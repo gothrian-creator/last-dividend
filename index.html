@@ -821,6 +821,7 @@ body.on-desk .shell { width: 100%; max-width: none; padding: 0; }
 .map .borders { fill: none; stroke: #6a4a20; stroke-opacity: 0.18; stroke-width: 0.7; pointer-events: none; }
 .map .rlabel { font-family: var(--font-sans); font-weight: 700; font-size: 17px; letter-spacing: 0.08em; fill: #5b3f14; paint-order: stroke; stroke: #fff4d8; stroke-width: 4px; pointer-events: none; }
 .map .rlabel.own { fill: #04454a; stroke: #d9fff8; }
+.map .rlabel .ls { display: none; }
 .map .rtag { font-family: var(--font-sans); font-weight: 700; font-size: 16px; letter-spacing: 0.1em; fill: #0f8a6a; paint-order: stroke; stroke: #fff; stroke-width: 4px; pointer-events: none; }
 .map .anc { fill: none; }
 .map .props, .map .traffic { pointer-events: none; }
@@ -1889,6 +1890,10 @@ h1, h2, h3 { color: var(--gold-hi); }
 @media (orientation: portrait), (max-width: 899px) {
   .desk .board-slab { transform: none; margin: 0 -6px; }
   .map .rlabel { font-size: 30px; stroke-width: 6px; }
+  .map .rlabel .lf { display: none; }
+  .map .rlabel .ls { display: inline; }
+  .map .rlabel.rl-ea { transform: translateY(-30px); }
+  .map .rlabel.rl-sa { transform: translateY(26px); }
   .map .pin-scale { transform: scale(1.9); }
   .map .pin-tag-in { transform: scale(1.45); }
   .map .pin-hit { transform: scale(1.45); }
@@ -2124,7 +2129,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 @media (orientation: portrait) and (max-height: 780px), (max-width: 380px) and (max-height: 780px) {
   .desk.has-sel .dossier,
   .desk.has-sel .dossier .dz { max-height: 66dvh; }
-  .deal-dz:has(.dz-choices) .dz-body { display: none; }
+  .deal-dz:has(.dz-choices) .dz-body { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; font-size: 12px; line-height: 1.3; margin: 0 0 2px; cursor: pointer; }
 }
 
 @media (orientation: landscape) and (min-width: 900px) {
@@ -2373,7 +2378,7 @@ body:has(#screen-tutorial.on) .shell,
 }
 
 @media (orientation: landscape) and (min-width: 900px) and (max-height: 820px) {
-  .deal-dz:has(.dz-choices) .dz-body { display: none; }
+  .deal-dz:has(.dz-choices) .dz-body { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; font-size: 12px; line-height: 1.3; margin: 0 0 2px; cursor: pointer; }
   .deal-dz:has(.dz-choices) .dz-art { height: 48px !important; }
   .deal-dz .dz-copy h3 { font-size: 16px; }
   .deal-dz .dz-choice { padding: 6px 8px; margin-top: 3px; }
@@ -2417,7 +2422,7 @@ body:has(#screen-tutorial.on) .shell,
     flex-direction: column;
     overflow: hidden;
   }
-  .deal-dz:has(.dz-choices) .dz-body { display: none; }
+  .deal-dz:has(.dz-choices) .dz-body { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; font-size: 12px; line-height: 1.3; margin: 0 0 2px; cursor: pointer; }
   .deal-dz .dz-choice { padding: 6px 8px; margin-top: 3px; }
   .deal-dz .fx-row { gap: 4px; margin: 2px 0; }
   .deal-dz .fine { font-size: 12px; margin: 4px 0 0; flex: none; }
@@ -2671,6 +2676,102 @@ body:has(#screen-tutorial.on) .shell,
 @media (max-height: 760px) and (max-width: 899px) {
   .overlay.evac-mode .evac-rule { display: none; }
 }
+/* =====================================================================
+   Polish pass: game feel, clarity, sound toggle
+   ===================================================================== */
+.meter { position: relative; }
+.m-pop { position: absolute; right: 8px; top: -6px; font: 800 15px/1 var(--font-sans); pointer-events: none; z-index: 5;
+  padding: 2px 7px; border-radius: 999px; animation: mpop 1.6s cubic-bezier(.2,.8,.3,1) forwards; text-shadow: 0 1px 0 rgba(0,0,0,.4); }
+.m-pop.up { background: #1f7a4d; color: #eafff2; }
+.m-pop.down { background: #a8321e; color: #fff0ea; }
+@keyframes mpop { 0% { transform: translateY(6px) scale(.6); opacity: 0; } 15% { transform: translateY(-4px) scale(1.15); opacity: 1; } 30% { transform: translateY(-6px) scale(1); } 80% { opacity: 1; } 100% { transform: translateY(-22px); opacity: 0; } }
+.meter.rise .m-bar span, .meter.fall .m-bar span { animation: mglow .9s ease-out; }
+@keyframes mglow { 0% { filter: brightness(1.8); } 100% { filter: none; } }
+
+/* Boss entrance */
+.boss-banner { position: fixed; left: 0; right: 0; top: 34%; z-index: 70; display: flex; justify-content: center;
+  background: linear-gradient(90deg, transparent, rgba(80, 6, 6, .94) 12%, rgba(40, 0, 0, .96) 50%, rgba(80, 6, 6, .94) 88%, transparent);
+  border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); pointer-events: none; animation: bbsweep 3.2s cubic-bezier(.2,.9,.2,1) forwards; }
+.boss-banner .bb-in { display: flex; align-items: center; gap: 14px; padding: 12px 22px; max-width: min(720px, 94vw); color: #fff3df; }
+.boss-banner .bb-ico { font-size: 46px; line-height: 1; filter: drop-shadow(0 0 12px rgba(255, 90, 60, .8)); }
+.boss-banner small { display: block; letter-spacing: .18em; text-transform: uppercase; font-size: 12px; color: var(--gold-hi, #f3d98f); }
+.boss-banner b { display: block; font-size: clamp(22px, 4.4vw, 34px); line-height: 1.05; font-family: var(--font-serif); }
+.boss-banner em { display: block; font-style: normal; font-size: 14px; opacity: .9; margin-top: 2px; }
+@keyframes bbsweep { 0% { transform: translateX(-100%) skewX(-12deg); opacity: 0; } 12% { transform: translateX(0) skewX(0); opacity: 1; } 85% { transform: none; opacity: 1; } 100% { transform: translateX(40%); opacity: 0; } }
+.boss-shake { animation: bshake .5s ease-in-out .15s; }
+@keyframes bshake { 0%,100% { transform: none; } 20% { transform: translate(-4px, 2px); } 40% { transform: translate(4px, -2px); } 60% { transform: translate(-3px, 1px); } 80% { transform: translate(2px, 0); } }
+
+/* Draft reveal */
+@media (min-width: 700px) { .fy-cards { grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); } }
+.fy-draft.reveal .fy-card { animation: cardin .5s cubic-bezier(.2,.9,.3,1.2) both; animation-delay: calc(var(--i) * 120ms); }
+@keyframes cardin { 0% { transform: perspective(700px) rotateY(88deg) scale(.9); opacity: 0; } 60% { opacity: 1; } 100% { transform: none; opacity: 1; } }
+.fy-draft.reveal .fy-card.r-r::after, .fy-draft.reveal .fy-card.r-l::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 236, 170, .75) 48%, transparent 66%) no-repeat; background-size: 250% 100%; background-position: 120% 0;
+  animation: rareflash 1.1s ease-out both; animation-delay: calc(var(--i) * 120ms + 380ms); }
+.fy-draft.reveal .fy-card.r-r, .fy-draft.reveal .fy-card.r-l { box-shadow: 0 0 0 2px var(--gold), 0 0 30px rgba(243, 217, 143, .6); }
+@keyframes rareflash { 0% { background-position: 120% 0; opacity: 1; } 100% { background-position: -60% 0; opacity: 0; } }
+.fy-card { overflow: hidden; }
+
+/* Level-up moment */
+.lvup-burst { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(4, 18, 12, .72); cursor: pointer; animation: lbfade .3s ease-out both; }
+.lvup-burst .lb-rays { position: absolute; width: 150vmax; height: 150vmax; left: 50%; top: 50%; margin: -75vmax 0 0 -75vmax; pointer-events: none;
+  background: repeating-conic-gradient(rgba(243, 217, 143, .16) 0 8deg, transparent 8deg 22deg); animation: lbspin 14s linear infinite;
+  -webkit-mask: radial-gradient(circle, #000 0, transparent 60%); mask: radial-gradient(circle, #000 0, transparent 60%); }
+.lvup-burst .lb-card { position: relative; text-align: center; padding: 20px 26px 16px; border-radius: 18px; border: 2px solid var(--gold); max-width: min(420px, 90vw);
+  background: linear-gradient(180deg, #123a28, #06180f); color: #fff6df; box-shadow: 0 0 60px rgba(243, 217, 143, .45); animation: lbpop .6s cubic-bezier(.2,1.4,.4,1) .1s both; }
+.lvup-burst small { letter-spacing: .25em; text-transform: uppercase; color: var(--gold-hi, #f3d98f); font-size: 12px; }
+.lvup-burst .lb-lv { font: 900 clamp(48px, 12vw, 76px)/1 var(--font-serif); color: var(--gold-hi, #f3d98f); text-shadow: 0 0 24px rgba(243, 217, 143, .7); margin: 4px 0; }
+.lvup-burst ul { list-style: none; margin: 8px 0 12px; padding: 0; font-size: 15px; }
+.lvup-burst li { margin: 3px 0; }
+@keyframes lbfade { from { opacity: 0; } }
+@keyframes lbspin { to { transform: rotate(360deg); } }
+@keyframes lbpop { 0% { transform: scale(.4); opacity: 0; } 100% { transform: none; opacity: 1; } }
+
+/* Memo card */
+.overlay.memo-mode .panel > .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fy-mchoice { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 2px; min-height: 64px; white-space: normal; }
+.fy-mchoice small { font-weight: 500; font-size: 13px; line-height: 1.3; opacity: .92; }
+.fy-mchoice[disabled] { opacity: .5; cursor: not-allowed; }
+@media (max-width: 520px) { .overlay.memo-mode .panel > .btn-row { grid-template-columns: 1fr; } }
+
+/* Clarity */
+.pf-chip .pf-fc { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 30vw; }
+.pf-chip .pf-fc.up { color: #8fe0a8; }
+.pf-chip .pf-fc.down { color: #ffb19a; }
+.fy-fc { margin: 0; font-size: 14px; padding: 6px 10px; border-radius: 10px; background: rgba(243, 217, 143, .1); border: 1px solid rgba(243, 217, 143, .3); }
+.fy-explain { cursor: pointer; font: inherit; border: 0; }
+.fy-chips .fy-explain { background: rgba(168, 50, 30, .35); color: inherit; border-radius: 999px; padding: 3px 10px; font-size: 13px; }
+.fy-whoboss { font-size: 12px; letter-spacing: .08em; padding: 4px 2px; min-height: 28px; color: var(--gold-hi, #f3d98f); background: none; text-decoration: underline; }
+.ex-sheet .ex-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; min-height: 0; overflow: hidden; }
+.ex-sheet .ex-list li { display: flex; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, .05); }
+.ex-sheet .ex-list li span:not(.fy-ico) { display: block; font-size: 13px; opacity: .9; }
+.ex-sheet .ex-list em { font-style: normal; font-size: 12px; color: var(--gold-hi, #f3d98f); }
+.ex-sheet .fy-ico { font-size: 26px; flex: none; }
+.ex-rules { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 3px 10px; min-height: 0; overflow: hidden; }
+.ex-rules li { font-size: 13px; line-height: 1.3; padding: 3px 8px; border-radius: 8px; }
+.ex-rules li.on { background: rgba(243, 217, 143, .18); box-shadow: inset 0 0 0 1px var(--gold); }
+.ex-rules b { display: inline-block; min-width: 34px; color: var(--gold-hi, #f3d98f); }
+.ex-rules em { font-style: normal; opacity: .7; font-size: 12px; }
+.ex-sheet .fy-note { margin: 4px 0 0; font-size: 13px; }
+@media (max-height: 760px) { .ex-rules li { font-size: 12px; padding: 1px 6px; } .ex-sheet .fy-head h2 { font-size: 20px !important; } }
+.end-carried { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin: 6px 0; font-size: 13px; }
+.end-carried > b { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-hi, #f3d98f); }
+.end-carried .ec { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(243, 217, 143, .35); }
+.end-carried .ec i { font-style: normal; }
+.end-carried .ec small { display: none; }
+.deal-dz .dz-body.open { -webkit-line-clamp: unset !important; position: absolute; left: 8px; right: 8px; z-index: 20; padding: 10px 12px; font-size: 14px !important;
+  background: #0f2b20; color: #fff6df; border: 1px solid var(--gold); border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+.deal-dz { position: relative; }
+.evac-why { display: none; font-size: 13px; margin: 2px 0; }
+@media (max-height: 760px) and (max-width: 899px) {
+  .overlay.evac-mode .evac-why { display: inline-block; }
+  .overlay.evac-mode.evac-why-on .evac-rule { display: block; font-size: 13px; }
+  .overlay.evac-mode.evac-why-on .readiness, .overlay.evac-mode.evac-why-on .evac-verdict { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .m-pop, .boss-banner, .boss-shake, .fy-draft.reveal .fy-card, .fy-draft.reveal .fy-card::after, .lvup-burst, .lvup-burst .lb-rays, .lvup-burst .lb-card, .meter.rise .m-bar span, .meter.fall .m-bar span { animation: none !important; }
+  .m-pop { opacity: 1; transform: translateY(-8px); }
+}
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -2806,7 +2907,7 @@ body:has(#screen-tutorial.on) .shell,
   LD.GRID_DISRUPTED = 2;
   LD.STRAIN_SURCHARGE = 8;
   LD.DISRUPT_SURCHARGE = 14;
-  LD.CONVERSION_CASH_RATE = 0.6;
+  LD.CONVERSION_CASH_RATE = 0.7;
 
   LD.SYSTEMS = [
     { id: "air", name: "Air", short: "AIR" },
@@ -2868,8 +2969,8 @@ body:has(#screen-tutorial.on) .shell,
       name: "Dr. Imani Okoye",
       title: "AgriFutures Chair",
       firm: "Yield & Residue PLC",
-      blurb: "A stockpile is already counted. The street is quieter, and the clock runs a little slower.",
-      start: { cash: 28, unrest: 8, collapse: 20, food: 1, foodQuality: "sound" },
+      blurb: "A stockpile is already counted. The street is quieter, and the clock runs a little slower through Act I.",
+      start: { cash: 26, unrest: 12, collapse: 20, food: 1, foodQuality: "sound" },
       perks: { foodCollapseRelief: 1, tags: ["food"] },
       compound: "Harvest Ziggurat",
       unlock: "win-run",
@@ -2881,7 +2982,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Crisis Logistics",
       firm: "Crowe Terminals",
       blurb: "More cash, more heat, and bad news takes an extra quarter to arrive. Use the time.",
-      start: { cash: 52, unrest: 24, collapse: 22 },
+      start: { cash: 56, unrest: 24, collapse: 22 },
       perks: { delayBonus: 1, tags: ["logistics"] },
       compound: "Port Sovereign",
       unlock: "three-runs",
@@ -2904,9 +3005,9 @@ body:has(#screen-tutorial.on) .shell,
       name: "Cassius Vane",
       title: "Managing Partner",
       firm: "Meridian Capital",
-      blurb: "No rooms, a fat float. Going private keeps 75% of every deal. Engineers are outsourced, and priced like it.",
-      start: { cash: 50, unrest: 14, collapse: 20 },
-      perks: { conversionRate: 0.75, engineerExtra: 8, tags: ["finance"] },
+      blurb: "No rooms, a fat float. Going private keeps 80% of every deal, and his private contractors build 8% cheaper. Engineers are outsourced, and priced like it.",
+      start: { cash: 56, unrest: 14, collapse: 20 },
+      perks: { conversionRate: 0.8, engineerExtra: 2, privateWorks: 0.92, tags: ["finance"] },
       compound: "Vault Exchange",
       unlock: "buy",
       price: 450
@@ -2925,7 +3026,7 @@ body:has(#screen-tutorial.on) .shell,
     strainSurcharge: 8,
     disruptSurcharge: 14,
     delayMult: 1,             /* delayed unrest/collapse fallout multiplier */
-    conversionRate: 0.6,      /* Go private cash rate */
+    conversionRate: 0.7,      /* Go private cash rate */
     conversionFee: 0,
     crisisNoPayAt: 70,        /* crises lose their "pay" option at this unrest */
     topDealAt: 30,            /* deal cash at or above this is trimmed */
@@ -3327,6 +3428,72 @@ body:has(#screen-tutorial.on) .shell,
         { id: "wait", label: "Issue a statement", hint: "Collapse +8.", immediate: { collapse: 8 } }
       ],
       weight: 20
+    }),
+    deal({
+      id: "crisis-smoke",
+      title: "Wildfire smoke rolls in",
+      kicker: "Crisis",
+      body: "The sun is a coin behind orange glass. Everyone is shopping for air.",
+      hint: "Hand out masks (10 cash, unrest −7), sell filters (+22, unrest +12, strains air), or wait (collapse +6).",
+      isCrisis: true,
+      unique: true,
+      minCollapse: 40,
+      minTurn: 3,
+      choices: [
+        { id: "masks", label: "Hand out branded masks", hint: "Costs 10. Unrest −7. Eases air supply.", cost: 10, immediate: { cash: -10, unrest: -7 }, ease: { air: 1 } },
+        { id: "filters", label: "Sell premium filters", hint: "+22 cash, unrest +12. Strains air supply.", immediate: { cash: 22, unrest: 12 }, strain: { air: 1 } },
+        { id: "wait", label: "Tweet a sunset photo", hint: "Collapse +6.", immediate: { collapse: 6 } }
+      ],
+      weight: 16
+    }),
+    deal({
+      id: "crisis-bread",
+      title: "Bread queues turn ugly",
+      kicker: "Crisis",
+      body: "The shelves are empty. Your warehouses are not. Someone has a drone.",
+      hint: "Open a food bank (14 cash, unrest −10), sell at market (+18, in 1Q unrest +14), or hold stock (unrest +6, collapse +3).",
+      isCrisis: true,
+      unique: true,
+      minUnrest: 36,
+      minTurn: 3,
+      choices: [
+        { id: "bank", label: "Open a food bank", hint: "Costs 14. Unrest −10. Eases food supply.", cost: 14, immediate: { cash: -14, unrest: -10 }, ease: { food: 1 } },
+        { id: "market", label: "Sell at 'market' prices", hint: "+18 cash. In 1Q: unrest +14.", immediate: { cash: 18 }, delay: { turns: 1, unrest: 14, log: "The 'market' price becomes a chant." } },
+        { id: "hold", label: "Hold the stock", hint: "Unrest +6, collapse +3.", immediate: { unrest: 6, collapse: 3 } }
+      ],
+      weight: 16
+    }),
+    deal({
+      id: "crisis-blackout",
+      title: "Rolling blackouts",
+      kicker: "Crisis",
+      body: "The grid is load-shedding the poor first. The algorithm insists it is neutral.",
+      hint: "Fund repairs (12 cash, collapse −3, unrest −5), sell priority power (+24, unrest +12, disrupts power), or wait (unrest +8).",
+      isCrisis: true,
+      unique: true,
+      minCollapse: 50,
+      choices: [
+        { id: "repair", label: "Fund the repair crews", hint: "Costs 12. Collapse −3, unrest −5. Eases power supply.", cost: 12, immediate: { cash: -12, collapse: -3, unrest: -5 }, ease: { power: 1 } },
+        { id: "priority", label: "Sell priority power", hint: "+24 cash, unrest +12. Disrupts power supply at quarter close.", immediate: { cash: 24, unrest: 12 }, strain: { power: 2 } },
+        { id: "wait", label: "Blame the weather", hint: "Unrest +8.", immediate: { unrest: 8 } }
+      ],
+      weight: 16
+    }),
+    deal({
+      id: "crisis-flood",
+      title: "The river forgets its banks",
+      kicker: "Crisis",
+      body: "Three towns are underwater. Your levee held. It was built for one address.",
+      hint: "Lend the pumps (10 cash, unrest −6, collapse −2), charge for rescue boats (+20, unrest +14), or wait (collapse +7).",
+      isCrisis: true,
+      unique: true,
+      minCollapse: 60,
+      choices: [
+        { id: "pumps", label: "Lend the pumps", hint: "Costs 10. Unrest −6, collapse −2. Eases water supply.", cost: 10, immediate: { cash: -10, unrest: -6, collapse: -2 }, ease: { water: 1 } },
+        { id: "boats", label: "Charge for the boats", hint: "+20 cash, unrest +14. Strains water supply.", immediate: { cash: 20, unrest: 14 }, strain: { water: 1 } },
+        { id: "wait", label: "Send thoughts", hint: "Collapse +7.", immediate: { collapse: 7 } }
+      ],
+      weight: 14
     })
   ];
 
@@ -3337,11 +3504,11 @@ body:has(#screen-tutorial.on) .shell,
     },
     {
       title: "Private supply versus profit",
-      body: "A strained network makes that system costlier to install. A disrupted one also delays the shipment by a quarter — it will not help you if collapse arrives first. You may spend a bunker action to convert to private supply: deals then pay only 60% cash, but further installs ignore that damage and arrive this quarter. Convert early to lock in materials; stay in the market longer if you want a bigger pile. Exploitation can still work either way."
+      body: "A strained network makes that system costlier to install. A disrupted one also delays the shipment by a quarter — it will not help you if collapse arrives first. You may spend a bunker action to convert to private supply: deals then pay only 70% cash, but further installs ignore that damage and arrive this quarter. Convert early to lock in materials; stay in the market longer if you want a bigger pile. Exploitation can still work either way."
     },
     {
       title: "The Fiscal Year",
-      body: "A run is three acts of four quarters. Each act ends in a boss quarter: the Earnings Call (Q4), a General Strike or a Hostile Takeover Bid (Q8), and the Reckoning (Q12), which ends the year. After every quarter you pick one of three Assets for your Portfolio (five slots), or skip for cash. Beat a boss for a rare draft. Each executive levels up from runs and earns small perks."
+      body: "A run is three acts of four quarters. Each act ends in a boss quarter: the Earnings Call (Q4), a General Strike or a Hostile Takeover Bid (Q8), and the Reckoning (Q12), which ends the year. After every quarter you pick one of three Assets for your Portfolio (five slots), or skip for cash. Beat a boss for a rare draft. Bosses vary from run to run, and about once an act a Board Memo asks you to choose. Each executive levels up from runs and earns small perks."
     },
     {
       title: "Then finish the shelter",
@@ -3530,6 +3697,7 @@ body:has(#screen-tutorial.on) .shell,
     var exec = execById(state.executiveId);
     var r = mods(state).conversionRate;
     if (exec.perks && exec.perks.conversionRate) r = Math.max(r, exec.perks.conversionRate);
+    if (LD.fyConversionBonus) r = Math.min(0.9, r + LD.fyConversionBonus(state));
     return r;
   }
 
@@ -3882,7 +4050,9 @@ body:has(#screen-tutorial.on) .shell,
     if (!row) return null;
     var m = mods(state);
     var cost = quality === "cheap" ? row.cheap : row.sound;
-    if (m.upgradeMult !== 1) cost = Math.round(cost * m.upgradeMult);
+    var um = m.upgradeMult;
+    if (state.converting && execById(state.executiveId).perks && execById(state.executiveId).perks.privateWorks) um *= execById(state.executiveId).perks.privateWorks;
+    if (um !== 1) cost = Math.round(cost * um);
     if (quality === "cheap" && m.cheapExtra) cost += m.cheapExtra;
     var exec = execById(state.executiveId);
     var perks = exec.perks || {};
@@ -3899,6 +4069,7 @@ body:has(#screen-tutorial.on) .shell,
     }
     if (state.bunker.water.level >= 2 && systemId === "food" && level === 2) cost -= 6;
     if (state.bunker.power.level >= 2 && (systemId === "air" || systemId === "water") && level === 2) cost -= 4;
+    if (level === 3 && LD.fyLv3Discount) cost -= LD.fyLv3Discount(state);
     if (hasFlag(state, "freightCharter")) {
       cost = Math.floor(cost * 0.7);
     }
@@ -4008,6 +4179,7 @@ body:has(#screen-tutorial.on) .shell,
       }, row.name);
       state.ap -= LD.BUNKER_AP;
       state.bunkerActedThisTurn = true;
+      if (LD.fyAfterBunker) LD.fyAfterBunker(state);
       state.lastBunkerAction = "upgrade:" + systemId + ":L" + nextLevel + ":" + quality + ":delayed";
       pushLog(state, "Paid " + cost + " for " + row.name + " (" + systemId + " L" + nextLevel + ", " + quality + "). Public " + systemId + " is disrupted — arrives Q" + (state.turn + quote.delay) + ".");
       return { ok: true, state: state, cost: cost, delayed: true, due: state.turn + quote.delay };
@@ -4021,6 +4193,7 @@ body:has(#screen-tutorial.on) .shell,
     /* L3 sound remediates; L1/L2 sound does not wash out a prior cheap mark unless L3. */
     state.ap -= LD.BUNKER_AP;
     state.bunkerActedThisTurn = true;
+      if (LD.fyAfterBunker) LD.fyAfterBunker(state);
     state.lastBunkerAction = "upgrade:" + systemId + ":L" + nextLevel + ":" + quality;
     pushLog(state, "Installed " + row.name + " (" + systemId + " L" + nextLevel + ", " + quality + ") for " + cost + ".");
     return { ok: true, state: state, cost: cost, delayed: false };
@@ -4039,6 +4212,7 @@ body:has(#screen-tutorial.on) .shell,
     state.engineer = true;
     state.ap -= LD.BUNKER_AP;
     state.bunkerActedThisTurn = true;
+      if (LD.fyAfterBunker) LD.fyAfterBunker(state);
     state.lastBunkerAction = "engineer";
     pushLog(state, "Retained a chief engineer for " + cost + ".");
     return { ok: true, state: state, cost: cost };
@@ -4098,6 +4272,7 @@ body:has(#screen-tutorial.on) .shell,
     }
     state.ap -= LD.BUNKER_AP;
     state.bunkerActedThisTurn = true;
+      if (LD.fyAfterBunker) LD.fyAfterBunker(state);
     pushLog(state, "Converted to private supply. Further deals pay " + Math.round(conversionRate(state) * 100) + "% cash." + (fee ? " Offshore paperwork " + fee + "." : "") + " Installs ignore public-network damage and arrive this quarter.");
     if (secured) {
       pushLog(state, "Secured " + secured.name + " (" + secured.systemId + " L" + secured.level + ", " + secured.quality + ") for " + cost + ".");
@@ -4221,7 +4396,7 @@ body:has(#screen-tutorial.on) .shell,
       delete state.flags.softQuarter;
     }
     var exec = execById(state.executiveId);
-    if (exec.perks && exec.perks.foodCollapseRelief) tick -= exec.perks.foodCollapseRelief;
+    if (exec.perks && exec.perks.foodCollapseRelief && state.turn < 5) tick -= exec.perks.foodCollapseRelief;
     return Math.max(1, tick);
   }
 
@@ -4233,7 +4408,7 @@ body:has(#screen-tutorial.on) .shell,
     var m = mods(state);
     var q = 0, turn = state.turn, soft = hasFlag(state, "softQuarter");
     while (remain > 0 && q < 40) {
-      var tick = m.collapseTick + (turn >= m.lateAccelTurn ? 1 : 0) - relief;
+      var tick = m.collapseTick + (turn >= m.lateAccelTurn ? 1 : 0) - (turn < 5 ? relief : 0);
       if (soft) { tick -= 2; soft = false; }
       remain -= Math.max(1, tick);
       turn += 1;
@@ -4685,7 +4860,7 @@ body:has(#screen-tutorial.on) .shell,
           cash += pay;
           events.push({ regionId: id, kind: "income", cash: pay, text: name + " plant pays +" + pay + "." });
         }
-        collapse += LD.PLANT.collapsePerQuarter;
+        collapse += LD.fyPlantCollapse && LD.fyPlantCollapse(state) === 0 ? 0 : LD.PLANT.collapsePerQuarter;
       }
       if (r.stress >= LD.STRESS_STRIKE) {
         unrest += LD.STRIKE_UNREST;
@@ -4779,7 +4954,7 @@ body:has(#screen-tutorial.on) .shell,
     { id: "CCC", text: "Paper trail: delayed fallout ×1.2", apply: function (m) { m.delayMult = 1.2; } },
     { id: "CC", text: "Building codes: Discount Lv 2 never holds (Sound or Lv 3 only)", apply: function () {} },
     { id: "C", text: "Credit crunch: start cash −$4M", apply: function (m) { m.startDelta.cash -= 4; } },
-    { id: "D", text: "The Reckoning comes early: the final boss lands at Q11", apply: function () {} }
+    { id: "D", text: "The Reckoning comes early: the final boss lands at Q11, and collapse starts 5 higher", apply: function () {} }
   ];
   LD.PERK_CAP_RATING = 5; /* at BB and below only one Perquisite slot works */
 
@@ -4877,6 +5052,10 @@ body:has(#screen-tutorial.on) .shell,
     add("Retained earnings", Math.min(15, Math.floor(Math.max(0, state.cash) / 4)), "Cash ÷ 4, max 15");
     var bosses = state.fy ? state.fy.bosses : 0;
     add("Bosses beaten", 10 * bosses, bosses + " × 10");
+    if (win && LD.fyHas && LD.fyHas(state, "penthouse")) {
+      var l3 = LD.SYSTEMS.filter(function (s) { return state.bunker[s.id].level >= 3; }).length;
+      if (l3) add("Penthouse Suite", 3 * l3, l3 + " Lv 3 room" + (l3 === 1 ? "" : "s") + " × 3", "win");
+    }
     if (win) {
       add("Successful exit", 25, "The doors closed with you inside", "win");
       add("Headroom", Math.max(0, Math.floor((90 - state.collapse) / 2)), "Sealed at collapse " + state.collapse, "win");
@@ -5336,7 +5515,7 @@ body:has(#screen-tutorial.on) .shell,
   LD.FY = {
     QUARTERS: 12, ACT_LEN: 4, SEAL_Q: 9,
     CAP: 5, SKIP_CASH: 3, DIVEST_CASH: 4,
-    INFLATION: 0.2,       /* bunker works +20% per act ("construction inflation") */
+    INFLATION: 0.25,      /* bunker works +25% per act ("construction inflation") */
     BOSS_BASE: 1.6        /* boss strength at AAA */
   };
   LD.ACTS = [
@@ -5388,13 +5567,24 @@ body:has(#screen-tutorial.on) .shell,
     { id: "consult", r: "C", arch: "corp", icon: "💼", name: "Management Consultants", text: "+$2M and +1 unrest every quarter" },
     { id: "buyback", r: "C", arch: "corp", icon: "💹", name: "Stock Buyback", text: "+$8M now" },
     { id: "loyalty", r: "R", arch: "corp", icon: "🪑", name: "Board Loyalty", text: "Once per run: unrest 85+ drops to 70" },
-    { id: "toobig", r: "L", arch: "corp", icon: "🏦", name: "Too Big To Fail", text: "Once per run: collapse 88+ with an unready bunker resets to 80" }
+    { id: "toobig", r: "L", arch: "corp", icon: "🏦", name: "Too Big To Fail", text: "Once per run: collapse 88+ with an unready bunker resets to 80" },
+    { id: "overtime", r: "U", arch: "bunker", icon: "🌙", name: "Overtime Crew", text: "Once per act: a second bunker order in the same quarter" },
+    { id: "penthouse", r: "R", arch: "bunker", icon: "🛋️", name: "Penthouse Suite", text: "Lv 3 works −$8M; +3 ◈ per Lv 3 room on a win" },
+    { id: "surge", r: "R", arch: "baron", icon: "📈", name: "Surge Pricing AI", text: "At collapse 50+, paying Squeeze deals +40%" },
+    { id: "influencer", r: "U", arch: "pr", icon: "🤳", name: "Influencer Retainer", text: "Once per act: your first Soothe deal −4 more unrest and +$4M" },
+    { id: "brine", r: "U", arch: "network", icon: "🧂", name: "Brine Partner", text: "Your plants stop adding collapse" },
+    { id: "privgrid", r: "R", arch: "network", icon: "🔋", name: "Private Grid", text: "Going private keeps 15% more deal cash (max 90%)" },
+    { id: "disfut", r: "U", arch: "crisis", icon: "🌪️", name: "Disaster Futures", text: "+$3M each quarter a crisis is on offer" },
+    { id: "futures", r: "U", arch: "time", icon: "⏳", name: "Futures Desk", text: "Delayed collapse from your deals lands 1 quarter later" },
+    { id: "rolodex", r: "U", arch: "corp", icon: "📇", name: "Golden Rolodex", text: "Drafts show 4 Assets" }
   ];
   LD.LIABILITIES = [
     { id: "classaction", icon: "⚖️", name: "Class Action", text: "+2 unrest per quarter until you sign a Soothe deal" },
     { id: "audit", icon: "🔍", name: "Building Audit", text: "Bunker works +15% for the rest of this act" },
     { id: "whistle", icon: "📯", name: "Whistleblower", text: "Your next deal's delayed fallout ×1.5" },
-    { id: "stranded", icon: "🪨", name: "Stranded Asset", text: "Takes a Portfolio slot. Worth nothing." }
+    { id: "stranded", icon: "🪨", name: "Stranded Asset", text: "Takes a Portfolio slot. Worth nothing." },
+    { id: "mole", icon: "🐀", name: "Rival Mole", text: "Your next boss is 15% harder. Leaves after that boss." },
+    { id: "toxic", icon: "☣️", name: "Toxic Brand", text: "Soothe deals calm 3 less for the rest of this act" }
   ];
   var BY_ID = {};
   LD.FY_ASSETS.forEach(function (a) { BY_ID[a.id] = a; });
@@ -5403,22 +5593,31 @@ body:has(#screen-tutorial.on) .shell,
 
   /* ---------- Bosses ---------- */
   LD.BOSSES = {
-    earnings: { name: "The Earnings Call", icon: "📞", kicker: "Act I boss" },
-    strike: { name: "General Strike", icon: "✊", kicker: "Act II boss" },
-    bid: { name: "Hostile Takeover Bid", icon: "🦈", kicker: "Act II boss" },
-    reckoning: { name: "The Reckoning", icon: "🌋", kicker: "Act III boss" }
+    earnings: { name: "The Earnings Call", icon: "📞", kicker: "Act I boss", act: 1 },
+    shortseller: { name: "Short-Seller Report", icon: "🐻", kicker: "Act I boss", act: 1 },
+    strike: { name: "General Strike", icon: "✊", kicker: "Act II boss", act: 2 },
+    bid: { name: "Hostile Takeover Bid", icon: "🦈", kicker: "Act II boss", act: 2 },
+    crash: { name: "Market Crash", icon: "💥", kicker: "Act II boss", act: 2 },
+    reckoning: { name: "The Reckoning", icon: "🌋", kicker: "Act III boss", act: 3, final: true },
+    heatdome: { name: "The Reckoning: Heat Dome", icon: "🔥", kicker: "Act III boss", act: 3, final: true },
+    seawall: { name: "The Reckoning: Sea Wall", icon: "🌊", kicker: "Act III boss", act: 3, final: true }
   };
+  function seedBosses(seed) {
+    var h = LD.hashString("bosses:" + seed);
+    return { bossI: ["earnings", "earnings", "shortseller"][h % 3], bossII: ["strike", "bid", "crash"][Math.floor(h / 3) % 3], bossIII: ["reckoning", "heatdome", "seawall"][Math.floor(h / 9) % 3] };
+  }
 
   /* ---------- Credit rating rules (cumulative) ---------- */
   function rulesFor(tier) {
     tier = tier | 0;
     return {
-      bossMult: tier >= 1 ? 1.15 : 1,
+      bossMult: tier >= 10 ? 1.3 : tier >= 1 ? 1.15 : 1,
       riderChance: tier >= 2 ? 0.25 : 0,
       crisisUnrest: tier >= 5 ? 3 : 0,
       startCurse: tier >= 6,
       crackedDiscount: tier >= 8,
-      finalQ: tier >= 10 ? 11 : 12
+      finalQ: tier >= 10 ? 11 : 12,
+      startCollapse: tier >= 10 ? 5 : 0
     };
   }
   LD.fyRules = rulesFor;
@@ -5427,25 +5626,25 @@ body:has(#screen-tutorial.on) .shell,
   LD.actOf = actOf;
   function fy(state) { return state && state.fy; }
   function has(state, id) { var f = fy(state); if (!f) return false; for (var i = 0; i < f.hand.length; i++) if (f.hand[i].id === id) return true; return false; }
-  function hasActive(state, id) { var f = fy(state); if (!f) return false; for (var i = 0; i < f.hand.length; i++) if (f.hand[i].id === id && (id !== "audit" || f.hand[i].actOf === f.act)) return true; return false; }
+  function hasActive(state, id) { var f = fy(state); if (!f) return false; for (var i = 0; i < f.hand.length; i++) if (f.hand[i].id === id && ((id !== "audit" && id !== "toxic") || f.hand[i].actOf === f.act)) return true; return false; }
   function archCount(state, arch) { return fy(state) ? fy(state).hand.filter(function (h) { var c = cardById(h.id); return c && c.arch === arch; }).length : 0; }
   function setOn(state, arch) { var a = LD.ARCHETYPES[arch]; return !!(a && a.set && archCount(state, arch) >= a.set); }
   function slotsUsed(state) { return fy(state).hand.filter(function (h) { var c = cardById(h.id); return c && (!c.liability || h.id === "stranded"); }).length; }
   function bossQuarters(state) { return [4, 8, fy(state) ? fy(state).rules.finalQ : 12]; }
   function bossAt(state, q) {
     var f = fy(state); if (!f) return null;
-    if (q === 4) return "earnings";
+    if (q === 4) return f.bossI || "earnings";
     if (q === 8) return f.bossII;
-    if (q === f.rules.finalQ) return "reckoning";
+    if (q === f.rules.finalQ) return f.bossIII || "reckoning";
     return null;
   }
-  function bossK(state) { return fy(state).rules.bossMult * LD.FY.BOSS_BASE; }
+  function bossK(state) { return fy(state).rules.bossMult * LD.FY.BOSS_BASE * (has(state, "mole") ? 1.15 : 1); }
   /* What a boss asks and threatens, as numbers (for UI and resolution). */
   function bossInfo(state, q) {
     var id = bossAt(state, q == null ? state.turn : q);
     if (!id) return null;
     var k = bossK(state), b = LD.BOSSES[id];
-    var info = { id: id, q: q == null ? state.turn : q, name: b.name, icon: b.icon, kicker: b.kicker };
+    var info = { id: id, q: q == null ? state.turn : q, name: b.name, icon: b.icon, kicker: b.kicker, final: !!b.final };
     if (id === "earnings") { info.ask = Math.round(15 * k); info.missUnrest = Math.round(12 * k); info.missCollapse = 4; info.choice = true;
       info.demand = "Hit the number: pay a $" + info.ask + "M special dividend.";
       info.beat = "Pay $" + info.ask + "M"; info.miss = "Guidance cut: unrest +" + info.missUnrest + ", collapse +4"; }
@@ -5455,9 +5654,21 @@ body:has(#screen-tutorial.on) .shell,
     if (id === "strike") { info.low = Math.round(8 * k); info.high = Math.round(18 * k); info.line = 60;
       info.demand = "The street walks out: unrest +" + info.low + " (+" + info.high + " if you are at 40+). End the quarter below " + info.line + " to break it.";
       info.beat = "Unrest stays under " + info.line; info.miss = "The strike holds. No bonus"; }
+    if (id === "shortseller") { info.ask = Math.round(11 * k); info.missUnrest = Math.round(6 * k); info.choice = true;
+      info.demand = "A short seller publishes 90 pages on you. Pay $" + info.ask + "M for a friendly counter-study.";
+      info.beat = "Pay $" + info.ask + "M"; info.miss = "Unrest +" + info.missUnrest + " and they expose your newest Asset (it is lost)"; }
+    if (id === "crash") { info.line = Math.round(10 * k); info.missUnrest = 6;
+      info.demand = "Markets fall: you lose 30% of your cash at close. Keep $" + info.line + "M+ after the drop to ride it out.";
+      info.beat = "$" + info.line + "M+ left after the drop"; info.miss = "The loss stands, layoffs follow: unrest +6"; }
     if (id === "reckoning") { info.hit = Math.round(15 * k);
-      info.demand = "Collapse +" + info.hit + " in one quarter. The fiscal year ends here: sealed, ready, or gone.";
+      info.demand = "Superstorm season: collapse +" + info.hit + " in one quarter. The fiscal year ends here: sealed, ready, or gone.";
       info.beat = "Seal first, or have all 4 rooms ready"; info.miss = "Forced evacuation into whatever you built"; }
+    if (id === "heatdome") { info.hit = Math.round(12 * k); info.missUnrest = Math.round(6 * k);
+      info.demand = "A heat dome parks over the cities: collapse +" + info.hit + " and unrest +" + info.missUnrest + ". The fiscal year ends here.";
+      info.beat = "Seal first, or have all 4 rooms ready (and unrest under 100)"; info.miss = "Forced evacuation into whatever you built"; }
+    if (id === "seawall") { info.hit = Math.round(13 * k);
+      info.demand = "The sea wall fails: collapse +" + info.hit + ", and floodwater takes one level off your weakest Discount room. The fiscal year ends here.";
+      info.beat = "Seal first, or have all 4 rooms ready (Sound rooms stay dry)"; info.miss = "Forced evacuation into whatever you built"; }
     return info;
   }
   LD.bossAt = bossAt;
@@ -5512,7 +5723,7 @@ body:has(#screen-tutorial.on) .shell,
   function makeDraft(state, rare) {
     var f = fy(state);
     var rng = fyRng(state, "draft:" + state.turn + ":" + (f.rerolled || 0));
-    var offer = drawAssets(state, 3, rare, rng);
+    var offer = drawAssets(state, has(state, "rolodex") ? 4 : 3, rare, rng);
     var rider = f.rules.riderChance > 0 && rng() < f.rules.riderChance;
     f.draft = { offer: offer, rare: !!rare, rider: rider, closed: state.turn - 1 };
     return f.draft;
@@ -5532,6 +5743,7 @@ body:has(#screen-tutorial.on) .shell,
         case "utility": m.strainSurcharge = 0; break;
         case "press": m.calmBonus += 3; break;
         case "audit": if (h.actOf === f.act) m.upgradeMult *= 1.15; break;
+        case "toxic": if (h.actOf === f.act) m.calmBonus -= 3; break;
       }
     });
     if (setOn(state, "bunker")) m.upgradeMult *= 0.9;
@@ -5565,10 +5777,12 @@ body:has(#screen-tutorial.on) .shell,
     if (lv >= 4) base.engineerCost -= 3;
     state.fy = {
       v: 1, act: 1, level: lv, hand: [], bosses: 0, bossLog: [], rules: rules, baseMods: base,
-      bossII: (LD.hashString("boss2:" + state.seed) % 2) ? "strike" : "bid",
+      bossII: "strike",
       draft: null, used: {}, drafts: 0, skips: 0, rerolls: lv >= 5 ? 1 : 0, rerolled: 0,
-      cap: lv >= 10 ? 6 : LD.FY.CAP, skipCash: lv >= 8 ? 5 : LD.FY.SKIP_CASH, lastBoss: null
+      cap: lv >= 10 ? 6 : LD.FY.CAP, skipCash: lv >= 8 ? 5 : LD.FY.SKIP_CASH, lastBoss: null,
+      memo: null, memoQs: seedMemoQs(state.seed), memosSeen: [], credit: {}, picks: []
     };
+    var sb = seedBosses(state.seed); state.fy.bossI = sb.bossI; state.fy.bossII = sb.bossII; state.fy.bossIII = sb.bossIII;
     if (lv >= 2) state.cash += 3;
     if (lv >= 7) state.cash += 3;
     if (lv >= 6) state.collapse = Math.max(0, state.collapse - 2);
@@ -5579,7 +5793,9 @@ body:has(#screen-tutorial.on) .shell,
       var pick = pool[Math.floor(rng() * pool.length)];
       addCard(state, pick.id);
       state.log.unshift({ turn: state.turn, text: "Signing bonus: " + pick.name + " joins your Portfolio." });
+      state.fy.picks.push(pick.id);
     }
+    if (rules.startCollapse) state.collapse += rules.startCollapse;
     if (rules.startCurse) { addCard(state, "classaction"); state.log.unshift({ turn: state.turn, text: "Inherited lawsuit: a Class Action follows you in." }); }
     rebuildMods(state);
     return state;
@@ -5598,10 +5814,36 @@ body:has(#screen-tutorial.on) .shell,
     rebuildMods(state);
     return state;
   }
-  LD.ensureFY = ensureFY;
+  /* Saves from the first Fiscal Year build: add the fields later builds use. Bosses already set stay set. */
+  function upgradeFY(state) {
+    var f = fy(state); if (!f) return state;
+    if (!f.memoQs) f.memoQs = seedMemoQs(state.seed);
+    if (!f.memosSeen) f.memosSeen = [];
+    if (f.memo === undefined) f.memo = null;
+    if (!f.credit) f.credit = {};
+    if (!f.picks) f.picks = f.hand.filter(function (h) { var c = cardById(h.id); return c && !c.liability; }).map(function (h) { return h.id; });
+    if (!f.bossI) f.bossI = "earnings";
+    if (!f.bossIII) f.bossIII = "reckoning";
+    return state;
+  }
+  LD.upgradeFY = upgradeFY;
+  function seedMemoQs(seed) {
+    var h = LD.hashString("memos:" + seed);
+    return [[2, 3][h % 2], [5, 6, 7][Math.floor(h / 2) % 3], [9, 10][Math.floor(h / 6) % 2]];
+  }
+  LD.ensureFY = function (state) { ensureFY(state); return upgradeFY(state); };
 
-  function blockDeal(state) { return fy(state) && fy(state).draft ? "Choose this quarter's acquisition first." : null; }
+  function blockDeal(state) { var f = fy(state); return f && f.draft ? "Choose this quarter's acquisition first." : f && f.memo ? "Answer the board memo first." : null; }
   LD.fyBlockDeal = blockDeal;
+
+  /* Run summary: what each held Asset did for you (cash, unrest, collapse, quarters held). */
+  function credit(state, id, k, n) {
+    var f = fy(state); if (!f || !id) return;
+    f.credit = f.credit || {};
+    var c = f.credit[id] || (f.credit[id] = { cash: 0, unrest: 0, collapse: 0, q: 0 });
+    c[k] += n;
+  }
+  LD.fyCredit = credit;
 
   /* selectDeal hook: runs after the engine applied the deal. */
   function fyOnDeal(state, deal, payload, choiceId, notes, pendingBefore) {
@@ -5611,29 +5853,34 @@ body:has(#screen-tutorial.on) .shell,
     var listed = LD.payloadCash ? LD.payloadCash(state, payload.immediate) : ((payload.immediate || {}).cash || 0);
     var paid = listed > 0;
     var fresh = state.pending.slice(pendingBefore).filter(function (i) { return !i.install; });
-    function cash(n, who) { state.cash = Math.max(0, state.cash + n); notes.push((n >= 0 ? "+" : "−") + Math.abs(n) + " cash (" + who + ")"); }
-    function unrest(n, who) { state.unrest = clamp(state.unrest + n, 0, LD.MAX_UNREST); notes.push((n >= 0 ? "+" : "−") + Math.abs(n) + " unrest (" + who + ")"); }
+    function nm(id) { var c = cardById(id); return c ? c.name : id; }
+    function cash(n, id) { state.cash = Math.max(0, state.cash + n); notes.push((n >= 0 ? "+" : "−") + Math.abs(n) + " cash (" + nm(id) + ")"); credit(state, id, "cash", n); }
+    function unrest(n, id) { state.unrest = clamp(state.unrest + n, 0, LD.MAX_UNREST); notes.push((n >= 0 ? "+" : "−") + Math.abs(n) + " unrest (" + nm(id) + ")"); credit(state, id, "unrest", n); }
     var hurts = fresh.filter(function (i) { return (i.unrest || 0) > 0 || (i.collapse || 0) > 0; });
-    if (ext && has(state, "creative") && hurts.length) { fresh.forEach(function (i) { i.due += 1; }); notes.push("fallout 1Q later (Creative Accounting)"); }
+    if (ext && has(state, "creative") && hurts.length) { fresh.forEach(function (i) { i.due += 1; }); notes.push("fallout 1Q later (Creative Accounting)"); credit(state, "creative", "q", 1); }
+    if (has(state, "futures") && fresh.some(function (i) { return i.collapse > 0; })) { fresh.forEach(function (i) { if (i.collapse > 0) i.due += 1; }); notes.push("collapse 1Q later (Futures Desk)"); credit(state, "futures", "q", 1); }
     if (ext && has(state, "regcap") && !(u.regcap && u.regcap[f.act]) && fresh.some(function (i) { return i.collapse > 0; })) {
       u.regcap = u.regcap || {}; u.regcap[f.act] = 1;
-      fresh.forEach(function (i) { i.collapse = 0; }); notes.push("delayed collapse waived (Regulatory Capture)");
+      var waived = 0; fresh.forEach(function (i) { waived += i.collapse || 0; i.collapse = 0; }); notes.push("delayed collapse waived (Regulatory Capture)"); credit(state, "regcap", "collapse", -waived);
     }
     if (has(state, "whistle") && hurts.length) {
       hurts.forEach(function (i) { i.unrest = Math.round((i.unrest || 0) * 1.5); i.collapse = Math.round((i.collapse || 0) * 1.5); });
       removeCard(state, "whistle"); notes.push("fallout ×1.5 (Whistleblower)");
     }
-    if (ext && paid && has(state, "shell")) cash(3, "Shell Company");
-    if (ext && has(state, "lobby")) unrest(-2, "Friendly Lobbyist");
-    if (ext && has(state, "vertical") && ["air", "water", "power", "food"].some(function (t) { return tagged(deal, t) && state.bunker[t].level >= 2; })) cash(5, "Vertical Integration");
-    if (ext && setOn(state, "baron")) cash(2, "The Cartel");
-    if (crisis && !payload.cost && has(state, "thoughts")) unrest(-4, "Thoughts & Prayers");
-    if (calm && has(state, "philan")) cash(6, "Philanthropy Foundation");
-    if (crisis && has(state, "chaser")) cash(4, "Ambulance Chaser");
-    if (crisis && payload.cost && has(state, "hedge")) cash(4, "Hedge Desk");
-    if (paid && state.collapse >= 60 && has(state, "short")) cash(5, "Short Position");
+    if (ext && paid && has(state, "shell")) cash(3, "shell");
+    if (ext && paid && state.collapse >= 50 && has(state, "surge")) cash(Math.max(2, Math.round(listed * 0.4)), "surge");
+    if (ext && has(state, "lobby")) unrest(-2, "lobby");
+    if (ext && has(state, "vertical") && ["air", "water", "power", "food"].some(function (t) { return tagged(deal, t) && state.bunker[t].level >= 2; })) cash(5, "vertical");
+    if (ext && setOn(state, "baron")) { state.cash += 2; notes.push("+2 cash (The Cartel)"); }
+    if (crisis && !payload.cost && has(state, "thoughts")) unrest(-4, "thoughts");
+    if (calm && has(state, "philan")) cash(6, "philan");
+    if (calm && has(state, "influencer") && !(u.infl && u.infl[f.act])) { u.infl = u.infl || {}; u.infl[f.act] = 1; unrest(-4, "influencer"); cash(4, "influencer"); }
+    if (calm && has(state, "press")) credit(state, "press", "unrest", -3);
+    if (crisis && has(state, "chaser")) cash(4, "chaser");
+    if (crisis && payload.cost && has(state, "hedge")) cash(4, "hedge");
+    if (paid && state.collapse >= 60 && has(state, "short")) cash(5, "short");
     if (calm && has(state, "classaction")) { removeCard(state, "classaction"); notes.push("Class Action settled"); }
-    if (crisis && f.rules.crisisUnrest) unrest(f.rules.crisisUnrest, "crisis season");
+    if (crisis && f.rules.crisisUnrest) { state.unrest = clamp(state.unrest + f.rules.crisisUnrest, 0, LD.MAX_UNREST); notes.push("+" + f.rules.crisisUnrest + " unrest (crisis season)"); }
   }
   LD.fyOnDeal = fyOnDeal;
 
@@ -5651,21 +5898,25 @@ body:has(#screen-tutorial.on) .shell,
     opts = opts || {};
     var out = [], u = f.used, t = state.turn;
     function ev(text, kind, extra) { var e = { text: text, source: "Portfolio", fy: kind || "asset" }; if (extra) Object.keys(extra).forEach(function (k) { e[k] = extra[k]; }); out.push(e); state.log.unshift({ turn: t, text: text }); }
-    if (has(state, "astro")) { state.unrest = clamp(state.unrest - 2, 0, LD.MAX_UNREST); ev("Astroturf Network: unrest −2."); }
-    if (has(state, "plantmgr")) { var pc = LD.plantCount ? LD.plantCount(state) : 0; if (pc) { state.cash += 2 * pc; ev("Plant Manager: +$" + (2 * pc) + "M."); } }
-    if (has(state, "toll")) { var oc = LD.ownedCount ? LD.ownedCount(state) : 1; state.cash += oc; var tu = t % 2 === 0; if (tu) state.unrest = clamp(state.unrest + 1, 0, LD.MAX_UNREST); ev("Toll Road: +$" + oc + "M" + (tu ? ", unrest +1" : "") + "."); }
-    if (has(state, "offsets") && t % 2 === 1) { state.collapse = clamp(state.collapse - 1, 0, LD.MAX_COLLAPSE); ev("Carbon Offsets: collapse −1."); }
-    if (has(state, "consult")) { state.cash += 2; state.unrest = clamp(state.unrest + 1, 0, LD.MAX_UNREST); ev("Management Consultants: +$2M, unrest +1."); }
+    function cr(id, k, n) { credit(state, id, k, n); }
+    f.hand.forEach(function (h) { var c = cardById(h.id); if (c && !c.liability) cr(h.id, "q", 1); });
+    if (has(state, "astro")) { var a0 = state.unrest; state.unrest = clamp(state.unrest - 2, 0, LD.MAX_UNREST); cr("astro", "unrest", state.unrest - a0); ev("Astroturf Network: unrest −2."); }
+    if (has(state, "plantmgr")) { var pc = LD.plantCount ? LD.plantCount(state) : 0; if (pc) { state.cash += 2 * pc; cr("plantmgr", "cash", 2 * pc); ev("Plant Manager: +$" + (2 * pc) + "M."); } }
+    if (has(state, "toll")) { var oc = LD.ownedCount ? LD.ownedCount(state) : 1; state.cash += oc; cr("toll", "cash", oc); var tu = t % 2 === 0; if (tu) { state.unrest = clamp(state.unrest + 1, 0, LD.MAX_UNREST); cr("toll", "unrest", 1); } ev("Toll Road: +$" + oc + "M" + (tu ? ", unrest +1" : "") + "."); }
+    if (has(state, "offsets") && t % 2 === 1) { state.collapse = clamp(state.collapse - 1, 0, LD.MAX_COLLAPSE); cr("offsets", "collapse", -1); ev("Carbon Offsets: collapse −1."); }
+    if (has(state, "consult")) { state.cash += 2; state.unrest = clamp(state.unrest + 1, 0, LD.MAX_UNREST); cr("consult", "cash", 2); cr("consult", "unrest", 1); ev("Management Consultants: +$2M, unrest +1."); }
+    if (has(state, "disfut") && (state.offered || []).some(function (id) { var d0 = LD.dealById && LD.dealById(id); return d0 && d0.isCrisis; })) { state.cash += 3; cr("disfut", "cash", 3); ev("Disaster Futures: a crisis was on the board. +$3M."); }
+    if (has(state, "brine") && LD.plantCount && LD.plantCount(state)) cr("brine", "collapse", -LD.plantCount(state));
     if (has(state, "classaction")) { state.unrest = clamp(state.unrest + 2, 0, LD.MAX_UNREST); ev("Class Action: unrest +2. Sign a Soothe deal to settle.", "liability"); }
     if (setOn(state, "time")) { state.collapse = clamp(state.collapse - 1, 0, LD.MAX_COLLAPSE); ev("Long View: collapse −1."); }
     if (has(state, "narrative")) {
       var cap = 10, cut = 0;
       state.pending.forEach(function (i) { if (!i.install && i.due <= t && (i.unrest || 0) > 0) { var k = Math.min(i.unrest, cap); cut += i.unrest - k; cap -= k; i.unrest = k; } });
-      if (cut) ev("Narrative Control: delayed unrest capped (−" + cut + ").");
+      if (cut) { cr("narrative", "unrest", -cut); ev("Narrative Control: delayed unrest capped (−" + cut + ")."); }
     }
-    if (has(state, "geo") && !(u.geo && u.geo[f.act]) && (state.collapse >= 55 || t % 4 === 0)) { u.geo = u.geo || {}; u.geo[f.act] = 1; state.collapse = clamp(state.collapse - 6, 0, LD.MAX_COLLAPSE); ev("Geoengineering Pilot: collapse −6."); }
-    if (has(state, "loyalty") && !u.loyal && state.unrest >= 85) { u.loyal = 1; state.unrest = 70; ev("Board Loyalty: the board closes ranks. Unrest drops to 70."); }
-    if (has(state, "toobig") && !u.toobig && state.collapse >= 88 && !isReady(state)) { u.toobig = 1; state.collapse = 80; ev("Too Big To Fail: the bailout lands. Collapse resets to 80."); }
+    if (has(state, "geo") && !(u.geo && u.geo[f.act]) && (state.collapse >= 55 || t % 4 === 0)) { u.geo = u.geo || {}; u.geo[f.act] = 1; state.collapse = clamp(state.collapse - 6, 0, LD.MAX_COLLAPSE); cr("geo", "collapse", -6); ev("Geoengineering Pilot: collapse −6."); }
+    if (has(state, "loyalty") && !u.loyal && state.unrest >= 85) { u.loyal = 1; cr("loyalty", "unrest", 70 - state.unrest); state.unrest = 70; ev("Board Loyalty: the board closes ranks. Unrest drops to 70."); }
+    if (has(state, "toobig") && !u.toobig && state.collapse >= 88 && !isReady(state)) { u.toobig = 1; cr("toobig", "collapse", 80 - state.collapse); state.collapse = 80; ev("Too Big To Fail: the bailout lands. Collapse resets to 80."); }
     var info = bossInfo(state, t);
     f.beatNow = false;
     if (info) {
@@ -5688,15 +5939,37 @@ body:has(#screen-tutorial.on) .shell,
         state.unrest = clamp(state.unrest + hit, 0, LD.MAX_UNREST);
         beaten = state.unrest < info.line;
         text = "General Strike: unrest +" + hit + (beaten ? ". You held the line." : ". The strike holds.");
-      } else if (info.id === "reckoning") {
+      } else if (info.id === "shortseller") {
+        if (!refuse && state.cash >= info.ask) { state.cash -= info.ask; text = "Short-Seller Report: the counter-study lands (−$" + info.ask + "M). The shorts cover."; }
+        else {
+          beaten = false; state.unrest = clamp(state.unrest + info.missUnrest, 0, LD.MAX_UNREST);
+          var newest = null; for (var ni = f.hand.length - 1; ni >= 0; ni--) { var nc = cardById(f.hand[ni].id); if (nc && !nc.liability) { newest = nc; break; } }
+          if (newest) removeCard(state, newest.id);
+          text = "Short-Seller Report: unrest +" + info.missUnrest + (newest ? ", and " + newest.name + " is exposed and written off." : ". There was nothing left to expose.");
+        }
+      } else if (info.id === "crash") {
+        var lost = Math.round(state.cash * 0.3);
+        state.cash -= lost;
+        beaten = state.cash >= info.line;
+        if (!beaten) state.unrest = clamp(state.unrest + info.missUnrest, 0, LD.MAX_UNREST);
+        text = "Market Crash: −$" + lost + "M." + (beaten ? " Your float rides it out." : " Layoffs follow: unrest +" + info.missUnrest + ".");
+      } else if (info.final) {
         state.collapse = clamp(state.collapse + info.hit, 0, LD.MAX_COLLAPSE);
-        beaten = state.collapse < LD.MAX_COLLAPSE;
-        text = "The Reckoning: collapse +" + info.hit + ".";
+        if (info.missUnrest) state.unrest = clamp(state.unrest + info.missUnrest, 0, LD.MAX_UNREST);
+        var flooded = "";
+        if (info.id === "seawall") {
+          var weak = LD.SYSTEMS.map(function (s2) { return s2.id; }).filter(function (sid) { return state.bunker[sid].quality === "cheap" && state.bunker[sid].level > 0; })
+            .sort(function (a2, b2) { return state.bunker[a2].level - state.bunker[b2].level; })[0];
+          if (weak) { state.bunker[weak].level -= 1; flooded = " Floodwater takes your " + weak + " room to Lv " + state.bunker[weak].level + "."; }
+        }
+        beaten = state.collapse < LD.MAX_COLLAPSE && state.unrest < LD.MAX_UNREST;
+        text = info.name + ": collapse +" + info.hit + (info.missUnrest ? ", unrest +" + info.missUnrest : "") + "." + flooded;
       }
+      if (has(state, "mole")) { removeCard(state, "mole"); text += " The mole is unmasked."; }
       if (beaten) { f.bosses += 1; f.beatNow = true; }
       f.lastBoss = { id: info.id, q: t, beaten: beaten, text: text };
       f.bossLog.push({ id: info.id, q: t, beaten: beaten });
-      ev(text + (beaten && info.id !== "reckoning" ? " Rare draft unlocked, +10 ◈." : beaten ? " +10 ◈." : ""), "boss", { boss: info.id, beaten: beaten });
+      ev(text + (beaten && !info.final ? " Rare draft unlocked, +10 ◈." : beaten ? " +10 ◈." : ""), "boss", { boss: info.id, beaten: beaten });
     }
     return out;
   }
@@ -5708,6 +5981,7 @@ body:has(#screen-tutorial.on) .shell,
     if (state.turn < f.rules.finalQ) return false;
     var result = LD.evacuationResult(state);
     if (result.kind === "win") { result.title = "The fiscal year closes on time"; result.body = "The Reckoning came and the doors held. " + result.body; }
+    if (state.unrest >= LD.MAX_UNREST && result.kind === "win") { result = LD.evacuationResult(state); }
     else if (result.reason === "unfinished") { result.title = "The fiscal year closed on an unfinished room"; result.body = "The board called time after the Reckoning. " + result.body; }
     else { result.title = "Year-end, and the bargain work gave out"; result.body = "The board called time after the Reckoning. " + result.body; }
     state.ended = true; state.ending = result; state.phase = "ended";
@@ -5715,6 +5989,87 @@ body:has(#screen-tutorial.on) .shell,
     return true;
   }
   LD.fyYearEnd = fyYearEnd;
+
+  /* ---------- Board Memos: one two-way choice per act, between deals ---------- */
+  LD.MEMOS = [
+    { id: "leak", icon: "📨", title: "Leaked Memo", body: "Someone forwarded the 'acceptable losses' spreadsheet to a journalist.",
+      a: { label: "Bury it", text: "−$8M" }, b: { label: "Leak a rival's memo", text: "+$6M from the short, unrest +6" } },
+    { id: "celebrity", icon: "🌟", title: "Celebrity Visit", body: "A beloved actor wants a tour of the 'resilience campus'.",
+      a: { label: "Photo op", text: "−$6M, unrest −6" }, b: { label: "Decline", text: "Nothing happens" } },
+    { id: "troll", icon: "🧌", title: "Patent Troll", body: "A shell company claims to own the idea of a door.",
+      a: { label: "Settle", text: "−$10M" }, b: { label: "Fight it", text: "Coin flip: +$10M or −$15M" } },
+    { id: "wedding", icon: "💒", title: "The Engineer's Wedding", body: "The best bunker engineer in the hemisphere is getting married.",
+      a: { label: "Attend, with a gift", text: "−$4M now; the chief engineer costs $6M less this run" }, b: { label: "Send a gift card", text: "Nothing happens" } },
+    { id: "summit", icon: "🌐", title: "Climate Summit", body: "Your attendance would be noted. So would your absence.",
+      a: { label: "Attend in person", text: "Collapse −5, but no bunker order this quarter" }, b: { label: "Sponsor the lanyards", text: "+$12M, collapse +4" } },
+    { id: "union", icon: "📋", title: "Union Drive", body: "The bunker crews have started using the word 'we'.",
+      a: { label: "Crush it", text: "+$8M now; in 2Q, unrest +12" }, b: { label: "Recognise it", text: "−$6M, unrest −8" } },
+    { id: "activist", icon: "🦅", title: "Activist Investor", body: "A fund with a bird logo wants a board seat and a 'clean-up'.",
+      a: { label: "Give them the seat", text: "Take a random Liability; your next draft is rare" }, b: { label: "Refuse", text: "Nothing happens" } },
+    { id: "space", icon: "🚀", title: "Space Billionaire", body: "He collects bunker rooms. He also collects people who say no.",
+      need: function (s) { return LD.SYSTEMS.some(function (x) { return s.bunker[x.id].level === 1; }); },
+      a: { label: "Sell a Lv 1 room", text: "+$20M; one Lv 1 room goes back to Lv 0" }, b: { label: "Decline", text: "Nothing happens" } },
+    { id: "collab", icon: "🤳", title: "Influencer Collab", body: "'Ten Bunkers You Won't Believe Exist'. Number four is yours.",
+      a: { label: "Post it", text: "+$5M, unrest +2, and a random Common Asset" }, b: { label: "Decline", text: "Nothing happens" } },
+    { id: "taxholiday", icon: "🏝️", title: "Tax Holiday", body: "A grateful ministry offers a holiday. The building inspectors are less grateful.",
+      a: { label: "Take it", text: "+$12M; Building Audit Liability (works +15% this act)" }, b: { label: "Decline", text: "Nothing happens" } },
+    { id: "pension", icon: "👴", title: "The Pension Fund", body: "Thirty thousand retirees. One very liquid fund.",
+      a: { label: "Borrow from it", text: "+$14M now; in 3Q, unrest +14" }, b: { label: "Leave it alone", text: "Nothing happens" } },
+    { id: "drought", icon: "🏜️", title: "Drought Emergency Powers", body: "The governor will sign anything that sounds like a plan.",
+      a: { label: "Write the plan", text: "+$9M, collapse +3" }, b: { label: "Fund the reservoirs", text: "−$9M, collapse −4" } }
+  ];
+  var MEMO_BY = {}; LD.MEMOS.forEach(function (m) { MEMO_BY[m.id] = m; });
+  LD.memoById = function (id) { return MEMO_BY[id] || null; };
+  function maybeMemo(state) {
+    var f = fy(state);
+    if (!f.memoQs || f.memoQs.indexOf(state.turn) === -1 || state.turn >= f.rules.finalQ) return null;
+    var rng = fyRng(state, "memo:" + state.turn);
+    var pool = LD.MEMOS.filter(function (m) { return f.memosSeen.indexOf(m.id) === -1 && (!m.need || m.need(state)); });
+    if (!pool.length) return null;
+    var m = pool[Math.floor(rng() * pool.length)];
+    f.memosSeen.push(m.id);
+    f.memo = { id: m.id, q: state.turn };
+    return f.memo;
+  }
+  function fyMemo(state, choice) {
+    state = clone(state);
+    var f = fy(state);
+    if (!f || !f.memo) return { ok: false, error: "No memo on the desk.", state: state };
+    var m = MEMO_BY[f.memo.id], A = choice === "a", t = state.turn, msg = "";
+    function cash(n) { state.cash = Math.max(0, state.cash + n); }
+    function un(n) { state.unrest = clamp(state.unrest + n, 0, LD.MAX_UNREST); }
+    function col(n) { state.collapse = clamp(state.collapse + n, 0, LD.MAX_COLLAPSE); }
+    function later(q, u2, why) { state.pending.push({ due: t + q, source: m.title, unrest: u2, collapse: 0, cash: 0, log: why, flags: null, grantSystem: null, effectsIf: null, strain: null, ease: null, install: null }); }
+    switch (m.id) {
+      case "leak": if (A) cash(-8); else { cash(6); un(6); } break;
+      case "celebrity": if (A) { cash(-6); un(-6); } break;
+      case "troll": if (A) cash(-10); else { var win = fyRng(state, "troll:" + t)() < 0.5; cash(win ? 10 : -15); msg = win ? "The court laughs them out: +$10M." : "The court sides with the door people: −$15M."; } break;
+      case "wedding": if (A) { cash(-4); f.baseMods.engineerCost -= 6; } break;
+      case "summit": if (A) { col(-5); state.bunkerActedThisTurn = true; } else { cash(12); col(4); } break;
+      case "union": if (A) { cash(8); later(2, 12, "The union you crushed finds a louder name."); } else { cash(-6); un(-8); } break;
+      case "activist": if (A) { var l = addLiability(state, fyRng(state, "activist:" + t)); f.nextRare = true; msg = "Liability taken: " + l.name + ". Your next draft is rare."; } break;
+      case "space": if (A) { var r1 = LD.SYSTEMS.map(function (x) { return x.id; }).filter(function (id) { return state.bunker[id].level === 1; })[0]; if (r1) { state.bunker[r1].level = 0; cash(20); msg = "Sold the " + r1 + " room: +$20M."; } } break;
+      case "collab": if (A) { cash(5); un(2);
+          if (slotsUsed(state) < f.cap) { var pool = LD.FY_ASSETS.filter(function (a) { return a.r === "C" && !has(state, a.id); }); var pk = pool[Math.floor(fyRng(state, "collab:" + t)() * pool.length)]; if (pk) { addCard(state, pk.id); f.picks.push(pk.id); msg = "The post goes viral. " + pk.name + " joins your Portfolio."; } }
+          else msg = "The post goes viral. No room for a sponsor in your Portfolio."; } break;
+      case "taxholiday": if (A) { cash(12); addCard(state, "audit"); } break;
+      case "pension": if (A) { cash(14); later(3, 14, "The retirees notice the hole in the fund."); } break;
+      case "drought": if (A) { cash(9); col(3); } else { cash(-9); col(-4); } break;
+    }
+    rebuildMods(state);
+    f.memo = null;
+    var opt = A ? m.a : m.b;
+    state.log.unshift({ turn: t, text: m.title + ": " + opt.label + ". " + (msg || opt.text) + "." });
+    return { ok: true, state: state, text: msg || opt.text, memo: m, choice: A ? "a" : "b" };
+  }
+  LD.fyMemo = fyMemo;
+  LD.memoAffordable = function (state, choice) {
+    var m = state.fy && state.fy.memo && MEMO_BY[state.fy.memo.id]; if (!m) return false;
+    var need = { leak: 8, celebrity: 6, troll: 10, wedding: 4, union: 6, drought: 9 };
+    if (choice === "a" && ["leak", "celebrity", "troll", "wedding"].indexOf(m.id) !== -1) return state.cash >= need[m.id];
+    if (choice === "b" && (m.id === "union" || m.id === "drought")) return state.cash >= need[m.id];
+    return true;
+  };
 
   /* closeQuarter hook after the turn advanced: new act, then the draft. */
   function fyAfterClose(state) {
@@ -5727,8 +6082,10 @@ body:has(#screen-tutorial.on) .shell,
       f.actIntro = f.act;
     }
     rebuildMods(state);
-    var d = makeDraft(state, f.beatNow);
+    var d = makeDraft(state, f.beatNow || f.nextRare);
+    if (f.nextRare) f.nextRare = false;
     f.beatNow = false;
+    if (!state.ended) maybeMemo(state);
     return d;
   }
   LD.fyAfterClose = fyAfterClose;
@@ -5755,6 +6112,7 @@ body:has(#screen-tutorial.on) .shell,
       divested = rc;
     }
     addCard(state, id);
+    f.picks = f.picks || []; f.picks.push(id);
     var c = cardById(id);
     var rider = null;
     if (d.rider) rider = addLiability(state, fyRng(state, "rider:" + state.turn));
@@ -5774,6 +6132,59 @@ body:has(#screen-tutorial.on) .shell,
     return { ok: true, state: state };
   }
   LD.fyReroll = fyReroll;
+
+  /* Overtime Crew: once per act, the first bunker order of a quarter leaves the bunker open for one more. */
+  LD.fyAfterBunker = function (state) {
+    var f = fy(state); if (!f || !has(state, "overtime")) return false;
+    var u = f.used; u.ot = u.ot || {};
+    if (u.ot[f.act]) return false;
+    u.ot[f.act] = 1;
+    state.bunkerActedThisTurn = false;
+    state.ap += LD.BUNKER_AP;
+    f.otNow = true;
+    credit(state, "overtime", "q", 2);
+    state.log.unshift({ turn: state.turn, text: "Overtime Crew: one more bunker order this quarter." });
+    return true;
+  };
+  LD.fyConversionBonus = function (state) { return has(state, "privgrid") ? 0.15 : 0; };
+  LD.fyPlantCollapse = function (state) { return has(state, "brine") ? 0 : null; };
+  LD.fyLv3Discount = function (state) { return has(state, "penthouse") ? 8 : 0; };
+
+  /* What your Portfolio will do when this quarter closes (passives only; deal triggers are on the deal card). */
+  LD.fyForecast = function (state) {
+    var f = fy(state); if (!f) return { cash: 0, unrest: 0, collapse: 0, items: [] };
+    var t = state.turn, u = f.used, out = { cash: 0, unrest: 0, collapse: 0, items: [] };
+    function add(id, c, un, co, txt) { out.cash += c; out.unrest += un; out.collapse += co; var cd = cardById(id); out.items.push({ id: id, icon: cd ? cd.icon : "", name: cd ? cd.name : id, text: txt, cash: c, unrest: un, collapse: co }); }
+    if (has(state, "astro")) add("astro", 0, -2, 0, "unrest −2");
+    if (has(state, "plantmgr")) { var pc = LD.plantCount ? LD.plantCount(state) : 0; if (pc) add("plantmgr", 2 * pc, 0, 0, "+$" + 2 * pc + "M"); }
+    if (has(state, "toll")) { var oc = LD.ownedCount ? LD.ownedCount(state) : 1; add("toll", oc, t % 2 === 0 ? 1 : 0, 0, "+$" + oc + "M" + (t % 2 === 0 ? ", unrest +1" : "")); }
+    if (has(state, "offsets") && t % 2 === 1) add("offsets", 0, 0, -1, "collapse −1");
+    if (has(state, "consult")) add("consult", 2, 1, 0, "+$2M, unrest +1");
+    if (has(state, "disfut") && (state.offered || []).some(function (id) { var d0 = LD.dealById && LD.dealById(id); return d0 && d0.isCrisis; })) add("disfut", 3, 0, 0, "+$3M (a crisis is on offer)");
+    if (has(state, "classaction")) add("classaction", 0, 2, 0, "unrest +2");
+    if (setOn(state, "time")) out.items.push({ id: "set-time", icon: "⏳", name: "Long View", text: "collapse −1", cash: 0, unrest: 0, collapse: -1 }), out.collapse -= 1;
+    if (has(state, "geo") && !(u.geo && u.geo[f.act]) && (state.collapse >= 55 || t % 4 === 0)) add("geo", 0, 0, -6, "collapse −6");
+    if (has(state, "overtime") && !(u.ot && u.ot[f.act])) out.items.push({ id: "overtime", icon: "🌙", name: "Overtime Crew", text: "ready: a second bunker order", cash: 0, unrest: 0, collapse: 0 });
+    return out;
+  };
+
+  /* End screen: the picks that carried the run. */
+  LD.fyRunSummary = function (state) {
+    var f = fy(state); if (!f) return [];
+    var cr = f.credit || {};
+    var ids = (f.picks || []).filter(function (id, i, a) { return a.indexOf(id) === i; });
+    f.hand.forEach(function (h) { var c = cardById(h.id); if (c && !c.liability && ids.indexOf(h.id) === -1) ids.push(h.id); });
+    return ids.map(function (id) {
+      var c = cardById(id), v = cr[id] || { cash: 0, unrest: 0, collapse: 0, q: 0 };
+      var score = v.cash - 1.5 * v.unrest - 2 * v.collapse + 1.5 * v.q;
+      var bits = [];
+      if (v.cash) bits.push((v.cash > 0 ? "+$" : "−$") + Math.abs(v.cash) + "M");
+      if (v.unrest) bits.push("unrest " + (v.unrest > 0 ? "+" : "−") + Math.abs(v.unrest));
+      if (v.collapse) bits.push("collapse " + (v.collapse > 0 ? "+" : "−") + Math.abs(v.collapse));
+      if (!bits.length && v.q) bits.push("held " + v.q + " quarter" + (v.q === 1 ? "" : "s"));
+      return { id: id, icon: c ? c.icon : "", name: c ? c.name : id, r: c ? c.r : "C", held: has(state, id), score: score, text: bits.join(" · ") || "no effect yet" };
+    }).sort(function (a, b) { return b.score - a.score; });
+  };
 
   /* Reliability rules: Redundancy Consultant and CC "Building codes". Returns true/false or null (engine default). */
   LD.fyReliable = function (state, sys) {
@@ -6140,7 +6551,7 @@ body:has(#screen-tutorial.on) .shell,
     if (meta.finished) {
       html += " · " + meta.finished + " run" + (meta.finished === 1 ? "" : "s") + " · " + meta.wins + " evacuated";
     }
-    html += ' · <button class="link-btn" id="btn-history">History</button></p>';
+    html += ' · <button class="link-btn" id="btn-history">History</button> · <button class="link-btn" id="btn-sound">' + (LD.SFX ? LD.SFX.label() : "🔊 Sound on") + "</button></p>";
     html += "</div></div>";
     html += '<div class="title-art" aria-label="Your future holdings">' + titleMap() + "</div>";
     html += "</div>";
@@ -6208,7 +6619,7 @@ body:has(#screen-tutorial.on) .shell,
         (nxt ? " · Next: " + escapeHtml(nxt.text) : "") + (have.length ? " · Perks: " + escapeHtml(have.map(function (p) { return p.text; }).join(", ")) : "") + "</span>" +
         '<span class="xp-bar" aria-hidden="true"><span style="width:' + (sx.need ? Math.round(100 * sx.into / sx.need) : 100) + '%"></span></span></p>';
     }
-    html += '<h3>Credit rating</h3><p class="muted">Win at a rating to unlock the next. Every tier adds a rule; exits pay up to ×4 Dividends, and each first clear pays a bonus.</p>';
+    html += '<h3>Credit rating <button class="link-btn fy-explain" id="btn-rules" data-explain="ratings">ⓘ All rules</button></h3><p class="muted">Win at a rating to unlock the next. Every tier adds a rule; exits pay up to ×4 Dividends, and each first clear pays a bonus.</p>';
     html += '<div class="rating-row" role="radiogroup" aria-label="Credit rating">';
     LD.RATINGS.forEach(function (r, i) {
       var lockedR = i > maxR;
@@ -6217,7 +6628,7 @@ body:has(#screen-tutorial.on) .shell,
     html += "</div>";
     html += '<ul class="rating-mods">';
     if (rating === 0) html += "<li>" + escapeHtml(LD.RATINGS[0].text) + "</li>";
-    if (rating === 0) html += "<li>Collapse drifts " + LD.DEFAULT_MODS.collapseTick + " a quarter, faster after Q8; bunker works +20% per act.</li>";
+    if (rating === 0) html += "<li>Collapse drifts " + LD.DEFAULT_MODS.collapseTick + " a quarter, faster after Q8; bunker works +25% per act.</li>";
     if (rating > 0) html += "<li>" + escapeHtml(LD.RATINGS[rating].text) + (rating > 1 ? " · plus " + (rating - 1) + " earlier rule" + (rating > 2 ? "s" : "") : "") + "</li>";
     if (meta.fyClears && LD.FIRST_CLEAR) html += "<li>" + (meta.fyClears.indexOf(selected + ":" + rating) === -1 ? "First clear bonus: +" + LD.FIRST_CLEAR(rating).div + " ◈, +" + LD.FIRST_CLEAR(rating).xp + " XP" : "First clear done at this rating") + "</li>";
     html += "<li>Rivals: " + (rating >= 7 ? "two" : "one") + ", " + (rating === 0 ? "passive" : rating < 5 ? "opportunistic" : rating < 8 ? "aggressive" : "ruthless") + "</li>";
@@ -6378,6 +6789,7 @@ body:has(#screen-tutorial.on) .shell,
           '<span class="xp-bar" aria-hidden="true"><span style="width:' + (xa.need ? Math.round(100 * xa.into / xa.need) : 100) + '%"></span></span></div>';
       }
       html += '<div class="pending">Q' + state.turn + " · " + escapeHtml(exec.name) + " \u00b7 seed " + escapeHtml(String(state.seedLabel)) + " \u00b7 Cash " + state.cash + " \u00b7 Unrest " + state.unrest + " \u00b7 Collapse " + state.collapse + "</div>";
+      if (LD.renderCarried) html += LD.renderCarried(state);
       html += '<div class="btn-row"><button class="btn btn-coral" id="btn-letter">Shareholder Letter</button>';
       html += '<button class="btn btn-ochre" id="btn-end-board">The Boardroom ' + (opts.meta ? "\u00b7 \u25c8 " + opts.meta.dividends : "") + "</button>";
       html += '<button class="btn" id="btn-again">Same executive, new seed</button>';
@@ -6570,7 +6982,8 @@ body:has(#screen-tutorial.on) .shell,
 
   function evacConfirmBody(state) {
     var r = readinessSummary(state);
-    var html = '<p class="evac-rule">' + escapeHtml(r.rule) + "</p>";
+    var html = '<p class="evac-rule" id="evac-rule">' + escapeHtml(r.rule) + "</p>";
+    html += '<button class="link-btn evac-why" id="evac-why" type="button" aria-controls="evac-rule">ⓘ Why rooms fail</button>';
     html += '<div class="readiness" style="margin-top:12px"><ul>';
     r.lines.forEach(function (line) {
       html += '<li class="' + line.status + '">' + escapeHtml(line.text) + "</li>";
@@ -6901,7 +7314,8 @@ body:has(#screen-tutorial.on) .shell,
       }
       h += '<circle class="anc" data-anc="' + id + '" cx="' + a[0] + '" cy="' + a[1] + '" r="1"/>';
       var lab = LD.REGION_NAMES[id].toUpperCase();
-      h += '<text class="rlabel' + (r.owned ? " own" : "") + '" x="' + a[0] + '" y="' + (a[1] + 58) + '" text-anchor="middle">' + esc(lab) + "</text>";
+      var SHORT = { me: "MIDEAST", sa: "S. ASIA", ea: "E. ASIA" };
+      h += '<text class="rlabel rl-' + id + (r.owned ? " own" : "") + '" x="' + a[0] + '" y="' + (a[1] + 58) + '" text-anchor="middle">' + (SHORT[id] ? '<tspan class="lf">' + esc(lab) + '</tspan><tspan class="ls">' + SHORT[id] + "</tspan>" : esc(lab)) + "</text>";
       h += pipsSvg(a[0], a[1] + 72, r.stress, r.owned ? "own" : "");
       if (r.trait === "boom") {
         h += '<text class="rtag boom" x="' + a[0] + '" y="' + (a[1] + 96) + '" text-anchor="middle">BOOMING</text>';
@@ -7880,9 +8294,9 @@ body:has(#screen-tutorial.on) .shell,
     return n >= a.set ? "✓ " + a.setName + ": " + a.setText : a.name + " " + Math.min(n, a.set) + "/" + a.set + " → " + a.setName;
   }
 
-  function card(state, id, sel, rider) {
+  function card(state, id, sel, rider, idx) {
     var c = LD.assetById(id);
-    var h = '<button class="fy-card ' + RCLS[c.r] + (sel ? " sel" : "") + '" data-asset="' + id + '" aria-pressed="' + (sel ? "true" : "false") + '">';
+    var h = '<button class="fy-card ' + RCLS[c.r] + (sel ? " sel" : "") + '" data-asset="' + id + '" aria-pressed="' + (sel ? "true" : "false") + '" style="--i:' + (idx | 0) + '">';
     h += '<span class="fy-ico" aria-hidden="true">' + c.icon + '</span><span class="fy-txt"><b>' + esc(c.name) + "</b>";
     h += '<em><i class="fy-gem" aria-hidden="true"></i>' + esc(LD.RARITY[c.r].name) + " · " + esc(LD.ARCHETYPES[c.arch].name) + "</em>";
     h += '<span class="fy-eff">' + esc(c.text) + "</span>";
@@ -7898,11 +8312,11 @@ body:has(#screen-tutorial.on) .shell,
     var f = state.fy, d = f.draft;
     var used = LD.fySlotsUsed(state), full = used >= f.cap;
     var selC = ui.sel ? LD.assetById(ui.sel) : null;
-    var h = '<div class="fy-draft' + (ui.replacing ? " replacing" : "") + '" role="dialog" aria-label="Quarterly Acquisitions">';
+    var h = '<div class="fy-draft' + (ui.replacing ? " replacing" : "") + (ui.reveal ? " reveal" : "") + '" role="dialog" aria-label="Quarterly Acquisitions">';
     h += '<div class="fy-head"><div class="dz-k">Q' + d.closed + " closed · Quarterly Acquisitions</div>";
     h += "<h2>" + (d.rare ? "Boss beaten: a rare draft" : "Choose one Asset") + "</h2>";
     h += '<div class="fy-chips"><button class="fx-chip own fy-pf" id="fy-pf">💼 Portfolio ' + used + "/" + f.cap + '</button><span class="fx-chip good">Cash ' + money(state.cash) + "</span>";
-    if (d.rider) h += '<span class="fx-chip bad">⚠ Rider: picking adds a random Liability</span>';
+    if (d.rider) h += '<button class="fx-chip bad fy-explain" data-explain="liabilities">⚠ Rider: picking adds a random Liability ⓘ</button>';
     else h += '<span class="fx-chip meh">Free pick · skip pays $' + f.skipCash + "M</span>";
     h += "</div></div>";
     if (ui.replacing && selC) {
@@ -7915,8 +8329,8 @@ body:has(#screen-tutorial.on) .shell,
       h += "</div></div>";
       h += '<div class="fy-foot"><button class="btn btn-ghost" id="fy-back">Back</button></div>';
     } else {
-      h += '<div class="fy-cards">';
-      d.offer.forEach(function (id) { h += card(state, id, ui.sel === id, d.rider); });
+      h += '<div class="fy-cards" style="--n:' + Math.max(3, d.offer.length) + '">';
+      d.offer.forEach(function (id, i) { h += card(state, id, ui.sel === id, d.rider, i); });
       if (!d.offer.length) h += '<p class="muted">Nothing left to buy. The market is yours.</p>';
       h += "</div>";
       h += '<div class="fy-foot"><button class="btn btn-ghost" id="fy-skip">Skip · +$' + f.skipCash + "M</button>";
@@ -7931,6 +8345,8 @@ body:has(#screen-tutorial.on) .shell,
     var assets = f.hand.filter(function (hd) { var c = LD.assetById(hd.id); return c && !c.liability; });
     var liab = f.hand.filter(function (hd) { var c = LD.assetById(hd.id); return c && c.liability; });
     var h = '<div class="fy-pfsheet"><div class="fy-head"><div class="dz-k">Portfolio · ' + LD.fySlotsUsed(state) + "/" + f.cap + " slots</div><h2>Your Assets</h2></div>";
+    var fc = LD.fyForecast(state);
+    h += '<p class="fy-fc"><b>At quarter close:</b> ' + (fc.items.length ? fc.items.map(function (it) { return it.icon + " " + esc(it.text); }).join(" · ") : "nothing automatic. Your Assets act when you sign deals.") + "</p>";
     h += '<ul class="fy-list">';
     if (!assets.length) h += '<li class="fy-empty">No Assets yet. After every quarter you pick one of three.</li>';
     assets.forEach(function (hd) {
@@ -7949,11 +8365,70 @@ body:has(#screen-tutorial.on) .shell,
     return h + "</div>";
   }
 
+  function fcText(fc) {
+    var b = [];
+    if (fc.cash) b.push((fc.cash > 0 ? "+$" : "−$") + Math.abs(fc.cash) + "M");
+    if (fc.unrest) b.push((fc.unrest > 0 ? "+" : "−") + Math.abs(fc.unrest) + " unrest");
+    if (fc.collapse) b.push((fc.collapse > 0 ? "+" : "−") + Math.abs(fc.collapse) + " collapse");
+    return b.join(" · ");
+  }
   function portfolioChip(state) {
     var f = state.fy; if (!f) return "";
     var icons = f.hand.map(function (hd) { var c = LD.assetById(hd.id); return c ? '<i class="' + (c.liability ? "liab" : "") + '">' + c.icon + "</i>" : ""; }).join("");
-    return '<button class="pf-chip" id="btn-portfolio" aria-label="Portfolio, ' + LD.fySlotsUsed(state) + " of " + f.cap + ' slots">💼 ' + LD.fySlotsUsed(state) + "/" + f.cap + '<span class="pf-icons">' + icons + "</span></button>";
+    var fc = LD.fyForecast(state), ft = fcText(fc);
+    return '<button class="pf-chip" id="btn-portfolio" aria-label="Portfolio, ' + LD.fySlotsUsed(state) + " of " + f.cap + " slots" + (ft ? ". At quarter close: " + ft : "") + '">💼 ' + LD.fySlotsUsed(state) + "/" + f.cap +
+      (ft ? '<span class="pf-fc ' + (fc.cash - fc.unrest - 2 * fc.collapse >= 0 ? "up" : "down") + '" title="At quarter close: ' + esc(ft) + '">▸ ' + esc(ft.split(" · ")[0]) + (ft.indexOf(" · ") > 0 ? " +" : "") + "</span>" : '<span class="pf-icons">' + icons + "</span>") + "</button>";
   }
+  LD.fyForecastText = function (state) { return fcText(LD.fyForecast(state)); };
+
+  /* Board Memo card */
+  function memoCard(state) {
+    var f = state.fy, m = f && f.memo && LD.memoById(f.memo.id);
+    if (!m) return "";
+    var h = '<div class="fy-boss fy-memo"><div class="fy-boss-ico" aria-hidden="true">' + m.icon + "</div>";
+    h += '<div class="dz-k">Board Memo · Q' + state.turn + "</div><h2>" + esc(m.title) + "</h2>";
+    h += '<p class="fy-demand">' + esc(m.body) + "</p>";
+    return h + "</div>";
+  }
+  function memoButtons(state) {
+    var m = LD.memoById(state.fy.memo.id);
+    function b(k, cls) {
+      var o = m[k], ok = LD.memoAffordable(state, k);
+      return '<button class="btn ' + cls + ' fy-mchoice" id="fy-m-' + k + '"' + (ok ? "" : " disabled") + "><b>" + esc(o.label) + "</b><small>" + esc(ok ? o.text : "Not enough cash · " + o.text) + "</small></button>";
+    }
+    return b("a", "btn-coral") + b("b", "");
+  }
+  LD.renderMemo = memoCard;
+  LD.renderMemoButtons = memoButtons;
+
+  /* Tap-to-explain sheets */
+  LD.explainHtml = function (kind, state) {
+    var h = "";
+    if (kind === "liabilities") {
+      h += '<div class="fy-head"><div class="dz-k">Liabilities</div><h2>What a rider can attach</h2></div><ul class="fy-list ex-list">';
+      LD.LIABILITIES.forEach(function (l) { h += '<li class="liab"><span class="fy-ico" aria-hidden="true">' + l.icon + "</span><div><b>" + esc(l.name) + "</b><span>" + esc(l.text) + "</span></div></li>"; });
+      h += "</ul><p class=\"fy-note\">Liabilities cannot be divested. Only Stranded Asset takes a Portfolio slot.</p>";
+    } else if (kind === "ratings") {
+      var cur = state && state.rating != null ? state.rating : null;
+      h += '<div class="fy-head"><div class="dz-k">Credit ratings</div><h2>Every tier adds one rule</h2></div><ol class="ex-rules">';
+      LD.RATINGS.forEach(function (r, i) { h += "<li" + (cur === i ? ' class="on"' : "") + "><b>" + esc(r.id) + '</b> <span>' + esc(r.text) + "</span> <em>×" + LD.ratingMultiplier(i).toFixed(1) + "</em></li>"; });
+      h += '</ol><p class="fy-note">Rules stack: a tier keeps every rule above it. Exits pay ×(1 + 0.3 × tier) Dividends.</p>';
+    } else if (kind === "bosses") {
+      h += '<div class="fy-head"><div class="dz-k">Boss quarters</div><h2>Who can show up</h2></div><ul class="fy-list ex-list">';
+      [["earnings", "shortseller"], ["strike", "bid", "crash"], ["reckoning", "heatdome", "seawall"]].forEach(function (grp, ai) {
+        grp.forEach(function (id) { var b = LD.BOSSES[id]; h += '<li><span class="fy-ico" aria-hidden="true">' + b.icon + "</span><div><b>" + esc(b.name) + "</b> <em>Act " + LD.ACTS[ai].roman + "</em></div></li>"; });
+      });
+      h += '</ul><p class="fy-note">Each act draws one boss from its row. The timeline shows yours from the start.</p>';
+    }
+    return '<div class="fy-pfsheet ex-sheet">' + h + "</div>";
+  };
+
+  /* End screen: picks that carried the run */
+  LD.renderCarried = function (state) {
+    var list = LD.fyRunSummary ? LD.fyRunSummary(state).filter(function (x) { return x.score > 0; }).slice(0, 3) : [];
+    if (!list.length) return "";
+    return '<div class="end-carried"><b>Carried by</b>' + list.map(function (x) { return '<span class="ec ' + RCLS[x.r] + '"><i aria-hidden="true">' + x.icon + "</i>" + esc(x.name) + "<small>" + esc(x.text) + "</small></span>"; }).join("") + "</div>";
+  };
 
   function actChip(state) {
     var f = state.fy; if (!f) return "Quarter";
@@ -7971,13 +8446,15 @@ body:has(#screen-tutorial.on) .shell,
     if (!info) return "";
     var act = LD.ACTS[LD.actOf(q) - 1];
     var h = '<div class="fy-boss b-' + info.id + '"><div class="fy-boss-ico" aria-hidden="true">' + info.icon + "</div>";
-    h += '<div class="dz-k">' + (mode === "confirm" ? "Boss quarter · Q" + q : "Act " + act.roman + " · " + esc(act.name) + " · boss at Q" + q) + "</div>";
+    h += '<div class="dz-k">' + (mode === "confirm" ? "Boss quarter · Q" + q : "Act " + act.roman + " · " + esc(act.name) + " · boss at Q" + q) + ' · <button class="link-btn fy-whoboss fy-explain" data-explain="bosses">ⓘ All bosses</button></div>';
     h += "<h2>" + esc(info.name) + "</h2>";
     h += '<p class="fy-demand">' + esc(info.demand) + "</p>";
-    h += '<div class="fy-outs"><div class="fy-out good"><b>Beat it</b><span>' + esc(info.beat) + (info.id === "reckoning" ? "" : " · rare draft + 10 ◈") + '</span></div><div class="fy-out bad"><b>Miss it</b><span>' + esc(info.miss) + "</span></div></div>";
+    h += '<div class="fy-outs"><div class="fy-out good"><b>Beat it</b><span>' + esc(info.beat) + (info.final ? " · + 10 ◈" : " · rare draft + 10 ◈") + '</span></div><div class="fy-out bad"><b>Miss it</b><span>' + esc(info.miss) + "</span></div></div>";
     if (mode === "confirm" && info.id === "strike") h += '<p class="fy-note">Unrest now ' + state.unrest + (state.unrest >= 40 ? " · the big hit applies" : " · under 40, the small hit applies") + ".</p>";
     if (mode === "confirm" && info.choice) h += '<p class="fy-note">Cash now ' + money(state.cash) + ". It resolves when you end the quarter.</p>";
-    if (mode === "confirm" && info.id === "reckoning") h += '<p class="fy-note">' + esc(LD.readinessSummary(state).tally) + ". " + (LD.readinessSummary(state).canWin ? "Your bunker would hold." : "Your bunker would not hold.") + "</p>";
+    if (mode === "confirm" && info.id === "crash") h += '<p class="fy-note">Cash now ' + money(state.cash) + " · after the drop about " + money(state.cash - Math.round(state.cash * 0.3)) + (state.cash - Math.round(state.cash * 0.3) >= info.line ? " · you ride it out" : " · not enough to ride it out") + ".</p>";
+    if (mode === "confirm" && info.id === "shortseller" && state.fy.hand.length) { var nw = null; state.fy.hand.forEach(function (hd) { var c0 = LD.assetById(hd.id); if (c0 && !c0.liability) nw = c0; }); if (nw) h += '<p class="fy-note">Your newest Asset: ' + nw.icon + " " + esc(nw.name) + ".</p>"; }
+    if (mode === "confirm" && info.final) h += '<p class="fy-note">' + esc(LD.readinessSummary(state).tally) + ". " + (LD.readinessSummary(state).canWin ? "Your bunker would hold." : "Your bunker would not hold.") + "</p>";
     return h + "</div>";
   }
 
@@ -8089,25 +8566,101 @@ body:has(#screen-tutorial.on) .shell,
     saveMeta(meta);
   }
 
-  function tick() {
-    try {
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-      if (!tick.ctx) tick.ctx = new Ctx();
-      var ctx = tick.ctx;
-      if (ctx.state === "suspended") ctx.resume();
-      var o = ctx.createOscillator();
-      var g = ctx.createGain();
-      o.type = "square";
-      o.frequency.value = 220;
-      g.gain.value = 0.025;
-      o.connect(g);
-      g.connect(ctx.destination);
-      o.start();
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.06);
-      o.stop(ctx.currentTime + 0.07);
-    } catch (e) {}
-  }
+  /* ---------- Sound: generated WebAudio, starts after the first gesture, mute persists ---------- */
+  var SFX = (function () {
+    var KEY = "lastDividend.audio";
+    var ctx = null, master = null, amb = null, unlocked = false;
+    var muted = false;
+    try { muted = localStorage.getItem(KEY) === "off"; } catch (e) {}
+    function ensure() {
+      if (!unlocked) return null;
+      if (!ctx) {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return null;
+        try { ctx = new Ctx(); } catch (e) { return null; }
+        master = ctx.createGain(); master.gain.value = muted ? 0 : 0.7; master.connect(ctx.destination);
+      }
+      if (ctx.state === "suspended") { try { ctx.resume(); } catch (e) {} }
+      return ctx;
+    }
+    function env(g, t, a, peak, d) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + d); }
+    function tone(f, dur, type, vol, delay, slide) {
+      var c = ensure(); if (!c || muted) return;
+      var t = c.currentTime + (delay || 0), o = c.createOscillator(), g = c.createGain();
+      o.type = type || "sine"; o.frequency.setValueAtTime(f, t);
+      if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
+      env(g, t, 0.008, vol || 0.08, dur); o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.05);
+    }
+    var nbuf = null;
+    function noise(dur, vol, delay, freq, q, type) {
+      var c = ensure(); if (!c || muted) return;
+      if (!nbuf) { nbuf = c.createBuffer(1, c.sampleRate, c.sampleRate); var d = nbuf.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+      var t = c.currentTime + (delay || 0), src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+      src.buffer = nbuf; f.type = type || "bandpass"; f.frequency.value = freq || 1200; f.Q.value = q || 1;
+      env(g, t, 0.005, vol || 0.1, dur); src.connect(f); f.connect(g); g.connect(master); src.start(t); src.stop(t + dur + 0.05);
+    }
+    var lib = {
+      tick: function () { tone(660, 0.05, "triangle", 0.035); },
+      flip: function (i) { noise(0.09, 0.09, (i || 0) * 0.12, 2600, 0.8, "highpass"); tone(880 + 120 * (i || 0), 0.08, "triangle", 0.03, (i || 0) * 0.12 + 0.03); },
+      rare: function () { [1046, 1318, 1568].forEach(function (f, i) { tone(f, 0.25, "sine", 0.05, 0.45 + i * 0.07); }); },
+      pick: function () { tone(523, 0.09, "triangle", 0.06); tone(784, 0.14, "triangle", 0.06, 0.07); noise(0.05, 0.05, 0, 4000, 1, "highpass"); },
+      coin: function () { tone(1318, 0.07, "square", 0.025); tone(1760, 0.12, "square", 0.025, 0.06); },
+      endq: function () { tone(196, 0.5, "sawtooth", 0.035, 0, 98); noise(0.35, 0.05, 0, 400, 0.7, "lowpass"); tone(392, 0.3, "triangle", 0.04, 0.05); },
+      seal: function () { noise(0.5, 0.25, 0, 180, 0.8, "lowpass"); tone(70, 0.6, "sine", 0.2, 0, 40); noise(0.08, 0.12, 0.42, 900, 2); tone(110, 0.3, "square", 0.04, 0.45, 55); },
+      boss: function () { tone(110, 0.9, "sawtooth", 0.05, 0, 104); tone(165, 0.9, "sawtooth", 0.04, 0.02, 156); tone(233, 0.7, "square", 0.025, 0.25); noise(0.6, 0.08, 0, 300, 0.6, "lowpass"); tone(55, 1.1, "sine", 0.12, 0.05); },
+      levelup: function () { [523, 659, 784, 1046, 1318].forEach(function (f, i) { tone(f, 0.22, "triangle", 0.06, i * 0.08); }); tone(1568, 0.6, "sine", 0.05, 0.42); },
+      win: function () { [392, 523, 659, 784].forEach(function (f, i) { tone(f, 0.5, "triangle", 0.05, i * 0.14); }); tone(1046, 0.9, "sine", 0.05, 0.6); },
+      lose: function () { [330, 294, 262, 196].forEach(function (f, i) { tone(f, 0.45, "sawtooth", 0.035, i * 0.2, f * 0.97); }); noise(0.9, 0.06, 0.2, 250, 0.5, "lowpass"); },
+      bad: function () { tone(180, 0.18, "square", 0.03, 0, 150); },
+      good: function () { tone(784, 0.1, "triangle", 0.04); tone(1046, 0.14, "triangle", 0.04, 0.06); }
+    };
+    function ambStart() {
+      var c = ensure(); if (!c || amb || muted) return;
+      var g = c.createGain(); g.gain.value = 0.0001; g.connect(master);
+      var lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 420; lp.connect(g);
+      var o1 = c.createOscillator(), o2 = c.createOscillator(), o3 = c.createOscillator();
+      o1.type = "sine"; o1.frequency.value = 55; o2.type = "sine"; o2.frequency.value = 82.6; o3.type = "triangle"; o3.frequency.value = 110.4;
+      var g3 = c.createGain(); g3.gain.value = 0.25; o3.connect(g3); g3.connect(lp);
+      o1.connect(lp); o2.connect(lp);
+      var lfo = c.createOscillator(), lg = c.createGain(); lfo.frequency.value = 0.07; lg.gain.value = 160; lfo.connect(lg); lg.connect(lp.frequency);
+      [o1, o2, o3, lfo].forEach(function (o) { o.start(); });
+      g.gain.exponentialRampToValueAtTime(0.045, c.currentTime + 3);
+      amb = { g: g, nodes: [o1, o2, o3, lfo] };
+    }
+    function ambStop() {
+      if (!amb || !ctx) return;
+      var a = amb; amb = null;
+      a.g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+      setTimeout(function () { a.nodes.forEach(function (o) { try { o.stop(); } catch (e) {} }); }, 700);
+    }
+    function unlock() {
+      if (unlocked) return;
+      unlocked = true; ensure();
+      if (!muted) ambStart();
+    }
+    ["pointerdown", "keydown", "touchstart"].forEach(function (ev) { window.addEventListener(ev, unlock, { capture: true, passive: true }); });
+    document.addEventListener("visibilitychange", function () { if (!ctx) return; if (document.hidden) { try { ctx.suspend(); } catch (e) {} } else if (!muted) { try { ctx.resume(); } catch (e) {} } });
+    return {
+      play: function (name, arg) { if (muted || !unlocked) return; try { if (lib[name]) lib[name](arg); } catch (e) {} },
+      muted: function () { return muted; },
+      toggle: function () {
+        muted = !muted;
+        try { localStorage.setItem(KEY, muted ? "off" : "on"); } catch (e) {}
+        if (master && ctx) master.gain.setTargetAtTime(muted ? 0 : 0.7, ctx.currentTime, 0.05);
+        if (muted) ambStop(); else { unlock(); ambStart(); }
+        return muted;
+      },
+      label: function () { return muted ? "🔇 Sound off" : "🔊 Sound on"; }
+    };
+  })();
+  LD.SFX = SFX;
+  function tick() { SFX.play("tick"); }
+  /* Crisis flavor on short screens: one clamped line; tap to read it whole. */
+  document.addEventListener("click", function (e) {
+    var b = e.target && e.target.closest ? e.target.closest(".deal-dz .dz-body") : null;
+    Array.prototype.forEach.call(document.querySelectorAll(".deal-dz .dz-body.open"), function (o) { if (o !== b) o.classList.remove("open"); });
+    if (b && (b.classList.contains("open") || b.scrollHeight > b.clientHeight + 2)) { b.classList.toggle("open"); }
+  });
 
   function show(name) {
     if (typeof PN !== "undefined" && PN.on && (name !== "desk" || PN.mode === "tip")) pennyStop();
@@ -8150,6 +8703,8 @@ body:has(#screen-tutorial.on) .shell,
     });
     $("seed-input").addEventListener("input", function () { seedDraft = this.value; });
     $("btn-how").addEventListener("click", function () { tick(); openHowTo(false); });
+    var snd = $("btn-sound");
+    if (snd) snd.addEventListener("click", function () { SFX.toggle(); tick(); snd.textContent = SFX.label(); });
     $("btn-history").addEventListener("click", function () { tick(); show("history"); renderHistory(); });
     $("btn-boardroom").addEventListener("click", function () { tick(); openBoardroom("title"); });
   }
@@ -8275,6 +8830,7 @@ body:has(#screen-tutorial.on) .shell,
       btn.addEventListener("click", function () { tick(); selectedRating = +btn.getAttribute("data-rating"); renderExec(); });
     });
     bindLoadoutChips(document.querySelector("#screen-exec"), false);
+    bindExplain($("screen-exec"), null, { rating: selectedRating != null ? selectedRating : currentRating(meta) });
     var lo = $("btn-loadout");
     if (lo) lo.addEventListener("click", function () { tick(); openLoadoutSheet(); });
     $("btn-boardroom2").addEventListener("click", function () { tick(); openBoardroom("exec"); });
@@ -8401,6 +8957,13 @@ body:has(#screen-tutorial.on) .shell,
       bar.style.transition = "";
       bar.style.width = Math.max(0, Math.min(100, to)) + "%";
       m.classList.add(to > start ? "rise" : "fall");
+      var d = to - start, pop = document.createElement("span");
+      var goodUp = key === "cash";
+      pop.className = "m-pop " + ((d > 0) === goodUp ? "up" : "down");
+      pop.textContent = (d > 0 ? "+" : "−") + (money ? LD.formatMoney(Math.abs(d)) : Math.abs(d));
+      m.appendChild(pop);
+      setTimeout(function () { if (pop.parentNode) pop.parentNode.removeChild(pop); }, 1700);
+      if (key === "cash" && d > 0) SFX.play("coin");
       var t0 = null;
       function stepFn(t) {
         if (!t0) t0 = t;
@@ -8787,11 +9350,12 @@ body:has(#screen-tutorial.on) .shell,
   function applyDeal(id, choice) {
     var prev = state;
     var res = LD.selectDeal(state, id, choice);
-    if (!res.ok) { flash(res.error); return; }
+    if (!res.ok) { if (state.fy && state.fy.memo) { openMemo(); return; } flash(res.error); return; }
     state = res.state;
     clearSel();
     persistRun();
     renderDesk(prev);
+    SFX.play("pick");
     pennyEmit("signed");
     var rid = res.region ? res.region.regionId : (prev.world && prev.world.pins[id]);
     if (rid) {
@@ -8900,6 +9464,8 @@ body:has(#screen-tutorial.on) .shell,
   }
 
   function afterBunker(prev, focus, msg) {
+    var ot = !!(state.fy && state.fy.otNow);
+    if (ot) { state.fy.otNow = false; msg += " · 🌙 Overtime Crew: order once more"; }
     persistRun();
     bk.justBuilt = focus;
     var ov = $("overlay");
@@ -8914,6 +9480,7 @@ body:has(#screen-tutorial.on) .shell,
     }
     renderDeskBehind(prev);
     pennyEmit("built");
+    if (ot) { SFX.play("good"); return; }
     setTimeout(function () {
       if ($("overlay").classList.contains("bunker-mode")) closeBunker(function () { animateMeters(prev); var c = $("bunker-card"); if (c) c.classList.add("installed"); });
     }, 1700);
@@ -8969,6 +9536,7 @@ body:has(#screen-tutorial.on) .shell,
   }
 
   function showSealed() {
+    SFX.play("seal");
     var ov = $("overlay");
     ov.hidden = false;
     ov.className = "overlay on bunker-mode";
@@ -8985,7 +9553,9 @@ body:has(#screen-tutorial.on) .shell,
   function endQuarter(opts) {
     opts = opts || {};
     if (closing) return;
+    if (state.fy && state.fy.memo && !state.ended) { openMemo(); return; }
     if (state.phase !== "deal" && !opts.confirmed && LD.bossInfo && LD.bossInfo(state, state.turn)) { showBossConfirm(); return; }
+    if (state.phase !== "deal") SFX.play("endq");
     if (state.phase === "deal") {
       var desk = document.querySelector(".desk");
       var btn = $("btn-endq");
@@ -9095,12 +9665,51 @@ body:has(#screen-tutorial.on) .shell,
   }
   function fyAfterOpen() {
     if (!state || state.ended || !state.fy) return;
+    if (LD.upgradeFY) { LD.upgradeFY(state); persistRun(); }
     if (state.fy.draft) { openDraft(); return; }
+    if (state.fy.memo) { openMemo(); return; }
     if (state.fy.actIntro) { showActIntro(); return; }
+    if (LD.bossInfo(state, state.turn) && state.fy.bannerQ !== state.turn) { state.fy.bannerQ = state.turn; persistRun(); bossBanner(LD.bossInfo(state, state.turn)); }
+  }
+  function fyNext(ms) { setTimeout(function () { if (screen === "desk" && state && !state.ended && !$("overlay").classList.contains("on")) fyAfterOpen(); }, ms || 700); }
+  function bossBanner(info) {
+    var desk = document.querySelector(".desk");
+    if (!desk) return;
+    var b = document.createElement("div");
+    b.className = "boss-banner b-" + info.id;
+    b.setAttribute("role", "status");
+    b.innerHTML = '<div class="bb-in"><span class="bb-ico" aria-hidden="true">' + info.icon + '</span><div><small>Boss quarter · Q' + info.q + "</small><b>" + LD.escapeHtml(info.name) + "</b><em>" + LD.escapeHtml(info.demand) + "</em></div></div>";
+    document.body.appendChild(b);
+    SFX.play("boss");
+    var sl = document.querySelector(".desk .board-slab"); if (sl) { sl.classList.remove("boss-shake"); void sl.offsetWidth; sl.classList.add("boss-shake"); }
+    b.addEventListener("click", function () { if (b.parentNode) b.parentNode.removeChild(b); });
+    setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, reduced() ? 2600 : 3200);
+  }
+  function openMemo() {
+    showFy(LD.renderMemo(state), LD.renderMemoButtons(state), function () {
+      ["a", "b"].forEach(function (k) {
+        var btn = $("fy-m-" + k);
+        if (btn) btn.addEventListener("click", function () {
+          tick();
+          var prev = state;
+          var res = LD.fyMemo(state, k);
+          if (!res.ok) { flash(res.error); return; }
+          state = res.state; persistRun(); hideOverlay(); renderDesk(prev);
+          floatCenter(res.memo.icon + " " + res.text, "good big");
+          fyNext(900);
+        });
+      });
+    }, true);
+    $("overlay").classList.add("memo-mode");
+    SFX.play("flip");
   }
   function openDraft() {
-    dr.sel = null; dr.replacing = false;
+    dr.sel = null; dr.replacing = false; dr.reveal = !reduced();
     paintDraft();
+    dr.reveal = false;
+    var n = state.fy.draft.offer.length;
+    for (var i = 0; i < n; i++) SFX.play("flip", i);
+    if (state.fy.draft.offer.some(function (id) { var c = LD.assetById(id); return c && (c.r === "R" || c.r === "L"); })) SFX.play("rare");
     setTimeout(function () { if (state && state.fy && state.fy.draft) pennyTip("draft"); }, 450);
   }
   function paintDraft() {
@@ -9108,6 +9717,7 @@ body:has(#screen-tutorial.on) .shell,
       Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-asset]"), function (b) {
         b.addEventListener("click", function () { tick(); dr.sel = b.getAttribute("data-asset"); paintDraft(); var t = $("fy-take"); if (t) try { t.focus({ preventScroll: true }); } catch (e) {} });
       });
+      bindExplain($("overlay"));
       var take = $("fy-take");
       if (take) take.addEventListener("click", function () {
         tick();
@@ -9143,13 +9753,14 @@ body:has(#screen-tutorial.on) .shell,
     renderDesk(prev);
     if (res.skipped) floatCenter("Cash back +$" + state.fy.skipCash + "M", "cash");
     else {
+      SFX.play("pick");
       floatCenter(res.asset.icon + " " + res.asset.name + " acquired", "good big");
       if (res.divested) floatCenter("Divested " + res.divested.name + " +$" + LD.FY.DIVEST_CASH + "M", "cash", 400, 40);
       if (res.rider) floatCenter("⚠ Rider: " + res.rider.name, "bad", 700, 80);
     }
     var chip = $("btn-portfolio");
     if (chip) { chip.classList.remove("pop"); void chip.offsetWidth; chip.classList.add("pop"); }
-    if (state.fy.actIntro) setTimeout(function () { if (screen === "desk" && state && !state.ended && !$("overlay").classList.contains("on")) showActIntro(); }, 900);
+    fyNext(900);
   }
   function openPortfolio(fromDraft) {
     showFy(LD.renderPortfolio(state), '<button class="btn btn-coral" id="fy-pf-close">' + (fromDraft ? "Back to the draft" : "Close") + "</button>", function () {
@@ -9160,6 +9771,7 @@ body:has(#screen-tutorial.on) .shell,
   function showBossCard(q, after) {
     showFy(LD.renderBossCard(state, q, "intro"), '<button class="btn btn-coral" id="fy-boss-ok">Understood</button>', function () {
       $("fy-boss-ok").addEventListener("click", function () { tick(); hideOverlay(); if (after) after(); });
+      bindExplain($("overlay"), function () { showBossCard(q, after); });
       $("fy-boss-ok").focus();
     }, true);
   }
@@ -9169,7 +9781,7 @@ body:has(#screen-tutorial.on) .shell,
     f.actIntro = 0;
     persistRun();
     var q = [4, 8, f.rules.finalQ][act - 1];
-    showBossCard(q, function () { if (act === 1) pennyTip("boss"); });
+    showBossCard(q, function () { if (act === 1) pennyTip("boss"); fyNext(500); });
   }
   function showBossConfirm() {
     var info = LD.bossInfo(state, state.turn);
@@ -9179,7 +9791,7 @@ body:has(#screen-tutorial.on) .shell,
       acts = '<button class="btn btn-coral" id="fy-b-pay"' + (can ? "" : " disabled") + ">" + (can ? LD.escapeHtml(info.beat) + " · end quarter" : "Need $" + info.ask + "M to pay") + "</button>" +
         '<button class="btn btn-danger" id="fy-b-refuse">Refuse · ' + LD.escapeHtml(info.miss) + "</button>";
     } else {
-      acts = '<button class="btn btn-coral" id="fy-b-go">' + (info.id === "reckoning" ? "Face the Reckoning · end the year" : "Face the strike · end quarter") + "</button>";
+      acts = '<button class="btn btn-coral" id="fy-b-go">' + (info.final ? "Face the Reckoning · end the year" : info.id === "crash" ? "Ride out the crash · end quarter" : "Face the strike · end quarter") + "</button>";
     }
     acts += '<button class="btn btn-ghost" id="fy-b-wait">Not yet</button>';
     showFy(LD.renderBossCard(state, state.turn, "confirm"), acts, function () {
@@ -9188,7 +9800,23 @@ body:has(#screen-tutorial.on) .shell,
       var r = $("fy-b-refuse"); if (r) r.addEventListener("click", function () { go("refuse"); });
       var g = $("fy-b-go"); if (g) g.addEventListener("click", function () { go(null); });
       $("fy-b-wait").addEventListener("click", function () { tick(); hideOverlay(); });
+      bindExplain($("overlay"), showBossConfirm);
     }, true);
+    SFX.play("boss");
+  }
+  /* Tap-to-explain: [data-explain] opens a sheet; Back returns to where you were. */
+  function bindExplain(root, back, ctx) {
+    if (!root) return;
+    Array.prototype.forEach.call(root.querySelectorAll("[data-explain]"), function (b) {
+      b.addEventListener("click", function (e) {
+        e.stopPropagation(); tick();
+        var kind = b.getAttribute("data-explain");
+        var ret = back || (kind === "liabilities" ? paintDraft : null);
+        showFy(LD.explainHtml(kind, ctx || state || { rating: currentRating(loadMeta()) }), '<button class="btn btn-coral" id="fy-ex-back">' + (ret ? "Back" : "Close") + "</button>", function () {
+          $("fy-ex-back").addEventListener("click", function () { tick(); if (ret) ret(); else hideOverlay(); });
+        }, true);
+      });
+    });
   }
   function bindBossLinks(root) {
     if (!root) return;
@@ -9206,11 +9834,13 @@ body:has(#screen-tutorial.on) .shell,
     showOverlay("Menu", "<p class='muted'>Seed " + LD.escapeHtml(String(state.seedLabel)) + " · Q" + state.turn + "</p>",
       '<button class="btn btn-coral" id="mn-resume">Resume</button>' +
       '<button class="btn" id="mn-how">How to play</button>' +
+      '<button class="btn" id="mn-sound">' + SFX.label() + "</button>" +
       '<button class="btn" id="mn-title">Save &amp; exit to title</button>' +
       '<button class="btn btn-danger" id="mn-abandon">Abandon run</button>',
       function () {
         $("mn-resume").addEventListener("click", function () { tick(); hideOverlay(); });
         $("mn-how").addEventListener("click", function () { tick(); hideOverlay(); openHowTo(true); });
+        $("mn-sound").addEventListener("click", function () { SFX.toggle(); tick(); this.textContent = SFX.label(); });
         $("mn-title").addEventListener("click", function () { tick(); persistRun(); show("title"); renderTitle(); });
         $("mn-abandon").addEventListener("click", function () {
           tick();
@@ -9230,6 +9860,8 @@ body:has(#screen-tutorial.on) .shell,
       '<button class="btn btn-danger" id="ov-seal">Seal now</button><button class="btn btn-ghost" id="ov-wait">Keep working</button>',
       function () {
         $("overlay").classList.add("evac-mode");
+        var why = $("evac-why");
+        if (why) why.addEventListener("click", function () { tick(); var ov = $("overlay"); ov.classList.toggle("evac-why-on"); why.textContent = ov.classList.contains("evac-why-on") ? "◂ Back to the rooms" : "ⓘ Why rooms fail"; });
         $("ov-seal").addEventListener("click", function () {
           tick();
           var res = LD.attemptEvacuation(state);
@@ -9252,14 +9884,21 @@ body:has(#screen-tutorial.on) .shell,
     var meta = loadMeta();
     var info = lastEnd && lastEnd.seed === state.seed && lastEnd.turn === state.turn ? lastEnd : null;
     $("screen-end").innerHTML = LD.renderEnd(state, { payout: info ? info.payout : null, newRating: info ? info.newRating : null, meta: meta, letter: endLetter, xp: info ? info.xp : null });
+    if (info && !info.soundDone) { info.soundDone = true; SFX.play(state.ending && state.ending.kind === "win" ? "win" : "lose"); }
     if (info && info.xp && info.xp.levelUp && !info.toastShown) {
       info.toastShown = true;
+      var ex = LD.execById(info.xp.exec);
       var tst = document.createElement("div");
-      tst.className = "lvup-toast";
-      tst.setAttribute("role", "status");
-      tst.innerHTML = "★ " + LD.escapeHtml(LD.execById(info.xp.exec).name) + " reached Lv " + info.xp.after.level + "<small>" + LD.escapeHtml(info.xp.newPerks.map(function (p) { return "Lv " + p.lv + ": " + p.text; }).join(" · ")) + "</small>";
+      tst.className = "lvup-burst";
+      tst.setAttribute("role", "dialog");
+      tst.setAttribute("aria-label", "Level up");
+      tst.innerHTML = '<div class="lb-rays" aria-hidden="true"></div><div class="lb-card"><small>Level up</small><div class="lb-lv">Lv ' + info.xp.after.level + "</div><b>" + LD.escapeHtml(ex.name) + "</b><ul>" +
+        info.xp.newPerks.map(function (p) { return "<li>✦ " + LD.escapeHtml(p.text) + "</li>"; }).join("") + '</ul><button class="btn btn-coral" id="lb-ok">Excellent</button></div>';
       document.body.appendChild(tst);
-      setTimeout(function () { if (tst.parentNode) tst.parentNode.removeChild(tst); }, 4400);
+      var close = function () { if (tst.parentNode) tst.parentNode.removeChild(tst); };
+      tst.addEventListener("click", function () { tick(); close(); });
+      setTimeout(function () { SFX.play("levelup"); }, 700);
+      setTimeout(close, 6500);
     }
     var bl = $("btn-letter");
     if (bl) bl.addEventListener("click", function () { tick(); endLetter = true; paintEnd(); });
@@ -9534,6 +10173,7 @@ body:has(#screen-tutorial.on) .shell,
       blks[0].style.cssText = full ? "left:0;top:0;width:100vw;height:" + ((window.visualViewport && visualViewport.height) || window.innerHeight) + "px;" : "display:none";
       for (var i = 1; i < 4; i++) blks[i].style.cssText = "display:none";
       el.classList.remove("box-top");
+      pennyAvoidDeal(box);
       return;
     }
     if (!PN.scrolled) {
@@ -9566,6 +10206,24 @@ body:has(#screen-tutorial.on) .shell,
     arrow.style.left = Math.max(4, Math.min(vw - 60, cx - 30)) + "px";
     arrow.style.top = Math.max(4, Math.min(vh - 74, ay)) + "px";
     arrow.classList.toggle("up", up);
+    pennyAvoidDeal(box);
+  }
+  /* Wide screens: never let Penny (card or portrait) sit on the open deal card. */
+  function pennyAvoidDeal(box) {
+    box.style.left = ""; box.style.width = ""; box.style.transform = "";
+    var vw = window.innerWidth;
+    if (vw <= 720) return;
+    var dz = document.querySelector(".desk.has-sel .deal-dz, .desk.has-sel #dossier");
+    if (!dz || !pvis(dz)) return;
+    var d = dz.getBoundingClientRect(), b = box.getBoundingClientRect();
+    var ix = Math.min(b.right, d.right) - Math.max(b.left, d.left), iy = Math.min(b.bottom, d.bottom) - Math.max(b.top, d.top);
+    if (ix <= 0 || iy <= 0) return;
+    if (d.right < vw * 0.5) {
+      var left = d.right + 10;
+      box.style.transform = "none"; box.style.left = left + "px"; box.style.width = Math.max(320, Math.min(860, vw - left - 12)) + "px";
+    } else if (d.left > vw * 0.5) {
+      box.style.transform = "none"; box.style.left = "12px"; box.style.width = Math.max(320, Math.min(860, d.left - 22)) + "px";
+    }
   }
 
   function pennyTickLoop() {

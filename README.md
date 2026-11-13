@@ -11,3 +11,5 @@ You can also open `index.html` directly in a browser from a local copy.
 ## Fonts
 
 This build embeds subsets of Playfair Display, Zilla Slab, and Source Sans Pro, licensed under the SIL Open Font License 1.1. See `FONT-LICENSES.txt` and `OFL-1.1.txt`.
+
+World-map proof: region outlines are derived from Natural Earth 1:110m (public domain) via the world-atlas package (ISC).

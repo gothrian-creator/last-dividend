@@ -1347,6 +1347,357 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
 }
 .bk-stage .toast { top: auto; bottom: 14px; }
 
+
+/* =====================================================================
+   v3 look: "Brighter Tomorrow" — tech-optimist Roaring 20s deco.
+   Emerald + black lacquer, thin gold linework, frosted emerald glass,
+   holographic map, golden sunrise. Visual only: no layout/logic changes.
+   ===================================================================== */
+:root {
+  --gold: #d4af37;
+  --gold-hi: #f3d98f;
+  --gold-soft: rgba(212, 175, 55, 0.55);
+  --gold-line: rgba(226, 191, 99, 0.7);
+  --ivory: #f6ecd4;
+  --ivory-muted: rgba(246, 236, 212, 0.74);
+  --emerald: #0d5a4c;
+  --emerald-deep: #06261f;
+  --lacquer: rgba(5, 28, 23, 0.8);
+  --lacquer-solid: #082a23;
+  --glass-deco: linear-gradient(180deg, rgba(14, 66, 56, 0.82), rgba(5, 30, 25, 0.86));
+  --deco-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --deco-inset: inset 0 0 0 1px rgba(212, 175, 55, 0.18), inset 0 1px 0 rgba(255, 240, 200, 0.12);
+}
+html, body { background: #05201b; color: var(--ivory); }
+body { background-image: radial-gradient(rgba(212, 175, 55, 0.07) 1px, transparent 1.2px); background-size: 12px 12px; }
+
+/* ---------- Desk backdrop: penthouse at sunrise ---------- */
+body.on-desk { background: #05201b; }
+.desk {
+  background:
+    linear-gradient(180deg, rgba(4, 22, 18, 0.55) 0%, rgba(4, 22, 18, 0.2) 30%, rgba(4, 22, 18, 0.35) 70%, rgba(3, 16, 13, 0.82) 100%),
+    radial-gradient(70% 55% at 22% 48%, rgba(255, 196, 96, 0.28), rgba(255, 196, 96, 0) 70%),
+    url("assets/desk-penthouse.webp") center 40% / cover no-repeat,
+    linear-gradient(180deg, #2a3a2c, #0a2a23);
+  color: var(--ivory);
+}
+.desk-light {
+  background: repeating-linear-gradient(115deg, rgba(255, 214, 140, 0) 0 90px, rgba(255, 214, 140, 0.07) 90px 160px, rgba(255, 214, 140, 0) 160px 280px);
+  mix-blend-mode: screen;
+}
+
+/* Wordmark: gold deco title with sunburst rules */
+.wordmark {
+  font-family: var(--font-serif); font-weight: 700; letter-spacing: 0.08em;
+  color: var(--gold-hi);
+  background: linear-gradient(180deg, #fff3c4 0%, #f0cf7a 45%, #b8862c 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: none; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
+}
+.wordmark .sun {
+  background: radial-gradient(circle, #fff6d0 0 30%, #f3c55a 32% 55%, rgba(243, 197, 90, 0) 60%);
+  box-shadow: 0 0 26px 8px rgba(255, 205, 100, 0.55);
+}
+.tag { color: var(--ivory); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); letter-spacing: 0.22em; }
+.tag::before, .tag::after { content: ""; display: inline-block; width: 34px; height: 1px; background: var(--gold); vertical-align: middle; margin: 0 10px; box-shadow: 0 -4px 0 -0.5px rgba(212, 175, 55, 0.5); }
+.q-chip {
+  background: var(--glass-deco); border: 1px solid var(--gold-line); color: var(--gold-hi);
+  box-shadow: var(--deco-shadow), var(--deco-inset); font-family: var(--font-serif);
+}
+.q-chip small { color: var(--ivory-muted); font-family: var(--font-sans); }
+.icon-btn { background: var(--glass-deco); color: var(--gold-hi); border: 1px solid var(--gold-line); box-shadow: var(--deco-shadow), var(--deco-inset); }
+
+/* Panels: frosted emerald glass, gold hairline + corner ticks */
+.panel, .dz, .card {
+  background: var(--glass-deco); border: 1px solid var(--gold-line); color: var(--ivory);
+  box-shadow: var(--deco-shadow), var(--deco-inset);
+  backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2);
+}
+.panel-k, .dz-k { color: var(--gold-hi); letter-spacing: 0.1em; font-weight: 700; }
+.panel-k::before, .dz-k::before { content: "◆"; font-size: 0.6em; color: var(--gold); margin-right: 6px; vertical-align: 0.2em; }
+@media (orientation: portrait), (max-width: 899px) {
+  .tag::before, .tag::after { display: none; }
+  .tag { letter-spacing: 0.12em; }
+}
+.dz-k { color: var(--gold-hi); }
+.dz, .dash-meters, .bunker-card { position: relative; }
+.dz::after, .dash-meters::after {
+  content: ""; position: absolute; inset: 5px; border-radius: 13px; pointer-events: none;
+  background:
+    linear-gradient(var(--gold), var(--gold)) left top / 14px 1px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) left top / 1px 14px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) right top / 14px 1px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) right top / 1px 14px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) left bottom / 14px 1px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) left bottom / 1px 14px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) right bottom / 14px 1px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) right bottom / 1px 14px no-repeat;
+  opacity: 0.8;
+}
+
+/* Meters */
+.meter { background: rgba(0, 0, 0, 0.28); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.35); }
+.m-lbl { color: var(--ivory-muted); letter-spacing: 0.12em; }
+.m-val { color: var(--ivory); font-family: var(--font-serif); }
+.m-cash .m-val { color: var(--gold-hi); }
+.m-unrest .m-val { color: #f5c04a; }
+.m-collapse .m-val { color: #ff8a6a; }
+.m-bar { background: rgba(0, 0, 0, 0.4); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.2); }
+.m-cash .m-bar span { background: linear-gradient(90deg, #b8862c, #f3d98f); }
+.m-sub { color: var(--ivory-muted); }
+.spark .area { fill: rgba(63, 224, 184, 0.16); }
+.spark .line { stroke: #3fe0b8; }
+.spark .line.down { stroke: #ff8a6a; }
+.holdings { color: var(--ivory-muted); }
+.holdings b { color: var(--gold-hi); }
+.tick-run { color: var(--ivory); }
+.tick-run span::before { color: var(--gold); content: "◆ "; }
+
+/* Bunker card on the desk */
+.bunker-card .bc-scene { background: #120e0b; box-shadow: inset 0 0 0 1px var(--gold-line); }
+.bunker-card.ready { box-shadow: var(--deco-shadow), 0 0 0 2px var(--gold); }
+@keyframes readyglow { 50% { box-shadow: var(--deco-shadow), 0 0 0 5px rgba(243, 217, 143, 0.4); } }
+.bc-cta { color: var(--gold-hi); }
+.bunker-card.ready .bc-cta { color: #ffb19c; }
+.coach-inline { background: var(--emerald); border: 1px solid var(--gold-line); color: var(--ivory); }
+
+/* Board: holographic map table with gold rim and emitter rings */
+.board-slab {
+  background: linear-gradient(180deg, rgba(120, 255, 225, 0.22), rgba(20, 120, 100, 0.12));
+  box-shadow:
+    0 12px 0 -2px rgba(90, 64, 18, 0.95),
+    0 12px 0 0 var(--gold),
+    0 34px 50px -12px rgba(0, 0, 0, 0.65),
+    0 0 46px rgba(63, 224, 184, 0.35),
+    0 0 0 2px var(--gold) inset;
+}
+.board-slab::before {
+  box-shadow: inset 0 0 0 2px rgba(243, 217, 143, 0.75), inset 0 0 0 7px rgba(6, 40, 34, 0.55), inset 0 0 0 8px rgba(212, 175, 55, 0.5), inset 0 0 60px rgba(63, 224, 184, 0.35);
+}
+.board-slab::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
+  background: repeating-linear-gradient(0deg, rgba(160, 255, 235, 0.05) 0 1px, transparent 1px 4px);
+  mix-blend-mode: screen; animation: scan 6s linear infinite;
+}
+@keyframes scan { from { background-position: 0 0; } to { background-position: 0 40px; } }
+.board-tilt { position: relative; }
+.board-tilt::after {
+  content: ""; position: absolute; left: 8%; right: 8%; bottom: -14px; height: 46px; pointer-events: none; z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(63, 224, 184, 0.45), rgba(63, 224, 184, 0) 70%);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.45), 0 0 0 10px rgba(212, 175, 55, 0.08), 0 0 0 12px rgba(212, 175, 55, 0.35);
+}
+.map .grat { stroke: #8ff5e0; stroke-opacity: 0.16; }
+.map .route { stroke: #8ff5e0; stroke-opacity: 0.35; }
+.map .route.live { stroke: var(--gold-hi); }
+.map .region .side { fill: #6b4a14; }
+.map .region .top { stroke: #fff1c2; stroke-width: 1.2; }
+.map .region.owned .side { fill: #064a3c; }
+.map .region.owned .top { stroke: #c8fff0; filter: drop-shadow(0 0 7px rgba(63, 224, 184, 0.95)); }
+.map .borders { stroke: #4a3208; stroke-opacity: 0.25; }
+.map .rlabel { fill: var(--ivory); stroke: #052a23; stroke-width: 4.5px; letter-spacing: 0.12em; }
+.map .rlabel.own { fill: #d9fff4; stroke: #04332a; }
+.map .rtag { fill: #ffd36a; stroke: #052a23; }
+.map .pin .drop { fill: #f6d77e; stroke: #6b4a10; filter: drop-shadow(0 0 6px rgba(255, 210, 110, 0.85)) drop-shadow(0 4px 3px rgba(0, 0, 0, 0.45)); }
+.map .pin.k-claim .drop { fill: #f6d77e; stroke: #0b5e55; }
+.map .pin.k-squeeze .drop { fill: #ffd56a; stroke: #7a5410; }
+.map .pin.k-calm .drop { fill: #e9f7c8; stroke: #1d6b4a; }
+.map .pin.k-crisis .drop { fill: #ffc2b0; stroke: #a3352a; }
+.map .pin .glyph { fill: #08362d; }
+.map .pin-tag rect { fill: rgba(5, 34, 28, 0.94); stroke: var(--gold-hi); stroke-width: 2; }
+.map .pin.k-claim .pin-tag rect { fill: #0a4f46; }
+.map .pin.k-squeeze .pin-tag rect { fill: #6e4a0c; }
+.map .pin.k-calm .pin-tag rect { fill: #175c40; }
+.map .pin.k-crisis .pin-tag rect { fill: #9a3226; }
+.map .pin.sel .pin-tag rect { fill: var(--coral); }
+.map .pin-tag text { fill: var(--ivory); }
+.map .signed-mark rect { fill: #0f8f72; stroke: var(--gold-hi); }
+
+.phase-pill { background: var(--glass-deco); border: 1px solid var(--gold-line); color: var(--ivory); box-shadow: var(--deco-shadow); }
+.desk.phase-deal .phase-pill { background: linear-gradient(180deg, #ef7a62, var(--coral-deep)); border-color: rgba(255, 220, 180, 0.7); }
+.coach-bubble, .coach-bubble::after { background: var(--emerald); }
+.coach-bubble { border: 1px solid var(--gold-line); color: var(--ivory); }
+.stamp { background: rgba(250, 240, 214, 0.92); font-family: var(--font-serif); box-shadow: 0 0 0 3px rgba(250, 240, 214, 0.92), 0 0 0 5px var(--gold); }
+.toast { background: var(--emerald); border: 1px solid var(--gold-line); }
+
+/* End Quarter: coral CTA kept, deco trim */
+.end-q { background: linear-gradient(180deg, rgba(40, 64, 56, 0.92), rgba(16, 36, 31, 0.94)); border: 1px solid var(--gold-soft); color: var(--ivory-muted); }
+.end-q.live { border-color: rgba(255, 225, 170, 0.75); color: #fff; }
+.eq-t { font-family: var(--font-serif); }
+.eq-t small { font-family: var(--font-sans); }
+body:not(.on-desk) { background: linear-gradient(180deg, rgba(4, 22, 18, 0.82), rgba(4, 22, 18, 0.9)), url("assets/desk-penthouse.webp") center / cover fixed no-repeat, #05201b; }
+.title-sunny > .desk-light { opacity: 0.5; }
+.eq-ico { border-color: currentColor; }
+
+/* Dossier */
+.dz h3 { color: var(--ivory); font-family: var(--font-serif); letter-spacing: 0; }
+.dz-x { color: var(--gold-hi); background: rgba(212, 175, 55, 0.14); }
+.dz-body, .dz-note, .fine, .exec-t, .quote { color: var(--ivory-muted); }
+.dz-note.priv { color: #7ff2d6; }
+.row-k { color: var(--ivory-muted); }
+.when { color: var(--gold-hi); }
+.fx-chip { background: rgba(255, 255, 255, 0.1); color: var(--ivory); }
+.fx-chip.good { background: rgba(63, 224, 184, 0.2); color: #9ff5de; }
+.fx-chip.bad { background: rgba(255, 120, 90, 0.2); color: #ffb3a1; }
+.fx-chip.cost { background: rgba(255, 255, 255, 0.12); color: #e8dcc0; }
+.fx-chip.own { background: #0f8f72; color: #fff; }
+.fx-chip.meh { background: rgba(243, 217, 143, 0.18); color: var(--gold-hi); }
+.dz-choice, .dz-act { background: rgba(0, 0, 0, 0.26); color: var(--ivory); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.45); }
+.dz-choice b, .dz-act b { color: var(--gold-hi); }
+.dz-act span { color: var(--ivory-muted); }
+.btn-sign { background: linear-gradient(180deg, #19a585, #0b5e4e); box-shadow: var(--deco-shadow), inset 0 0 0 1px var(--gold-hi); }
+@keyframes signpulse { 50% { box-shadow: var(--deco-shadow), inset 0 0 0 1px var(--gold-hi), 0 0 0 6px rgba(243, 217, 143, 0.28); } }
+.btn-seal { box-shadow: var(--deco-shadow), inset 0 0 0 1px rgba(255, 225, 170, 0.8); }
+.pips i { background: rgba(255, 255, 255, 0.16); }
+.pips i.on { background: #3fe0b8; }
+.dz-stat span:first-child { color: var(--ivory-muted); }
+.avatar { background: linear-gradient(135deg, #12806a, #063a30); box-shadow: inset 0 0 0 2px var(--gold), 0 0 0 1px rgba(0, 0, 0, 0.4); color: var(--gold-hi); font-family: var(--font-serif); }
+.target { background: rgba(212, 175, 55, 0.12); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.35); color: var(--ivory); }
+.dz-art { box-shadow: 0 0 0 1px var(--gold-line); }
+.card .c-t { color: var(--ivory); }
+.c-k { color: var(--gold-hi); }
+
+/* Overlays (report, menu, crisis confirm, sheets) */
+body.on-desk .overlay { background: rgba(2, 14, 11, 0.55); }
+body.on-desk .overlay .panel, .sheet, .overlay .panel {
+  background: linear-gradient(180deg, #0e4238, #062a23); color: var(--ivory);
+  border: 1px solid var(--gold-line); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), var(--deco-inset);
+}
+.overlay .panel h2, .report h3, .sheet h3 { color: var(--gold-hi); font-family: var(--font-serif); }
+.overlay .panel p, .overlay .muted { color: var(--ivory-muted); }
+.overlay .kicker { color: var(--gold-hi); }
+.rd { background: rgba(0, 0, 0, 0.28); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.35); }
+.rd span { color: var(--ivory-muted); }
+.rd b { color: var(--ivory); font-family: var(--font-serif); }
+.rd.good em { color: #6ff0c9; }
+.rd.bad em { color: #ff9a80; }
+.rep-list li { color: var(--ivory); }
+.rep-list i { background: rgba(212, 175, 55, 0.2); color: var(--gold-hi); }
+.overlay .btn:not(.btn-coral):not(.btn-danger) { background: rgba(0, 0, 0, 0.25); border-color: var(--gold-line); color: var(--ivory); }
+.overlay .btn-danger { background: rgba(0, 0, 0, 0.25); color: #ffb3a1; }
+.mode-row { background: rgba(0, 0, 0, 0.25); }
+.mode { color: var(--ivory); }
+.mode.on { background: rgba(212, 175, 55, 0.25); }
+.sys { background: rgba(0, 0, 0, 0.25); }
+.sys-d { color: var(--ivory-muted); }
+
+/* ---------- Bunker zoom view: island scene, slim glass hint strip ---------- */
+.overlay.bunker-mode { background: rgba(2, 14, 11, 0.6); }
+.bk-view {
+  background: linear-gradient(180deg, #0c3a31, #051f1a); color: var(--ivory);
+  border: 1px solid var(--gold-line); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), var(--deco-inset);
+}
+.bk-top h3 { color: var(--ivory); font-family: var(--font-serif); }
+.bk-stage { background: #120e0b; box-shadow: 0 0 0 1px var(--gold-line), 0 10px 24px rgba(0, 0, 0, 0.45); }
+.bk-panel {
+  background: linear-gradient(180deg, rgba(14, 66, 56, 0.78), rgba(5, 30, 25, 0.85));
+  border: 1px solid var(--gold-line); border-radius: 14px; padding: 10px 14px;
+  box-shadow: var(--deco-inset); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.bk-panel:has(.bp-hint) { padding: 8px 14px; text-align: center; }
+.bp-hint { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 4px 10px; font-size: 17px; color: var(--ivory); font-family: var(--font-serif); }
+.bp-hint b { color: var(--gold-hi); }
+.bp-dot { color: var(--gold); }
+.bp-hint-sub { font-size: 16px; color: var(--ivory-muted); margin-top: 2px; }
+.bp-hint-sub b { color: var(--gold-hi); }
+.bp-head h3 { color: var(--ivory); font-family: var(--font-serif); }
+.bp-sub, .bp-note { color: var(--ivory-muted); }
+.bp-next { color: var(--ivory); }
+.bp-next b { color: var(--gold-hi); }
+.bp-warn { color: #ff9a80; }
+.bp-ico { box-shadow: inset 0 0 0 2px var(--gold); background: #3a2e22; }
+.bp-ico.st-incomplete { background: #a8781c; }
+.bp-ico.st-ready { background: #0f8f72; }
+.bp-btn { background: linear-gradient(180deg, #19a585, #0b5e4e); box-shadow: var(--deco-shadow), inset 0 0 0 1px var(--gold-hi); }
+.bp-btn.q-cheap { background: linear-gradient(180deg, #e2b445, #9a6a12); color: #1e1404; }
+.bp-btn.on { box-shadow: var(--deco-shadow), 0 0 0 3px var(--gold-hi); }
+.bk-scene .bk-spotlbl rect { fill: #d4af37; stroke: none; }
+.bk-scene .bk-spotlbl .bk-spotlbl-in { fill: #062a23; stroke: rgba(255, 240, 200, 0.35); stroke-width: 1; }
+.bk-scene .bk-spotlbl text { fill: var(--ivory); font-family: var(--font-serif); }
+.bk-scene .bk-spotlbl.on .bk-spotlbl-in { fill: #0f8f72; }
+.bk-scene .bk-spot.sel .bk-spotlbl .bk-spotlbl-in { fill: var(--coral); }
+.bk-scene .bk-spot.sel .bk-spotlbl rect:first-child { fill: #fff1c2; }
+.bk-scene .bk-plaque rect { fill: #062a23; stroke: var(--gold); stroke-width: 2; }
+.bk-scene .bk-plaque text { fill: var(--gold-hi); font-family: var(--font-serif); }
+.bk-scene.mini .bk-plaque { display: none; }
+.bk-scene .bk-zap { animation: zap 1.5s steps(3) infinite; }
+@keyframes zap { 0%, 100% { opacity: 0.15; } 40% { opacity: 1; } 70% { opacity: 0.4; } }
+.bk-scene .bk-pipeflow { animation: dash 2.6s linear infinite; }
+.bk-scene .bk-docklamp { animation: glowp 1.6s ease-in-out infinite; }
+.bk-scene .bk-docklit { mix-blend-mode: screen; }
+.bk-scene .bk-hit { cursor: pointer; }
+.bk-scene .bk-spot:not(.sel) .bk-hit:hover { fill: rgba(243, 217, 143, 0.08); }
+.bk-view.convert-mode .bk-room .bk-shell { fill: #0f8f72; }
+.bk-scene.live .bk-room.sel .bk-shell { fill: var(--coral); stroke: #fff1c2; }
+
+@media (orientation: landscape) and (min-width: 900px) {
+  .bk-view { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "stage" "panel"; width: min(1320px, 100%, calc((100dvh - 320px) * 1.528 + 26px)); min-width: min(860px, 100%); }
+  .bk-stage { background: #120e0b; }
+  .bk-stage .bk-scene { max-height: calc(100dvh - 320px); }
+  .bk-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 440px); column-gap: 18px; align-items: start; }
+  .bk-panel > * { grid-column: 1; }
+  .bk-panel > .bp-buy, .bk-panel > #btn-engineer, .bk-panel > .btn-seal { grid-column: 2; grid-row: 1 / span 4; align-self: center; margin-top: 0; }
+  .bk-panel .bp-buy { grid-template-columns: 1fr 1fr; }
+  .bk-panel:has(.bp-hint) { display: block; }
+}
+@media (orientation: landscape) and (min-width: 900px) and (max-height: 820px) {
+  .bk-panel { padding: 6px 12px; }
+  .bp-head { margin-bottom: 2px; }
+  .bp-btn { min-height: 54px; }
+}
+
+/* Portrait: sticky footer + bottom sheet go dark */
+@media (orientation: portrait), (max-width: 899px) {
+  .hand { background: linear-gradient(180deg, rgba(4, 22, 18, 0), rgba(4, 22, 18, 0.92) 30%); }
+  .desk.has-sel .dossier .dz { background: linear-gradient(180deg, #0e4238, #062a23); }
+  .desk.has-sel::after { background: rgba(0, 0, 0, 0.45); }
+  .desk { background-position: 0 0, 0 0, 30% 0, 0 0; background-size: auto, auto, auto 100vh, auto; background-attachment: scroll, scroll, fixed, scroll; }
+}
+
+/* ---------- Title, executive select, brochure pages ---------- */
+#screen-title .title-sunny {
+  background:
+    linear-gradient(90deg, rgba(4, 22, 18, 0.85) 0%, rgba(4, 22, 18, 0.55) 40%, rgba(4, 22, 18, 0.25) 100%),
+    url("assets/desk-penthouse.webp") center / cover no-repeat, #0a2a23;
+  border: 1px solid var(--gold-line); box-shadow: var(--deco-shadow);
+}
+.title-sunny .kicker { color: var(--gold-hi); letter-spacing: 0.24em; }
+.title-sunny h1.wordmark { font-family: var(--font-serif); letter-spacing: 0.06em; }
+.title-sunny .tagline { color: #ffb39e; }
+.title-sunny .demo-note, .demo-note { color: var(--ivory-muted); }
+.link-btn { color: var(--gold-hi); }
+.btn { background: rgba(4, 30, 25, 0.75); border: 1px solid var(--gold-line); color: var(--ivory); }
+.btn-coral { background: linear-gradient(180deg, #ef7a62, var(--coral-deep)); border-color: rgba(255, 225, 170, 0.75); color: #fff; }
+.btn-ochre { background: linear-gradient(180deg, #f0cf7a, #b8862c); border-color: #fff1c2; color: #1e1404; }
+.btn-teal { background: linear-gradient(180deg, #19a585, #0b5e4e); border-color: var(--gold-line); color: #fff; }
+.btn-ghost { background: transparent; border-color: rgba(212, 175, 55, 0.4); color: var(--ivory-muted); }
+.btn-danger { background: rgba(4, 30, 25, 0.75); border-color: var(--coral); color: #ffb3a1; }
+.seed-row input, .title-sunny .seed-row input { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--gold-line); color: var(--ivory); }
+.field-label { color: var(--ivory-muted); }
+.page, .title-page { background: linear-gradient(180deg, #0c3a31, #051f1a); border-color: var(--gold); color: var(--ivory); }
+.page::before, .page::after { border-color: var(--gold); }
+.page.play, .page.inner { background: linear-gradient(180deg, #0c3a31, #051f1a); background-image: radial-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 1.2px), linear-gradient(180deg, #0c3a31, #051f1a); background-size: 12px 12px, auto; }
+h1, h2, h3 { color: var(--gold-hi); }
+.kicker { color: var(--gold-hi); }
+.muted { color: var(--ivory-muted); }
+.inner-head h2 { font-family: var(--font-serif); }
+.exec-card { background: var(--glass-deco); border: 1px solid var(--gold-line); color: var(--ivory); box-shadow: var(--deco-inset); }
+.exec-card.on { border-color: var(--coral); box-shadow: inset 0 0 0 2px var(--coral), 0 0 22px rgba(224, 90, 72, 0.25); }
+.exec-card .name { color: var(--ivory); }
+.exec-card .firm { color: var(--gold-hi); }
+.exec-card p { color: var(--ivory-muted); }
+.dots i { background: rgba(212, 175, 55, 0.3); }
+.page p, .page li { color: var(--ivory); }
+.page .muted, .page .hint, .page .meta { color: var(--ivory-muted); }
+.tutorial-page .btn-row { background: linear-gradient(180deg, rgba(5, 31, 26, 0), #051f1a 40%) !important; }
+.upgrade, .readiness { background: rgba(0, 0, 0, 0.28); border-color: var(--gold-line); color: var(--ivory); }
+.upgrade h3, .readiness h3 { color: var(--gold-hi); }
+.upgrade .meta, .log { color: var(--ivory-muted); }
+.readiness p, .readiness li { color: var(--ivory); }
+.end-mark.win { color: var(--gold-hi); }
+.end-mark.lose { color: #ff8a6a; }
+.end-hero.diagram { background: #0a2a23; }
+.history li { color: var(--ivory-muted); border-bottom-color: rgba(212, 175, 55, 0.25); }
   </style>
 </head>
 <body>
@@ -3865,13 +4216,13 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
     var coachDeal = ui.coachDeal || null;
     var h = '<svg class="map" viewBox="0 10 ' + M.w + " " + (M.h - 10) + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="World map of your holdings">';
     h += "<defs>" +
-      '<radialGradient id="g-ocean" gradientUnits="userSpaceOnUse" cx="480" cy="200" r="900"><stop offset="0" stop-color="#4fc3d6"/><stop offset="0.6" stop-color="#2a9bb5"/><stop offset="1" stop-color="#1b6f8c"/></radialGradient>' +
-      '<radialGradient id="g-glare" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fffbe6" stop-opacity="0.75"/><stop offset="1" stop-color="#fffbe6" stop-opacity="0"/></radialGradient>' +
-      '<linearGradient id="g-land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4e3b5"/><stop offset="1" stop-color="#d9bf86"/></linearGradient>' +
-      '<linearGradient id="g-own" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1fb3a6"/><stop offset="1" stop-color="#0b6f73"/></linearGradient>' +
-      '<linearGradient id="g-burn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9b48a"/><stop offset="1" stop-color="#c47a55"/></linearGradient>' +
-      '<pattern id="p-dots" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#0a464e" fill-opacity="0.16"/></pattern>' +
-      '<pattern id="p-waves" width="40" height="18" patternUnits="userSpaceOnUse"><path d="M2 9 q8 -6 16 0" fill="none" stroke="#fff" stroke-opacity="0.22" stroke-width="1.6" stroke-linecap="round"/></pattern>' +
+      '<radialGradient id="g-ocean" gradientUnits="userSpaceOnUse" cx="480" cy="200" r="900"><stop offset="0" stop-color="#16857a"/><stop offset="0.55" stop-color="#0b4f4a"/><stop offset="1" stop-color="#062824"/></radialGradient>' +
+      '<radialGradient id="g-glare" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#9ff5e4" stop-opacity="0.45"/><stop offset="1" stop-color="#9ff5e4" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="g-land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d98f"/><stop offset="1" stop-color="#c4913a"/></linearGradient>' +
+      '<linearGradient id="g-own" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ff0c4"/><stop offset="1" stop-color="#0f8f72"/></linearGradient>' +
+      '<linearGradient id="g-burn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f09a6a"/><stop offset="1" stop-color="#b4482f"/></linearGradient>' +
+      '<pattern id="p-dots" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#3b2a08" fill-opacity="0.2"/></pattern>' +
+      '<pattern id="p-waves" width="40" height="18" patternUnits="userSpaceOnUse"><path d="M2 9 q8 -6 16 0" fill="none" stroke="#7ff2dc" stroke-opacity="0.16" stroke-width="1.4" stroke-linecap="round"/></pattern>' +
       '<filter id="f-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
       LD.REGION_IDS.map(function (id) { return '<path id="rg-' + id + '" d="' + M.regions[id].d + '"/>'; }).join("") +
       "</defs>";
@@ -4290,6 +4641,10 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
   function money(n) { return (n < 0 ? "−$" : "$") + Math.abs(n) + "M"; }
 
   var W = 640, H = 420;
+  /* Deco island scene: the room cutaway (W x H local units) sits under a painted
+     private-island backdrop. SW x SH is the full scene; OX/OY shift the cutaway. */
+  var SW = 880, SH = 576, OX = 120, OY = 156;
+  var ISLAND_ART = "assets/oasis-island.webp";
   var RW = 250, RH = 118;
   LD.BUNKER_ROOMS = {
     air: { x: 28, y: 146, name: "Air" },
@@ -4371,13 +4726,14 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
     var s = roomStage(state, id);
     var sealed = opts.sealed;
     var cls = "bk-room st-" + s.status + " sg-" + s.stage + (s.cheap ? " cheap" : "") + (opts.focus === id ? " sel" : "") + (opts.justBuilt === id ? " just" : "");
-    var wall = s.stage === "empty" ? "#3d362f" : s.stage === "building" ? "#8b7a60" : "#f8ecd2";
+    var wall = s.stage === "empty" ? "#2c2620" : s.stage === "building" ? "#7c6a4e" : "#f3e3bf";
     var floor = s.stage === "empty" ? "#4a4038" : s.stage === "building" ? "#a8926c" : "#d8c59c";
     var h = '<g class="' + cls + '" data-room="' + id + '" transform="translate(' + R.x + " " + R.y + ')">';
-    h += '<rect class="bk-shell" x="-6" y="-6" width="' + (RW + 12) + '" height="' + (RH + 12) + '" rx="10" fill="#6b6157"/>';
+    h += '<rect class="bk-shell" x="-6" y="-6" width="' + (RW + 12) + '" height="' + (RH + 12) + '" rx="8" fill="#2a2018" stroke="#d4af37" stroke-width="2.5"/>';
     h += '<rect x="14" y="12" width="222" height="82" fill="' + wall + '"/>';
-    h += '<polygon points="0,0 250,0 236,12 14,12" fill="#857a6c"/>';
-    h += '<polygon points="0,0 14,12 14,94 0,118" fill="#9b8f80"/><polygon points="250,0 236,12 236,94 250,118" fill="#7d7266"/>';
+    h += '<polygon points="0,0 250,0 236,12 14,12" fill="#5a4630"/>';
+    h += '<polygon points="0,0 14,12 14,94 0,118" fill="#6b5338"/><polygon points="250,0 236,12 236,94 250,118" fill="#4c3b28"/>';
+    h += '<path d="M0 0 L14 12 M250 0 L236 12 M0 118 L14 94 M250 118 L236 94" stroke="#d4af37" stroke-opacity="0.55" stroke-width="1.2"/>';
     h += '<polygon points="14,94 236,94 250,118 0,118" fill="' + floor + '"/>';
     if (s.stage === "done") {
       h += '<rect class="bk-light" x="60" y="12" width="130" height="5" rx="2" fill="#fff6c8"/>';
@@ -4430,8 +4786,9 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
   }
 
   function spotLabel(x, y, text, on) {
-    var w = text.length * 8.6 + 22;
-    return '<g class="bk-spotlbl' + (on ? " on" : "") + '" transform="translate(' + x + " " + y + ')"><rect x="' + (-w / 2) + '" y="-13" width="' + w + '" height="24" rx="12"/><text y="4.5" text-anchor="middle" font-size="15" font-weight="700">' + esc(text) + "</text></g>";
+    var w = text.length * 9.4 + 30;
+    return '<g class="bk-spotlbl' + (on ? " on" : "") + '" transform="translate(' + x + " " + y + ')"><rect x="' + (-w / 2) + '" y="-15" width="' + w + '" height="30" rx="15"/>' +
+      '<rect class="bk-spotlbl-in" x="' + (-w / 2 + 3) + '" y="-12" width="' + (w - 6) + '" height="24" rx="12"/><text y="5.5" text-anchor="middle" font-size="16" font-weight="700">' + esc(text) + "</text></g>";
   }
 
   function feeds(state) {
@@ -4440,7 +4797,7 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
       var R = LD.BUNKER_ROOMS[sys.id];
       var y = R.y + 64;
       var left = R.x < W / 2;
-      var x0 = left ? 0 : W, x1 = left ? R.x - 6 : R.x + RW + 6;
+      var x0 = left ? -OX : W + (SW - W - OX), x1 = left ? R.x - 6 : R.x + RW + 6;
       if (state.converting) {
         h += '<line x1="' + x0 + '" y1="' + y + '" x2="' + x1 + '" y2="' + y + '" stroke="#7d7266" stroke-width="7" stroke-linecap="round"/>' +
           '<text x="' + ((x0 + x1) / 2) + '" y="' + (y + 5) + '" text-anchor="middle" font-size="14" font-weight="700" fill="#e05a48">✕</text>';
@@ -4454,63 +4811,68 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
     return h;
   }
 
+  /* Above ground: painted private island (Oasis Prime tower, villa, public
+     pipeline to the mainland, private cargo dock). Scene coordinates (SW x SH). */
   function surface(state, opts) {
     var collapse = state.collapse;
-    var h = '<rect width="' + W + '" height="132" fill="url(#bk-sky)"/>';
-    h += '<g class="bk-sun"><circle cx="572" cy="38" r="20" fill="#ffd36a"/><circle cx="572" cy="38" r="32" fill="#ffd36a" opacity="0.25"/></g>';
-    h += '<g class="bk-cloud"><ellipse cx="120" cy="34" rx="34" ry="10" fill="#fff" opacity="0.85"/><ellipse cx="146" cy="28" rx="20" ry="10" fill="#fff" opacity="0.85"/></g>';
-    /* distant city with a fire at the edge that grows with collapse */
-    h += '<path d="M0 118 v-26 h18 v-14 h14 v22 h12 v-30 h16 v38 h10 v-18 h14 v28 Z" fill="#7fb3b8" opacity="0.55"/>';
+    var priv = !!state.converting;
+    var h = '<rect width="' + SW + '" height="' + (OY + 140) + '" fill="#e9b46a"/>';
+    h += '<image class="bk-art" href="' + ISLAND_ART + '" x="0" y="-30" width="' + SW + '" height="495" preserveAspectRatio="none"/>';
+    /* mainland smog + fire grow with collapse */
     var fire = Math.min(1, Math.max(0.15, (collapse - 20) / 60));
-    h += '<g class="bk-smoke" opacity="' + fire.toFixed(2) + '"><ellipse cx="40" cy="64" rx="26" ry="14" fill="#8a7f78" opacity="0.6"/><ellipse cx="58" cy="46" rx="20" ry="11" fill="#9c928b" opacity="0.5"/>' +
-      '<path class="bk-fire" d="M34 100 q6 -16 10 -6 q4 -14 10 2 q6 -10 6 8z" fill="#ff8a3d"/></g>';
-    h += '<rect y="118" width="' + W + '" height="14" fill="#8fcf6a"/><rect y="118" width="' + W + '" height="4" fill="#b8e68f"/>';
-    /* palms + pavilion + pool */
-    [236, 412].forEach(function (px, k) {
-      h += '<g transform="translate(' + px + ' 118)"><g class="bk-palm" style="animation-delay:' + k + 's"><path d="M0 0 q2 -26 -2 -44" stroke="#8a5a33" stroke-width="4" fill="none"/>' +
-        '<path d="M-2 -44 q-18 -4 -26 8 M-2 -44 q16 -8 26 4 M-2 -44 q-6 -16 -20 -18 M-2 -44 q8 -16 22 -14" stroke="#3aa35c" stroke-width="5" fill="none" stroke-linecap="round"/></g></g>';
-    });
-    h += '<rect x="262" y="66" width="116" height="52" rx="4" fill="url(#bk-glass)" stroke="#fff" stroke-width="2"/>';
-    h += '<rect x="254" y="60" width="132" height="8" rx="3" fill="#0a464e"/>';
-    h += '<text x="320" y="56" text-anchor="middle" font-size="15" font-weight="700" fill="#0a464e" letter-spacing="2">OASIS PRIME</text>';
-    h += '<line x1="298" y1="68" x2="298" y2="118" stroke="#fff" stroke-opacity="0.6"/><line x1="342" y1="68" x2="342" y2="118" stroke="#fff" stroke-opacity="0.6"/>';
-    h += '<rect x="430" y="110" width="66" height="9" rx="3" fill="#2bb5c8"/><rect class="bk-shimmer" x="436" y="111" width="18" height="3" rx="1.5" fill="#fff"/>';
-    /* site office (engineer) */
-    h += '<g class="bk-spot' + (opts.focus === "engineer" ? " sel" : "") + '" data-spot="engineer">';
-    h += '<rect x="96" y="90" width="76" height="28" rx="4" fill="#e3a93a" stroke="#8a5508" stroke-width="2"/><rect x="104" y="96" width="14" height="10" fill="#bfe9f2"/><rect x="150" y="96" width="14" height="22" fill="#a36a10"/>';
-    if (state.engineer) {
-      h += '<g transform="translate(184 118)"><rect x="-4" y="-16" width="8" height="12" rx="2" fill="#19b3a6"/><circle cy="-20" r="4" fill="#f1c9a5"/><path d="M-5 -21 A5 5 0 0 1 5 -21Z" fill="#fff"/><rect x="4" y="-14" width="7" height="9" fill="#fff" stroke="#0a464e"/></g>';
-    }
-    if (opts.interactive) {
-      h += spotLabel(134, 80, state.engineer ? "Engineer ✓" : "Hire engineer", state.engineer);
-      h += '<rect class="bk-hit" x="84" y="64" width="112" height="58"/>';
-    }
-    h += "</g>";
-    /* private supply lot */
-    h += '<g class="bk-spot' + (opts.focus === "private" ? " sel" : "") + '" data-spot="private">';
-    if (state.converting) {
-      h += '<g transform="translate(518 118)"><rect x="-6" y="-38" width="30" height="38" rx="4" fill="#eaf7f7" stroke="#0a464e" stroke-width="2"/><rect x="-3" y="-20" width="24" height="17" fill="#2bb5c8"/>' +
-        '<g transform="translate(40 -4) skewX(-20)"><rect width="40" height="4" fill="#0a464e"/><rect y="-12" width="40" height="10" fill="#1d5f86" stroke="#bfe9f2"/></g>' +
-        '<line x1="0" y1="-38" x2="0" y2="-54" stroke="#0a464e" stroke-width="2"/><path d="M0 -54 h18 l-4 5 l4 5 h-18z" fill="#19b3a6"/></g>';
-      h += '<path class="bk-private" d="M518 120 V138 H352" fill="none" stroke="#19b3a6" stroke-width="5" stroke-dasharray="8 6"/>';
+    h += '<g class="bk-smoke" opacity="' + fire.toFixed(2) + '"><ellipse cx="46" cy="176" rx="70" ry="30" fill="#5f5a57" opacity="0.55"/><ellipse cx="88" cy="150" rx="48" ry="22" fill="#77706b" opacity="0.45"/>' +
+      '<ellipse cx="20" cy="132" rx="40" ry="20" fill="#4d4744" opacity="0.5"/>' +
+      '<path class="bk-fire" d="M30 214 q6 -16 10 -6 q4 -14 10 2 q6 -10 6 8z" fill="#ff8a3d"/><path class="bk-fire" d="M62 210 q4 -10 7 -4 q3 -9 7 1 q4 -6 4 5z" fill="#ffb347"/></g>';
+    /* public pipeline + power cable: sparks while live, dark and cut once private */
+    var pipe = "M0 222 L120 238 L250 258 L362 280";
+    if (priv) {
+      h += '<path d="' + pipe + '" fill="none" stroke="#141210" stroke-opacity="0.62" stroke-width="16" stroke-linecap="round"/>';
+      h += '<path d="M0 186 L100 200 L190 218" fill="none" stroke="#141210" stroke-opacity="0.5" stroke-width="5"/>';
+      h += '<g transform="translate(300 268)"><circle r="12" fill="#1a1512" stroke="#e05a48" stroke-width="3"/><path d="M-6 -6 L6 6 M6 -6 L-6 6" stroke="#e05a48" stroke-width="3.4" stroke-linecap="round"/></g>';
     } else {
-      h += '<rect x="500" y="98" width="86" height="20" fill="none" stroke="#0a464e" stroke-width="2" stroke-dasharray="5 4"/>' +
-        '<g transform="translate(560 118)"><line y1="0" y2="-30" stroke="#6b4f12" stroke-width="3"/><rect x="-22" y="-44" width="44" height="18" rx="2" fill="#fff" stroke="#0a464e"/><text y="-31" text-anchor="middle" font-size="11" font-weight="700" fill="#0a464e">FOR SALE</text></g>';
-      h += '<g transform="translate(616 118)"><line y1="0" y2="-62" stroke="#6b4f12" stroke-width="4"/><line x1="-10" y1="-54" x2="10" y2="-54" stroke="#6b4f12" stroke-width="3"/>' +
-        '<path d="M-10 -54 Q-40 -40 -80 -52" stroke="#333" fill="none" stroke-width="1.5"/></g>';
+      h += '<path class="bk-pipeflow" d="' + pipe + '" fill="none" stroke="#ffd36a" stroke-opacity="0.55" stroke-width="2.4" stroke-dasharray="6 14"/>';
+      [[186, 228], [219, 243], [258, 253], [104, 205]].forEach(function (pt, k) {
+        h += '<g class="bk-zap" style="animation-delay:' + (k * 0.37).toFixed(2) + 's" transform="translate(' + pt[0] + " " + pt[1] + ')"><circle r="7" fill="#ffd36a" opacity="0.35"/><circle r="2.6" fill="#fff6c8"/>' +
+          '<path d="M-7 -3 L-2 -1 L-5 3 L2 0 M3 -4 L7 -6" stroke="#fff1a8" stroke-width="1.4" fill="none"/></g>';
+      });
+    }
+    /* site office = deco beach villa (engineer) */
+    h += '<g class="bk-spot' + (opts.focus === "engineer" ? " sel" : "") + '" data-spot="engineer">';
+    if (state.engineer) {
+      h += '<g transform="translate(282 238)"><rect x="-4" y="-16" width="8" height="12" rx="2" fill="#19b3a6"/><circle cy="-20" r="4" fill="#f1c9a5"/><path d="M-5 -21 A5 5 0 0 1 5 -21Z" fill="#fff"/><rect x="4" y="-14" width="7" height="9" fill="#fff" stroke="#0a464e"/></g>';
     }
     if (opts.interactive) {
-      h += spotLabel(540, 80, state.converting ? "Private supply ✓" : "Go private", state.converting);
-      h += '<rect class="bk-hit" x="470" y="64" width="150" height="58"/>';
+      h += spotLabel(206, 150, state.engineer ? "Engineer ✓" : "Hire engineer", state.engineer);
+      h += '<rect class="bk-hit" x="148" y="132" width="150" height="104"/>';
     }
     h += "</g>";
+    /* private cargo dock (Go private = own supply chain) */
+    h += '<g class="bk-spot' + (opts.focus === "private" ? " sel" : "") + '" data-spot="private">';
+    if (priv) {
+      h += '<g class="bk-docklit"><ellipse cx="636" cy="250" rx="80" ry="22" fill="#ffe39a" opacity="0.28"/>' +
+        '<ellipse cx="760" cy="212" rx="70" ry="40" fill="#7ff2c8" opacity="0.18"/>' +
+        [[572, 246], [610, 250], [656, 252], [698, 252], [640, 186], [706, 160], [770, 166]].map(function (pt, k) {
+          return '<circle class="bk-docklamp" style="animation-delay:' + (k * 0.2).toFixed(1) + 's" cx="' + pt[0] + '" cy="' + pt[1] + '" r="3.2" fill="#fff6c8"/>';
+        }).join("") + "</g>";
+      h += '<path class="bk-private" d="M560 266 L470 270 L460 288" fill="none" stroke="#3fe0b8" stroke-width="5" stroke-dasharray="8 6"/>';
+    } else {
+      h += '<rect x="548" y="238" width="170" height="26" fill="#0b1512" opacity="0.18"/>';
+    }
+    if (opts.interactive) {
+      h += spotLabel(736, 84, priv ? "Private supply ✓" : "Go private", priv);
+      h += '<rect class="bk-hit" x="508" y="64" width="360" height="226"/>';
+    }
+    h += "</g>";
+    h += '<g class="bk-plaque" transform="translate(440 18)"><rect x="-72" y="-13" width="144" height="26" rx="13"/><text y="5" text-anchor="middle" font-size="14" font-weight="700" letter-spacing="3">OASIS PRIME</text></g>';
     return h;
   }
 
   function shaft(state, opts) {
-    var h = '<rect x="290" y="128" width="60" height="276" fill="#4b433b"/>';
-    h += '<line x1="300" y1="130" x2="300" y2="402" stroke="#7d7266" stroke-width="2"/><line x1="340" y1="130" x2="340" y2="402" stroke="#7d7266" stroke-width="2"/>';
-    h += '<g class="bk-elev' + (opts.sealed ? " still" : "") + '"><rect x="298" y="150" width="44" height="40" rx="4" fill="#f8ecd2" stroke="#0a464e" stroke-width="2"/><rect x="306" y="158" width="28" height="18" fill="#bfe9f2"/><line x1="320" y1="130" x2="320" y2="150" stroke="#222"/></g>';
+    var h = '<rect x="284" y="128" width="72" height="278" fill="#1a1410" stroke="#d4af37" stroke-width="3"/>';
+    h += '<rect x="292" y="128" width="56" height="278" fill="url(#bk-shaft)"/>';
+    h += '<line x1="300" y1="130" x2="300" y2="404" stroke="#d4af37" stroke-opacity="0.7" stroke-width="2"/><line x1="340" y1="130" x2="340" y2="404" stroke="#d4af37" stroke-opacity="0.7" stroke-width="2"/>';
+    for (var cy = 214; cy < 400; cy += 46) h += '<path d="M292 ' + cy + ' L320 ' + (cy - 12) + ' L348 ' + cy + '" fill="none" stroke="#d4af37" stroke-opacity="0.45" stroke-width="2"/>';
+    h += '<g class="bk-elev' + (opts.sealed ? " still" : "") + '"><rect x="298" y="150" width="44" height="40" rx="4" fill="#2b231b" stroke="#e2bf63" stroke-width="2.5"/><rect x="306" y="158" width="28" height="18" fill="#7fe0d0" opacity="0.85"/><path d="M306 186 h28" stroke="#e2bf63" stroke-width="1.5"/><line x1="320" y1="130" x2="320" y2="150" stroke="#e2bf63"/></g>';
     var inbound = (state.pending || []).filter(function (p) { return !!p.install; })[0];
     if (inbound) h += '<g class="bk-crate"><line x1="368" y1="40" x2="368" y2="96" stroke="#222"/><rect x="354" y="96" width="28" height="20" fill="#c99428" stroke="#6b4f12" stroke-width="2"/><text x="368" y="111" text-anchor="middle" font-size="11" font-weight="700" fill="#3b2500">Q' + inbound.due + "</text></g>";
     /* blast door at the top of the shaft */
@@ -4519,7 +4881,7 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
       h += '<ellipse cx="320" cy="128" rx="40" ry="11" fill="#9aa7a5" stroke="#0a464e" stroke-width="3"/><path d="M290 128 h60 M320 118 v20" stroke="#0a464e" stroke-width="2"/>' +
         '<ellipse class="bk-sealglow" cx="320" cy="128" rx="50" ry="16" fill="none" stroke="#19b3a6" stroke-width="4"/>';
     } else {
-      h += '<ellipse cx="320" cy="128" rx="34" ry="8" fill="#1f1a16"/><g class="bk-doorleaf"><ellipse cx="368" cy="112" rx="10" ry="22" fill="#9aa7a5" stroke="#0a464e" stroke-width="2.5"/></g>';
+      h += '<ellipse cx="320" cy="128" rx="34" ry="8" fill="#1f1a16"/><g class="bk-doorleaf"><ellipse cx="368" cy="112" rx="10" ry="22" fill="#b8862c" stroke="#fff1c2" stroke-width="2"/><ellipse cx="368" cy="112" rx="5" ry="13" fill="none" stroke="#5a3d0c" stroke-width="1.5"/></g>';
     }
     if (opts.interactive) {
       var can = LD.canEvacuate(state);
@@ -4534,24 +4896,27 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
     opts = opts || {};
     var P = opts.idPrefix || "bv";
     var cls = "bk-scene" + (opts.mini ? " mini" : "") + (opts.interactive ? " live" : "") + (opts.sealed ? " is-sealed" : "") + (state.converting ? " private" : "") + (state.engineer ? " engineer" : "");
-    var h = '<svg class="' + cls + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Private bunker cutaway">';
+    var h = '<svg class="' + cls + '" viewBox="0 0 ' + SW + " " + SH + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Private bunker cutaway">';
     h += "<defs>" +
       '<linearGradient id="bk-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe9f2"/><stop offset="1" stop-color="#fff1c9"/></linearGradient>' +
-      '<linearGradient id="bk-soil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8945a"/><stop offset="1" stop-color="#7d5030"/></linearGradient>' +
+      '<linearGradient id="bk-soil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e1813" stop-opacity="0.12"/><stop offset="0.5" stop-color="#1e1813" stop-opacity="0.8"/><stop offset="0.62" stop-color="#1e1813"/><stop offset="1" stop-color="#120e0b"/></linearGradient>' +
+      '<linearGradient id="bk-shaft" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2e2419"/><stop offset="0.5" stop-color="#4a3a26"/><stop offset="1" stop-color="#2e2419"/></linearGradient>' +
       '<linearGradient id="bk-glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dff7f6"/><stop offset="0.5" stop-color="#9fdcdc"/><stop offset="1" stop-color="#5fb8bd"/></linearGradient>' +
       '<radialGradient id="bk-glow" cx="50%" cy="0%" r="90%"><stop offset="0" stop-color="#fff6c8"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient>' +
       '<pattern id="bk-tape" width="18" height="9" patternUnits="userSpaceOnUse"><rect width="18" height="9" fill="#ffd23a"/><path d="M0 9 L9 0 H14 L5 9Z" fill="#1f1a16"/></pattern>' +
-      '<pattern id="bk-dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#3b2410" fill-opacity="0.18"/></pattern>' +
+      '<pattern id="bk-dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#d4af37" fill-opacity="0.07"/></pattern>' +
       "</defs>";
     h += surface(state, opts);
-    h += '<rect y="132" width="' + W + '" height="' + (H - 132) + '" fill="url(#bk-soil)"/>';
-    h += '<rect y="132" width="' + W + '" height="' + (H - 132) + '" fill="url(#bk-dots)"/>';
-    h += '<path d="M0 230 q80 -10 160 4 t160 -2 t160 6 t160 -6 M0 372 q90 8 180 -4 t200 6 t260 -4" stroke="#6b4428" stroke-opacity="0.35" stroke-width="3" fill="none"/>';
+    h += '<g class="bk-under" transform="translate(' + OX + " " + OY + ')">';
+    h += '<rect x="' + (-OX) + '" y="132" width="' + SW + '" height="' + (SH - OY - 132) + '" fill="url(#bk-soil)"/>';
+    h += '<rect x="' + (-OX) + '" y="132" width="' + SW + '" height="' + (SH - OY - 132) + '" fill="url(#bk-dots)"/>';
+    h += '<path d="M' + (-OX) + ' 132 H' + (SW - OX) + '" stroke="#d4af37" stroke-width="3"/>';
+    h += '<path d="M-120 250 q100 -10 200 4 t200 -2 t200 6 t280 -6 M-120 392 q110 8 220 -4 t240 6 t400 -4" stroke="#d4af37" stroke-opacity="0.16" stroke-width="2" fill="none"/>';
     h += feeds(state);
     h += shaft(state, opts);
     ["air", "power", "water", "food"].forEach(function (id) { h += room(state, id, opts); });
     if (opts.sealed) h += '<g class="bk-stamp"><rect x="190" y="240" width="260" height="64" rx="10" fill="rgba(255,250,240,0.9)" stroke="#e05a48" stroke-width="5" transform="rotate(-6 320 272)"/><text x="320" y="284" text-anchor="middle" font-size="40" font-weight="700" fill="#e05a48" transform="rotate(-6 320 272)">SEALED</text></g>';
-    h += "</svg>";
+    h += "</g></svg>";
     return h.replace(/(id="|url\(#)bk-/g, "$1" + P + "-");
   }
 
@@ -4643,9 +5008,9 @@ body:has(#screen-title.on) .shell { width: 100%; max-width: none; }
 
   function defaultPanel(state) {
     var r = LD.readinessSummary(state);
-    var h = '<div class="bp-head"><span class="bp-ico st-ready">☀</span><div><h3>Tap a room to build</h3><div class="bp-sub">' + r.ready + "/4 ready</div></div></div>";
-    h += '<p class="bp-note">Goal: all 4 rooms Lv 2+, then seal from Q' + LD.MIN_EVAC_TURN + '.</p><p class="bp-note"><b>Discount</b> cracks at Lv 2 unless you hire an engineer or reach Lv 3.</p>';
-    h += '<p class="bp-note">Office, lot and blast door are tappable too.</p>';
+    var h = '<div class="bp-hint"><b>Tap a room to build</b><span class="bp-dot">·</span><span>' + r.ready + "/4 ready</span>" +
+      '<span class="bp-dot">·</span><span>Goal: all 4 rooms Lv 2+, then seal from Q' + LD.MIN_EVAC_TURN + "</span></div>";
+    h += '<div class="bp-hint-sub"><b>Discount</b> cracks at Lv 2 unless you hire an engineer or reach Lv 3. Office, lot and blast door are tappable too.</div>';
     return h;
   }
 

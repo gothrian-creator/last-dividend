@@ -1951,6 +1951,90 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 
 .end-hero { aspect-ratio: 16 / 8; height: auto !important; }
 .end-hero img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
+/* ---- Penny · Onboarding ---- */
+.penny { position: fixed; inset: 0; z-index: 900; pointer-events: none; }
+.penny[hidden] { display: none; }
+.penny .pn-blk { position: fixed; background: rgba(2, 14, 11, 0.62); pointer-events: auto; transition: none; }
+.penny.is-tip .pn-blk { background: rgba(2, 14, 11, 0.45); }
+.penny .pn-hole { position: fixed; border-radius: 14px; pointer-events: none; box-shadow: 0 0 0 2px #f3d27a, 0 0 22px 6px rgba(243, 210, 122, 0.55), inset 0 0 18px rgba(243, 210, 122, 0.25); animation: pnHole 1.6s ease-in-out infinite; }
+@keyframes pnHole { 50% { box-shadow: 0 0 0 3px #fff0c0, 0 0 34px 10px rgba(243, 210, 122, 0.7), inset 0 0 22px rgba(243, 210, 122, 0.35); } }
+.penny .pn-arrow { position: fixed; width: 60px; height: 70px; pointer-events: none; animation: pnBob 0.9s ease-in-out infinite; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)) drop-shadow(0 0 10px rgba(243,210,122,0.6)); }
+.penny .pn-arrow svg { width: 100%; height: 100%; }
+.penny .pn-arrow path { fill: #e9bd52; stroke: #fff2c4; stroke-width: 2.5; stroke-linejoin: round; }
+.penny .pn-arrow.up { transform: rotate(180deg); animation-name: pnBobUp; }
+.penny .pn-arrow.nudge { animation: pnNudge 0.45s ease-in-out 2; }
+@keyframes pnBob { 50% { translate: 0 12px; } }
+@keyframes pnBobUp { 50% { translate: 0 -12px; } }
+@keyframes pnNudge { 25% { translate: -8px 0; } 75% { translate: 8px 0; } }
+.penny .pn-box { position: fixed; left: 50%; bottom: 18px; transform: translateX(-46%); width: min(860px, calc(100vw - 40px)); display: flex; align-items: flex-end; gap: 0; pointer-events: auto; }
+.penny.box-top .pn-box { bottom: auto; top: 14px; }
+.penny .pn-box.pop .pn-card { animation: pnPop 0.32s cubic-bezier(.2,.9,.3,1.3); }
+@keyframes pnPop { from { transform: scale(0.96) translateY(10px); opacity: 0.2; } }
+.penny .pn-face { width: 230px; height: 307px; object-fit: contain; object-position: bottom; margin-right: -38px; margin-bottom: -18px; position: relative; z-index: 2; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.55)); pointer-events: none; }
+.penny.box-top .pn-face { width: 165px; height: 220px; margin-bottom: -10px; }
+.penny .pn-card { position: relative; flex: 1; min-width: 0; padding: 30px 26px 16px 56px; border-radius: 6px;
+  background: linear-gradient(180deg, rgba(10, 58, 48, 0.94), rgba(4, 30, 25, 0.96));
+  border: 2px solid #d4af37; box-shadow: inset 0 0 0 5px rgba(4, 30, 25, 0.95), inset 0 0 0 6px rgba(212, 175, 55, 0.65), 0 18px 40px rgba(0,0,0,0.55), 0 0 30px rgba(212,175,55,0.18);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #f6edd7; }
+.penny .pn-card::before, .penny .pn-card::after { content: ""; position: absolute; width: 26px; height: 26px; border: 2px solid #f0cf7a; pointer-events: none; }
+.penny .pn-card::before { left: -7px; bottom: -7px; border-right: 0; border-top: 0; }
+.penny .pn-card::after { right: -7px; top: -7px; border-left: 0; border-bottom: 0; }
+.penny .pn-head { position: absolute; left: 40px; right: 18px; top: -19px; display: flex; justify-content: space-between; align-items: flex-start; }
+.penny .pn-name { padding: 6px 22px 7px; background: linear-gradient(180deg, #0d4a3d, #052820); border: 2px solid #d4af37; clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%); font: 800 21px var(--font-serif, Georgia, serif); letter-spacing: 0.06em; color: #f3d27a; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+.penny .pn-name span { font: 700 18px var(--font-sans, sans-serif); letter-spacing: 0.02em; color: #f3d27a; }
+.penny .pn-count { margin-top: 26px; font: 700 17px var(--font-sans, sans-serif); color: #f3d27a; }
+.penny.is-tip .pn-count { display: none; }
+.penny .pn-text { margin: 4px 0 0; min-height: 3.2em; font: 500 20px/1.5 var(--font-sans, sans-serif); color: #fbf3df; cursor: pointer; }
+.penny .pn-text b { color: #f3d27a; }
+.penny .pn-text .ch { opacity: 0; }
+.penny .pn-text .ch.on, .penny .pn-text.done .ch { opacity: 1; }
+.penny .pn-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+.penny .pn-next, .penny .pn-alt { min-height: 44px; padding: 0 20px; border-radius: 8px; border: 2px solid #d4af37; background: linear-gradient(180deg, #0e4a3d, #052a22); color: #f6edd7; font: 800 17px var(--font-sans, sans-serif); cursor: pointer; }
+.penny .pn-next:hover, .penny .pn-next:focus-visible { background: linear-gradient(180deg, #f0cf7a, #a87a22); color: #1e1404; outline: none; box-shadow: 0 0 0 3px rgba(243,210,122,0.45); }
+.penny.is-action .pn-next { font-size: 15px; opacity: 0.92; }
+.penny .pn-skip { position: absolute; right: 0; bottom: -2px; transform: translateY(100%); min-height: 36px; padding: 4px 6px; background: none; border: 0; color: #fbf3df; font: 700 17px var(--font-sans, sans-serif); text-shadow: 0 2px 6px rgba(0,0,0,0.9); cursor: pointer; text-decoration: underline; text-decoration-color: rgba(243,210,122,0.5); text-underline-offset: 4px; }
+.penny .pn-skip:focus-visible { outline: 2px solid #f3d27a; border-radius: 4px; }
+.penny.box-top .pn-skip { bottom: auto; top: auto; }
+.penny .pn-box { margin-bottom: 26px; }
+.penny.is-passive .pn-box { left: 18px; transform: none; width: min(560px, calc(100vw - 36px)); }
+.penny.is-passive .pn-face { width: 150px; height: 200px; }
+.penny.is-passive .pn-text { font-size: 18px; }
+.pn-glow { filter: drop-shadow(0 0 8px #f3d27a) drop-shadow(0 0 16px rgba(243,210,122,0.7)); }
+.howto-pick { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; }
+.howto-pick img { width: 96px; height: 128px; object-fit: contain; }
+@media (max-width: 720px) {
+  .penny .pn-box { left: 8px; right: 8px; bottom: 10px; transform: none; width: auto; display: block; margin-bottom: 30px; }
+  .penny .pn-face { position: absolute; left: -2px; bottom: calc(100% - 30px); width: 96px; height: 128px; margin: 0; }
+  .penny.box-top .pn-face { width: 96px; height: 128px; bottom: auto; top: calc(100% - 26px); }
+  .penny.box-top .pn-box { top: 8px; margin-bottom: 0; }
+  .penny .pn-card { padding: 30px 16px 12px 16px; }
+  .penny .pn-head { left: 92px; top: -17px; right: 12px; }
+  .penny .pn-name { font-size: 16px; padding: 5px 14px 6px; }
+  .penny .pn-name span { font-size: 14px; }
+  .penny .pn-count { font-size: 15px; margin-top: 22px; }
+  .penny .pn-text { font-size: 17px; line-height: 1.42; min-height: 0; }
+  .penny .pn-next { font-size: 15px; padding: 0 14px; }
+  .penny .pn-skip { font-size: 15px; }
+  .penny.box-top .pn-skip { transform: translateY(100%); }
+  .penny.is-passive .pn-box { left: 8px; width: auto; }
+  .penny.is-passive .pn-face { width: 80px; height: 106px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .penny .pn-arrow, .penny .pn-hole { animation: none; }
+}
+/* Phone: Skip button for the world-reacts sequence sits at the top of the map, clear of the rail. */
+@media (max-width: 899px), (orientation: portrait) {
+  .desk .board-tilt { position: relative; }
+  .skip-btn { top: 10px; bottom: auto; left: auto; right: 10px; transform: none; padding: 0 16px; min-height: 40px; }
+}
+
+.map .pin { touch-action: none; }
+.map .pin.dragging { cursor: grabbing; opacity: 0.92; }
+.map .pin.dragging .pin-scale { filter: drop-shadow(0 0 10px #f3d27a); }
+
+@media (max-width: 620px) {
+  .desk .float { font-size: 15px; padding: 5px 12px; max-width: 280px; white-space: normal; text-align: center; line-height: 1.25; }
+}
 </style>
 </head>
 <body>
@@ -6558,6 +6642,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
   }
 
   function show(name) {
+    if (typeof PN !== "undefined" && PN.on && (name !== "desk" || PN.mode === "tip")) pennyStop();
     screen = name;
     document.body.classList.toggle("on-desk", name === "desk");
     ["title", "tutorial", "exec", "deal", "bunker", "desk", "end", "history", "boardroom"].forEach(function (id) {
@@ -6594,13 +6679,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       $("seed-input").value = seedDraft;
     });
     $("seed-input").addEventListener("input", function () { seedDraft = this.value; });
-    $("btn-how").addEventListener("click", function () {
-      tick();
-      screenIntent = "title";
-      tutorialPage = 0;
-      show("tutorial");
-      renderTutorial();
-    });
+    $("btn-how").addEventListener("click", function () { tick(); openHowTo(false); });
     $("btn-history").addEventListener("click", function () { tick(); show("history"); renderHistory(); });
     $("btn-boardroom").addEventListener("click", function () { tick(); openBoardroom("title"); });
   }
@@ -6641,6 +6720,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       });
     });
     $("btn-br-play").addEventListener("click", function () { tick(); seedDraft = ""; goExec(); });
+    setTimeout(function () { if (screen === "boardroom") pennyTip("dividends"); }, 400);
     $("btn-br-back").addEventListener("click", function () {
       tick();
       if (boardBack === "exec") goExec();
@@ -6737,6 +6817,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     });
     $("btn-boardroom2").addEventListener("click", function () { tick(); openBoardroom("exec"); });
     $("btn-start").addEventListener("click", function () { tick(); startRun(); });
+    if ((meta.finished | 0) >= 1) setTimeout(function () { if (screen === "exec") pennyTip("ratings"); }, 400);
     $("btn-back").addEventListener("click", function () { tick(); show("title"); renderTitle(); });
   }
 
@@ -6751,6 +6832,8 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     hidePins = false;
     persistRun();
     enterPlay();
+    if (PN.forceStart) { PN.forceStart = false; pennySave(function (p) { p.offered = true; }); pennyStart(); }
+    else if (rating === 0) pennyAutoOffer();
   }
 
   function enterPlay() {
@@ -6773,7 +6856,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 
   function coachInfo() {
     var meta = loadMeta();
-    if (meta.coachDone || !state || state.turn !== 1) return {};
+    if (meta.coachDone || !state || state.turn !== 1 || PN.on) return {};
     if (state.phase === "deal") {
       if (sel.deal) return {};
       var pick = state.offered[0];
@@ -6869,8 +6952,10 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     clearSel();
     sel.deal = id;
     refreshSelection();
+    pennyEmit("pin");
+    if (LD.dealKind(LD.dealById(id)) === "crisis") pennyTip("crisis");
   }
-  function selectRegion(id) { clearSel(); sel.region = id; refreshSelection(); }
+  function selectRegion(id) { clearSel(); sel.region = id; refreshSelection(); pennyTip("region"); }
   function selectNet(id) { clearSel(); sel.net = id; refreshSelection(); }
   function selectRival(i) { clearSel(); sel.rival = i; refreshSelection(); }
 
@@ -6895,6 +6980,34 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       function open() { tick(); selectDealPin(n.getAttribute("data-deal")); }
       n.addEventListener("click", function (e) { e.stopPropagation(); open(); });
       activateOnKey(n, open);
+      /* Drag a pin to preview what it does; dropping it opens the deal. */
+      n.addEventListener("pointerdown", function (e) {
+        if (state.phase !== "deal" || (e.button && e.button > 0)) return;
+        e.stopPropagation();
+        var svg = n.ownerSVGElement;
+        if (!svg || !svg.viewBox || !svg.viewBox.baseVal) return;
+        var vb = svg.viewBox.baseVal, rr = svg.getBoundingClientRect();
+        var k = Math.max(vb.width / Math.max(1, rr.width), vb.height / Math.max(1, rr.height));
+        var orig = n.getAttribute("transform");
+        var m = /translate\(([-\d.]+)[ ,]+([-\d.]+)\)/.exec(orig || "");
+        if (!m) return;
+        var sx = e.clientX, sy = e.clientY, moved = false, id = n.getAttribute("data-deal");
+        function mv(ev) {
+          var dx = ev.clientX - sx, dy = ev.clientY - sy;
+          if (!moved && Math.sqrt(dx * dx + dy * dy) < 8) return;
+          if (!moved) { moved = true; n.classList.add("dragging"); hideTip(); updatePreview(id, null); }
+          n.setAttribute("transform", "translate(" + (+m[1] + dx * k).toFixed(1) + " " + (+m[2] + dy * k).toFixed(1) + ")");
+        }
+        function up() {
+          window.removeEventListener("pointermove", mv);
+          window.removeEventListener("pointerup", up);
+          window.removeEventListener("pointercancel", up);
+          if (moved) { n.setAttribute("transform", orig); n.classList.remove("dragging"); selectDealPin(id); }
+        }
+        window.addEventListener("pointermove", mv);
+        window.addEventListener("pointerup", up);
+        window.addEventListener("pointercancel", up);
+      });
       n.addEventListener("keydown", function (e) {
         if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); pins[(i + 1) % pins.length].focus(); }
         if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); pins[(i + pins.length - 1) % pins.length].focus(); }
@@ -7173,6 +7286,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     clearSel();
     persistRun();
     renderDesk(prev);
+    pennyEmit("signed");
     var rid = res.region ? res.region.regionId : (prev.world && prev.world.pins[id]);
     if (rid) {
       var dc = state.cash - prev.cash;
@@ -7212,6 +7326,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     ov.onclick = function (e) { if (e.target === ov) { tick(); closeBunker(); } };
     bindBunkerView();
     zoomFrom(ov.querySelector(".bk-view"), from);
+    pennyEmit("bunker-open");
   }
 
   function zoomFrom(view, from) {
@@ -7271,6 +7386,8 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
         tick();
         bk.focus = n.getAttribute("data-room") || n.getAttribute("data-spot");
         refreshBunkerPanel();
+        if (n.getAttribute("data-room")) pennyEmit("room");
+        if (bk.focus === "private" && !state.converting) pennyTip("private");
       });
     });
     bindBunkerPanel();
@@ -7290,6 +7407,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       stage.appendChild(t);
     }
     renderDeskBehind(prev);
+    pennyEmit("built");
     setTimeout(function () {
       if ($("overlay").classList.contains("bunker-mode")) closeBunker(function () { animateMeters(prev); var c = $("bunker-card"); if (c) c.classList.add("installed"); });
     }, 1700);
@@ -7374,6 +7492,8 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     if (!res.ok) { flash(res.error); return; }
     closing = true;
     state = res.state;
+    pennyEmit("endq");
+    if ((res.world || []).some(function (ev) { return /^rival/.test(ev.kind || ""); }) || res.sniped) PN.pendingRival = true;
     if (state.ended) recordEnding();
     else persistRun();
     var meta = loadMeta();
@@ -7406,7 +7526,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       skip.id = "btn-skip-react";
       skip.textContent = "Skip ▸";
       skip.addEventListener("click", function () { tick(); finish(); });
-      var board = document.querySelector(".desk .board");
+      var board = document.querySelector(isPhone() ? ".desk .board-tilt" : ".desk .board") || document.querySelector(".desk .board");
       if (board) board.appendChild(skip);
       var beats = [];
       /* 1. Delayed effects land (from the rail). */
@@ -7443,11 +7563,12 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
           hideOverlay();
           hidePins = false;
           if (state.ended) showEnd();
-          else renderDesk();
+          else { renderDesk(); pennyEmit("report-closed"); }
         });
         $("ov-ok").focus();
       });
     $("overlay").classList.add("report-mode");
+    pennyEmit("report");
   }
 
   function openMenu() {
@@ -7458,13 +7579,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       '<button class="btn btn-danger" id="mn-abandon">Abandon run</button>',
       function () {
         $("mn-resume").addEventListener("click", function () { tick(); hideOverlay(); });
-        $("mn-how").addEventListener("click", function () {
-          tick();
-          screenIntent = "play";
-          tutorialPage = 0;
-          show("tutorial");
-          renderTutorial();
-        });
+        $("mn-how").addEventListener("click", function () { tick(); hideOverlay(); openHowTo(true); });
         $("mn-title").addEventListener("click", function () { tick(); persistRun(); show("title"); renderTitle(); });
         $("mn-abandon").addEventListener("click", function () {
           tick();
@@ -7509,6 +7624,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       seedDraft = "";
       startRun();
     });
+    setTimeout(function () { if (screen === "end") pennyTip("dividends"); }, 500);
     $("btn-title").addEventListener("click", function () {
       tick();
       show("title");
@@ -7543,6 +7659,413 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       '<button class="btn btn-coral" id="ov-ok">OK</button>',
       function () { $("ov-ok").addEventListener("click", function () { tick(); hideOverlay(); }); }
     );
+  }
+
+  /* ---------- Penny · Onboarding: guided first quarter + one-time contextual tips ---------- */
+  var PN = { on: false, mode: null, idx: -1, cur: null, loop: null, typer: null, typed: true, el: null, shownFor: null, pendingRival: false, scrolled: false, waitSince: 0 };
+  var PENNY_FACES = { wink: "penny-wink", excited: "penny-excited", worried: "penny-worried", smug: "penny-smug" };
+  function pq(s) { return document.querySelector(s); }
+  function pvis(n) { if (!n) return false; var r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0; }
+  function pennyMeta() { var m = loadMeta(); if (!m.penny || typeof m.penny !== "object") m.penny = {}; if (!m.penny.tips || typeof m.penny.tips !== "object") m.penny.tips = {}; return m; }
+  function pennySave(fn) { var m = pennyMeta(); fn(m.penny); saveMeta(m); }
+  function bunkerOpen() { return !!pq("#overlay.bunker-mode .bk-view"); }
+  function reportOpen() { return !!pq("#overlay.report-mode #ov-ok"); }
+  function pennyPin() {
+    var best = null;
+    Array.prototype.forEach.call(document.querySelectorAll(".desk .pin"), function (p) {
+      var d = LD.dealById(p.getAttribute("data-deal"));
+      if (!best) best = p;
+      if (LD.dealKind(d) === "claim" && LD.dealKind(LD.dealById(best.getAttribute("data-deal"))) !== "claim") best = p;
+    });
+    return best;
+  }
+  function pennyRoom() {
+    var best = null, bestScore = 1e9;
+    LD.availableUpgrades(state).forEach(function (u) {
+      var n = pq('#overlay .bk-view [data-room="' + u.systemId + '"]');
+      if (!n || u.inbound || !(u.canSound || u.canCheap)) return;
+      var score = state.bunker[u.systemId].level * 10 + (u.canSound ? 0 : 5);
+      if (score < bestScore) { best = n; bestScore = score; }
+    });
+    return best || pq('#overlay .bk-view [data-room]');
+  }
+  function isRoom(k) { return !!(k && LD.BUNKER_ROOMS && LD.BUNKER_ROOMS[k]); }
+  function clickEl(n) { if (n) n.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
+
+  var TOUR = [
+    { id: "pin", n: 1, face: "wink", on: "pin", label: "Pick one for me ▸",
+      text: "Welcome aboard, Executive! ✦ Each quarter you sign <b>ONE</b> deal. Tap a glowing pin to see what it pays… and who pays for it!",
+      skip: function () { return state.phase !== "deal"; },
+      target: function () { return pennyPin(); },
+      act: function () { var t = pennyPin(); if (t) selectDealPin(t.getAttribute("data-deal")); } },
+    { id: "preview", n: 2, face: "smug", next: true, back: "pin",
+      text: "<b>NOW</b> is what lands in your account. <b>LATER</b> is the bill, parked on the timeline. And that glowing region on the map? Those stress pips are the people who pay. Not you, obviously!",
+      skip: function () { return state.phase !== "deal"; },
+      lost: function () { return !sel.deal; },
+      target: function () { return pq("#dossier .deal-dz") || pq("#dossier"); }, glow: ".desk .pv-plate, .desk .pv-outline" },
+    { id: "sign", n: 3, face: "excited", on: "signed", back: "pin", label: "Sign it for me ▸",
+      text: "Love it. Pure synergy! Now <b>sign the deal</b>. One signature per quarter, so make it count ♡",
+      skip: function () { return state.phase !== "deal"; },
+      lost: function () { return !sel.deal; },
+      target: function () { return pq("#btn-sign:not([disabled])") || pq("#dossier .dz-choice:not([disabled])"); },
+      act: function () { clickEl(pq("#btn-sign:not([disabled])") || pq("#dossier .dz-choice:not([disabled])")); } },
+    { id: "bunker", n: 4, face: "wink", on: "bunker-open", label: "Open it ▸",
+      text: "Cash in hand! Now the fun part: <b>your private bunker</b>. Open it up. You get one bunker order per quarter.",
+      skip: function () { return state.phase !== "bunker" || state.bunkerActedThisTurn; },
+      wait: function () { return bunkerOpen(); },
+      target: function () { return pq("#bunker-card"); },
+      act: function () { clickEl(pq("#bunker-card")); } },
+    { id: "room", n: 4, face: "excited", on: "room", back: "bunker", label: "Pick for me ▸",
+      text: "Four rooms: <b>Air, Water, Power, Food</b>. The doors only close for you once all four work. Tap a room to see your options ✧",
+      skip: function () { return state.bunkerActedThisTurn || (bk.focus && isRoom(bk.focus) && bunkerOpen()); },
+      lost: function () { return !bunkerOpen(); },
+      target: function () { return pennyRoom(); },
+      act: function () { clickEl(pennyRoom()); } },
+    { id: "order", n: 4, face: "worried", on: "built", back: "room", label: "Order it for me ▸",
+      text: "<b>Sound</b> work costs more and <i>holds</i> when the doors close. <b>Discount</b> is cheaper… but at Lv 2 it cracks at evacuation unless you hire an engineer or reach Lv 3. Ehehe… choose wisely!",
+      skip: function () { return state.bunkerActedThisTurn; },
+      lost: function () { return !bunkerOpen() || !bk.focus || !isRoom(bk.focus); },
+      target: function () { return pq("#bk-panel .bp-buy") || pq("#bk-panel"); },
+      act: function () { clickEl(pq('#bk-panel [data-up][data-q="sound"]:not([disabled])') || pq("#bk-panel [data-up]:not([disabled])")); } },
+    { id: "meters", n: 5, face: "smug", next: true,
+      text: "Your three numbers. <b>Cash</b> buys everything. <b>Unrest</b> is how angry the street is: at 100 they're in the lobby. <b>Collapse</b> is the world itself: at 100 it's over, bunker or not.",
+      wait: function () { return bunkerOpen() || !!pq("#overlay.on"); },
+      target: function () { return pq(".desk .dash-meters"); } },
+    { id: "rail", n: 6, face: "worried", next: true,
+      text: "This is the <b>timeline</b>. Deals leave little IOUs here (unrest, collapse, late shipments) that land in future quarters. Read it before you sign. Or don't! …Please do.",
+      wait: function () { return !!pq("#overlay.on"); },
+      target: function () { return pq("#rail-wrap"); } },
+    { id: "endq", n: 7, face: "excited", on: "endq", label: "End Quarter ▸",
+      text: "Ready? Press <b>End Quarter</b> and watch the world react to your genius.",
+      skip: function () { return state.phase === "deal" || state.turn > PN.startTurn; },
+      wait: function () { return !!pq("#overlay.on"); },
+      target: function () { return pq("#btn-endq"); },
+      act: function () { clickEl(pq("#btn-endq")); } },
+    { id: "react", n: 7, face: "wink", passive: true, on: "report", scrollTo: ".desk .board",
+      text: "Here it comes… income, protests, rivals, Collapse ticking up. Hit <b>Skip</b> any time if you're busy being visionary.",
+      skip: function () { return reportOpen(); },
+      target: function () { return null; } },
+    { id: "report", n: 7, face: "smug", on: "report-closed", label: "Next quarter ▸",
+      text: "Your <b>quarterly report</b>. Numbers went up! Some of them were the bad ones. Open the next quarter when you're ready.",
+      skip: function () { return !reportOpen() && state.phase === "deal" && state.turn > PN.startTurn; },
+      target: function () { return pq("#overlay.report-mode .panel"); },
+      act: function () { clickEl(pq("#ov-ok")); } },
+    { id: "goal", n: 8, face: "excited", next: true, last: true,
+      text: "The goal: get <b>all 4 rooms to Lv 2+</b>, then <b>seal the bunker from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse hits 100. Seal early and the board pays more Dividends. Go get 'em, Executive! ✦",
+      wait: function () { return !!pq("#overlay.on"); },
+      target: function () { return pq("#bunker-card"); } }
+  ];
+  var TOUR_TOTAL = 8;
+
+  var PENNY_TIPS = {
+    crisis: { face: "worried", text: function () { return "Uh-oh, a <b>crisis</b>! You pick a response instead of a plain signature. Paying it off works… until Unrest hits " + LD.mods(state).crisisNoPayAt + ". Then the street stops cashing cheques."; },
+      target: function () { return pq("#dossier .deal-dz") || pq("#dossier"); } },
+    rival: { face: "worried", text: function () { return "A <b>rival executive</b> just moved! Rivals snipe pins, buy regions and race you to seal. Tap one here to <b>leak</b> their contracts, or <b>outbid</b> them from a region dossier."; },
+      target: function () { return pq(".desk .rivals"); } },
+    "private": { face: "smug", text: function () { return "<b>Go private</b>: run your own supply! Installs ignore public network damage and never arrive late… but every deal pays only " + Math.round(LD.conversionRate(state) * 100) + "% from then on. Once per run!"; },
+      target: function () { return pq("#bk-panel") || pq('#overlay [data-spot="private"]'); } },
+    region: { face: "wink", text: function () { return "A <b>region dossier</b>! Regions you own take one regional order per quarter: plants, soothing, outbids. The <b>Mood / Networks / Holdings</b> lenses up top read the whole map at a glance."; },
+      target: function () { return pq("#dossier .dz") || pq("#dossier"); } },
+    dividends: { face: "excited", text: function () { return "Payday! Every run pays <b>Dividends ◈</b>, itemised in your Shareholder Letter. Spend them in <b>The Boardroom</b>: new executives, perks, deal packs and very tasteful cosmetics."; },
+      target: function () { return pq("#screen-end .letter") || pq("#screen-boardroom .br-balance"); } },
+    ratings: { face: "smug", text: function () { return "<b>Credit ratings</b>: win at a rating to unlock the next, harder one, from AAA all the way down to D. Harder ratings multiply your Dividends. No pressure ♡"; },
+      target: function () { return pq("#screen-exec .rating-row"); } }
+  };
+
+  function pennyBuild() {
+    if (PN.el) return PN.el;
+    var el = document.createElement("div");
+    el.id = "penny";
+    el.className = "penny";
+    el.hidden = true;
+    el.innerHTML = '<div class="pn-blk" data-b="t"></div><div class="pn-blk" data-b="l"></div><div class="pn-blk" data-b="r"></div><div class="pn-blk" data-b="b"></div>' +
+      '<div class="pn-hole" aria-hidden="true"></div>' +
+      '<div class="pn-arrow" aria-hidden="true"><svg viewBox="0 0 60 70"><path d="M30 68 L4 36 H19 V2 H41 V36 H56 Z"/></svg></div>' +
+      '<div class="pn-box" role="dialog" aria-modal="false" aria-label="Penny, onboarding">' +
+      '<img class="pn-face" alt="" src="">' +
+      '<div class="pn-card"><div class="pn-head"><div class="pn-name">PENNY <span>· Onboarding</span></div><div class="pn-count"></div></div>' +
+      '<p class="pn-text" aria-hidden="true"></p><p class="sr-only pn-sr" aria-live="polite"></p>' +
+      '<div class="pn-actions"><button class="pn-alt" type="button" hidden></button><button class="pn-next" type="button">Next ▸</button></div></div>' +
+      '<button class="pn-skip" type="button">Skip tutorial</button></div>';
+    document.body.appendChild(el);
+    el.querySelector(".pn-next").addEventListener("click", function (e) { e.stopPropagation(); tick(); pennyNext(); });
+    el.querySelector(".pn-skip").addEventListener("click", function (e) { e.stopPropagation(); tick(); if (PN.mode === "tip") pennyMuteTips(); else pennySkip(); });
+    el.querySelector(".pn-alt").addEventListener("click", function (e) { e.stopPropagation(); tick(); pennySkip(); });
+    el.querySelector(".pn-text").addEventListener("click", function () { pennyFinishType(); });
+    Array.prototype.forEach.call(el.querySelectorAll(".pn-blk"), function (b) {
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        if (PN.mode === "tip") { pennyCloseTip(); return; }
+        var a = el.querySelector(".pn-arrow");
+        a.classList.remove("nudge"); void a.offsetWidth; a.classList.add("nudge");
+      });
+    });
+    PN.el = el;
+    return el;
+  }
+
+  function pennyType(html) {
+    var el = PN.el.querySelector(".pn-text");
+    var out = "", inTag = false;
+    for (var i = 0; i < html.length; i++) {
+      var c = html[i];
+      if (c === "<") inTag = true;
+      if (inTag) { out += c; if (c === ">") inTag = false; continue; }
+      if (c === "&") { var j = html.indexOf(";", i); out += '<span class="ch">' + html.slice(i, j + 1) + "</span>"; i = j; continue; }
+      out += '<span class="ch">' + c + "</span>";
+    }
+    el.innerHTML = out;
+    PN.el.querySelector(".pn-sr").textContent = el.textContent;
+    var chars = el.querySelectorAll(".ch");
+    clearInterval(PN.typer);
+    if (reduced()) { el.classList.add("done"); PN.typed = true; return; }
+    el.classList.remove("done");
+    PN.typed = false;
+    var k = 0;
+    PN.typer = setInterval(function () {
+      for (var s = 0; s < 2 && k < chars.length; s++) chars[k++].classList.add("on");
+      if (k >= chars.length) pennyFinishType();
+    }, 22);
+  }
+  function pennyFinishType() {
+    clearInterval(PN.typer);
+    if (!PN.el) return;
+    PN.el.querySelector(".pn-text").classList.add("done");
+    PN.typed = true;
+  }
+
+  function pennyShowStep(step) {
+    var el = pennyBuild();
+    PN.cur = step;
+    PN.scrolled = false;
+    PN.shownFor = null;
+    el.querySelector(".pn-face").src = assetUrlP(PENNY_FACES[step.face] || "penny-wink");
+    var count = el.querySelector(".pn-count");
+    count.textContent = step.n ? step.n + " / " + TOUR_TOTAL : "";
+    var next = el.querySelector(".pn-next");
+    var alt = el.querySelector(".pn-alt");
+    var skip = el.querySelector(".pn-skip");
+    alt.hidden = true;
+    if (PN.mode === "tip") { next.textContent = "Got it ✓"; skip.textContent = "Mute tips"; }
+    else if (step.offer) { next.textContent = "Yes, show me ▸"; skip.textContent = "Skip tutorial"; }
+    else if (step.last) { next.textContent = "Let's go! ✦"; skip.textContent = "Skip tutorial"; }
+    else { next.textContent = step.label || (step.act ? "Do it for me ▸" : "Next ▸"); skip.textContent = "Skip tutorial"; }
+    if (step.scrollTo && isPhone()) { var st = pq(step.scrollTo); if (st) try { st.scrollIntoView({ block: "start" }); } catch (e) {} }
+    next.hidden = !!step.passive;
+    el.classList.toggle("is-tip", PN.mode === "tip");
+    el.classList.toggle("is-passive", !!step.passive);
+    el.classList.toggle("is-action", !!step.act);
+    pennyType(typeof step.text === "function" ? step.text() : step.text);
+    el.hidden = false;
+    pennyPlace();
+    var box = el.querySelector(".pn-box");
+    box.classList.remove("pop"); void box.offsetWidth; box.classList.add("pop");
+    try { next.focus({ preventScroll: true }); } catch (e) {}
+  }
+  function assetUrlP(name) { return LD.assetUrl ? LD.assetUrl(name) : "assets/" + name + ".webp"; }
+
+  function pennyPlace() {
+    var el = PN.el, step = PN.cur;
+    if (!el || !step || el.hidden && !PN.on) return;
+    var t = step.target ? step.target() : null;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var box = el.querySelector(".pn-box");
+    var hole = el.querySelector(".pn-hole"), arrow = el.querySelector(".pn-arrow");
+    var blks = el.querySelectorAll(".pn-blk");
+    Array.prototype.forEach.call(document.querySelectorAll(".pn-glow"), function (g) { g.classList.remove("pn-glow"); });
+    if (step.glow) Array.prototype.forEach.call(document.querySelectorAll(step.glow), function (g) { g.classList.add("pn-glow"); });
+    if (!t || !pvis(t)) {
+      hole.style.display = "none";
+      arrow.style.display = "none";
+      var full = !step.passive;
+      blks[0].style.cssText = full ? "left:0;top:0;width:100vw;height:100vh;" : "display:none";
+      for (var i = 1; i < 4; i++) blks[i].style.cssText = "display:none";
+      el.classList.remove("box-top");
+      return;
+    }
+    if (!PN.scrolled) {
+      PN.scrolled = true;
+      var r0 = t.getBoundingClientRect();
+      var boxH0 = box.getBoundingClientRect().height || 200;
+      if (r0.top < 8 || r0.bottom > vh - boxH0 - 12) {
+        try { t.scrollIntoView({ block: r0.height > vh * 0.45 ? "start" : "center", behavior: "auto" }); } catch (e) {}
+      }
+    }
+    var r = t.getBoundingClientRect();
+    var pad = 8;
+    var L = Math.max(0, r.left - pad), T = Math.max(0, r.top - pad), R = Math.min(vw, r.right + pad), B = Math.min(vh, r.bottom + pad);
+    hole.style.display = "block";
+    hole.style.cssText = "display:block;left:" + L + "px;top:" + T + "px;width:" + (R - L) + "px;height:" + (B - T) + "px;";
+    blks[0].style.cssText = "left:0;top:0;width:100vw;height:" + T + "px;";
+    blks[1].style.cssText = "left:0;top:" + T + "px;width:" + L + "px;height:" + (B - T) + "px;";
+    blks[2].style.cssText = "left:" + R + "px;top:" + T + "px;width:" + Math.max(0, vw - R) + "px;height:" + (B - T) + "px;";
+    blks[3].style.cssText = "left:0;top:" + B + "px;width:100vw;height:" + Math.max(0, vh - B) + "px;";
+    var bh = box.getBoundingClientRect().height || 200;
+    var wantTop = B > vh - bh - 16 && T > bh + 16;
+    el.classList.toggle("box-top", wantTop);
+    var bb = box.getBoundingClientRect();
+    /* Arrow: above the hole pointing down, or below pointing up; keep it off the dialogue box. */
+    var cx = (L + R) / 2;
+    var up = T < 84 || (wantTop && T - 76 < bb.bottom);
+    var ay = up ? B + 6 : T - 74;
+    if (!up && !wantTop && ay + 70 > bb.top && bb.top > 0 && T > bb.top - 10) up = true, ay = B + 6;
+    arrow.style.display = "block";
+    arrow.style.left = Math.max(4, Math.min(vw - 60, cx - 30)) + "px";
+    arrow.style.top = Math.max(4, Math.min(vh - 74, ay)) + "px";
+    arrow.classList.toggle("up", up);
+  }
+
+  function pennyTickLoop() {
+    if (!PN.on || !PN.cur) return;
+    if (!state && PN.mode === "tour") { pennyStop(); return; }
+    var step = PN.cur;
+    if (PN.mode === "tour" && !step.offer) {
+      if (step.skip && step.skip()) { pennyAdvance(); return; }
+      if (step.lost && step.lost() && step.back) { pennyGoto(step.back); return; }
+    }
+    var waiting = step.wait && step.wait();
+    var t = step.target ? step.target() : null;
+    var hide = waiting || (step.target && !step.passive && !(t && pvis(t)) && !step.offer);
+    if (hide) {
+      if (!PN.el.hidden) { PN.el.hidden = true; }
+      return;
+    }
+    if (PN.el.hidden) { PN.el.hidden = false; PN.scrolled = false; }
+    pennyPlace();
+  }
+
+  function pennyStart(opts) {
+    opts = opts || {};
+    if (!state || screen !== "desk") return;
+    pennyCloseTip(true);
+    PN.on = true;
+    PN.mode = "tour";
+    PN.startTurn = state.turn;
+    clearInterval(PN.loop);
+    PN.loop = setInterval(pennyTickLoop, 180);
+    document.body.classList.add("penny-on");
+    renderDesk();
+    if (opts.offer) {
+      PN.idx = -1;
+      pennyShowStep({ offer: true, face: "wink", n: 0, text: "Hi! I'm <b>Penny</b>, from Onboarding ✦ Want a quick guided first quarter? Two minutes, eight steps, zero liability!", target: null });
+      return;
+    }
+    PN.idx = -1;
+    pennyAdvance();
+  }
+  function pennyGoto(id) {
+    for (var i = 0; i < TOUR.length; i++) if (TOUR[i].id === id) { PN.idx = i; pennyShowStep(TOUR[i]); return; }
+  }
+  function pennyAdvance() {
+    PN.idx += 1;
+    while (PN.idx < TOUR.length && TOUR[PN.idx].skip && TOUR[PN.idx].skip()) PN.idx += 1;
+    if (PN.idx >= TOUR.length) { pennyDone(); return; }
+    pennyShowStep(TOUR[PN.idx]);
+  }
+  function pennyNext() {
+    if (!PN.on || !PN.cur) return;
+    if (!PN.typed) { pennyFinishType(); return; }
+    var step = PN.cur;
+    if (PN.mode === "tip") { pennyCloseTip(); return; }
+    if (step.offer) { pennyAdvance(); return; }
+    if (step.last) { pennyDone(); return; }
+    if (step.act) { step.act(); return; }
+    if (step.passive) return;
+    pennyAdvance();
+  }
+  function pennyEmit(ev) {
+    if (PN.mode === "tour" && PN.cur && PN.cur.on === ev) {
+      var at = PN.cur;
+      setTimeout(function () { if (PN.cur === at && PN.on) pennyAdvance(); }, 60);
+    }
+    if (ev === "report-closed" && PN.pendingRival) { PN.pendingRival = false; setTimeout(function () { pennyTip("rival"); }, 400); }
+  }
+  function pennyStop() {
+    PN.on = false;
+    PN.mode = null;
+    PN.cur = null;
+    clearInterval(PN.loop);
+    clearInterval(PN.typer);
+    document.body.classList.remove("penny-on");
+    Array.prototype.forEach.call(document.querySelectorAll(".pn-glow"), function (g) { g.classList.remove("pn-glow"); });
+    if (PN.el) PN.el.hidden = true;
+  }
+  function pennyDone() {
+    pennySave(function (p) { p.done = true; p.offered = true; });
+    var wasDesk = screen === "desk" && state && !state.ended;
+    pennyStop();
+    if (wasDesk) renderDesk();
+  }
+  function pennySkip() { pennyDone(); }
+
+  /* One-time tips: same dialogue, "Got it" to close. Never during the tour. */
+  function pennyTip(key) {
+    if (PN.mode === "tour") return;
+    var m = pennyMeta();
+    if (m.penny.tipsOff || m.penny.tips[key]) return;
+    var tip = PENNY_TIPS[key];
+    if (!tip) return;
+    var t = tip.target();
+    if (!t || !pvis(t)) return;
+    if (key === "rival" && !state) return;
+    pennySave(function (p) { p.tips[key] = true; });
+    PN.on = true;
+    PN.mode = "tip";
+    clearInterval(PN.loop);
+    PN.loop = setInterval(pennyTickLoop, 180);
+    pennyShowStep({ id: "tip-" + key, face: tip.face, text: tip.text, target: tip.target, n: 0 });
+  }
+  function pennyCloseTip(silent) {
+    if (PN.mode !== "tip") return;
+    pennyStop();
+  }
+  function pennyMuteTips() { pennySave(function (p) { p.tipsOff = true; }); pennyCloseTip(); }
+  function pennyAutoOffer() {
+    var m = pennyMeta();
+    if (m.penny.offered || m.penny.done) return false;
+    var fresh = (m.finished | 0) === 0 && (!m.history || !m.history.length);
+    pennySave(function (p) { p.offered = true; });
+    if (!fresh) return false;
+    pennyStart({ offer: true });
+    return true;
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (!PN.on || !PN.el || PN.el.hidden) return;
+    if (e.key === "Escape" || e.key === "Esc") {
+      e.preventDefault(); e.stopPropagation();
+      if (PN.mode === "tip") pennyCloseTip(); else pennySkip();
+      return;
+    }
+    if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+      var a = document.activeElement;
+      if (a && a.closest && (a.closest(".pn-skip") || a.closest(".pn-alt"))) return;
+      var neutral = !a || a === document.body || a === document.documentElement || (a.closest && a.closest("#penny"));
+      if (!neutral) return;
+      e.preventDefault(); e.stopPropagation();
+      pennyNext();
+    }
+  }, true);
+  window.addEventListener("resize", function () { if (PN.on) pennyPlace(); });
+  window.addEventListener("scroll", function () { if (PN.on) pennyPlace(); }, { passive: true });
+
+  function openHowTo(inRun) {
+    var m = loadMeta();
+    var warn = !inRun && m.midRun ? "<p class='muted'>Starts a fresh AAA practice run with Mara Voss. Your saved run will be replaced.</p>" : "";
+    showOverlay("How to play", "<div class='howto-pick'><img src='" + assetUrlP("penny-wink") + "' alt=''><p><b>Penny · Onboarding</b> walks you through a real first quarter, step by step." + (inRun ? " She'll pick up from wherever you are." : "") + "</p></div>" + warn,
+      '<button class="btn btn-coral" id="ht-penny">' + (inRun ? "Replay Penny's tour" : "Guided tour with Penny") + '</button><button class="btn" id="ht-rules">Read the rulebook</button><button class="btn btn-ghost" id="ht-close">Back</button>',
+      function () {
+        $("ht-penny").addEventListener("click", function () {
+          tick();
+          hideOverlay();
+          if (inRun) { pennyStart(); return; }
+          selectedExec = "mara"; selectedRating = 0; seedDraft = "";
+          PN.forceStart = true;
+          startRun();
+        });
+        $("ht-rules").addEventListener("click", function () { tick(); screenIntent = inRun ? "play" : "title"; tutorialPage = 0; show("tutorial"); renderTutorial(); });
+        $("ht-close").addEventListener("click", function () { tick(); hideOverlay(); });
+      });
   }
 
   function boot() {

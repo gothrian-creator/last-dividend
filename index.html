@@ -2035,6 +2035,281 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 @media (max-width: 620px) {
   .desk .float { font-size: 15px; padding: 5px 12px; max-width: 280px; white-space: normal; text-align: center; line-height: 1.25; }
 }
+/* =====================================================================
+   No-scroll redesign: compact dossier, locked phone desk, tabbed shop,
+   two-step end screen, short-phone bunker panel.
+   ===================================================================== */
+.dz-head { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 6px; }
+.dz-copy { flex: 1; min-width: 0; padding-right: 36px; }
+.dz-copy .dz-k { padding-right: 0; }
+.dz-copy h3 { margin: 2px 0 0; font-size: 18px; }
+.dz-art {
+  width: 112px; height: 64px; flex: none;
+  object-fit: cover; border-radius: 10px; margin: 0; display: block;
+}
+.deal-dz { padding: 10px 12px 12px; }
+.deal-dz .dz-body { font-size: 15px; margin: 0 0 6px; }
+.deal-dz .fx-chip, .deal-dz .row-k, .deal-dz .when { font-size: 13px; }
+.deal-dz .btn-sign { min-height: 48px; margin-top: 6px; font-size: 18px; }
+.deal-dz .dz-choice { min-height: 44px; margin-top: 4px; padding: 8px 10px; }
+.deal-dz .fine { font-size: 13px; margin: 6px 0 0; }
+
+@media (orientation: portrait), (max-width: 899px) {
+  .desk {
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    gap: 8px;
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "head" "board" "dash" "hand";
+  }
+  .desk .board { min-height: 0; overflow: hidden; }
+  .hand {
+    position: relative;
+    z-index: 8;
+    margin: 0 -12px;
+    padding: 4px 12px max(6px, env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(3,16,13,0), rgba(3,16,13,0.88) 28%);
+    grid-area: hand;
+  }
+  .end-q { min-height: 56px; }
+  .eq-t { font-size: clamp(18px, 4.2vw, 24px); }
+  .eq-ico { width: 40px; height: 40px; font-size: 20px; }
+  .dossier {
+    grid-area: auto !important;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 30;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    padding: 0 10px max(10px, env(safe-area-inset-bottom));
+  }
+  .desk.has-sel .dossier {
+    height: auto;
+    max-height: 58dvh;
+    overflow: hidden;
+    pointer-events: auto;
+  }
+  .desk.has-sel .dossier .dz { max-height: 58dvh; overflow: hidden; }
+  .dash {
+    grid-area: dash;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 108px;
+    grid-template-rows: auto auto auto;
+    grid-template-areas: "perf bunk" "news bunk" "rivals rivals";
+    gap: 6px;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .dash-meters { grid-area: perf; padding: 6px 8px; }
+  .dash-meters .panel-k { font-size: 11px; margin-bottom: 2px; }
+  .dash .meters { gap: 4px; }
+  .dash .m-val { font-size: 20px; }
+  .dash .m-sub, .dash .spark-row { display: none; }
+  .dash .m-bar { height: 6px; }
+  .bunker-card { grid-area: bunk; width: 108px; padding: 6px; min-height: 0; }
+  .bunker-card .bc-scene { display: none; }
+  .bunker-card .bc-cta { font-size: 12px; }
+  .ticker { grid-area: news; padding: 4px 8px; align-self: stretch; }
+  .ticker .panel-k { display: none; }
+  .tick-wrap { height: 1.3em; overflow: hidden; }
+  .rivals { grid-area: rivals; padding: 4px 8px; }
+}
+
+@media (orientation: portrait) and (max-height: 780px), (max-width: 380px) and (max-height: 780px) {
+  .desk.has-sel .dossier,
+  .desk.has-sel .dossier .dz { max-height: 66dvh; }
+  .deal-dz:has(.dz-choices) .dz-body { display: none; }
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  .deal-dz .dz-head { flex-direction: column; gap: 6px; }
+  .deal-dz .dz-copy { order: -1; padding-right: 44px; }
+  .deal-dz .dz-art, .dz-art { width: 100%; height: 90px; display: block; }
+  .dossier { overflow: hidden; }
+}
+@media (orientation: landscape) and (min-width: 900px) and (max-height: 820px) {
+  .deal-dz .dz-art, .dz-art { height: 72px !important; display: block !important; }
+}
+
+#screen-boardroom.on, #screen-end.on { height: 100dvh; overflow: hidden; }
+.page.boardroom, .page.end-page {
+  height: calc(100dvh - 20px);
+  max-height: calc(100dvh - 20px);
+  min-height: 0;
+  overflow: hidden;
+}
+.boardroom .page-inner, .end-page .page-inner {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 12px 14px 14px;
+  box-sizing: border-box;
+}
+.boardroom .inner-head { flex: none; }
+.boardroom .inner-head h2 { font-size: 26px; }
+.br-balance { font-size: 14px; }
+.br-tabs { display: flex; gap: 4px; flex: none; margin: 8px 0 6px; }
+.br-tab {
+  flex: 1; min-width: 0; min-height: 44px; padding: 4px 2px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  border-radius: 10px; border: 1px solid var(--gold-line);
+  background: rgba(10, 40, 34, 0.45); color: var(--ivory);
+}
+.br-tab.on { background: linear-gradient(180deg, #19a585, #0b5e4e); color: #fff; box-shadow: inset 0 0 0 1px var(--gold-hi); }
+.br-desc { font-size: 13px; margin: 0 0 6px; flex: none; }
+.br-pane { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.boardroom .shop-grid {
+  display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 0;
+  flex: 1; min-height: 0; align-content: start; overflow: hidden;
+}
+@media (min-width: 700px) {
+  .boardroom .shop-grid { grid-template-columns: 1fr 1fr; }
+}
+.boardroom .shop-item { padding: 8px 10px; gap: 2px; border-radius: 12px; }
+.boardroom .si-text, .boardroom .si-alt {
+  font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.boardroom .si-up, .boardroom .si-down { font-size: 12px; }
+.boardroom .shop-item .btn { min-height: 44px; margin-top: 4px; font-size: 13px; }
+.br-pager { display: flex; justify-content: center; align-items: center; gap: 10px; flex: none; margin-top: 6px; }
+.br-pager .btn { width: auto; min-width: 88px; min-height: 40px; }
+.boardroom .btn-row, .end-page .btn-row {
+  flex: none; margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.boardroom .history-mini { font-size: 13px; margin: 6px 0 0; padding: 0; list-style: none; overflow: hidden; }
+.boardroom .history-mini li { padding: 6px 0; border-bottom: 1px solid var(--gold-line); }
+
+.end-page .end-hero { height: 100px !important; aspect-ratio: auto !important; margin: 8px 0; flex: none; }
+.end-page h2 { font-size: 24px; flex: none; }
+.end-page .end-mark { font-size: 13px; }
+.end-page .end-body {
+  font-size: 15px; margin: 6px 0; flex: none;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.end-tally, .end-div-chip, .end-page .pending { margin: 4px 0; font-size: 14px; flex: none; }
+.end-div-chip { font-weight: 700; color: var(--gold-hi); }
+.end-div-chip b { font-size: 20px; }
+.end-page .letter { margin: 0; padding: 12px 14px; overflow: hidden; flex: 1; min-height: 0; }
+.end-page .letter th, .end-page .letter td { padding: 4px 3px; font-size: 14px; }
+.end-page .letter tr.total th, .end-page .letter tr.total td { font-size: 18px; }
+.end-page .btn-row .btn { min-height: 44px; }
+
+@media (orientation: portrait) and (max-height: 844px), (max-width: 430px) {
+  .overlay.on.bunker-mode { padding: 6px; align-items: stretch; }
+  .overlay.bunker-mode .bk-view {
+    max-height: calc(100dvh - 12px);
+    overflow: hidden;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+  .overlay.bunker-mode .bk-stage { min-height: 0; overflow: hidden; }
+  .overlay.bunker-mode .bk-panel { padding: 4px 8px 8px; max-height: 42dvh; overflow: hidden; }
+  .overlay.bunker-mode .bp-note,
+  .overlay.bunker-mode .bp-sub,
+  .overlay.bunker-mode .bp-hint-sub { font-size: 13px; margin: 2px 0; }
+  .overlay.bunker-mode .bp-next { font-size: 14px; margin: 4px 0 2px; }
+  .overlay.bunker-mode .bp-head h3 { font-size: 18px; }
+  .overlay.bunker-mode .bp-ico { width: 36px; height: 36px; font-size: 18px; }
+  .overlay.bunker-mode .bp-btn { min-height: 48px; }
+  .overlay.bunker-mode .bp-btn b { font-size: 15px; }
+  .overlay.bunker-mode .bp-btn span { font-size: 13px; }
+  .overlay.bunker-mode .bp-buy { gap: 6px; margin-top: 4px; }
+}
+
+/* Lock pre-desk and shop screens to the viewport; compact the executive picker. */
+body:has(#screen-title.on),
+body:has(#screen-exec.on),
+body:has(#screen-boardroom.on),
+body:has(#screen-end.on),
+body:has(#screen-history.on),
+body:has(#screen-tutorial.on) {
+  height: 100dvh;
+  overflow: hidden;
+}
+body:has(#screen-title.on) .shell,
+body:has(#screen-exec.on) .shell,
+body:has(#screen-boardroom.on) .shell,
+body:has(#screen-end.on) .shell,
+body:has(#screen-history.on) .shell,
+body:has(#screen-tutorial.on) .shell {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+#screen-title.on, #screen-exec.on, #screen-boardroom.on, #screen-end.on, #screen-history.on, #screen-tutorial.on {
+  height: 100%;
+  overflow: hidden;
+}
+#screen-title .title-sunny {
+  min-height: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.page.exec-page, .page.boardroom, .page.end-page, #screen-history .page, #screen-tutorial .page {
+  height: 100%;
+  min-height: 0 !important;
+  max-height: 100%;
+  overflow: hidden;
+}
+#screen-exec .page-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 12px 14px 12px;
+  box-sizing: border-box;
+}
+.exec-page .inner-head { flex: none; }
+.exec-page .inner-head h2 { font-size: 22px; }
+.exec-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  align-content: start;
+}
+.exec-card { padding: 8px 10px; text-align: left; }
+.exec-card .name { font-size: 16px; }
+.exec-card .firm { font-size: 10px; margin: 0 0 2px; letter-spacing: 0.04em; }
+.exec-card p {
+  font-size: 12px; line-height: 1.25; margin: 0;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.exec-page .loadout { flex: 1; min-height: 0; overflow: hidden; margin-top: 8px; }
+.exec-page .loadout h3 { font-size: 16px; margin: 6px 0 4px; }
+.exec-page .loadout p.muted {
+  font-size: 12px; margin: 0 0 4px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.exec-page .rating-mods { font-size: 12px; margin: 4px 0; padding-left: 18px; }
+.exec-page .rating-mods li { margin: 0; }
+.exec-page .btn-row {
+  flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto;
+}
+.exec-page .btn-row #btn-start { grid-column: 1 / -1; }
+.exec-page .btn-row .btn { min-height: 44px; }
+@media (max-height: 780px) {
+  .exec-card p { display: none; }
+  .exec-card.on p { display: -webkit-box; -webkit-line-clamp: 2; }
+  .exec-page .loadout p.muted { display: none; }
+  #screen-title .title-sunny { padding: 12px 14px !important; gap: 8px !important; }
+  .title-sunny h1.wordmark { font-size: clamp(32px, 10vw, 52px) !important; }
+  .title-sunny .title-art { max-height: 22dvh; overflow: hidden; }
+  .title-sunny .title-panel { margin-top: 6px !important; gap: 6px !important; }
+}
 </style>
 </head>
 <body>
@@ -4638,8 +4913,49 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
   };
   LD.DEAL_ART = {
     "water-rights": "card-water-rights",
+    "farm-rollups": "card-farm-rollups",
+    "accelerate-permits": "card-accelerate-permits",
+    "fuel-futures": "card-fuel-futures",
+    "rezoning-clinic": "card-rezoning-clinic",
+    "seed-vault": "card-seed-vault",
+    "aquifer-tap": "card-aquifer-tap",
+    "ht-desal": "card-ht-desal",
+    "ht-poison": "card-ht-poison",
+    "ht-merge": "card-ht-merge",
     "sell-reserves": "card-sell-reserves",
-    "charity-filters": "card-fund-filters"
+    "dump-grain": "card-dump-grain",
+    "quiet-inspector": "card-quiet-inspector",
+    "offshore-pensions": "card-offshore-pensions",
+    "crisis-kits": "card-crisis-kits",
+    "cut-safety": "card-cut-safety",
+    "blackout-insurance": "card-blackout-insurance",
+    "lobby-relief": "card-lobby-relief",
+    "cloud-seeding": "card-cloud-seeding",
+    "divert-filters": "card-divert-filters",
+    "poach-engineers": "card-poach-engineers",
+    "dc-surge": "card-dc-surge",
+    "dc-rebuild": "card-dc-rebuild",
+    "dc-insure": "card-dc-insure",
+    "dc-ration": "card-dc-ration",
+    "ht-greenmail": "card-ht-greenmail",
+    "charity-filters": "card-fund-filters",
+    "well-repairs": "card-well-repairs",
+    "media-buy": "card-media-buy",
+    "settle-action": "card-settle-action",
+    "calm-quarterly": "card-calm-quarterly",
+    "solar-writeoff": "card-solar-writeoff",
+    "open-books": "card-open-books",
+    "retention-bonus": "card-retention-bonus",
+    "charter-freight": "card-charter-freight",
+    "esg-offset": "card-esg-offset",
+    "esg-water-pledge": "card-esg-water-pledge",
+    "esg-rewild": "card-esg-rewild",
+    "esg-solar-glass": "card-esg-solar-glass",
+    "esg-badge": "card-esg-badge",
+    "crisis-strike": "card-crisis-strike",
+    "crisis-inquiry": "card-crisis-inquiry",
+    "crisis-dust": "card-crisis-dust",
+    "dc-heatwave": "card-dc-heatwave"
   };
 })(typeof globalThis !== "undefined" ? globalThis : this);
 
@@ -5027,74 +5343,131 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     ["portfolio", "Property Portfolio", "Pure flavour for your island and bunker."],
     ["annual", "Annual Report", "Small conveniences."]
   ];
+  var TAB_LABELS = [
+    ["seats", "Seats"],
+    ["perks", "Perks"],
+    ["prospectus", "Packs"],
+    ["portfolio", "Cosmetics"],
+    ["annual", "Archive"]
+  ];
+  var SHOP_PAGE = 6;
+  function shopCard(meta, it) {
+    var owned = LD.itemOwned(meta, it.key);
+    var afford = meta.dividends >= it.price;
+    var html = '<div class="shop-item' + (owned ? " owned" : "") + '"><div class="si-head"><b>' + escapeHtml(it.name) + "</b><em>" + (owned ? "Owned" : "◈ " + it.price) + "</em></div>";
+    if (it.up) html += '<div class="si-up">▲ ' + escapeHtml(it.up) + '</div><div class="si-down">▼ ' + escapeHtml(it.down) + "</div>";
+    if (it.text) html += '<p class="si-text">' + escapeHtml(it.text) + "</p>";
+    if (it.alt && !owned) html += '<p class="si-alt">' + escapeHtml(it.alt) + "</p>";
+    if (it.wing === "portfolio" && owned) {
+      var eq = LD.equippedCosmetics(meta)[it.slot] === it.id;
+      html += '<button class="btn btn-sm' + (eq ? " btn-teal" : "") + '" data-equip="' + it.slot + ":" + it.id + '">' + (eq ? "Equipped" : "Equip") + "</button>";
+    } else if (!owned) {
+      html += '<button class="btn btn-sm btn-ochre" data-buy="' + it.key + '"' + (afford ? "" : " disabled") + ">" + (afford ? "Buy · ◈ " + it.price : "Need ◈ " + it.price) + "</button>";
+    }
+    return html + "</div>";
+  }
   function renderBoardroom(opts) {
     opts = opts || {};
     var meta = LD.migrateMeta(opts.meta || {});
     var items = LD.shopItems();
+    var tab = opts.tab || "seats";
+    var page = Math.max(0, opts.page | 0);
+    var wing = null;
+    WINGS.forEach(function (w) { if (w[0] === tab) wing = w; });
+    if (!wing) { tab = "seats"; wing = WINGS[0]; }
+    var list = items.filter(function (it) { return it.wing === tab; });
+    if (tab === "portfolio") {
+      LD.COSMETIC_SLOTS.forEach(function (sl) {
+        var def = LD.COSMETICS.filter(function (c) { return c.slot === sl[0] && c.free; })[0];
+        list = list.concat([{ key: "cos:" + sl[0] + ":" + def.id, wing: "portfolio", name: def.name, price: 0, text: def.text, slot: sl[0], id: def.id, _free: true }]);
+      });
+    }
+    var histAll = tab === "annual" ? (meta.history || []).slice().reverse() : [];
+    var pages = Math.max(1, Math.ceil((tab === "annual" ? Math.max(histAll.length, 1) : list.length) / SHOP_PAGE));
+    if (page > pages - 1) page = pages - 1;
+    var slice = tab === "annual" ? list : list.slice(page * SHOP_PAGE, page * SHOP_PAGE + SHOP_PAGE);
     var html = '<div class="page inner boardroom"><div class="page-inner">';
     html += '<div class="inner-head"><div class="kicker">Members only</div><h2>The Boardroom</h2>';
     html += '<p class="br-balance">' + divBadge(meta) + ' <span class="muted">Dividends to spend · lifetime ◈ ' + meta.lifetime.dividends + " · " + meta.lifetime.runs + " runs</span></p></div>";
-    if (opts.notice) html += '<p class="br-notice" role="status">' + escapeHtml(opts.notice) + "</p>";
-    WINGS.forEach(function (w) {
-      var list = items.filter(function (it) { return it.wing === w[0]; });
-      if (!list.length) return;
-      html += '<section class="wing"><h3>' + w[1] + '</h3><p class="muted">' + w[2] + '</p><div class="shop-grid">';
-      list.forEach(function (it) {
-        var owned = LD.itemOwned(meta, it.key);
-        var afford = meta.dividends >= it.price;
-        html += '<div class="shop-item' + (owned ? " owned" : "") + '"><div class="si-head"><b>' + escapeHtml(it.name) + "</b><em>" + (owned ? "Owned" : "◈ " + it.price) + "</em></div>";
-        if (it.up) html += '<div class="si-up">▲ ' + escapeHtml(it.up) + '</div><div class="si-down">▼ ' + escapeHtml(it.down) + "</div>";
-        if (it.text) html += '<p class="si-text">' + escapeHtml(it.text) + "</p>";
-        if (it.alt && !owned) html += '<p class="si-alt">' + escapeHtml(it.alt) + "</p>";
-        if (it.wing === "portfolio" && owned) {
-          var eq = LD.equippedCosmetics(meta)[it.slot] === it.id;
-          html += '<button class="btn btn-sm' + (eq ? " btn-teal" : "") + '" data-equip="' + it.slot + ":" + it.id + '">' + (eq ? "Equipped" : "Equip") + "</button>";
-        } else if (!owned) {
-          html += '<button class="btn btn-sm btn-ochre" data-buy="' + it.key + '"' + (afford ? "" : " disabled") + ">" + (afford ? "Buy · ◈ " + it.price : "Need ◈ " + it.price) + "</button>";
-        }
-        html += "</div>";
-      });
-      if (w[0] === "portfolio") {
-        LD.COSMETIC_SLOTS.forEach(function (sl) {
-          var def = LD.COSMETICS.filter(function (c) { return c.slot === sl[0] && c.free; })[0];
-          var eq = LD.equippedCosmetics(meta)[sl[0]] === def.id;
-          html += '<div class="shop-item owned"><div class="si-head"><b>' + escapeHtml(def.name) + "</b><em>" + escapeHtml(sl[1]) + '</em></div><p class="si-text">' + escapeHtml(def.text) + "</p>" +
-            '<button class="btn btn-sm' + (eq ? " btn-teal" : "") + '" data-equip="' + sl[0] + ":" + def.id + '">' + (eq ? "Equipped" : "Equip") + "</button></div>";
-        });
-      }
-      html += "</div></section>";
+    html += '<div class="br-tabs" role="tablist">';
+    TAB_LABELS.forEach(function (tb) {
+      html += '<button class="br-tab' + (tb[0] === tab ? " on" : "") + '" data-br-tab="' + tb[0] + '" role="tab" aria-selected="' + (tb[0] === tab ? "true" : "false") + '">' + tb[1] + "</button>";
     });
+    html += "</div>";
+    if (opts.notice) html += '<p class="br-notice" role="status">' + escapeHtml(opts.notice) + "</p>";
+    html += '<section class="wing br-pane"><p class="muted br-desc">' + wing[2] + '</p><div class="shop-grid">';
+    slice.forEach(function (it) {
+      if (it._free) {
+        var eq = LD.equippedCosmetics(meta)[it.slot] === it.id;
+        html += '<div class="shop-item owned"><div class="si-head"><b>' + escapeHtml(it.name) + '</b><em>Default</em></div><p class="si-text">' + escapeHtml(it.text) + "</p>" +
+          '<button class="btn btn-sm' + (eq ? " btn-teal" : "") + '" data-equip="' + it.slot + ":" + it.id + '">' + (eq ? "Equipped" : "Equip") + "</button></div>";
+      } else {
+        html += shopCard(meta, it);
+      }
+    });
+    html += "</div>";
+    if (tab === "annual") {
+      var hist = histAll;
+      var hSlice = hist.slice(page * SHOP_PAGE, page * SHOP_PAGE + SHOP_PAGE);
+      if (hist.length) {
+        html += '<ul class="history-mini">';
+        hSlice.forEach(function (h) {
+          var name = (LD.execById(h.executiveId) || {}).name || h.executiveId;
+          html += "<li><strong>" + (h.result === "win" ? "Evacuated" : "Failed") + "</strong> — " + escapeHtml(h.title) +
+            " · Q" + h.turn + " · " + escapeHtml(name) + (h.dividends != null ? " · ◈ " + h.dividends : "") + "</li>";
+        });
+        html += "</ul>";
+      } else if (!list.length) {
+        html += "<p class='muted'>No finished runs yet.</p>";
+      }
+    }
+    if (pages > 1) {
+      html += '<div class="br-pager"><button class="btn btn-ghost btn-sm" data-br-page="' + (page - 1) + '"' + (page <= 0 ? " disabled" : "") + ">Prev</button>";
+      html += '<span class="muted"> ' + (page + 1) + " / " + pages + " </span>";
+      html += '<button class="btn btn-ghost btn-sm" data-br-page="' + (page + 1) + '"' + (page >= pages - 1 ? " disabled" : "") + ">Next</button></div>";
+    }
+    html += "</section>";
     html += '<div class="btn-row"><button class="btn btn-coral" id="btn-br-play">Appoint an executive</button><button class="btn btn-ghost" id="btn-br-back">Back</button></div></div></div>';
     return html;
-  }
-
-  var END_ART = { win: "end-win", lose: "end-lose" };
-  function renderEnd(state, opts) {
+  }  function renderEnd(state, opts) {
     opts = opts || {};
     var e = state.ending;
     var exec = LD.execById(state.executiveId);
     var pay = opts.payout || LD.computeDividends(state);
-    var html = '<div class="page inner end-page"><div class="page-inner">';
-    html += '<div class="end-mark ' + e.kind + '">' + (e.kind === "win" ? "Evacuation successful" : "The run is over") + " · " + escapeHtml(LD.ratingName(state.rating)) + "</div>";
-    html += "<h2>" + escapeHtml(e.title) + "</h2>";
-    html += '<div class="end-hero ' + e.kind + '"><img src="' + escapeHtml(assetUrl(END_ART[e.kind] || "end-lose")) + '" alt="">';
-    if (opts.newRating != null) html += '<div class="end-stamp">Downgraded to ' + escapeHtml(LD.ratingName(opts.newRating)) + "<small>new rating unlocked for " + escapeHtml(exec.name) + "</small></div>";
-    html += "</div>";
-    html += "<p>" + escapeHtml(e.body) + "</p>";
-    html += '<section class="letter" aria-label="Shareholder letter"><div class="letter-head"><div class="kicker">Shareholder Letter</div><p>“The board thanks you for your service. Whatever happened out there.”</p></div><table>';
-    pay.lines.forEach(function (l) {
-      html += "<tr" + (l.amount ? "" : ' class="zero"') + "><th>" + escapeHtml(l.label) + "<small>" + escapeHtml(l.note) + "</small></th><td>+" + l.amount + "</td></tr>";
-    });
-    html += '<tr class="sub"><th>Subtotal</th><td>' + pay.subtotal + "</td></tr>";
-    html += '<tr class="sub"><th>Credit rating ' + escapeHtml(LD.ratingName(pay.rating)) + "</th><td>×" + pay.multiplier.toFixed(1) + "</td></tr>";
-    html += '<tr class="total"><th>Dividends paid</th><td>◈ ' + pay.total + "</td></tr></table>";
-    if (opts.meta) html += '<p class="letter-foot">Balance ◈ ' + opts.meta.dividends + " · lifetime ◈ " + opts.meta.lifetime.dividends + "</p>";
-    html += "</section>";
-    html += renderReadiness(state);
-    html += '<div class="pending" style="margin-top:12px"><strong>Final ledger.</strong> Q' + state.turn + " · " + escapeHtml(exec.name) + " · seed " + escapeHtml(String(state.seedLabel)) + " · Cash " + state.cash + " · Unrest " + state.unrest + " · Collapse " + state.collapse + "</div>";
-    html += '<div class="btn-row"><button class="btn btn-coral" id="btn-again">Same executive, new seed</button>';
-    html += '<button class="btn btn-ochre" id="btn-end-board">The Boardroom ' + (opts.meta ? "· ◈ " + opts.meta.dividends : "") + "</button>";
-    html += '<button class="btn" id="btn-title">Return to title</button></div></div></div>';
+    var letter = !!opts.letter;
+    var html = '<div class="page inner end-page ' + (letter ? "end-letter" : "end-result") + '"><div class="page-inner">';
+    if (!letter) {
+      html += '<div class="end-mark ' + e.kind + '">' + (e.kind === "win" ? "Evacuation successful" : "The run is over") + " · " + escapeHtml(LD.ratingName(state.rating)) + "</div>";
+      html += "<h2>" + escapeHtml(e.title) + "</h2>";
+      html += '<div class="end-hero ' + e.kind + '"><img src="' + escapeHtml(assetUrl(END_ART[e.kind] || "end-lose")) + '" alt="">';
+      if (opts.newRating != null) html += '<div class="end-stamp">Downgraded to ' + escapeHtml(LD.ratingName(opts.newRating)) + "<small>new rating unlocked for " + escapeHtml(exec.name) + "</small></div>";
+      html += "</div>";
+      html += '<p class="end-body">' + escapeHtml(e.body) + "</p>";
+      var ready = readinessSummary(state);
+      html += '<p class="end-tally">' + escapeHtml(ready.tally) + "</p>";
+      html += '<p class="end-div-chip">Dividends earned <b>\u25c8 ' + pay.total + "</b></p>";
+      html += '<div class="pending">Q' + state.turn + " · " + escapeHtml(exec.name) + " \u00b7 seed " + escapeHtml(String(state.seedLabel)) + " \u00b7 Cash " + state.cash + " \u00b7 Unrest " + state.unrest + " \u00b7 Collapse " + state.collapse + "</div>";
+      html += '<div class="btn-row"><button class="btn btn-coral" id="btn-letter">Shareholder Letter</button>';
+      html += '<button class="btn btn-ochre" id="btn-end-board">The Boardroom ' + (opts.meta ? "\u00b7 \u25c8 " + opts.meta.dividends : "") + "</button>";
+      html += '<button class="btn" id="btn-again">Same executive, new seed</button>';
+      html += '<button class="btn btn-ghost" id="btn-title">Return to title</button></div>';
+    } else {
+      html += '<section class="letter" aria-label="Shareholder letter"><div class="letter-head"><div class="kicker">Shareholder Letter</div><p>\u201cThe board thanks you for your service. Whatever happened out there.\u201d</p></div><table>';
+      pay.lines.forEach(function (l) {
+        if (!l.amount) return;
+        html += "<tr><th>" + escapeHtml(l.label) + "<small>" + escapeHtml(l.note) + "</small></th><td>+" + l.amount + "</td></tr>";
+      });
+      html += '<tr class="sub"><th>Subtotal</th><td>' + pay.subtotal + "</td></tr>";
+      html += '<tr class="sub"><th>Credit rating ' + escapeHtml(LD.ratingName(pay.rating)) + "</th><td>\u00d7" + pay.multiplier.toFixed(1) + "</td></tr>";
+      html += '<tr class="total"><th>Dividends paid</th><td>\u25c8 ' + pay.total + "</td></tr></table>";
+      if (opts.meta) html += '<p class="letter-foot">Balance \u25c8 ' + opts.meta.dividends + " \u00b7 lifetime \u25c8 " + opts.meta.lifetime.dividends + "</p>";
+      html += "</section>";
+      html += '<div class="btn-row"><button class="btn btn-ghost" id="btn-end-result">Back to result</button>';
+      html += '<button class="btn btn-ochre" id="btn-end-board">The Boardroom ' + (opts.meta ? "\u00b7 \u25c8 " + opts.meta.dividends : "") + "</button>";
+      html += '<button class="btn btn-coral" id="btn-again">Same executive, new seed</button>';
+      html += '<button class="btn btn-ghost" id="btn-title">Return to title</button></div>';
+    }
+    html += "</div></div>";
     return html;
   }
 
@@ -5920,10 +6293,13 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     var rid = state.world.pins[dealId];
     var h = '<div class="dz deal-dz k-' + kind + '">';
     h += '<button class="dz-x" id="dz-close" aria-label="Close">✕</button>';
-    h += '<div class="dz-k">' + esc(d.kicker) + " · " + esc(LD.REGION_NAMES[rid] || "") + (d.pack ? " · " + esc((LD.PACKS.filter(function (p) { return p.id === d.pack; })[0] || {}).name || "") : "") + "</div>";
-    h += "<h3>" + esc(d.title) + "</h3>";
+    h += '<div class="dz-head">';
     var art = LD.dealArtKey(dealId);
     if (art) h += '<img class="dz-art" src="' + esc(LD.assetUrl(art)) + '" alt="">';
+    h += '<div class="dz-copy">';
+    h += '<div class="dz-k">' + esc(d.kicker) + " · " + esc(LD.REGION_NAMES[rid] || "") + (d.pack ? " · " + esc((LD.PACKS.filter(function (p) { return p.id === d.pack; })[0] || {}).name || "") : "") + "</div>";
+    h += "<h3>" + esc(d.title) + "</h3>";
+    h += "</div></div>";
     h += '<p class="dz-body">' + esc(d.body) + "</p>";
     if (d.choices) {
       h += '<div class="dz-choices">';
@@ -6558,6 +6934,9 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
   var lastEnd = null;
   var boardBack = "title";
   var boardNotice = "";
+  var boardTab = "seats";
+  var boardPage = 0;
+  var endLetter = false;
 
   function $(id) { return document.getElementById(id); }
 
@@ -6688,11 +7067,27 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
   function openBoardroom(back) {
     boardBack = back || "title";
     boardNotice = "";
+    boardTab = "seats";
+    boardPage = 0;
     show("boardroom");
     renderBoardroom();
   }
   function renderBoardroom() {
-    $("screen-boardroom").innerHTML = LD.renderBoardroom({ meta: loadMeta(), notice: boardNotice });
+    $("screen-boardroom").innerHTML = LD.renderBoardroom({ meta: loadMeta(), notice: boardNotice, tab: boardTab, page: boardPage });
+    Array.prototype.forEach.call(document.querySelectorAll("#screen-boardroom [data-br-tab]"), function (b) {
+      b.addEventListener("click", function () {
+        boardTab = b.getAttribute("data-br-tab");
+        boardPage = 0;
+        boardNotice = "";
+        renderBoardroom();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#screen-boardroom [data-br-page]"), function (b) {
+      b.addEventListener("click", function () {
+        boardPage = +b.getAttribute("data-br-page") || 0;
+        renderBoardroom();
+      });
+    });
     Array.prototype.forEach.call(document.querySelectorAll("#screen-boardroom [data-buy]"), function (b) {
       b.addEventListener("click", function () {
         tick();
@@ -7613,9 +8008,17 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 
   function showEnd() {
     show("end");
+    endLetter = false;
+    paintEnd();
+  }
+  function paintEnd() {
     var meta = loadMeta();
     var info = lastEnd && lastEnd.seed === state.seed && lastEnd.turn === state.turn ? lastEnd : null;
-    $("screen-end").innerHTML = LD.renderEnd(state, { payout: info ? info.payout : null, newRating: info ? info.newRating : null, meta: meta });
+    $("screen-end").innerHTML = LD.renderEnd(state, { payout: info ? info.payout : null, newRating: info ? info.newRating : null, meta: meta, letter: endLetter });
+    var bl = $("btn-letter");
+    if (bl) bl.addEventListener("click", function () { tick(); endLetter = true; paintEnd(); });
+    var brs = $("btn-end-result");
+    if (brs) brs.addEventListener("click", function () { tick(); endLetter = false; paintEnd(); });
     $("btn-end-board").addEventListener("click", function () { tick(); openBoardroom("end"); });
     $("btn-again").addEventListener("click", function () {
       tick();
@@ -7624,7 +8027,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
       seedDraft = "";
       startRun();
     });
-    setTimeout(function () { if (screen === "end") pennyTip("dividends"); }, 500);
+    if (endLetter) setTimeout(function () { if (screen === "end") pennyTip("dividends"); }, 200);
     $("btn-title").addEventListener("click", function () {
       tick();
       show("title");

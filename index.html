@@ -4029,6 +4029,204 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
 /* The globe draws the map much smaller: thicker ink so the highlight still reads. */
 .desk.is-globe .map .pin.ld-act .ring { stroke-width: 4.5 !important; stroke-dasharray: 7 6; transform: translateY(-8px) scale(1.8); }
 .desk.is-globe .map .pin.ld-act .pin-tag rect { stroke-width: 6 !important; stroke-dasharray: 14 8; }
+
+/* =====================================================================
+   EXECUTIVE SELECT · swipeable poster carousel (2026-11-14)
+   Painted travel posters, neighbours peeking, modifiers as a stamp + luggage tags.
+   ===================================================================== */
+#screen-exec .page.cx-page { background: var(--jy-teal-deep); background-image: var(--jy-grain), radial-gradient(120% 70% at 50% 30%, #2a5f5c 0%, #163c3e 60%, #10292b 100%) !important; }
+#screen-exec .cx-inner { display: grid !important; grid-template-rows: minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 12px 16px 12px !important; height: 100%; box-sizing: border-box; }
+.cx-left { display: flex; flex-direction: column; min-height: 0; }
+.cx-head { flex: none; text-align: center; margin: 0 0 4px; }
+.cx-head .kicker { font-size: 12px; }
+.cx-page .cx-head h2 { font-size: 26px !important; margin: 2px 0 0; line-height: 1.05; }
+.cx-stage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; outline: none; padding: 10px 0 14px; margin: 0 -16px; }
+.cx-stage:focus-visible { box-shadow: none; }
+.cx-track { position: absolute; inset: 10px 0 14px; --drag: 0px; --step: 76%; }
+.cx-poster { position: absolute; left: 50%; top: 0; height: 100%; aspect-ratio: 0.66; max-width: 86%; box-sizing: border-box;
+  --f: var(--o); --af: var(--a);
+  transform: translateX(calc(-50% + var(--f) * var(--step))) scale(calc(1 - min(var(--af), 2) * 0.16)) rotate(calc(var(--f) * 3.5deg - (1 - min(var(--af), 1)) * 0.6deg));
+  opacity: calc(1.6 - var(--af) * 0.8); z-index: calc(10 - var(--a)); transition: transform 0.42s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s, filter 0.3s;
+  background: var(--jy-paper); background-image: var(--jy-grain); border: 2.5px solid var(--jy-ink); border-radius: 6px; padding: 8px; box-shadow: 5px 7px 0 rgba(12, 22, 23, 0.55);
+  display: flex; flex-direction: column; cursor: pointer; }
+.cx-poster.on { cursor: default; }
+.cx-poster:not(.on) { filter: saturate(0.75) brightness(0.88); }
+.cx-stage.dragging .cx-poster, .cx-poster.cx-jump { transition: none; }
+.cx-art { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; border: 2px solid var(--jy-ink); border-radius: 3px; background: #d9c9a3; }
+.cx-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; display: block; pointer-events: none; }
+.cx-plate { position: absolute; left: 18px; right: 18px; top: 16px; padding: 8px 10px 7px; text-align: center; background: rgba(248, 238, 219, 0.94); background-image: var(--jy-grain); border: 2px solid var(--jy-ink); border-radius: 3px; box-shadow: 3px 3px 0 rgba(20, 32, 33, 0.45); }
+.cx-name { margin: 0; font: 800 clamp(18px, 2.6vh, 30px)/1.05 var(--font-serif); text-transform: uppercase; letter-spacing: 0.03em; color: var(--jy-ink); }
+.cx-page .cx-firm { margin: 3px 0 0; font: 700 clamp(11px, 1.35vh, 14px)/1.2 var(--font-sans); color: var(--jy-terra-deep); letter-spacing: 0.04em; }
+.cx-page .cx-firm .cx-co { color: var(--jy-teal); }
+.cx-lv { position: absolute; right: 8px; bottom: 8px; display: grid; gap: 3px; justify-items: end; padding: 4px 7px; background: var(--jy-ink); color: var(--jy-cream); border-radius: 3px; font: 800 12px/1 var(--font-sans); letter-spacing: 0.06em; }
+.cx-lv .cx-xp { display: block; width: 54px; height: 5px; background: rgba(243, 230, 200, 0.25); border-radius: 3px; overflow: hidden; }
+.cx-lv .cx-xp i { display: block; height: 100%; background: var(--jy-ochre); }
+.cx-lv small { font: 700 10px/1 var(--font-sans); color: var(--jy-ochre); text-transform: uppercase; }
+.cx-kit { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 7px; border: 2px solid var(--jy-ink); border-radius: 3px; background: var(--jy-cream); }
+.cx-kit-i { display: grid; justify-items: center; gap: 3px; padding: 7px 4px 6px; text-align: center; }
+.cx-kit-i + .cx-kit-i { border-left: 1.5px dashed rgba(31, 46, 47, 0.45); }
+.cx-kit-i .ico { width: clamp(38px, 5vh, 56px); height: clamp(38px, 5vh, 56px); }
+.cx-kit-i b { font: 800 clamp(11px, 1.3vh, 14px)/1.1 var(--font-sans); color: var(--jy-ink); }
+.cx-page .cx-trait { display: none; }
+.cx-locktag { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%) rotate(-4deg); width: 62%; display: grid; justify-items: center; gap: 4px; padding: 16px 12px 12px; background: var(--jy-paper); background-image: var(--jy-grain); border: 2.5px solid var(--jy-ink); border-radius: 4px; box-shadow: 4px 5px 0 rgba(12, 22, 23, 0.5); text-align: center;
+  clip-path: polygon(14% 0, 86% 0, 100% 14%, 100% 100%, 0 100%, 0 14%); z-index: 2; }
+.cx-locktag .ico { width: 52px; height: 52px; }
+.cx-locktag b { font: 800 20px/1 var(--font-serif); text-transform: uppercase; letter-spacing: 0.06em; color: var(--jy-terra-deep); }
+.cx-locktag span { font: 700 14px/1.2 var(--font-sans); color: var(--jy-ink); }
+.cx-poster.locked .cx-kit { filter: grayscale(0.7); opacity: 0.75; }
+.cx-arrow { position: absolute; top: 50%; z-index: 20; width: 48px; height: 64px; transform: translateY(-50%); border: 2.5px solid var(--jy-ink); border-radius: 5px; background: var(--jy-ochre); background-image: var(--jy-grain); color: var(--jy-ink); font: 800 24px/1 var(--font-sans); box-shadow: 3px 4px 0 rgba(12, 22, 23, 0.55); cursor: pointer; }
+.cx-arrow.prev { left: 20px; } .cx-arrow.next { right: 20px; }
+.cx-arrow:active { transform: translateY(calc(-50% + 2px)); box-shadow: 1px 2px 0 rgba(12, 22, 23, 0.55); }
+.cx-dots { flex: none; display: flex; justify-content: center; gap: 4px; padding: 2px 0 0; }
+.cx-dot { width: 30px; height: 30px; border: 0; background: none; padding: 0; position: relative; cursor: pointer; }
+.cx-dot::before { content: ""; position: absolute; left: 50%; top: 50%; width: 11px; height: 11px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(243, 230, 200, 0.45); border: 2px solid var(--jy-ink); }
+.cx-dot.locked::before { background: rgba(31, 46, 47, 0.7); border-color: rgba(243, 230, 200, 0.5); }
+.cx-dot.on::before { width: 15px; height: 15px; background: var(--jy-terra); border-color: var(--jy-cream); }
+
+/* Side: blurb, modifiers, ticket */
+.cx-side { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.cx-page .cx-blurb { margin: 0; text-align: center; font: italic 500 15px/1.3 var(--font-serif); color: #f3e6c8; min-height: 2.6em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cx-mods { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 10px 12px 12px; background: var(--jy-paper); background-image: var(--jy-grain); color: var(--jy-ink); border: 2.5px solid var(--jy-ink); border-radius: 6px; box-shadow: var(--jy-shadow); }
+.cx-h { margin: 0; display: flex; align-items: baseline; justify-content: space-between; font: 800 13px/1 var(--font-sans) !important; letter-spacing: 0.18em; text-transform: uppercase; color: var(--jy-terra-deep) !important; }
+.cx-rules { font: 800 13px/1 var(--font-sans) !important; letter-spacing: 0.04em; text-transform: none; color: var(--jy-teal) !important; background: none; border: 0; padding: 8px 4px; margin: -8px -4px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cx-rating { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "stamp ladder" "stamp rule" "stamp next"; column-gap: 12px; row-gap: 5px; align-items: center; }
+.cx-stamp-row { grid-area: stamp; display: flex; align-items: center; gap: 6px; }
+.cx-step { width: 40px; height: 56px; border: 2px solid var(--jy-ink); border-radius: 4px; background: var(--jy-cream); color: var(--jy-ink); font: 800 22px/1 var(--font-sans); cursor: pointer; }
+.cx-step[disabled], .cx-step[aria-disabled="true"] { opacity: 0.35; cursor: not-allowed; }
+.cx-stamp { position: relative; width: 112px; height: 92px; display: grid; place-items: center; align-content: center; gap: 2px; background: var(--jy-teal-deep); color: #f6e7c4; border: 3px double #f3e6c8; outline: 2.5px solid var(--jy-ink); border-radius: 4px; transform: rotate(-3deg); box-shadow: 3px 4px 0 rgba(12, 22, 23, 0.45);
+}
+.cx-stamp::before { content: ""; position: absolute; inset: 4px; border: 1.5px dashed rgba(243, 230, 200, 0.55); border-radius: 2px; pointer-events: none; }
+.cx-stamp small { font: 800 9px/1 var(--font-sans); letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; }
+.cx-stamp b { font: 800 36px/1 var(--font-serif); letter-spacing: 0.02em; }
+.cx-stamp em { font: 800 11px/1 var(--font-sans); font-style: normal; color: var(--jy-ochre); }
+.cx-stamp.t3, .cx-stamp.t4, .cx-stamp.t5 { background: #7a5a1c; }
+.cx-stamp.t6, .cx-stamp.t7, .cx-stamp.t8 { background: var(--jy-terra-deep); }
+.cx-stamp.t9, .cx-stamp.t10 { background: #3a1a12; }
+.cx-ladder { grid-area: ladder; display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 3px; }
+.cx-pip { min-width: 0; height: 30px; padding: 0; border: 1.5px solid var(--jy-ink); border-radius: 3px; background: var(--jy-cream); color: var(--jy-ink); font: 800 10px/1 var(--font-sans); cursor: pointer; }
+.cx-pip.past { background: #e3d3ad; }
+.cx-pip.on { background: var(--jy-teal-deep); color: #f6e7c4; box-shadow: 0 0 0 2px var(--jy-ochre); }
+.cx-pip.locked { background: repeating-linear-gradient(135deg, #d8cdb2 0 4px, #cbbf9f 4px 8px); color: rgba(31, 46, 47, 0.45); border-color: rgba(31, 46, 47, 0.4); cursor: not-allowed; }
+.cx-page .cx-rule { grid-area: rule; margin: 0; font: 600 13px/1.3 var(--font-sans); color: var(--jy-ink); }
+.cx-page .cx-rule b { color: var(--jy-teal); margin-right: 4px; white-space: nowrap; }
+.cx-page .cx-next { grid-area: next; margin: 0; min-height: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font: 700 12px/1.2 var(--font-sans); color: rgba(31, 46, 47, 0.7); }
+.cx-next .ico { width: 18px; height: 18px; vertical-align: -4px; }
+.cx-next.cx-shake { animation: cx-shake 0.4s; color: var(--jy-terra-deep); }
+@keyframes cx-shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+.cx-fc { padding: 2px 6px; border: 1.5px solid var(--jy-teal); border-radius: 3px; color: var(--jy-teal); }
+.cx-perks { position: relative; border-top: 1.5px dashed rgba(31, 46, 47, 0.45); padding-top: 8px; }
+.cx-perks-h { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; font: 800 12px/1 var(--font-sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--jy-terra-deep); }
+.cx-slots { padding: 3px 7px; border-radius: 3px; background: var(--jy-ink); color: var(--jy-cream); letter-spacing: 0.06em; }
+.cx-perks-h small { font: 700 11px/1 var(--font-sans); letter-spacing: 0.02em; text-transform: none; color: rgba(31, 46, 47, 0.65); }
+.cx-tags { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.cx-tag { position: relative; min-width: 0; display: grid; justify-items: center; align-content: start; gap: 3px; padding: 14px 2px 7px; background: #efe0bd; background-image: var(--jy-grain); border: 2px solid var(--jy-ink); border-radius: 3px 3px 5px 5px; color: var(--jy-ink); cursor: pointer;
+  clip-path: polygon(22% 0, 78% 0, 100% 16%, 100% 100%, 0 100%, 0 16%); transform: rotate(var(--r, 0deg)); transition: transform 0.15s; }
+.cx-tag:nth-child(odd) { --r: -2deg; } .cx-tag:nth-child(3n) { --r: 1.5deg; }
+.cx-tag .cx-hole { position: absolute; top: 5px; left: 50%; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: var(--jy-teal-deep); box-shadow: 0 0 0 1.5px var(--jy-ink); }
+.cx-tag .ico { width: clamp(36px, 4.4vh, 48px); height: clamp(36px, 4.4vh, 48px); }
+.cx-tag b { font: 800 11px/1.1 var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.cx-tag.on { background-color: #f6e7c4; box-shadow: inset 0 0 0 3px var(--jy-teal); }
+.cx-tag.focus { transform: translateY(-4px) rotate(0deg); }
+.cx-tag.locked .ico { filter: grayscale(1) contrast(0.85); opacity: 0.55; }
+.cx-tag.locked b { color: rgba(31, 46, 47, 0.6); }
+.cx-check { position: absolute; top: 12px; right: 5px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: var(--jy-teal); color: var(--jy-cream); font: 800 13px/1 var(--font-sans); font-style: normal; border: 1.5px solid var(--jy-ink); }
+.cx-price { font: 800 11px/1 var(--font-sans); font-style: normal; color: var(--jy-terra-deep); }
+.cx-tip { position: absolute; left: 0; right: 0; bottom: calc(100% - 4px); z-index: 30; display: grid; grid-template-columns: 1fr auto; column-gap: 10px; row-gap: 2px; align-items: center; padding: 10px 40px 10px 12px; background: var(--jy-ink); color: var(--jy-cream); border-radius: 5px; box-shadow: 4px 5px 0 rgba(12, 22, 23, 0.45); }
+.cx-tip > b { grid-column: 1; font: 800 16px/1.1 var(--font-serif); color: #f6e7c4; }
+.cx-tip .up { grid-column: 1; font: 700 13px/1.25 var(--font-sans); color: #a9e3cf; }
+.cx-tip .down { grid-column: 1; font: 700 13px/1.25 var(--font-sans); color: #ffb3a1; }
+.cx-tip-btn, .cx-tip-lock { grid-column: 2; grid-row: 1 / span 3; }
+.cx-tip-btn { min-height: 44px; padding: 0 16px; border: 2px solid var(--jy-cream); border-radius: 4px; background: transparent; color: var(--jy-cream); font: 800 14px/1 var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; }
+.cx-tip-btn.go { background: var(--jy-teal); }
+.cx-tip-lock { max-width: 170px; font: 700 12px/1.25 var(--font-sans); color: var(--jy-ochre); }
+.cx-tip-lock .ico { width: 18px; height: 18px; vertical-align: -4px; }
+.cx-tip-x { position: absolute; top: 4px; right: 4px; width: 32px; height: 32px; border: 0; background: none; color: var(--jy-cream); font: 700 22px/1 var(--font-sans); cursor: pointer; }
+.cx-tip::after { content: ""; position: absolute; left: clamp(16px, var(--tx, 50%), calc(100% - 16px)); bottom: -8px; width: 16px; height: 16px; background: var(--jy-ink); transform: translateX(-50%) rotate(45deg); }
+.cx-packs { margin-top: 8px; min-height: 36px; padding: 0 12px; border: 1.5px dashed var(--jy-ink); border-radius: 4px; background: none; color: var(--jy-teal); font: 800 12px/1 var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.cx-ticket { display: grid; gap: 8px; }
+.cx-depart { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 6px; }
+.cx-depart-face { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 64px; background: var(--jy-terra); background-image: var(--jy-grain); color: var(--jy-cream); border: 2.5px solid var(--jy-ink); border-radius: 6px; box-shadow: var(--jy-shadow);
+  -webkit-mask: radial-gradient(circle at 0 50%, transparent 10px, #000 10.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 10px, #000 10.5px) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle at 0 50%, transparent 10px, #000 10.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 10px, #000 10.5px) right / 51% 100% no-repeat; }
+.cx-depart-face b { font: 800 25px/1 var(--font-serif); text-transform: uppercase; letter-spacing: 0.06em; }
+.cx-depart-face small { font: 700 12px/1.2 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.92; padding: 0 18px; text-align: center; }
+.cx-depart:active .cx-depart-face { transform: translateY(2px); box-shadow: 1px 2px 0 rgba(20, 32, 33, 0.55); }
+.cx-depart[disabled] { cursor: not-allowed; }
+.cx-depart[disabled] .cx-depart-face { background-color: #8c8270; color: #efe4c9; }
+.cx-depart[disabled] .cx-depart-face small { text-transform: none; letter-spacing: 0.02em; font-size: 13px; }
+.cx-stubs { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 0.8fr); gap: 8px; }
+.cx-seed { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 0 6px 0 10px; background: rgba(243, 230, 200, 0.1); border: 1.5px dashed rgba(243, 230, 200, 0.55); border-radius: 5px; }
+.cx-seed label { font: 800 10px/1 var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--jy-ochre); white-space: nowrap; }
+.cx-seed input { flex: 1; min-width: 0; height: 36px; font: 700 15px/1 ui-monospace, "Courier New", monospace; letter-spacing: 0.1em; color: var(--jy-ink) !important; background: var(--jy-paper) !important; border: 2px solid var(--jy-ink) !important; border-radius: 4px; padding: 0 8px; box-sizing: border-box; }
+.cx-roll { height: 36px; padding: 0 10px; border: 2px solid var(--jy-ink); border-radius: 4px; background: var(--jy-ochre); color: var(--jy-ink); font: 800 12px/1 var(--font-sans); text-transform: uppercase; cursor: pointer; }
+.cx-stub { min-height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0 6px; border: 2px solid var(--jy-ink); border-radius: 5px; background: var(--jy-paper); background-image: var(--jy-grain); color: var(--jy-ink); font: 800 13px/1.1 var(--font-sans); text-transform: uppercase; letter-spacing: 0.04em; box-shadow: 2px 3px 0 rgba(12, 22, 23, 0.45); cursor: pointer; }
+.cx-stub small { font: 700 11px/1 var(--font-sans); text-transform: none; color: var(--jy-teal); letter-spacing: 0; }
+.cx-stub.ghost { background: transparent; color: #f6e7c4; border-color: rgba(243, 230, 200, 0.6); box-shadow: none; }
+.ico { display: inline-block; width: 40px; height: 40px; flex: none; background-image: url("assets/journey/icons.webp"); background-size: 1800% 100%; background-repeat: no-repeat; border-radius: 50%; font-style: normal; }
+.ico.ico-t { background-image: url("assets/journey/tokens.webp"); background-size: 800% 100%; }
+
+/* Landscape: carousel left, modifiers right */
+@media (min-aspect-ratio: 1/1) {
+  #screen-exec .cx-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-rows: minmax(0, 1fr); column-gap: 22px; padding: 14px 22px !important; }
+  .cx-stage { margin: 0 -22px 0 -22px; }
+  .cx-track { --step: 70%; }
+  .cx-side { justify-content: center; gap: 10px; }
+  .cx-page .cx-head h2 { font-size: 24px !important; }
+  .cx-page .cx-blurb { text-align: left; font-size: 16px; }
+  .cx-stamp { width: 136px; height: 112px; } .cx-stamp b { font-size: 44px; }
+  .cx-step { height: 64px; }
+  .cx-mods { padding: 14px 16px 16px; gap: 12px; }
+  .cx-page .cx-rule { font-size: 14px; }
+  .cx-pip { height: 34px; font-size: 11px; }
+  .cx-tag { padding-top: 16px; } .cx-tag .ico { width: 52px; height: 52px; } .cx-tag b { font-size: 12px; }
+  .cx-depart-face { min-height: 78px; } .cx-depart-face b { font-size: 30px; }
+  .cx-stub { min-height: 54px; } .cx-seed input { height: 40px; }
+  .cx-arrow.prev { left: 10px; } .cx-arrow.next { right: 10px; }
+}
+@media (max-width: 480px) {
+  #screen-exec .cx-inner { padding: 8px 10px !important; gap: 6px; }
+  .cx-head .kicker { font-size: 10px; letter-spacing: 0.1em; }
+  .cx-page .cx-head h2 { font-size: 19px !important; }
+  .cx-stage { margin: 0 -10px; padding: 6px 0 8px; }
+  .cx-track { inset: 6px 0 8px; --step: 80%; }
+  .cx-plate { left: 10px; right: 10px; top: 10px; padding: 5px 6px; }
+  .cx-name { font-size: 17px; } .cx-page .cx-firm { font-size: 10px; }
+  .cx-lv { right: 5px; bottom: 5px; padding: 3px 5px; } .cx-lv .cx-xp { width: 40px; }
+  .cx-kit-i { padding: 4px 2px; } .cx-kit-i .ico { width: 30px; height: 30px; } .cx-kit-i b { font-size: 10px; }
+  .cx-arrow { width: 34px; height: 48px; font-size: 18px; } .cx-arrow.prev { left: 6px; } .cx-arrow.next { right: 6px; }
+  .cx-dot { width: 24px; height: 24px; }
+  .cx-page .cx-blurb { display: none; }
+  .cx-mods { padding: 8px 10px 10px; gap: 6px; }
+  .cx-rating { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "stamp rule" "next next"; column-gap: 8px; }
+  .cx-ladder { display: none; }
+  .cx-stamp { width: 74px; height: 62px; } .cx-stamp b { font-size: 24px; } .cx-stamp small { font-size: 7px; } .cx-stamp em { font-size: 9px; }
+  .cx-step { width: 28px; height: 46px; font-size: 16px; }
+  .cx-page .cx-rule { font-size: 12px; }
+  .cx-tags { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+  .cx-tag { padding: 12px 1px 4px; } .cx-tag .ico { width: 30px; height: 30px; } .cx-tag b { display: none; } .cx-check { top: 8px; right: 1px; width: 16px; height: 16px; font-size: 11px; } .cx-price { font-size: 9px; }
+  .cx-depart-face { min-height: 54px; } .cx-depart-face b { font-size: 20px; }
+  .cx-stubs { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.8fr); gap: 5px; }
+  .cx-seed { padding: 0 4px; gap: 4px; } .cx-seed label { display: none; } .cx-seed input { height: 34px; font-size: 13px; padding: 0 5px; letter-spacing: 0.04em; } .cx-roll { padding: 0 6px; font-size: 10px; }
+  .cx-stub { min-height: 44px; font-size: 11px; } .cx-stub small { font-size: 10px; }
+}
+}
+
+/* Highlight polish (2026-11-14): ink/terracotta outline on ochre surfaces, sideways hand, finer globe rings */
+@keyframes ld-breathe-ink { 0%, 100% { outline-offset: 2px; outline-color: var(--ld-ink); } 50% { outline-offset: 6px; outline-color: var(--ld-terra); } }
+@keyframes ld-breathe-ink-in { 0%, 100% { outline-offset: -4px; outline-color: var(--ld-ink); } 50% { outline-offset: -1px; outline-color: var(--ld-terra); } }
+.ld-act.ld-on-ochre:not(svg *) { outline-color: var(--ld-ink) !important; animation-name: ld-breathe-ink !important; }
+#bk-panel .ld-act.ld-on-ochre, #door .df-hand .dc.ld-act.ld-on-ochre, #overlay .bc-use.ld-act.ld-on-ochre { animation-name: ld-breathe-ink-in !important; }
+.ld-arrow.left svg { animation-name: ld-bob-left; transform: rotate(-90deg); }
+.ld-arrow.right svg { animation-name: ld-bob-right; transform: rotate(90deg); }
+@keyframes ld-bob-left { 0%, 100% { transform: rotate(-90deg) translateY(0); } 50% { transform: rotate(-90deg) translateY(-8px); } }
+@keyframes ld-bob-right { 0%, 100% { transform: rotate(90deg) translateY(0); } 50% { transform: rotate(90deg) translateY(-8px); } }
+.desk.is-globe .map .pin.ld-act .ring { stroke-width: 2.4px !important; vector-effect: non-scaling-stroke; stroke-dasharray: 6 4; transform: translateY(-8px) scale(2.5); }
+.desk.is-globe .map .pin.ld-act .pin-tag rect { stroke-width: 2.6px !important; vector-effect: non-scaling-stroke; stroke-dasharray: 7 4; }
+#screen-exec .cx-depart.ld-act { outline-offset: 4px; border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) {
+  .ld-act.ld-on-ochre:not(svg *) { animation: none !important; outline-color: var(--ld-ink) !important; }
+  .cx-poster { transition: none; }
+}
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -9342,89 +9540,159 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     return '<span class="div-badge div-stamp" aria-label="' + (meta.dividends || 0) + ' Dividends">' + tok("div") + (meta.dividends || 0) + "</span>";
   }
 
+  /* ---------- Executive select: swipeable poster carousel (2026-11-14) ---------- */
+  var ICONS = ["water", "power", "food", "air", "logistics", "cheaper", "delay", "quiet", "heat", "handshake", "media", "stamp", "permit", "offshore", "engineer", "deed", "lock", "medal"];
+  function ico(name, extra) {
+    var t = TOKENS.indexOf(name);
+    if (t >= 0) return '<i class="ico ico-t ico-' + name + (extra ? " " + extra : "") + '" aria-hidden="true" style="background-position:' + (t * 100 / 7).toFixed(3) + '% 0"></i>';
+    var i = ICONS.indexOf(name); if (i < 0) i = 0;
+    return '<i class="ico ico-' + name + (extra ? " " + extra : "") + '" aria-hidden="true" style="background-position:' + (i * 100 / (ICONS.length - 1)).toFixed(3) + '% 0"></i>';
+  }
+  LD.ico = ico;
+  /* Three painted badges per executive, from their real starting kit. */
+  function execBadges(ex) {
+    var s = ex.start || {}, p = ex.perks || {};
+    var out = [];
+    ["water", "power", "food", "air"].forEach(function (k) { if (s[k]) out.push([k, k.charAt(0).toUpperCase() + k.slice(1) + " room built", "Starts with a Sound " + k + " room already in the bunker."]); });
+    ["water", "power", "air"].forEach(function (k) { var d = p[k + "UpgradeDiscount"]; if (d) out.push(["cheaper", k.charAt(0).toUpperCase() + k.slice(1) + " works −$" + d + "M", k.charAt(0).toUpperCase() + k.slice(1) + " upgrades cost $" + d + "M less."]); });
+    if (p.foodCollapseRelief) { out.push(["quiet", "Quieter street", "Starts at unrest " + s.unrest + ", the calmest seat at the table."]); out.push(["delay", "Slower Act I", "The collapse clock runs a little slower through 1978."]); }
+    if (p.conversionRate) out.push(["offshore", "Private keeps " + Math.round(p.conversionRate * 100) + "%", "Going private keeps " + Math.round(p.conversionRate * 100) + "% of every deal's cash."]);
+    if (p.privateWorks) out.push(["cheaper", "Contractors −" + Math.round((1 - p.privateWorks) * 100) + "%", "Private contractors build " + Math.round((1 - p.privateWorks) * 100) + "% cheaper; engineers cost +$" + (p.engineerExtra || 0) + "M."]);
+    if (p.delayBonus) { out.push(["unrest", "More heat", "Starts at unrest " + s.unrest + "."]); out.push(["delay", "Bad news +" + p.delayBonus + "Q", "Delayed fallout lands one quarter later."]); }
+    if (s.collapse > 20) out.push(["heat", "Hotter clock", "Collapse starts at " + s.collapse + " instead of 20."]);
+    out.unshift(["cash", "$" + s.cash + "M float", "Starting cash: $" + s.cash + "M."]);
+    /* cash first only when it's the headline (Julian, Cassius); sector rooms lead otherwise */
+    if (s.water || s.power || s.food || s.air) out.push(out.shift());
+    return out.slice(0, 3);
+  }
+  LD.execBadges = execBadges;
+  var PERK_ICON = { golden: "handshake", media: "media", regulator: "stamp", permits: "permit", offshore: "offshore", retainer: "engineer", legacy: "deed" };
+  var PERK_SHORT = { golden: "Handshake", media: "Media", regulator: "Regulator", permits: "Permits", offshore: "Offshore", retainer: "Retainer", legacy: "Legacy" };
+  function lockShort(ex) {
+    if (ex.unlock === "finish-run") return "Finish any run";
+    if (ex.unlock === "win-run") return "Evacuate once · or ◈ " + ex.price;
+    if (ex.unlock === "three-runs") return "Finish 3 runs · or ◈ " + ex.price;
+    if (ex.unlock === "buy") return "Buy the seat · ◈ " + ex.price;
+    return "Locked";
+  }
+  function posterHtml(meta, ex, o) {
+    var open = LD.isExecutiveUnlocked(ex.id, meta);
+    var lvx = LD.levelFromXp ? LD.levelFromXp((meta.xp || {})[ex.id] | 0) : null;
+    var best = meta.bestRating && meta.bestRating[ex.id] != null ? LD.ratingName(meta.bestRating[ex.id]) : null;
+    var a = Math.abs(o);
+    var h = '<article class="cx-poster' + (o === 0 ? " on" : "") + (open ? "" : " locked") + '" data-id="' + ex.id + '" style="--o:' + o + ";--a:" + a + '" role="group" aria-roledescription="slide" aria-label="' + escapeHtml(ex.name) + (open ? "" : " (locked)") + '"' + (a > 1 ? ' aria-hidden="true"' : "") + ">";
+    h += '<div class="cx-art"><img src="assets/exec/exec-' + ex.id + (open ? "" : "-locked") + '.webp" alt="" draggable="false">';
+    if (open && lvx) {
+      h += '<div class="cx-lv" title="' + (lvx.need ? lvx.into + "/" + lvx.need + " XP to Lv " + (lvx.level + 1) : "Max level") + '"><b>Lv ' + lvx.level + '</b><i class="cx-xp"><i style="width:' + (lvx.need ? Math.round(100 * lvx.into / lvx.need) : 100) + '%"></i></i>' + (best ? '<small>best ' + best + "</small>" : "") + "</div>";
+    }
+    h += "</div>";
+    h += '<header class="cx-plate"><h3 class="cx-name">' + escapeHtml(ex.name) + '</h3><p class="cx-firm"><span class="cx-title">' + escapeHtml(ex.title) + '</span> · <span class="cx-co">' + escapeHtml(ex.firm) + "</span></p></header>";
+    if (!open) h += '<div class="cx-locktag">' + ico("lock") + "<b>Locked</b><span>" + escapeHtml(lockShort(ex)) + "</span></div>";
+    h += '<footer class="cx-kit">';
+    execBadges(ex).forEach(function (b) { h += '<span class="cx-kit-i" title="' + escapeHtml(b[2]) + '">' + ico(b[0]) + "<b>" + escapeHtml(b[1]) + "</b></span>"; });
+    h += "</footer>";
+    h += '<p class="cx-trait">' + escapeHtml(ex.trait || "") + "</p>";
+    return h + "</article>";
+  }
+  function execOffset(i, cur, n) { var o = ((i - cur) % n + n) % n; if (o > n / 2) o -= n; return o; }
+  LD.execOffset = execOffset;
+
+  /* Right-hand / lower half: modifiers, ticket, depart. Re-rendered on its own when the carousel moves. */
+  function renderExecSide(opts) {
+    opts = opts || {};
+    var meta = LD.migrateMeta(opts.meta || {});
+    var selected = opts.selectedExec || "mara";
+    var ex = LD.execById(selected);
+    var open = LD.isExecutiveUnlocked(selected, meta);
+    var rating = opts.rating | 0;
+    var maxR = LD.ratingUnlocked(meta, selected);
+    var R = LD.RATINGS[rating];
+    var html = '<p class="cx-blurb">' + escapeHtml(open ? ex.blurb : unlockHint(ex)) + "</p>";
+    html += '<section class="cx-mods" aria-label="Modifiers"><h3 class="cx-h">Modifiers <button class="link-btn fy-explain cx-rules" id="btn-rules" data-explain="ratings">All rules ▸</button></h3>';
+    /* Credit rating stamp */
+    html += '<div class="cx-rating"><div class="cx-stamp-row">';
+    html += '<button class="cx-step" id="cx-r-prev" aria-label="Lower rating"' + (rating <= 0 ? " disabled" : "") + ">◂</button>";
+    html += '<div class="cx-stamp t' + Math.min(10, rating) + '" role="status" aria-label="Credit rating ' + R.id + '"><small>Credit rating</small><b>' + R.id + "</b><em>×" + LD.ratingMultiplier(rating).toFixed(1) + " exit ◈</em></div>";
+    html += '<button class="cx-step" id="cx-r-next" aria-label="Raise rating"' + (rating >= LD.RATINGS.length - 1 ? " disabled" : rating >= maxR ? ' aria-disabled="true" data-locked="1"' : "") + ">▸</button></div>";
+    html += '<div class="cx-ladder" role="radiogroup" aria-label="Credit rating ladder">';
+    LD.RATINGS.forEach(function (r, i) {
+      var lk = i > maxR || !open;
+      html += '<button class="cx-pip' + (i === rating ? " on" : "") + (lk ? " locked" : "") + (i < rating ? " past" : "") + '" role="radio" aria-checked="' + (i === rating) + '" data-rating="' + i + '" title="' + escapeHtml(r.id + (lk ? " · locked: win at " + LD.ratingName(Math.max(0, i - 1)) + " to unlock" : " · " + r.text)) + '"' + (lk ? " disabled" : "") + ">" + r.id + "</button>";
+    });
+    html += "</div>";
+    var rule = rating === 0 ? R.text : R.text + (rating > 1 ? " · +" + (rating - 1) + " earlier rule" + (rating > 2 ? "s" : "") : "");
+    html += '<p class="cx-rule"><b>×' + LD.ratingBaseMult(rating).toFixed(1) + " base · ×" + LD.ratingMultiplier(rating).toFixed(1) + " exit ◈</b> " + escapeHtml(rule) + "</p>";
+    var nextLocked = rating === maxR && maxR < LD.RATINGS.length - 1;
+    var fc = meta.fyClears && LD.FIRST_CLEAR ? (meta.fyClears.indexOf(selected + ":" + rating) === -1 ? "First clear +" + LD.FIRST_CLEAR(rating).div + " ◈" : "Cleared here") : "";
+    html += '<p class="cx-next">' + (nextLocked ? ico("lock") + " " + LD.RATINGS[maxR + 1].id + ": win a run at " + R.id + " to unlock" : "") + (fc ? '<span class="cx-fc">' + escapeHtml(fc) + "</span>" : "") + "</p>";
+    html += "</div>";
+    /* Perquisites as luggage tags */
+    var slots = LD.perkSlots(meta, rating);
+    var eqN = meta.equipped.filter(function (id) { return meta.owned.indexOf("perk:" + id) !== -1; }).length;
+    html += '<div class="cx-perks"><div class="cx-perks-h"><span>Perks</span><b class="cx-slots" aria-label="' + Math.min(eqN, slots) + " of " + slots + ' slots">' + Math.min(eqN, slots) + "/" + slots + "</b>" + (rating >= LD.PERK_CAP_RATING && LD.perkSlots(meta) > 1 ? '<small>1 slot at BB and below</small>' : "") + "</div>";
+    html += '<div class="cx-tags">';
+    LD.PERKS.forEach(function (p) {
+      var owned = meta.owned.indexOf("perk:" + p.id) !== -1, on = owned && meta.equipped.indexOf(p.id) !== -1;
+      html += '<button class="cx-tag' + (on ? " on" : "") + (owned ? "" : " locked") + (opts.perkFocus === p.id ? " focus" : "") + '" data-perk-tag="' + p.id + '" aria-pressed="' + on + '" aria-label="' + escapeHtml(p.name + (on ? ", equipped" : owned ? ", owned" : ", locked, " + p.price + " Dividends")) + '">' +
+        '<i class="cx-hole"></i>' + ico(PERK_ICON[p.id] || "medal") + "<b>" + escapeHtml(PERK_SHORT[p.id] || p.name) + "</b>" + (on ? '<em class="cx-check">✓</em>' : owned ? "" : '<em class="cx-price">◈' + p.price + "</em>") + "</button>";
+    });
+    html += "</div>";
+    var fp = opts.perkFocus ? LD.PERKS.filter(function (p) { return p.id === opts.perkFocus; })[0] : null;
+    if (fp) {
+      var fo = meta.owned.indexOf("perk:" + fp.id) !== -1, fon = fo && meta.equipped.indexOf(fp.id) !== -1;
+      var fi = LD.PERKS.indexOf(fp);
+      html += '<div class="cx-tip" role="dialog" style="--tx:' + ((fi + 0.5) * 100 / LD.PERKS.length).toFixed(2) + '%" aria-label="' + escapeHtml(fp.name) + '"><b>' + escapeHtml(fp.name) + '</b><span class="up">▲ ' + escapeHtml(fp.up) + '</span><span class="down">▼ ' + escapeHtml(fp.down) + "</span>" +
+        (fo ? '<button class="cx-tip-btn' + (fon ? "" : " go") + '" data-perk="' + fp.id + '">' + (fon ? "Unequip" : "Equip") + "</button>" : '<span class="cx-tip-lock">' + ico("lock") + " ◈ " + fp.price + " in the Summit Lounge" + (meta.dividends >= fp.price ? " · you can afford it" : "") + "</span>") +
+        '<button class="cx-tip-x" id="cx-tip-x" aria-label="Close">×</button></div>';
+    }
+    var packsOwned = (LD.PACKS || []).filter(function (p) { return meta.owned.indexOf("pack:" + p.id) !== -1; });
+    if (packsOwned.length) html += '<button class="cx-packs" id="btn-loadout">Prospectus ' + packsOwned.filter(function (p) { return meta.packsOff.indexOf(p.id) === -1; }).length + "/" + packsOwned.length + " ▸</button>";
+    html += "</div></section>";
+    /* Hidden loadout content for the Prospectus sheet (old logic, unchanged) */
+    html += '<div class="lo-extra" id="lo-extra" hidden>';
+    if (packsOwned.length) {
+      html += '<h3>Prospectus</h3><div class="perk-row">';
+      packsOwned.forEach(function (p) {
+        var on2 = meta.packsOff.indexOf(p.id) === -1;
+        html += '<button class="pack-chip perk-chip' + (on2 ? " on" : "") + '" data-pack="' + p.id + '" aria-pressed="' + on2 + '"><b>' + escapeHtml(p.name) + "</b><span>" + escapeHtml(p.text) + "</span></button>";
+      });
+      html += "</div>";
+    }
+    html += "</div>";
+    /* Ticket strip */
+    html += '<div class="cx-ticket">';
+    html += '<button class="cx-depart" id="btn-start"' + (open ? "" : " disabled") + '><span class="cx-depart-face"><b>' + (open ? "Depart for 1978" : "Seat locked") + "</b><small>" + escapeHtml(open ? ex.name + " · " + R.id + (slots && eqN ? " · " + Math.min(eqN, slots) + " perk" + (Math.min(eqN, slots) > 1 ? "s" : "") : "") : unlockHint(ex)) + "</small></span></button>";
+    html += '<div class="cx-stubs">';
+    html += '<div class="cx-seed"><label for="seed-input">Ticket No.</label><input id="seed-input" type="text" inputmode="text" autocomplete="off" placeholder="random" value="' + escapeHtml(opts.seedDraft || "") + '"><button class="cx-roll" id="btn-roll" type="button">Roll</button></div>';
+    html += '<button class="cx-stub" id="btn-boardroom2"' + (!open && ex.price && (meta.dividends || 0) >= ex.price ? " data-can-buy=\"1\"" : "") + '>Summit Lounge' + ((!open && ex.price) ? "<small>Buy seat ◈" + ex.price + "</small>" : "<small>◈ " + (meta.dividends || 0) + "</small>") + "</button>";
+    html += '<button class="cx-stub ghost" id="btn-back">◂ Street</button>';
+    html += "</div></div>";
+    return html;
+  }
+  LD.renderExecSide = renderExecSide;
+
   function renderExec(opts) {
     opts = opts || {};
     var meta = LD.migrateMeta(opts.meta || {});
     var selected = opts.selectedExec || "mara";
-    var rating = opts.rating | 0;
-    var maxR = LD.ratingUnlocked(meta, selected);
-    var html = '<div class="page inner exec-page jy-board"><div class="page-inner">';
-    html += '<div class="inner-head"><div class="kicker">Boarding · departures to 1978 ' + divBadge(meta) + '</div><h2>Who’s making the climb?</h2></div>';
-    html += '<div class="exec-list">';
-    LD.EXECUTIVES.forEach(function (ex) {
+    var cur = 0, n = LD.EXECUTIVES.length;
+    LD.EXECUTIVES.forEach(function (ex, i) { if (ex.id === selected) cur = i; });
+    var html = '<div class="page inner exec-page jy-board cx-page"><div class="page-inner cx-inner">';
+    html += '<div class="cx-left"><div class="inner-head cx-head"><div class="kicker">Boarding · departures to 1978 ' + divBadge(meta) + '</div><h2>Who’s making the climb?</h2></div>';
+    html += '<div class="cx-stage" id="cx-stage" aria-roledescription="carousel" aria-label="Executives" tabindex="0">';
+    html += '<div class="cx-track" id="cx-track">';
+    LD.EXECUTIVES.forEach(function (ex, i) { html += posterHtml(meta, ex, execOffset(i, cur, n)); });
+    html += "</div>";
+    html += '<button class="cx-arrow prev" id="cx-prev" aria-label="Previous executive">◂</button><button class="cx-arrow next" id="cx-next" aria-label="Next executive">▸</button>';
+    html += "</div>";
+    html += '<div class="cx-dots" role="tablist" aria-label="Choose executive">';
+    LD.EXECUTIVES.forEach(function (ex, i) {
       var open = LD.isExecutiveUnlocked(ex.id, meta);
-      var best = meta.bestRating && meta.bestRating[ex.id] != null ? LD.ratingName(meta.bestRating[ex.id]) : null;
-      html += '<button class="exec-card' + (selected === ex.id ? " on" : "") + (open ? "" : " locked") + '" data-id="' + ex.id + '" ' + (open ? "" : "disabled") + ">";
-      var lvx = LD.levelFromXp ? LD.levelFromXp((meta.xp || {})[ex.id] | 0) : null;
-      var initials = ex.name.replace(/^Dr\.\s+/, "").split(" ").map(function (w) { return w.charAt(0); }).join("");
-      var art = (LD.ISLAND_ART && LD.ISLAND_ART[ex.id]) || ("assets/island-" + ex.id + ".webp");
-      html += '<span class="ex-ava" aria-hidden="true"><img src="' + escapeHtml(art) + '" alt=""><i>' + escapeHtml(initials) + "</i></span>";
-      html += '<span class="ex-body">';
-      html += '<span class="name">' + escapeHtml(ex.name) + (open && lvx ? ' <span class="lv">Lv ' + lvx.level + "</span>" : "") + (best ? ' <span class="best">best ' + best + "</span>" : "") + "</span>";
-      html += '<span class="firm"><span class="ex-title">' + escapeHtml(ex.title) + '</span><span class="ex-co">' + escapeHtml(ex.firm) + "</span></span>";
-      if (ex.trait) html += '<span class="ex-trait">' + escapeHtml(ex.trait) + "</span>";
-      html += "<p>" + escapeHtml(open ? ex.blurb : unlockHint(ex)) + "</p></span>";
-      html += '<span class="bp-stub" aria-hidden="true">' + (open ? "<small>Seat</small><b>" + escapeHtml(initials) + "</b><i class=\"bp-bars\"></i>" : '<span class="bp-lock"></span><small>Locked</small>') + "</span></button>";
+      html += '<button class="cx-dot' + (i === cur ? " on" : "") + (open ? "" : " locked") + '" data-i="' + i + '" role="tab" aria-selected="' + (i === cur) + '" aria-label="' + escapeHtml(ex.name) + '"></button>';
     });
-    html += "</div>";
-
-    var sx = LD.levelFromXp ? LD.levelFromXp((meta.xp || {})[selected] | 0) : null;
-    html += '<section class="loadout">';
-    if (sx) {
-      var have = LD.perksAt(sx.level), nxt = LD.LEVEL_PERKS.filter(function (p) { return p.lv === sx.level + 1; })[0];
-      html += '<p class="lv-line"><span class="lv-t"><b>' + escapeHtml(LD.execById(selected).name) + " · Lv " + sx.level + "</b>" + (sx.need ? " · " + sx.into + "/" + sx.need + " XP" : " · max level") +
-        (nxt ? " · Next: " + escapeHtml(nxt.text) : "") + (have.length ? " · Perks: " + escapeHtml(have.map(function (p) { return p.text; }).join(", ")) : "") + "</span>" +
-        '<span class="xp-bar" aria-hidden="true"><span style="width:' + (sx.need ? Math.round(100 * sx.into / sx.need) : 100) + '%"></span></span></p>';
-    }
-    html += '<h3>Credit rating <button class="link-btn fy-explain" id="btn-rules" data-explain="ratings">ⓘ All rules</button></h3><p class="muted">Win at a rating to unlock the next. Every tier adds a rule; exits pay up to ×4 Dividends, and each first clear pays a bonus.</p>';
-    html += '<div class="rating-row" role="radiogroup" aria-label="Credit rating">';
-    LD.RATINGS.forEach(function (r, i) {
-      var lockedR = i > maxR;
-      html += '<button class="rating-chip' + (i === rating ? " on" : "") + (lockedR ? " locked" : "") + '" role="radio" aria-checked="' + (i === rating) + '" data-rating="' + i + '"' + (lockedR ? " disabled" : "") + ">" + r.id + "<small>×" + LD.ratingMultiplier(i).toFixed(1) + "</small></button>";
-    });
-    html += "</div>";
-    html += '<ul class="rating-mods">';
-    if (rating === 0) html += "<li>" + escapeHtml(LD.RATINGS[0].text) + "</li>";
-    if (rating === 0) html += "<li>Collapse drifts " + LD.DEFAULT_MODS.collapseTick + " a quarter, faster after Q8; bunker works +25% per act.</li>";
-    if (rating > 0) html += "<li>" + escapeHtml(LD.RATINGS[rating].text) + (rating > 1 ? " · plus " + (rating - 1) + " earlier rule" + (rating > 2 ? "s" : "") : "") + "</li>";
-    if (meta.fyClears && LD.FIRST_CLEAR) html += "<li>" + (meta.fyClears.indexOf(selected + ":" + rating) === -1 ? "First clear bonus: +" + LD.FIRST_CLEAR(rating).div + " ◈, +" + LD.FIRST_CLEAR(rating).xp + " XP" : "First clear done at this rating") + "</li>";
-    html += "<li>Rivals: " + (rating >= 7 ? "two" : "one") + ", " + (rating === 0 ? "passive" : rating < 5 ? "opportunistic" : rating < 8 ? "aggressive" : "ruthless") + "</li>";
-    html += "</ul>";
-
-    var slots = LD.perkSlots(meta, rating);
-    var ownedPerks = LD.PERKS.filter(function (p) { return meta.owned.indexOf("perk:" + p.id) !== -1; });
-    var packsOwned = (LD.PACKS || []).filter(function (p) { return meta.owned.indexOf("pack:" + p.id) !== -1; });
-    if (ownedPerks.length || packsOwned.length) {
-      var eqNames = ownedPerks.filter(function (p) { return meta.equipped.indexOf(p.id) !== -1; }).map(function (p) { return p.name; });
-      html += '<button class="btn btn-ghost lo-open" id="btn-loadout">💼 Perquisites ' + Math.min(meta.equipped.length, slots) + "/" + slots + (eqNames.length ? " · " + escapeHtml(eqNames.join(", ")) : "") + (packsOwned.length ? " · Prospectus " + packsOwned.filter(function (p) { return meta.packsOff.indexOf(p.id) === -1; }).length + "/" + packsOwned.length : "") + " ▸</button>";
-    }
-    html += '<div class="lo-extra" id="lo-extra">';
-    html += "<h3>Perquisites <small>" + Math.min(meta.equipped.length, slots) + "/" + slots + " equipped" + (rating >= LD.PERK_CAP_RATING && LD.perkSlots(meta) > 1 ? " · one slot at BB and below" : "") + "</small></h3>";
-    if (!ownedPerks.length) html += '<p class="muted">None yet. Buy Perquisites in the Boardroom.</p>';
-    else {
-      html += '<div class="perk-row">';
-      ownedPerks.forEach(function (p) {
-        var on = meta.equipped.indexOf(p.id) !== -1;
-        html += '<button class="perk-chip' + (on ? " on" : "") + '" data-perk="' + p.id + '" aria-pressed="' + on + '" title="' + escapeHtml(p.up + " · " + p.down) + '"><b>' + (on ? "✓ " : "") + escapeHtml(p.name) + "</b><span class=\"up\">" + escapeHtml(p.up) + "</span><span class=\"down\">" + escapeHtml(p.down) + "</span></button>";
-      });
-      html += "</div>";
-      var eqd = ownedPerks.filter(function (p) { return meta.equipped.indexOf(p.id) !== -1; });
-      html += '<p class="perk-detail">' + (eqd.length ? eqd.map(function (p) { return "<b>" + escapeHtml(p.name) + "</b> <span class=\"up\">" + escapeHtml(p.up) + "</span> · <span class=\"down\">" + escapeHtml(p.down) + "</span>"; }).join(" — ") : "Tap a Perquisite to equip it and read its terms.") + "</p>";
-    }
-    var packs = (LD.PACKS || []).filter(function (p) { return meta.owned.indexOf("pack:" + p.id) !== -1; });
-    if (packs.length) {
-      html += '<h3>Prospectus</h3><div class="perk-row">';
-      packs.forEach(function (p) {
-        var on = meta.packsOff.indexOf(p.id) === -1;
-        html += '<button class="pack-chip perk-chip' + (on ? " on" : "") + '" data-pack="' + p.id + '" aria-pressed="' + on + '"><b>' + escapeHtml(p.name) + "</b><span>" + escapeHtml(p.text) + "</span></button>";
-      });
-      html += "</div>";
-    }
-    html += "</div></section>";
-    html += '<div class="bp-ticketno"><label for="seed-input">Ticket No.</label><input id="seed-input" type="text" inputmode="text" autocomplete="off" placeholder="random" value="' + escapeHtml(opts.seedDraft || "") + '"><button class="btn btn-sm" id="btn-roll" type="button">Roll</button></div>';
-    html += '<div class="btn-row"><button class="btn btn-coral jy-depart" id="btn-start"><b>Depart for 1978</b><small>' + escapeHtml(LD.execById(selected).name) + " · " + LD.ratingName(rating) + "</small></button>";
-    html += '<button class="btn" id="btn-boardroom2">Summit Lounge</button>';
-    html += '<button class="btn btn-ghost" id="btn-back">◂ Back to the street</button></div></div></div>';
+    html += "</div></div>";
+    html += '<div class="cx-side" id="cx-side">' + renderExecSide(opts) + "</div>";
+    html += "</div></div>";
     return html;
   }
 
@@ -12300,32 +12568,127 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     return selectedRating;
   }
 
+  var perkFocus = null;
+  function execIndex(id) { for (var i = 0; i < LD.EXECUTIVES.length; i++) if (LD.EXECUTIVES[i].id === id) return i; return 0; }
+  function execOpts(meta) { return { meta: meta, selectedExec: selectedExec, rating: currentRating(meta), seedDraft: seedDraft, perkFocus: perkFocus }; }
   function renderExec() {
     var meta = loadMeta();
-    if (!LD.isExecutiveUnlocked(selectedExec, meta)) selectedExec = "mara";
-    $("screen-exec").innerHTML = LD.renderExec({ meta: meta, selectedExec: selectedExec, rating: currentRating(meta), seedDraft: seedDraft });
+    if (!LD.execById(selectedExec)) selectedExec = "mara";
+    $("screen-exec").innerHTML = LD.renderExec(execOpts(meta));
+    bindExecCarousel();
+    bindExecSide();
+    if ((meta.finished | 0) >= 1) setTimeout(function () { if (screen === "exec") pennyTip("ratings"); }, 400);
+  }
+  function renderExecSide() {
+    var side = $("cx-side"); if (!side) return renderExec();
+    var meta = loadMeta();
+    side.innerHTML = LD.renderExecSide(execOpts(meta));
+    bindExecSide();
+  }
+  /* Move the carousel without rebuilding it, so the posters slide. */
+  function selectExec(i, opts) {
+    var n = LD.EXECUTIVES.length;
+    i = ((i % n) + n) % n;
+    var id = LD.EXECUTIVES[i].id;
+    if (id === selectedExec && !(opts && opts.force)) return;
+    selectedExec = id; selectedRating = null; perkFocus = null;
+    var track = $("cx-track");
+    if (!track) return renderExec();
+    Array.prototype.forEach.call(track.querySelectorAll(".cx-poster"), function (p, k) {
+      var o = LD.execOffset(k, i, n), a = Math.abs(o);
+      var prev = +p.style.getPropertyValue("--o");
+      if (Math.abs(prev - o) > 1.5) p.classList.add("cx-jump"); else p.classList.remove("cx-jump");
+      p.style.setProperty("--o", o); p.style.setProperty("--a", a);
+      p.classList.toggle("on", o === 0);
+      if (a > 1) p.setAttribute("aria-hidden", "true"); else p.removeAttribute("aria-hidden");
+    });
+    requestAnimationFrame(function () { Array.prototype.forEach.call(track.querySelectorAll(".cx-jump"), function (p) { p.classList.remove("cx-jump"); }); });
+    Array.prototype.forEach.call(document.querySelectorAll(".cx-dot"), function (d, k) { d.classList.toggle("on", k === i); d.setAttribute("aria-selected", String(k === i)); });
+    if (!(opts && opts.silent)) tick();
+    renderExecSide();
+  }
+  LD.selectExec = function (id) { selectExec(execIndex(id)); };
+  function bindExecCarousel() {
+    var stage = $("cx-stage"), track = $("cx-track");
+    if (!stage || !track) return;
+    $("cx-prev").addEventListener("click", function () { selectExec(execIndex(selectedExec) - 1); });
+    $("cx-next").addEventListener("click", function () { selectExec(execIndex(selectedExec) + 1); });
+    Array.prototype.forEach.call(document.querySelectorAll(".cx-dot"), function (d) {
+      d.addEventListener("click", function () { selectExec(+d.getAttribute("data-i")); });
+    });
+    Array.prototype.forEach.call(track.querySelectorAll(".cx-poster"), function (p, k) {
+      p.addEventListener("click", function () { if (drag.moved) return; if (k !== execIndex(selectedExec)) selectExec(k); });
+    });
+    /* Touch / mouse swipe with snap */
+    var drag = { id: null, x0: 0, y0: 0, dx: 0, moved: false, t0: 0 };
+    stage.addEventListener("pointerdown", function (e) {
+      if (e.target.closest(".cx-arrow")) return;
+      drag.id = e.pointerId; drag.x0 = e.clientX; drag.y0 = e.clientY; drag.dx = 0; drag.moved = false; drag.t0 = Date.now();
+    });
+    stage.addEventListener("pointermove", function (e) {
+      if (drag.id !== e.pointerId) return;
+      var dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+      if (!drag.moved && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) { drag.moved = true; stage.classList.add("dragging"); try { stage.setPointerCapture(e.pointerId); } catch (er) {} }
+      if (drag.moved) {
+        drag.dx = dx;
+        var ps = track.querySelectorAll(".cx-poster"), on = track.querySelector(".cx-poster.on") || ps[0];
+        var stepPx = Math.max(60, on.offsetWidth * (parseFloat(getComputedStyle(track).getPropertyValue("--step")) || 76) / 100);
+        Array.prototype.forEach.call(ps, function (p) { var f = (+p.style.getPropertyValue("--o")) + dx / stepPx; p.style.setProperty("--f", f.toFixed(3)); p.style.setProperty("--af", Math.abs(f).toFixed(3)); });
+      }
+    });
+    function end(e) {
+      if (drag.id !== e.pointerId) return;
+      drag.id = null;
+      stage.classList.remove("dragging");
+      Array.prototype.forEach.call(track.querySelectorAll(".cx-poster"), function (p) { p.style.removeProperty("--f"); p.style.removeProperty("--af"); });
+      if (drag.moved) {
+        var w = stage.getBoundingClientRect().width, fast = Math.abs(drag.dx) / Math.max(1, Date.now() - drag.t0) > 0.45;
+        if (Math.abs(drag.dx) > Math.min(70, w * 0.12) || (fast && Math.abs(drag.dx) > 24)) selectExec(execIndex(selectedExec) + (drag.dx < 0 ? 1 : -1));
+        setTimeout(function () { drag.moved = false; }, 0);
+      }
+    }
+    stage.addEventListener("pointerup", end);
+    stage.addEventListener("pointercancel", end);
+    stage.addEventListener("keydown", function (e) { if (e.key === "Enter") { var b = $("btn-start"); if (b && !b.disabled) b.click(); } });
+  }
+  document.addEventListener("keydown", function (e) {
+    if (screen !== "exec" || !$("cx-stage")) return;
+    var t = e.target; if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    if ($("overlay") && !$("overlay").hidden && $("overlay").classList.contains("on")) return;
+    if (e.key === "ArrowLeft") { e.preventDefault(); selectExec(execIndex(selectedExec) - 1); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); selectExec(execIndex(selectedExec) + 1); }
+  });
+  function bindExecSide() {
+    var meta = loadMeta();
     var si = $("seed-input");
     if (si) si.addEventListener("input", function () { seedDraft = this.value.trim(); });
     var roll = $("btn-roll");
     if (roll) roll.addEventListener("click", function () { tick(); seedDraft = String((Math.floor(Math.random() * 900000) + 100000)); $("seed-input").value = seedDraft; });
-    Array.prototype.forEach.call(document.querySelectorAll(".exec-card"), function (btn) {
-      btn.addEventListener("click", function () {
-        tick();
-        selectedExec = btn.getAttribute("data-id");
-        selectedRating = null;
-        renderExec();
-      });
+    var max = LD.ratingUnlocked(meta, selectedExec);
+    var rp = $("cx-r-prev"), rn = $("cx-r-next");
+    if (rp) rp.addEventListener("click", function () { var r = currentRating(loadMeta()); if (r > 0) { tick(); selectedRating = r - 1; renderExecSide(); } });
+    if (rn) rn.addEventListener("click", function () {
+      var r = currentRating(loadMeta());
+      if (r < max) { tick(); selectedRating = r + 1; renderExecSide(); return; }
+      var nx = document.querySelector(".cx-next"); if (nx) { nx.classList.remove("cx-shake"); void nx.offsetWidth; nx.classList.add("cx-shake"); }
     });
-    Array.prototype.forEach.call(document.querySelectorAll(".rating-chip"), function (btn) {
-      btn.addEventListener("click", function () { tick(); selectedRating = +btn.getAttribute("data-rating"); renderExec(); });
+    Array.prototype.forEach.call(document.querySelectorAll(".cx-pip"), function (btn) {
+      btn.addEventListener("click", function () { tick(); selectedRating = +btn.getAttribute("data-rating"); renderExecSide(); });
     });
-    bindLoadoutChips(document.querySelector("#screen-exec"), false);
-    bindExplain($("screen-exec"), null, { rating: selectedRating != null ? selectedRating : currentRating(meta) });
+    Array.prototype.forEach.call(document.querySelectorAll(".cx-tag"), function (btn) {
+      btn.addEventListener("click", function () { tick(); var id = btn.getAttribute("data-perk-tag"); perkFocus = perkFocus === id ? null : id; renderExecSide(); });
+    });
+    var tx = $("cx-tip-x"); if (tx) tx.addEventListener("click", function () { tick(); perkFocus = null; renderExecSide(); });
+    bindLoadoutChips($("cx-side"), false);
+    bindExplain($("screen-exec"), null, { rating: currentRating(meta) });
     var lo = $("btn-loadout");
     if (lo) lo.addEventListener("click", function () { tick(); openLoadoutSheet(); });
     $("btn-boardroom2").addEventListener("click", function () { tick(); openBoardroom("exec"); });
-    $("btn-start").addEventListener("click", function () { tick(); var si2 = $("seed-input"); if (si2) seedDraft = si2.value.trim(); jyDepart({ label: "Admit one · " + LD.execById(selectedExec).name, stamp: "Departed", era: 1, sub: "Port Calder · " + LD.ratingName(currentRating(loadMeta())) }, startRun); });
-    if ((meta.finished | 0) >= 1) setTimeout(function () { if (screen === "exec") pennyTip("ratings"); }, 400);
+    $("btn-start").addEventListener("click", function () {
+      if (!LD.isExecutiveUnlocked(selectedExec, loadMeta())) return;
+      tick(); var si2 = $("seed-input"); if (si2) seedDraft = si2.value.trim();
+      jyDepart({ label: "Admit one · " + LD.execById(selectedExec).name, stamp: "Departed", era: 1, sub: "Port Calder · " + LD.ratingName(currentRating(loadMeta())) }, startRun);
+    });
     $("btn-back").addEventListener("click", function () { tick(); show("title"); renderTitle(); });
   }
   function openLoadoutSheet() {
@@ -12338,8 +12701,8 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
   }
   function bindLoadoutChips(root, inSheet) {
     if (!root) return;
-    var after = function () { renderExec(); if (inSheet) openLoadoutSheet(); };
-    Array.prototype.forEach.call(root.querySelectorAll(".perk-chip[data-perk]"), function (btn) {
+    var after = function () { if (inSheet) { renderExec(); openLoadoutSheet(); } else renderExecSide(); };
+    Array.prototype.forEach.call(root.querySelectorAll(".perk-chip[data-perk], .cx-tip-btn[data-perk]"), function (btn) {
       btn.addEventListener("click", function () {
         tick();
         var m = loadMeta();
@@ -14419,6 +14782,8 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     endq: function () { return "#btn-endq"; },
     card: function (x) { return '#door .df-hand [data-u="' + x + '"]'; },
     endround: function () { return "#df-end"; },
+    depart: function () { return "#screen-exec #btn-start:not([disabled])"; },
+    buyseat: function () { return "#screen-exec #btn-boardroom2[data-can-buy]"; },
     fightclose: function () { return "#df-close"; },
     door: function () { return doorOpen() ? null : ".desk .office .of-door"; },
     reward: function () { return '#door.rw-mode [data-card]:not(.no), #door.rw-mode [data-asset], #rw-keep, #rw-take:not([disabled]), #door.rw-mode [data-isell], #door.rw-mode [data-areplace], #door.rw-mode [data-shred]:not(.no), #door.rw-mode [data-upg]:not(.no)'; },
@@ -14433,6 +14798,18 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     "reward-take": "#rw-take:not([disabled])",
     reward: "#rw-keep"
   };
+  /* Ochre/gold surfaces swallow an ochre outline: those get an ink/terracotta one instead. */
+  function hlOchre(n) {
+    if (n instanceof SVGElement) return false;
+    var cs = getComputedStyle(n), m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?/.exec(cs.backgroundColor);
+    if (!m || (m[4] != null && +m[4] < 0.3)) m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(cs.backgroundImage || "");
+    if (!m) return false;
+    var R = +m[1] / 255, G = +m[2] / 255, B = +m[3] / 255, mx = Math.max(R, G, B), mn = Math.min(R, G, B), l = (mx + mn) / 2, d = mx - mn;
+    if (d < 0.12) return false;
+    var sat = d / (1 - Math.abs(2 * l - 1)), h = mx === R ? 60 * (((G - B) / d) % 6) : mx === G ? 60 * ((B - R) / d + 2) : 60 * ((R - G) / d + 4);
+    if (h < 0) h += 360;
+    return h >= 22 && h <= 58 && sat > 0.35 && l > 0.3 && l < 0.82;
+  }
   function hlSel(id) { var i = id.indexOf(":"), k = i < 0 ? id : id.slice(0, i), f = HL_SEL[k]; return f ? f(i < 0 ? "" : id.slice(i + 1)) : null; }
   function hlLensSeen() {
     if (!state) return null;
@@ -14455,27 +14832,64 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     a.innerHTML = '<svg viewBox="0 0 64 80"><g class="ld-hand"><path class="ld-hand-fill" d="M27 6c4-1 7 2 7 6v22l2-9c1-4 7-4 8 0v8c1-4 7-4 8 1v6c1-3 6-3 7 1v15c0 10-7 19-19 19h-3c-8 0-13-4-17-10L9 46c-2-4 2-8 6-5l6 6V12c0-3 2-6 6-6z"/><path class="ld-hand-line" d="M27 6c4-1 7 2 7 6v22l2-9c1-4 7-4 8 0v8c1-4 7-4 8 1v6c1-3 6-3 7 1v15c0 10-7 19-19 19h-3c-8 0-13-4-17-10L9 46c-2-4 2-8 6-5l6 6V12c0-3 2-6 6-6zM36 34v8M44 33v9M52 40v4"/></g></svg>';
     document.body.appendChild(a); HL.arrow = a; return a;
   }
+  /* How much a hand box at (x, y) would cover things other than its target: other controls count 3, readable text 2. */
+  function hlCost(n, x, y, W, H) {
+    var cost = 0, seen = [];
+    for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) {
+      var px = x + W * (0.18 + 0.32 * i), py = y + H * (0.18 + 0.32 * j);
+      if (px < 0 || py < 0 || px > window.innerWidth || py > window.innerHeight) { cost += 4; continue; }
+      var e = document.elementFromPoint(px, py);
+      if (!e || e === n || n.contains(e) || seen.indexOf(e) !== -1) continue;
+      seen.push(e);
+      if (e.closest && e.closest("button, a, input, select, .dc, .pin, [role=button], [data-up], [data-room], .rs")) cost += 3;
+      else {
+        var txt = false;
+        for (var k = 0; k < e.childNodes.length; k++) { var c = e.childNodes[k]; if (c.nodeType === 3 && /\S/.test(c.nodeValue)) { txt = true; break; } }
+        if (txt) cost += 2;
+      }
+    }
+    return cost;
+  }
   function hlPlaceArrow() {
     var a = HL.arrow; if (!a) return;
     var n = HL.target;
     var pennyOn = (function () { var p = document.getElementById("penny"); return !!(p && !p.hidden && pvis(p)); })();
     if (!n || !document.body.contains(n) || pennyOn || hlCovered(n) || Date.now() - HL.since < 1200) { a.hidden = true; return; }
-    var r = n.getBoundingClientRect(), W = 44, H = 55;
-    var up = r.top < H + 16; /* no room above: point up from below */
-    var x = Math.round(Math.min(window.innerWidth - W - 4, Math.max(4, r.left + r.width / 2 - W / 2)));
-    var y = Math.round(up ? Math.min(window.innerHeight - H - 4, r.bottom + 6) : r.top - H - 4);
-    a.style.left = x + "px"; a.style.top = y + "px";
-    a.classList.toggle("up", up);
+    var r = n.getBoundingClientRect(), W = 44, H = 55, G = 6;
+    /* Candidates: above (points down), below (points up), left/right (points sideways), then tucked inside the target's edge. */
+    var cx = r.left + r.width / 2 - W / 2, cy = r.top + r.height / 2 - H / 2;
+    var cands = [
+      { d: "down", x: cx, y: r.top - H - G },
+      { d: "up", x: cx, y: r.bottom + G },
+      { d: "right", x: r.left - W - G - 4, y: cy },
+      { d: "left", x: r.right + G + 4, y: cy }
+    ];
+    if (r.width > W * 3) cands.push({ d: "left", x: r.right - W - 8, y: cy, inside: true });
+    if (r.height > H * 1.6) cands.push({ d: "down", x: cx, y: r.top + 4, inside: true });
+    var best = null;
+    cands.forEach(function (c, i) {
+      c.x = Math.round(Math.min(window.innerWidth - W - 4, Math.max(4, c.x)));
+      c.y = Math.round(Math.min(window.innerHeight - H - 4, Math.max(4, c.y)));
+      var ov = !(c.x + W <= r.left || c.x >= r.right || c.y + H <= r.top || c.y >= r.bottom);
+      c.cost = hlCost(n, c.x, c.y, W, H) + i * 0.1 + (c.inside ? 2.5 : ov ? 6 : 0);
+      if (!best || c.cost < best.cost) best = c;
+    });
+    a.style.left = best.x + "px"; a.style.top = best.y + "px";
+    a.classList.toggle("up", best.d === "up");
+    a.classList.toggle("left", best.d === "left");
+    a.classList.toggle("right", best.d === "right");
     a.hidden = false;
   }
   function applyHighlights() {
     HL.raf = 0;
     var on = screen === "desk" && state && !state.ended && !closing;
     var res = on ? LD.actionable(state, { lensSeen: hlLensSeen() }) : { ids: [], prio: [], dim: [], badges: [] };
+    if (screen === "exec" && document.querySelector("#screen-exec #btn-start:not([disabled])")) { res.ids = ["depart"]; res.prio = ["depart"]; }
+    else if (screen === "exec" && document.querySelector("#screen-exec #btn-boardroom2[data-can-buy]")) { res.ids = ["buyseat"]; res.prio = ["buyseat"]; }
     var want = new Set();
     res.ids.forEach(function (id) { var s = hlSel(id); if (!s) return; Array.prototype.forEach.call(document.querySelectorAll(s), function (n) { want.add(n); }); });
-    Array.prototype.forEach.call(document.querySelectorAll(".ld-act"), function (n) { if (!want.has(n)) n.classList.remove("ld-act", "ld-primary"); });
-    want.forEach(function (n) { if (!n.classList.contains("ld-act")) n.classList.add("ld-act"); });
+    Array.prototype.forEach.call(document.querySelectorAll(".ld-act"), function (n) { if (!want.has(n)) n.classList.remove("ld-act", "ld-primary", "ld-on-ochre"); });
+    want.forEach(function (n) { if (!n.classList.contains("ld-act")) { n.classList.add("ld-act"); n.classList.toggle("ld-on-ochre", hlOchre(n)); } });
     var dim = new Set();
     var soft = new Set();
     res.dim.forEach(function (id) { var sf = /-soft$/.test(id), s = hlSel(id.replace(/-soft$/, "")); if (s) Array.prototype.forEach.call(document.querySelectorAll(s), function (n) { if (!want.has(n)) (sf ? soft : dim).add(n); }); });
@@ -14516,7 +14930,7 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     });
     document.addEventListener("DOMContentLoaded", function () { hlObs.observe(document.body, { childList: true, subtree: true }); scheduleHighlights(); });
   }
-  setInterval(function () { if (document.hidden) return; if (HL.target || (HL.arrow && !HL.arrow.hidden)) applyHighlights(); else if (screen === "desk") scheduleHighlights(); }, 500);
+  setInterval(function () { if (document.hidden) return; if (HL.target || (HL.arrow && !HL.arrow.hidden)) applyHighlights(); else if (screen === "desk" || screen === "exec") scheduleHighlights(); }, 500);
   window.addEventListener("resize", scheduleHighlights);
 
   function boot() {

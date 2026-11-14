@@ -3505,6 +3505,115 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
 .pedestal i:nth-child(1) { background: rgba(24, 58, 61, .55); box-shadow: none; }
 .pedestal i { border-color: #b98a2e; }
 @media (min-width: 600px) and (max-width: 899px) and (orientation: portrait) { .office > .m-cash { left: 50%; transform: translateX(-50%); } }
+
+/* ---------- Narrative fights: speech bubbles, the paid pose, endings, A FAMILIAR FACE ---------- */
+.sc-opp[data-pose="paid"] .p-paid { opacity: 1; }
+.sc-bubble { position: absolute; z-index: 6; left: 13%; top: 33%; max-width: 38%; padding: 8px 12px 9px; border-radius: 18px; background: #fffaf0; color: var(--ink-line); border: 2.5px solid var(--ink-line); box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.42);
+  font: 700 14px/1.25 "Comic Neue", "Comic Sans MS", "Chalkboard SE", var(--font-sans); animation: sc-say 0.28s ease-out both; pointer-events: none; }
+.sc-bubble b { display: block; font: 800 10px/1.2 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--terra); margin-bottom: 2px; }
+.sc-bubble::after { content: ""; position: absolute; right: -13px; top: 42%; width: 0; height: 0; border-left: 16px solid var(--ink-line); border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+.sc-bubble::before { content: ""; position: absolute; right: -8px; top: calc(42% + 3px); width: 0; height: 0; border-left: 11px solid #fffaf0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; z-index: 1; }
+.sc-bubble.k-hit { background: #ffe3d6; } .sc-bubble.k-hit::before { border-left-color: #ffe3d6; }
+.sc-bubble.k-block { background: #e3f1ea; } .sc-bubble.k-block::before { border-left-color: #e3f1ea; }
+.sc-bubble.k-attack { background: #ffd9c9; font-size: 15px; clip-path: none; border-width: 3px; } .sc-bubble.k-attack::before { border-left-color: #ffd9c9; }
+.sc-bubble.k-attack b { font-size: 13px; }
+.sc-bubble.k-end { top: 26%; }
+@keyframes sc-say { from { transform: scale(0.6) translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+.df-cbchip { font-style: normal; color: #f1c75a; font-size: 0.8em; }
+.sc-stamp.paid { color: #8a6418; border-color: #8a6418; } .sc-stamp.crushed { color: var(--terra); border-color: var(--terra); } .sc-stamp.walked { color: var(--ink-line); border-color: var(--ink-line); }
+.sc-ending { display: grid; gap: 3px; justify-items: center; padding-bottom: 6px; margin-bottom: 2px; border-bottom: 1.5px dashed rgba(20, 33, 31, 0.35); }
+.sc-end-stamp { font: 800 13px/1 var(--font-sans); font-style: normal; letter-spacing: 0.16em; padding: 3px 8px; border: 2px solid currentColor; border-radius: 3px; transform: rotate(-3deg); }
+.sc-ending.h-paid .sc-end-stamp { color: #8a6418; } .sc-ending.h-crushed .sc-end-stamp { color: var(--terra); } .sc-ending.h-walked .sc-end-stamp { color: var(--ink-line); }
+.sc-ending q { font: 700 15px/1.3 "Comic Neue", "Comic Sans MS", "Chalkboard SE", var(--font-sans); }
+.sc-ending em { font: italic 600 13px/1.2 var(--font-serif); color: #6a5530; }
+.sc-cb { position: absolute; z-index: 8; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(92%, 440px); display: grid; grid-template-columns: auto 1fr; grid-template-areas: "k k" "img t" "img ok"; gap: 6px 12px; align-items: center;
+  padding: 10px 14px 12px; background: var(--paper-c); color: var(--ink-line); border: 3px solid var(--ink-line); border-radius: 6px; box-shadow: 0 0 0 3px #c9942a, 6px 7px 0 rgba(0, 0, 0, 0.5); animation: sc-cb-in 0.45s cubic-bezier(.2, 1.4, .4, 1) both; }
+.sc-cb-k { grid-area: k; justify-self: center; padding: 3px 14px; font: 800 14px/1.2 var(--font-serif); letter-spacing: 0.14em; color: #fff8e6; background: var(--terra); border: 2px solid var(--ink-line); transform: rotate(-1.5deg); }
+.sc-cb img { grid-area: img; height: 120px; width: auto; max-width: 96px; object-fit: contain; object-position: 50% 100%; align-self: end; }
+.sc-cb.is-witness img { height: 140px; max-width: 112px; }
+.sc-cb-t { grid-area: t; display: grid; gap: 3px; }
+.sc-cb-t b { font: 700 15px/1.2 var(--font-serif); }
+.sc-cb-t q { font: 700 15px/1.3 "Comic Neue", "Comic Sans MS", "Chalkboard SE", var(--font-sans); }
+.sc-cb-t em { font-size: 12.5px; line-height: 1.25; color: #6a2a1e; font-weight: 600; font-style: normal; }
+.sc-cb-ok { grid-area: ok; justify-self: start; min-height: 40px; padding: 6px 14px; font: 700 14px var(--font-sans); color: #fff8e6; background: #1f6a5c; border: 2px solid var(--ink-line); border-radius: 4px; box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); cursor: pointer; }
+@keyframes sc-cb-in { from { transform: translate(-50%, -50%) scale(0.7) rotate(-3deg); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
+@media (min-aspect-ratio: 1/1) {
+  .sc-bubble { left: 17%; top: 10%; max-width: 30%; }
+  .sc-bubble.k-end { top: 14%; }
+}
+@media (max-width: 600px) {
+  .sc-bubble { left: 6%; top: 30%; max-width: 46%; font-size: 12.5px; padding: 6px 9px 7px; }
+  .sc-cb img { height: 92px; }
+  .sc-cb-t q { font-size: 13.5px; } .sc-cb-t em { font-size: 11.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .sc-bubble, .sc-cb { animation: none !important; } }
+
+/* ---------- Era skins: same layout, the theme swapped (Act I 1978 · Act II 2008 · Act III now). Meta screens stay timeless Art Deco. ---------- */
+body.era-1 { --era-font: "Courier Prime", "Courier New", Courier, monospace; --era-accent: #b8432e; --era-paper: #efe2c4; }
+body.era-2 { --era-font: "Trebuchet MS", "Lucida Grande", Verdana, sans-serif; --era-accent: #2f6fd0; --era-paper: #eef2f6; }
+/* Office background and hub */
+body.era-1 .desk { background: var(--grain), linear-gradient(180deg, rgba(40, 30, 18, 0.6) 0%, rgba(40, 30, 18, 0.34) 35%, rgba(40, 30, 18, 0.55) 75%, rgba(30, 22, 12, 0.86) 100%), url("assets/fight/room-hub-1.webp") center 38% / cover no-repeat, #3a2c1c; background-size: 160px 160px, auto, cover, auto; }
+body.era-2 .desk { background: var(--grain), linear-gradient(180deg, rgba(14, 26, 40, 0.62) 0%, rgba(14, 26, 40, 0.36) 35%, rgba(14, 26, 40, 0.55) 75%, rgba(10, 18, 30, 0.86) 100%), url("assets/fight/room-hub-2.webp") center 38% / cover no-repeat, #16222e; background-size: 160px 160px, auto, cover, auto; }
+body.era-1:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(40, 30, 18, 0.8), rgba(30, 22, 12, 0.9)), url("assets/fight/room-hub-1.webp") center / cover fixed no-repeat, #3a2c1c; background-size: 160px 160px, auto, cover, auto; }
+body.era-2:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(14, 26, 40, 0.8), rgba(10, 18, 30, 0.9)), url("assets/fight/room-hub-2.webp") center / cover fixed no-repeat, #16222e; background-size: 160px 160px, auto, cover, auto; }
+body.era-1 .office .of-room { background-image: url("assets/fight/room-hub-1.webp"); }
+body.era-2 .office .of-room { background-image: url("assets/fight/room-hub-2.webp"); }
+/* Type: a typewriter in 1978, early-web sans in 2008 */
+body.era-1 .desk .ticker .panel-k, body.era-1 .desk .tag, body.era-1 .desk .tick-msg, body.era-1 .desk .q-chip small, body.era-1 .desk .phase-pill, body.era-1 .fy-target, body.era-1 .bk-top .dz-k, body.era-1 .fy-memo .dz-k, body.era-1 .fy-memo .fy-demand,
+body.era-2 .desk .ticker .panel-k, body.era-2 .desk .tag, body.era-2 .desk .tick-msg, body.era-2 .desk .q-chip small, body.era-2 .desk .phase-pill, body.era-2 .fy-target, body.era-2 .bk-top .dz-k, body.era-2 .fy-memo .dz-k, body.era-2 .fy-memo .fy-demand { font-family: var(--era-font); }
+body.era-1 .desk .tag { color: #e8c47a; letter-spacing: 0.06em; }
+body.era-2 .desk .tag { color: #9cc4ff; letter-spacing: 0.04em; text-transform: none; font-weight: 700; }
+/* UI chips */
+body.era-1 .q-chip, body.era-1 .phase-pill { background: var(--era-paper); color: #2a2018; border-color: #2a2018; }
+body.era-1 .q-chip small { color: var(--era-accent); }
+body.era-2 .q-chip, body.era-2 .phase-pill { background: linear-gradient(180deg, #fdfdfd, #d7dee6); color: #13202c; border-color: #13202c; border-radius: 8px; }
+body.era-2 .q-chip small { color: var(--era-accent); }
+body.era-1 .panel.ticker { background-color: #efe2c4; color: #2a2018; }
+body.era-2 .panel.ticker { background: linear-gradient(180deg, #1c2a3a, #0f1822); color: #e6f0ff; border-color: #0a1018; }
+body.era-2 .panel.ticker .panel-k { color: #ffcc33; }
+/* Map: a sepia paper atlas with red string (1978); a wall screen in a bezel (2008) */
+body.era-1 .desk .map { filter: sepia(0.72) saturate(0.82) contrast(1.05) brightness(0.98); }
+body.era-1 .desk:not(.is-globe) .board-slab { background-color: #c9b48a; }
+body.era-1 .desk .map-zoom, body.era-2 .desk .map-zoom { position: relative; }
+body.era-1 .desk .map-zoom::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g stroke='%23c0392b' stroke-width='0.45' fill='none' opacity='.8'><path d='M24 34 L46 30 L64 38 L80 50'/><path d='M46 30 L40 58 L56 70'/><path d='M24 34 L30 56 L40 58'/></g><g fill='%23c0392b'><circle cx='24' cy='34' r='1'/><circle cx='46' cy='30' r='1'/><circle cx='64' cy='38' r='1'/><circle cx='80' cy='50' r='1'/><circle cx='40' cy='58' r='1'/><circle cx='56' cy='70' r='1'/><circle cx='30' cy='56' r='1'/></g></svg>") center / contain no-repeat; }
+body.era-2 .desk .map { filter: saturate(0.55) hue-rotate(-28deg) brightness(1.08) contrast(1.05) drop-shadow(0 0 12px rgba(80, 150, 255, 0.45)); }
+body.era-2 .desk .board-slab { background: radial-gradient(ellipse at 50% 40%, #16304a, #0a1420 75%) !important; border-radius: 16px !important; box-shadow: 0 0 0 7px #1a1f26, 0 0 0 9px #46505c, 0 0 24px 4px rgba(80, 150, 255, 0.3), 4px 14px 0 rgba(4, 8, 14, 0.5) !important; }
+body.era-2 .desk .map-zoom::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; border-radius: 16px; background: repeating-linear-gradient(180deg, rgba(140, 190, 255, 0.07) 0 2px, transparent 2px 5px), linear-gradient(180deg, rgba(60, 130, 255, 0.1), rgba(60, 130, 255, 0.04)); }
+/* Wall trophies: a gold record (1978), a magazine cover (2008), a glowing token screen (now) */
+body.era-1 .of-wallart i:not(.empty) { border-radius: 50%; background: radial-gradient(circle, #2a2018 0 18%, #f1c75a 19% 22%, #c9942a 23% 60%, #8a6418 61% 64%, #c9942a 65%); color: transparent; text-shadow: 0 0 0 #2a2018; }
+body.era-2 .of-wallart i:not(.empty) { border-radius: 1px; background: linear-gradient(180deg, #c0392b 0 22%, #f6f1e6 22%); box-shadow: 1px 1px 0 rgba(10, 22, 24, 0.5), inset 0 0 0 1px #2a2018; }
+body.era-3 .of-wallart i:not(.empty) { background: #0e1a24; box-shadow: 0 0 6px rgba(127, 224, 234, 0.75), inset 0 0 0 1px #7fe0ea; }
+/* The window: era props */
+.of-city .era-props .stack { fill: #4a3a30; stroke: var(--ink-line); stroke-width: 0.4; }
+.of-city .era-props .smoke { fill: #8a7a6a; opacity: 0.6; }
+.of-city .era-props .banner { fill: #c0392b; stroke: var(--ink-line); stroke-width: 0.4; }
+.of-city .era-props .banner-t, .of-city .era-props .jumbo-t, .of-city .era-props .sign-t { font: 700 5px/1 "Courier New", monospace; fill: #fff6e0; }
+.of-city .era-props .sign-t { font-size: 3px; fill: #2a2018; }
+.of-city .era-props .crane { stroke: #e0a020; stroke-width: 1.4; fill: none; }
+.of-city .era-props .jumbo { fill: #0a1420; stroke: #46505c; stroke-width: 0.8; }
+.of-city .era-props .jumbo-t { fill: #ff4a3a; }
+.of-city .era-props .sign { fill: #f6f1e6; stroke: var(--ink-line); stroke-width: 0.3; }
+.of-city .era-props .wall { fill: #8a96a0; stroke: var(--ink-line); stroke-width: 0.3; }
+.of-city .era-props .drone { stroke: #1a1f26; stroke-width: 1.1; fill: none; }
+body.era-1 .of-city .sky { fill: #e8c98a; } body.era-1 .of-city .bd rect:first-child { fill: #6b4f3a; }
+body.era-2 .of-city .sky { fill: #c9d6e2; } body.era-2 .of-city .bd rect:first-child { fill: #3f5a72; }
+body:not(.era-3) .of-city .palm, body:not(.era-3) .of-city .isle { display: none; }
+/* Fights: the door screen takes the era's paper */
+body.era-1 .door-screen { background: var(--grain), #3a2c1c; background-size: 160px 160px; }
+body.era-2 .door-screen { background: var(--grain), #16222e; background-size: 160px 160px; }
+body.era-1 .fight2 .df-title b, body.era-2 .fight2 .df-title b { font-family: var(--era-font); }
+body.era-1 .fight2 .sc-room { filter: sepia(0.18) contrast(1.02); }
+/* Bunker props */
+.bk-scene .bk-led { animation: bk-blink 1.4s steps(2) infinite; }
+.bk-scene .bk-puff { animation: bk-puff 2.4s ease-out infinite; }
+@keyframes bk-blink { 50% { opacity: 0.25; } }
+@keyframes bk-puff { from { transform: translateY(0); opacity: 0.7; } to { transform: translateY(-14px); opacity: 0; } }
+body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--era-font); }
+.fy-who { margin: -2px 0 4px; font-weight: 700; color: var(--terra); }
+.ex-list li span { display: block; font-size: 13px; color: var(--ink-muted); }
+@media (prefers-reduced-motion: reduce) { .bk-scene .bk-led, .bk-scene .bk-puff { animation: none !important; } }
+.fight2.is-done .sc-stamp { top: 64%; }
+@media (min-width: 601px) { .sc-bubble { font-size: 15px; } }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -4248,7 +4357,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     },
     {
       title: "The Fiscal Year",
-      body: "A run is three acts of four quarters. Q4 and Q8 end in a card fight at the door (an Earnings Call or a Short-Seller Report, then a General Strike, a Hostile Takeover or a Market Crash). Q12 is The Reckoning, which tests your bunker. Every deal sends someone to your door. Win those fights to earn new cards. Assets are rarer trophies for the office wall, and the phone rings with calls — a Headhunter, a distressed sale, an old friend. Each executive levels up from runs and earns small perks."
+      body: "A run is three acts of four quarters, and each act is an era of Port Calder: The Street (1978), The Middle (2008) and The Top (now). Every deal sends someone to your door: a beat cop, a landlord, a councilman, a reporter. Pay them off or crush them, and they remember. Q4 and Q8 end in a boss fight (an Earnings Call or a Short-Seller Report, then a General Strike, a Hostile Takeover or a Market Crash). Q12 is The Reckoning, which tests your bunker. Win fights to earn new cards. Assets are rarer trophies for the office wall, and the phone rings with calls — a Headhunter, a distressed sale, an old friend. Each executive levels up from runs and earns small perks."
     },
     {
       title: "Then finish the shelter",
@@ -6275,9 +6384,9 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     BOSS_BASE: 1.6        /* boss strength at AAA */
   };
   LD.ACTS = [
-    { n: 1, roman: "I", name: "Seed Round" },
-    { n: 2, roman: "II", name: "Growth" },
-    { n: 3, roman: "III", name: "Exit" }
+    { n: 1, roman: "I", name: "The Street", year: "1978" },
+    { n: 2, roman: "II", name: "The Middle", year: "2008" },
+    { n: 3, roman: "III", name: "The Top", year: "Now" }
   ];
   LD.RARITY = {
     C: { name: "Common", w: 60, wRare: 0 },
@@ -6537,7 +6646,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       var sc = Math.round((info.q <= 4 ? LD.DOOR.SCRUT[4] : LD.DOOR.SCRUT[8]) * (1 + LD.DOOR.TIER * (state.rating | 0)) * fy(state).rules.bossMult);
       var rounds = LD.DOOR.BOSS_ROUNDS + ((state.rating | 0) >= 10 ? 1 : 0);
       info.fight = true; info.scrutiny = sc; info.rounds = rounds;
-      info.demand = "A card fight at the door: Scrutiny " + sc + ", " + rounds + " rounds. " + E.pattern.slice(0, rounds).map(function (k) { return LD.INTENTS[k].label; }).join(", then ") + ".";
+      info.demand = "A card fight at the door: Scrutiny " + sc + ", " + rounds + " rounds. " + ((LD.bossOpp && LD.oppById(LD.bossOpp(state, id))) ? LD.oppById(LD.bossOpp(state, id)).pattern : E.pattern).slice(0, rounds).map(function (k) { return LD.INTENTS[k].label; }).join(", then ") + ".";
       info.beat = "Win: a rare card reward, an Asset for the wall, and loot"; info.miss = "Lose: what got through lands on your meters";
       return info;
     }
@@ -7120,8 +7229,8 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var f = fy(state); if (!f) return { cash: 0, unrest: 0, collapse: 0, items: [] };
     var t = state.turn, u = f.used, out = { cash: 0, unrest: 0, collapse: 0, items: [] };
     function add(id, c, un, co, txt) { out.cash += c; out.unrest += un; out.collapse += co; var cd = cardById(id); out.items.push({ id: id, icon: cd ? cd.icon : "", name: cd ? cd.name : id, text: txt, cash: c, unrest: un, collapse: co }); }
-    if (has(state, "soundproof")) { out.unrest -= 2; out.items.push({ id: "soundproof", icon: "🔇", name: "Soundproofed Door", text: "unrest −2" }); }
-    if (has(state, "holo")) { out.cash += 3; out.collapse += 1; out.items.push({ id: "holo", icon: "🖼️", name: "Holo-Window", text: "+$3M, collapse +1" }); }
+    if (has(state, "soundproof")) { out.unrest -= 2; out.items.push({ id: "soundproof", icon: cardById("soundproof").icon, name: cardById("soundproof").name, text: "unrest −2" }); }
+    if (has(state, "holo")) { out.cash += 3; out.collapse += 1; out.items.push({ id: "holo", icon: cardById("holo").icon, name: cardById("holo").name, text: "+$3M, collapse +1" }); }
     var pay0 = 0; (f.fixers || []).forEach(function (r) { var x = LD.fixerById(r.id); if (x) pay0 += x.pay; });
     if (pay0) { out.cash -= pay0; out.items.push({ id: "retainers", icon: "💼", name: "Fixer retainers", text: "−$" + pay0 + "M", cash: -pay0, unrest: 0, collapse: 0 }); }
     if (f.bill) { out.cash -= f.bill; out.items.push({ id: "bill", icon: "⏱️", name: "Billable hours", text: "−$" + f.bill + "M", cash: -f.bill, unrest: 0, collapse: 0 }); }
@@ -7409,6 +7518,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var f = fy(state);
     if (bossAt(state, state.turn) && !LD.BOSSES[bossAt(state, state.turn)].final) return bossAt(state, state.turn);
     if (f.hearing) return "hearing";
+    if (LD.dunnHearingDue && LD.dunnHearingDue(state)) return "hearing";
     var kind = LD.dealKind ? LD.dealKind(deal) : "neutral";
     if (LD.doorLevel(state) >= 3) return "protest";
     if (kind === "claim") return "rival";
@@ -7457,6 +7567,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     if (E.boss) n *= fy(state).rules.bossMult;
     var st = LD.cityStage(state); if (st >= 2) n *= 1 + 0.1 * (st - 1);
     if (I.mult) n *= I.mult;
+    n += (fg.ramp || 0) + (fg.cbAdd || 0);
     if (I.protest || fg.enc === "protest") {
       n += [0, 2, 4, 6][LD.doorLevel(state)];
       if ((state.rating | 0) >= 5) n += 2;
@@ -7473,11 +7584,14 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       var ca = fg.hand.filter(function (u) { var c = deckCard(state, u); return c && c.id === "c_class"; }).length;
       if (ca) { n += 2 * ca; notes.push("Class Action +" + 2 * ca); }
     }
+    if (I.bribeUp && fg.bribes) { n += I.bribeUp * fg.bribes; notes.push("+" + I.bribeUp * fg.bribes + " for your bribes"); }
+    if (I.lobbyDown && fg.lobby) { var ld = Math.min(n, I.lobbyDown * fg.lobby); n -= ld; notes.push("captured −" + ld); }
     if (fg.flags.whisper) { n = Math.round(n * 0.7); notes.push("whispered −30%"); }
     if (it.meter === "collapse" && fg.flags.halfcol) { n = Math.round(n / 2); notes.push("halved"); }
     if (fg.flags.cancel) { n = 0; notes.push("cancelled"); }
     var through = Math.max(0, n - fg.block);
-    return { k: it.k, label: it.label, meter: it.meter, n: n, block: fg.block, through: through, notes: notes, rider: I.rider, at: I.at, rtext: I.rtext, oath: !!I.oath };
+    var noR = !!(fg.cb && fg.cb.mod && fg.cb.mod.noRider);
+    return { k: it.k, label: it.label, meter: it.meter, n: n, block: fg.block, through: through, notes: notes, rider: noR ? null : I.rider, at: I.at, rtext: noR ? (I.rider ? "rider buried by a friend" : I.rtext) : I.rtext, oath: !!I.oath, say: I.say || "", halfDeny: !!I.halfDeny, cashTax: I.cashTax || 0 };
   }
   LD.fightIntent = function (state) { var fg = fy(state) && fy(state).fight; return fg && !fg.done ? intentNow(state, fg) : null; };
   function frng(fg) { var r = LD.createRng(fg.rs); return r; }
@@ -7513,9 +7627,23 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       leaks: { cash: 0, unrest: 0, collapse: 0, heat: 0 }, log: [], rs: 1, done: null, intent: null
     };
     if (enc !== "protest" && LD.doorLevel(state) >= 3 && !E.boss && !E.elite) fg.pattern = LD.ENCOUNTERS.protest.pattern.slice();
+    /* Who is at the door: the act's cast (eras.js). The base encounter keeps the balance; the face brings the moves and the lines. */
+    var opp = LD.pickOpponent ? LD.pickOpponent(state, enc, fg.kind, r) : null, O = opp && LD.oppById(opp);
+    if (O) {
+      fg.opp = opp; fg.encName = E.name; fg.name = O.who; fg.sub = O.role + " \u00b7 " + E.name; fg.pattern = O.pattern.slice();
+      if (O.venue) fg.venue = O.venue;
+      else if (enc === "protest" && !E.boss) fg.venue = (state.turn % 2 === 0) ? "away" : "home";
+      f.met = f.met || {}; f.met[opp] = state.turn;
+      fg.cb = LD.callbackFor ? LD.callbackFor(state, opp) : null;
+      if (fg.cb && f.cbDone && f.cbDone[fg.cb.id]) fg.cb = null;
+      if (fg.cb) { f.cbDone = f.cbDone || {}; f.cbDone[fg.cb.id] = state.turn; f.cbSeen = (f.cbSeen || []).concat([fg.cb.id]); }
+    }
+    fg.ramp = 0; fg.bribes = 0; fg.lobby = 0; fg.cbAdd = fg.cb && fg.cb.mod.add ? fg.cb.mod.add : 0;
     fg.venue = LD.fightVenue(fg);
     if (enc === "protest" && (state.rating | 0) >= 5) fg.swell = 0;
     fg.scrut = fg.max = scrutinyFor(state, enc);
+    if (fg.cb && fg.cb.mod.scrutMult) fg.scrut = fg.max = Math.max(4, Math.round(fg.max * fg.cb.mod.scrutMult));
+    if (fg.cb && fg.cb.mod.cash) { var cc = Math.min(state.cash, fg.cb.mod.cash); state.cash -= cc; fg.leaks.cash += cc; }
     fg.rs = Math.floor(r() * 4294967295) >>> 0 || 7;
     var rr = frng(fg); fg.draw = rr.shuffle(f.deck.map(function (c) { return c.u; })); fg.rs = rr.state();
     if (state.turn === 1) {
@@ -7524,6 +7652,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       want.forEach(function (id) { for (var i = 0; i < fg.draw.length; i++) { var c = deckCard(state, fg.draw[i]); if (c && c.id === id) { top.push(fg.draw.splice(i, 1)[0]); break; } } });
       fg.draw = top.concat(fg.draw);
     }
+    if (fg.cb && fg.cb.mod.curse) { var cz = addCurse(state, fg.cb.mod.curse, fg.cb.who); fg.hand.push(cz.u); }
     f.fightN = (f.fightN || 0) + 1;
     f.fight = fg;
     startRound(state, fg);
@@ -7541,12 +7670,14 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var f = fy(state), fg = f && f.fight; if (!fg || fg.done) return null;
     var c = deckCard(state, u); if (!c) return null;
     var o = cv(c.id, c.up), cost = costNow(state, fg, o), why = null;
+    var I0 = fg.intent ? LD.INTENTS[fg.intent.k] : null, cashNow = o.cash ? o.cash + (I0 && I0.cashTax ? I0.cashTax : 0) : 0;
     if (o.unplay) why = "Unplayable.";
-    else if (o.cash && state.cash < o.cash) why = "Needs $" + o.cash + "M.";
+    else if (cashNow && state.cash < cashNow) why = "Needs $" + cashNow + "M.";
     else if (cost > fg.inf) why = "Needs " + cost + "◆.";
     else if (o.sp === "purge" && !f.deck.some(function (d) { return isCurse(d.id); })) why = "No curse to remove.";
     var vsP = fg.enc === "protest" || LD.INTENTS[fg.intent.k].protest;
-    return { u: u, id: c.id, up: c.up, o: o, cost: cost, why: why, p: (o.p || 0) * (o.sp === "vsprotest" && vsP ? 2 : 1), d: (o.d || 0) * (o.sp === "vsprotestd" && vsP ? 2 : 1) };
+    var dd = (o.d || 0) * (o.sp === "vsprotestd" && vsP ? 2 : 1); if (dd && I0 && I0.halfDeny) dd = Math.ceil(dd / 2);
+    return { u: u, id: c.id, up: c.up, o: o, cost: cost, why: why, cash: cashNow, p: (o.p || 0) * (o.sp === "vsprotest" && vsP ? 2 : 1), d: dd };
   };
   function fightCheck(state) {
     var f = fy(state); if (!f) return "No fight.";
@@ -7568,7 +7699,9 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     }
     if (info.why) return { ok: false, error: info.why, state: state };
     fg.inf -= info.cost;
-    if (o.cash) { state.cash -= o.cash; fx.push({ k: "cash", n: -o.cash }); }
+    if (info.cash) { state.cash -= info.cash; fx.push({ k: "cash", n: -info.cash }); }
+    if (info.cash || o.sp === "codb") fg.bribes = (fg.bribes || 0) + 1;
+    if (c && CARD_BY[c.id] && CARD_BY[c.id].t === "Lobbyist") fg.lobby = (fg.lobby || 0) + 1;
     fg.hand.splice(ix, 1);
     fg.played += 1;
     var before = fg.scrut;
@@ -7639,7 +7772,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       out.text = it.label + ": Heat +" + h + (hu ? ", unrest +" + hu : "") + ".";
     }
     var I = LD.INTENTS[it.k];
-    if (I.rider && t >= I.at) {
+    if (I.rider && t >= I.at && !(fg.cb && fg.cb.mod && fg.cb.mod.noRider)) {
       if (I.rider === "subpoena") { addCurse(state, "c_subpoena", "the audit"); out.riders.push("A Subpoena joins your deck."); }
       if (I.rider === "leak") { addCurse(state, "c_leak", "the story ran"); out.riders.push("A Leak joins your deck."); }
       if (I.rider === "claim" && fg.claimed && fg.region && state.world.regions[fg.region]) { state.world.regions[fg.region].owned = false; fg.claimed = false; out.riders.push("Outbid: you lose the claim on " + LD.REGION_NAMES[fg.region] + "."); }
@@ -7655,7 +7788,9 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     state = clone(state);
     var why = fightCheck(state); if (why) return { ok: false, error: why, state: state };
     var f = fy(state), fg = f.fight, it = intentNow(state, fg);
-    var hit = applyThrough(state, fg, it);
+    var hit = applyThrough(state, fg, it), I1 = LD.INTENTS[it.k];
+    if (I1.ramp && it.through) { fg.ramp = (fg.ramp || 0) + I1.ramp; hit.ramp = I1.ramp; }
+    if (I1.heal && it.n > 0 && fg.scrut > 0) { var hb = fg.scrut; fg.scrut = Math.min(fg.max, fg.scrut + I1.heal); hit.heal = fg.scrut - hb; if (hit.heal) hit.text += " They win back " + hit.heal + " Scrutiny."; }
     fg.log.push({ round: fg.round, intent: it.label, n: it.n, block: it.block, through: it.through, text: hit.text, riders: hit.riders });
     state.log.unshift({ turn: state.turn, text: fg.name + " · round " + fg.round + ": " + hit.text + (hit.riders.length ? " " + hit.riders.join(" ") : "") });
     fg.hand.forEach(function (u) { fg.disc.push(u); }); fg.hand = [];
@@ -7708,7 +7843,13 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       f.bossLog.push({ id: fg.boss, q: t, beaten: !!win });
     }
     fg.done = { win: !!win, settled: !!settled, cost: cost || 0, notes: notes, leaks: clone(fg.leaks) };
-    f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite };
+    var how = LD.fightHow ? LD.fightHow(fg) : null;
+    if (fg.opp && how) {
+      fg.done.how = how;
+      f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, q: t, act: actOf(t), who: fg.name };
+      if (fg.opp === "june" && how === "crushed" && f.bossII !== "strike" && t < 8) { f.bossII = "strike"; f.strikeSwap = t; notes.push("June Park will lead a general strike at Q8"); }
+    }
+    f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite, opp: fg.opp || null, how: how };
     f.fights = f.fights || { won: 0, lost: 0, settled: 0 };
     f.fights[win ? "won" : settled ? "settled" : "lost"] += 1;
     state.log.unshift({ turn: t, text: fg.name + ": " + (win ? "you win" : settled ? "settled for $" + cost + "M" : "they got through") + (notes.length ? " (" + notes.join(", ") + ")" : "") + "." });
@@ -7943,6 +8084,405 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
 })(typeof globalThis !== "undefined" ? globalThis : this);
 
   </script>
+  <script>/* Last Dividend: eras, act casts, narrative fights and callbacks.
+   Each act is an era of the last fifty years in Port Calder: I "The Street" (1978), II "The Middle" (2008), III "The Top" (now).
+   The fight engine (fy.js) keeps its base encounter types for balance; this file picks WHO is at the door, what they call their
+   moves, what they say, how it ends, and who comes back. Everything here is fiction. */
+(function () {
+  "use strict";
+  var LD = (typeof window !== "undefined" ? window : globalThis).LD = (typeof window !== "undefined" ? window : globalThis).LD || {};
+
+  /* ---------- The three eras ---------- */
+  LD.ERAS = [null,
+    { act: 1, year: "1978", name: "The Street", tag: "Port Calder, 1978. The mills are closing. Everything is for sale, cheap.", device: "rotary", phone: "The rotary phone rings", phoneIcon: "☎️",
+      bunker: "Fallout Shelter", bunkerSub: "Civil-defence surplus, bought by the crate", window: "Smokestacks, gas lines, a strike banner" },
+    { act: 2, year: "2008", name: "The Middle", tag: "Port Calder, 2008. The banks fell over and somebody has to pay. Not you.", device: "berry", phone: "Your Berry buzzes", phoneIcon: "📟",
+      bunker: "Prepper Vault", bunkerSub: "Servers, a wine wall and a panic room", window: "Cranes, foreclosure signs, a jumbotron" },
+    { act: 3, year: "Now", name: "The Top", tag: "Port Calder, now. The sea is at the door and the sky garden is lovely.", device: "ring", phone: "Your smart ring pings", phoneIcon: "💍",
+      bunker: "Resilience Estate", bunkerSub: "Hydroponics, a house AI and a sky garden", window: "Heat haze, sea wall, delivery drones" }
+  ];
+  LD.eraOf = function (state) { var t = state && state.turn ? state.turn : 1; return LD.actOf ? LD.actOf(Math.min(12, t)) : (t <= 4 ? 1 : t <= 8 ? 2 : 3); };
+  LD.ERA_NEWS = [null,
+    ["STATE TO CALDER: SINK OR SWIM", "Calder Steel banks its last furnace", "Gas lines round the block on Harbor Ave", "Rent strike spreads down Odell Street", "14th Precinct begins 'quality of life' sweeps",
+      "Mayor: the water works 'could be sold'", "Local 9 votes to strike. Again.", "Tenement fire on Pell Street: 'electrical', says landlord", "Unemployment 11% in the Flats", "Disco is dead, says man at bus stop"],
+    ["STABILITY FUND PASSES: BANKS RESCUED", "Calder Mutual: 'We are well capitalised'", "Foreclosures up 81% in the Flats", "Ledger.now: 10 Bunkers You Won't Believe", "Citizens for Prosperity buys every ad slot",
+      "Regulator joins the firm she regulated", "Odell Street rebranded 'The Brownstone District'", "Council approves luxury tower. Councilman approves luxury boat", "Pundit: 'Nobody could have seen this coming'", "Your bonus is safe, says your bonus"],
+    ["Heat dome: day 19", "Sea-wall bond fails by 400 votes", "Trust in institutions hits a record low (again)", "Hearth rally and Forward march meet on the bridge", "A billionaire's bunker gets a sky garden",
+      "One app now owns the buses, the bank and the weather", "Water rationing for the Flats, not the Heights", "Both parties blame the other party", "Insurers leave the coast", "Experts disagree about experts"]
+  ];
+
+  /* ---------- Era names: what things were called then (Act III keeps the canonical names) ---------- */
+  /* kind -> id -> [act1, act2, act3?] entries: { n: name, i: icon } ; omitted fields keep the canonical value. */
+  LD.ERA_NAMES = {
+    asset: {
+      astro: [{ n: "Letter-Writing Campaign", i: "✉️" }, { n: "Astroturf Blog Network", i: "💻" }],
+      influencer: [{ n: "Radio Jingle Retainer", i: "📻" }, { n: "Blogger Retainer", i: "💻" }],
+      surge: [{ n: "Price-Gouging Desk", i: "🧾" }, { n: "Dynamic Pricing Software", i: "💽" }],
+      holo: [{ n: "Painted Window Blind", i: "🪟" }, { n: "Flat-Screen 'Window'", i: "📺" }],
+      geo: [{ n: "Cloud-Seeding Pilot", i: "☁️" }, { n: "Carbon Capture Pilot", i: "🏭" }],
+      offsets: [{ n: "Tree-Planting Ad", i: "🌳" }, { n: "Carbon Offsets" }],
+      rolodex: [{ n: "Golden Rolodex", i: "📇" }, { n: "Golden Berry", i: "📟" }, { n: "Golden Smart Ring", i: "💍" }],
+      privgrid: [{ n: "Private Diesel Plant", i: "🛢️" }, { n: "Private Substation", i: "⚡" }],
+      buyback: [{ n: "Special Dividend", i: "💵" }, { n: "Stock Buyback" }],
+      toobig: [{ n: "Friends at the Treasury", i: "🏦" }, { n: "Too Big To Fail" }],
+      disfut: [{ n: "Disaster Insurance Book", i: "📒" }, { n: "Disaster Futures" }],
+      narrative: [{ n: "Friendly Editor", i: "🗞️" }, { n: "Message Discipline", i: "🎙️" }],
+      press: [{ n: "Press Office", i: "📠" }, { n: "Press Office", i: "📰" }],
+      penthouse: [{ n: "Penthouse Suite", i: "🛋️" }, { n: "Penthouse Suite", i: "🍾" }],
+      short: [{ n: "Short Position", i: "📉" }, { n: "Short Position", i: "🩳" }],
+      shell: [{ n: "Shell Company", i: "🐚" }, { n: "Offshore Shell", i: "🏝️" }],
+      futures: [{ n: "Commodities Desk", i: "⏳" }, { n: "Futures Desk" }]
+    },
+    item: {
+      prblitz: [{ n: "Newspaper Ad Blitz", i: "🗞️" }, { n: "Cable News Blitz", i: "📺" }],
+      hotline: [{ n: "Lobbyist on Retainer", i: "☎️" }, { n: "Lobbyist on Speed-Dial", i: "📟" }],
+      cloud: [{ n: "Cloud Seeding", i: "✈️" }, { n: "Cloud Seeding" }],
+      pod: [{ n: "Prefab Shelter Kit", i: "🧰" }, { n: "Prefab Panic Room", i: "🚪" }],
+      security: [{ n: "Night Watchmen", i: "🔦" }, { n: "Private Security" }],
+      liquidity: [{ n: "Bridge Loan", i: "💰" }, { n: "Emergency Liquidity" }]
+    },
+    card: {
+      darkmoney: [{ n: "Bag Money", i: "💼" }, { n: "Soft Money", i: "🕳️" }],
+      unsettled: [{ n: "Further Study Needed", i: "❓" }, { n: "Unsettled Science" }],
+      synergy: [{ n: "Interoffice Memo", i: "📎" }, { n: "Synergy Memo" }],
+      privsec: [{ n: "Strikebreaker Detail", i: "🚔" }, { n: "Private Security" }],
+      astro: [{ n: "Paid Letter Campaign", i: "✉️" }, { n: "Astroturf Rally" }],
+      crisiscomms: [{ n: "Crisis Comms", i: "📠" }, { n: "Crisis Comms", i: "📡" }],
+      photoop: [{ n: "Ribbon Cutting", i: "✂️" }, { n: "Photo Op" }],
+      revolving: [{ n: "Revolving Door", i: "🚪" }, { n: "Revolving Door" }]
+    },
+    fixer: {
+      tamsin: [{ role: "public relations counsel" }, { role: "head of social media" }],
+      dex: [{ role: "Capitol Row lobbyist" }, { role: "Capitol Row lobbyist" }, { role: "Capitol Row lobbyist" }],
+      gus: [{ role: "ad man" }, { role: "cable-news spin doctor" }],
+      lorne: [{ role: "Council for Balanced Energy" }, { role: "Center for Balanced Climate" }],
+      pike: [{ role: "Institute for Free Enterprise" }, { role: "Institute for Abundant Futures" }],
+      chip: [{ role: "ex-utility commissioner" }],
+      margo: [{ role: "fixer-at-large" }]
+    },
+    upgrade: {
+      air: [["Hand-crank vent", "Blast filter", "Twin scrubbers"], ["HVAC intake", "HEPA stack", "Redundant scrubbers"], ["Intake fans", "Filtration stack", "Redundant scrubbers"]],
+      water: [["Water drums", "Cistern", "Deep-well tap"], ["Bottled reserve", "Recycling plant", "Deep-well tap"]],
+      power: [["Diesel reserve", "Generator hall", "Battery bank"], ["Diesel reserve", "Server-grade UPS", "Battery vault"]],
+      food: [["Canned goods", "Ration store", "Root cellar"], ["Freeze-dried stock", "Wine wall & pantry", "Hydroponics trial"], ["Dry stockpile", "Hydroponics", "Sky garden"]]
+    },
+    deal: {
+      "crisis-smoke": [{ choice: { "wait": "Issue a cheerful press release" } }, { choice: { "wait": "Post a sunset photo on your blog" } }],
+      "crisis-bread": [{ body: "The shelves are empty. Your warehouses are not. Someone has a crowbar." }, { body: "The shelves are empty. Your warehouses are not. Someone has a camera phone." }],
+      "crisis-blackout": [{ body: "The grid is load-shedding the poor first. The utility insists it is neutral." }, { body: "The grid is load-shedding the poor first. The software insists it is neutral." }],
+      "esg-offset": [{ body: "A forest on paper. A press release in every paper." }, { body: "A forest on paper. A press release on every blog." }]
+    },
+    memo: {
+      collab: [{ title: "Talk-Show Appearance", icon: "📺", body: "A late-night host wants to film your fallout shelter for the Friday show. The wine rack is 'a must'." },
+        { title: "Viral Video Collab", icon: "📹", body: "'10 Bunkers You Won't Believe Exist'. Number four is yours. Three million views by lunch." }],
+      space: [{ title: "The Shipping Magnate", icon: "🚢", body: "He owns half the tankers on the coast. He also collects people who say no." },
+        { title: "The Dot-Com Billionaire", icon: "💾", body: "He sold a search engine for a billion. Now he collects bunker rooms, and people who say no." }],
+      summit: [{ title: "Energy Crisis Summit", icon: "⛽", body: "Gas lines, an oil shock, a summit. Your attendance would be noted. So would your absence." }, { title: "Climate Summit" }],
+      leak: [{ body: "Someone photocopied the 'acceptable losses' ledger and mailed it to a reporter." }, { body: "Someone forwarded the 'acceptable losses' spreadsheet to a blogger." }],
+      troll: [{ title: "The Shakedown Lawyer", icon: "🦈" }, { title: "Patent Troll" }]
+    }
+  };
+  var CANON = null;
+  function snap(o, keys) { var s = {}; keys.forEach(function (k) { s[k] = o[k]; }); return s; }
+  function canon() {
+    if (CANON) return CANON;
+    CANON = { asset: {}, item: {}, card: {}, fixer: {}, upgrade: {}, memo: {} };
+    (LD.FY_ASSETS || []).forEach(function (a) { CANON.asset[a.id] = snap(a, ["name", "icon"]); });
+    (LD.ITEMS || []).forEach(function (a) { CANON.item[a.id] = snap(a, ["name", "icon"]); });
+    (LD.CARDS || []).forEach(function (a) { CANON.card[a.id] = snap(a, ["name", "icon"]); });
+    (LD.FIXERS || []).forEach(function (a) { CANON.fixer[a.id] = snap(a, ["role"]); });
+    Object.keys(LD.UPGRADES || {}).forEach(function (k) { CANON.upgrade[k] = LD.UPGRADES[k].map(function (u) { return u.name; }); });
+    (LD.MEMOS || []).forEach(function (m) { if (m.id) CANON.memo[m.id] = snap(m, ["title", "icon", "body"]); });
+    return CANON;
+  }
+  LD.eraNow = 0;
+  /* Swap display names to an era (0 = canonical, used by the timeless meta screens). Saves only store ids, so this is display-only. */
+  LD.applyEra = function (act) {
+    act = act | 0; var C = canon(), E = LD.ERA_NAMES;
+    if (LD.eraNow === act) return act;
+    LD.eraNow = act;
+    function pick(tab, id) { var r = tab && tab[id]; return act >= 1 && r ? r[act - 1] || null : null; }
+    function apply(list, kind, keys) {
+      (list || []).forEach(function (a) {
+        var c = C[kind][a.id]; if (!c) return;
+        keys.forEach(function (k) { a[k] = c[k]; });
+        var o = pick(E[kind], a.id); if (!o) return;
+        if (o.n && keys.indexOf("name") !== -1) a.name = o.n;
+        if (o.i && keys.indexOf("icon") !== -1) a.icon = o.i;
+        if (o.role) a.role = o.role;
+        if (o.title) a.title = o.title;
+      });
+    }
+    apply(LD.FY_ASSETS, "asset", ["name", "icon"]);
+    apply(LD.ITEMS, "item", ["name", "icon"]);
+    apply(LD.CARDS, "card", ["name", "icon"]);
+    apply(LD.FIXERS, "fixer", ["role"]);
+    (LD.MEMOS || []).forEach(function (m) { var c = C.memo[m.id]; if (!c) return; m.title = c.title; m.icon = c.icon; m.body = c.body; var o = pick(E.memo, m.id); if (o) { if (o.title) m.title = o.title; if (o.icon) m.icon = o.icon; if (o.body) m.body = o.body; } });
+    Object.keys(LD.UPGRADES || {}).forEach(function (k) {
+      var names = C.upgrade[k], o = pick(E.upgrade, k);
+      LD.UPGRADES[k].forEach(function (u, i) { u.name = o && o[i] ? o[i] : names[i]; });
+    });
+    Object.keys(E.deal).forEach(function (did) {
+      var d = LD.dealById ? LD.dealById(did) : null; if (!d) return;
+      var o = pick(E.deal, did);
+      if (d._canonBody == null) d._canonBody = d.body || ""; d.body = o && o.body ? o.body : d._canonBody;
+      (d.choices || []).forEach(function (c) { if (c._canon == null) c._canon = c.label; c.label = c._canon; if (o && o.choice && o.choice[c.id]) c.label = o.choice[c.id]; });
+    });
+    if (typeof document !== "undefined" && document.body && document.body.setAttribute) document.body.setAttribute("data-era", String(act));
+    return act;
+  };
+  LD.eraDealChoice = function (dealId, choiceId, label, state) {
+    var r = LD.ERA_NAMES.deal[dealId], a = state ? LD.eraOf(state) : LD.eraNow; if (!r || !a || a >= 3) return label;
+    var o = r[a - 1]; return o && o.choice && o.choice[choiceId] ? o.choice[choiceId] : label;
+  };
+
+  /* ---------- Named moves (intents) per opponent ---------- */
+  /* Base meters stay the same as the generic encounter so balance holds; twists add character:
+     ramp: later intents grow +n after this fires · bribeUp: +n per paid card you played this fight · lobbyDown: −n per Lobbyist card
+     heal: they win back n Scrutiny after it fires · halfDeny: your Deniability is halved this round · cashTax: cash cards cost +$n this round */
+  var MOVES = {
+    /* Act I */
+    dunn_paper: { label: "Lost Paperwork", meter: "cash", rider: "subpoena", at: 4, rtext: "4+ through: a Subpoena curse", say: "Funny. Your permit's gone missing." },
+    dunn_price: { label: "The Price Goes Up", meter: "cash", bribeUp: 2, rtext: "+2 for every paid card you've played", say: "Inflation, pal. Everything costs more." },
+    mor_evict: { label: "Eviction Notice", meter: "unrest", rtext: "unrest on the block", say: "Tenants out by Friday. Your problem now." },
+    mor_rent: { label: "Rent Hike", meter: "cash", ramp: 2, rtext: "grows +2 each time it lands", say: "Rent's due. Rent's always due." },
+    mor_fire: { label: "Electrical Fault", meter: "collapse", rtext: "a 'convenient' fire", say: "Old wiring. Terrible shame." },
+    june_griev: { label: "Grievance", meter: "heat", rtext: "Heat +1 per 4, unrest half", say: "Article nine. Read it. Out loud." },
+    june_walk: { label: "Wildcat Walkout", meter: "unrest", protest: true, grow: 2, rtext: "grows +2", say: "Line's stopped. Nobody told the line to stop." },
+    mick_vig: { label: "The Vig", meter: "cash", cashTax: 2, rtext: "your cash cards cost +$2M this round", say: "Interest, sweetheart. It compounds." },
+    mick_fire: { label: "A Little Fire", meter: "collapse", rtext: "an insurance job nobody ordered", say: "Shame about the warehouse." },
+    mick_favor: { label: "Calling in a Favor", meter: "cash", rider: "leak", at: 5, rtext: "5+ through: a Leak curse", say: "Remember '76? I remember '76." },
+    odell_pet: { label: "Petition", meter: "unrest", protest: true, grow: 2, rtext: "grows +2", say: "Four hundred signatures. Grandmas sign in pen." },
+    odell_meet: { label: "Block Meeting", meter: "unrest", protest: true, heal: 3, rtext: "the block rallies: they win back 3 Scrutiny", say: "Coffee's on. Bring the neighbours." },
+    /* Act II */
+    del_zone: { label: "Zoning Hold", meter: "cash", rider: "claim", at: 6, rtext: "6+ through: you lose the claim", say: "Committee's backed up. Months. Years." },
+    del_ask: { label: "Campaign Ask", meter: "cash", bribeUp: 1, rtext: "+1 for every paid card you've played", say: "Re-election's expensive. You get that." },
+    del_recount: { label: "Recount", meter: "unrest", heal: 4, rtext: "they win back 4 Scrutiny", say: "Let's count that again. Slowly." },
+    oka_front: { label: "Front Page", meter: "unrest", rider: "leak", at: 4, halfDeny: true, rtext: "your Deniability is halved this round · 4+ through: a Leak", say: "'No comment' reads as guilty, you know." },
+    oka_follow: { label: "Follow-up Question", meter: "heat", rtext: "Heat +1 per 4, unrest half", say: "Just one more. Who signed the bailout memo?" },
+    oka_click: { label: "It Went Viral", meter: "unrest", ramp: 2, rtext: "grows +2 each time it lands", say: "Two million views. Before lunch." },
+    hale_decree: { label: "Consent Decree", meter: "cash", lobbyDown: 2, rtext: "−2 for every Lobbyist card you play (she's on loan from industry)", say: "Sign here. Admit nothing. Pay this." },
+    hale_audit: { label: "Comment Period", meter: "cash", rider: "subpoena", at: 4, lobbyDown: 2, rtext: "4+ through: a Subpoena · −2 per Lobbyist card", say: "We'd love your input. Under seal." },
+    bea_under: { label: "Undercut", meter: "cash", say: "We'll do it for half. Quality is a feeling." },
+    bea_poach: { label: "Poach the Contract", meter: "cash", rider: "claim", at: 6, rtext: "6+ through: you lose the claim", say: "Your client called me. Twice." },
+    bea_cds: { label: "Bet Against You", meter: "cash", ramp: 2, rtext: "grows +2 each time it lands", say: "I bought insurance on your house. Then I lit a candle." },
+    gray_kettle: { label: "Kettle", meter: "unrest", protest: true, rtext: "the crowd gets angrier", say: "Nobody leaves the square." },
+    gray_ot: { label: "Overtime Invoice", meter: "cash", ramp: 3, rtext: "grows +3 each time it lands", say: "Protection's billed by the hour. My hours." },
+    /* Act III regulars and the hearing */
+    cro_fee: { label: "Platform Fee", meter: "cash", ramp: 2, rtext: "grows +2 each time it lands", say: "Thirty percent. It's in the terms." },
+    cro_acq: { label: "Acquire & Shut Down", meter: "cash", rider: "claim", at: 6, rtext: "6+ through: you lose the claim", say: "I don't compete. I purchase." },
+    rosa_chant: { label: "Chant", meter: "unrest", protest: true, say: "Whose city? OUR city!" },
+    rosa_occupy: { label: "Occupy the Lobby", meter: "unrest", protest: true, grow: 2, rtext: "grows +2", say: "We brought tents. And Gran's thermos." },
+    sor_q: { label: "Short Interest", meter: "unrest", say: "Your numbers have numbers. I counted them." },
+    sor_ex: { label: "Footnote 47", meter: "unrest", rider: "asset", at: 5, rtext: "5+ through: you lose your newest Asset", say: "Page 47. The shell in the shell." },
+    ash_down: { label: "Downgrade", meter: "cash", say: "Sell. Strong sell." },
+    ash_guide: { label: "Guidance?", meter: "unrest", heal: 3, rtext: "they win back 3 Scrutiny", say: "Any colour on next quarter?" },
+    br_contempt: { label: "Contempt", meter: "cash", say: "You'll answer the question or you'll answer to me." },
+    br_oath: { label: "Under Oath", meter: "unrest", oath: true, rtext: "your cards cost +1◆ this round", say: "Raise your right hand." },
+    br_bite: { label: "Sound Bite", meter: "unrest", ramp: 2, rtext: "grows +2 each time it lands", say: "For the cameras: are you a crook, yes or no?" },
+    /* Bosses */
+    ash_guidance: { label: "Guidance?", meter: "unrest", say: "Walk us through the miss. Slowly." },
+    ash_miss: { label: "Miss the Number", meter: "collapse", say: "You missed. The market has feelings." },
+    ash_call: { label: "Analyst Pile-on", meter: "unrest", ramp: 3, rtext: "grows +3 each time it lands", say: "Next question. And the next. And the next." },
+    sor_report: { label: "The Report", meter: "unrest", say: "Ninety pages. Bound. Embossed." },
+    sor_expose: { label: "Expose", meter: "unrest", rider: "asset", at: 5, rtext: "5+ through: you lose your newest Asset", say: "Your best asset is a shell company. I drew a diagram." },
+    sor_borrow: { label: "Borrowed Shares", meter: "cash", ramp: 3, rtext: "grows +3 each time it lands", say: "I don't own you. I rent you." },
+    var_chant: { label: "Down Tools", meter: "unrest", protest: true, say: "Not a wheel turns." },
+    var_picket: { label: "Picket Line", meter: "unrest", protest: true, mult: 1.5, rtext: "×1.5", say: "Cross it. I dare you." },
+    var_general: { label: "General Strike", meter: "unrest", protest: true, mult: 1.5, heal: 3, rtext: "×1.5 · solidarity: they win back 3 Scrutiny", say: "The buses joined. The bakers joined. Your driver joined." },
+    jun_chant: { label: "Nothing Left to Lose", meter: "unrest", protest: true, ramp: 2, rtext: "grows +2 each time it lands", say: "You took the job. You don't get the city." },
+    cro_green: { label: "Greenmail", meter: "cash", say: "Buy my stake back. At my price." },
+    cro_strip: { label: "Asset Strip", meter: "cash", rider: "strip", at: 6, rtext: "6+ through: a bunker room loses a level", say: "I'll sell your bunker by the room." },
+    tic_crash: { label: "Flash Crash", meter: "cash", say: "▼▼▼" },
+    tic_margin: { label: "Margin Call", meter: "cash", ramp: 3, rtext: "grows +3 each time it lands", say: "CALL. CALL. CALL." },
+    tic_drain: { label: "Liquidity Drain", meter: "cash", rider: "drain", at: 1, rtext: "any through: lose 15% of your cash", say: "BID: NONE." }
+  };
+
+  /* ---------- The cast ---------- */
+  /* base: the generic encounter it plays as (balance + win bonus). paid: has a sixth 'paid' pose. venue: fixed venue or null. */
+  LD.OPPONENTS = {
+    dunn: { act: 1, base: "regulator", who: "Officer Frank Dunn", role: "14th Precinct", art: "dunn", room: "precinct", place: "The 14th Precinct front desk", ar: 0.526, paid: true,
+      pattern: ["dunn_paper", "dunn_price"], debate: "Broken-windows policing, and who it's for",
+      open: "Nice place. Be a shame if it got... inspected.", hit: ["Hey! I'm an officer of the law!", "Okay, okay. Let's talk numbers.", "You don't scare me. Much."], block: ["Ha! Desk sergeant's deaf.", "Paperwork says otherwise."],
+      end: { paid: "Pleasure doing business. I never saw you.", crushed: "You'll regret this. Cops remember.", walked: "Have a safe night. Watch your windows." } },
+    moretti: { act: 1, base: "rival", who: "Sal Moretti", role: "Moretti Holdings (14 buildings)", art: "moretti", room: "tenement", place: "A Moretti walk-up on Pell Street", ar: 0.522, paid: true,
+      pattern: ["mor_rent", "mor_evict"], debate: "Rent control versus property rights",
+      open: "You want my block? Everybody wants my block.", hit: ["Ow! That's a tenant-rights move!", "Fine, fine, I'm listening.", "My lawyer's gonna hear about this."], block: ["Rent's due either way.", "I own the stairs, kid."],
+      end: { paid: "A pleasure. You're good people. I'll tell the Councilman.", crushed: "Fourteen buildings. You'll want them back someday.", walked: "Rent's going up. Yours too." } },
+    june: { act: 1, base: "journalist", who: "June Park", role: "Shop steward, Local 9", art: "june", room: "diner", place: "Rosie's Diner, back booth", ar: 0.575, paid: true,
+      pattern: ["june_griev", "june_walk"], debate: "The long decline of the unions",
+      open: "Twelve hundred jobs. You've got five minutes.", hit: ["That's a lockout tactic!", "You think we scare that easy?", "...Okay. That one landed."], block: ["Solidarity, pal.", "The line holds."],
+      end: { paid: "I'll take it. For my kids. Not for you.", crushed: "You think this is over? We'll be back. All of us.", walked: "See you on the picket line." } },
+    mickey: { act: 1, base: "regulator", who: "Mickey 'the Nail' Russo", role: "Waterfront 'consultant'", art: "mickey", room: "alley", place: "The alley behind Club Pelican", ar: 0.534, paid: true,
+      pattern: ["mick_vig", "mick_fire"], debate: "The informal economy: who really runs the docks",
+      open: "Nice operation. Lotta things can go wrong with an operation.", hit: ["Ow. Rude.", "Okay, okay, we're friends.", "You hit like a banker."], block: ["Heh. Missed me.", "I got guys for that."],
+      end: { paid: "Smart. You need anything buried, call Mickey.", crushed: "Nobody does that to the Nail. Nobody.", walked: "See? Easy. Same time next month." } },
+    odell: { act: 1, base: "protest", who: "Ma Odell", role: "Odell Street Block Association", art: "odell", room: "stoop", place: "Her stoop on Odell Street", ar: 0.583, paid: true, venue: "away",
+      pattern: ["odell_pet", "odell_meet"], debate: "Urban renewal, and who gets renewed",
+      open: "Forty years on this stoop. You think I'm moving for a briefcase?", hit: ["Watch your mouth on my steps!", "Hmph. My grandbabies are watching.", "Don't you sweet-talk me."], block: ["Honey, I've seen landlords.", "The block's got my back."],
+      end: { paid: "Fine. But you fix the boiler. Every winter.", crushed: "You'll tear it down, sure. Someone always remembers.", walked: "Go on home. This is our street." } },
+    delacroix: { act: 2, base: "regulator", who: "Councilman Ray Delacroix", role: "City Council, Ward 6", art: "delacroix", room: "cityhall", place: "His City Hall office", ar: 0.521, paid: true,
+      pattern: ["del_zone", "del_ask", "del_recount"], debate: "Campaign money and the machine",
+      open: "I've got a ribbon to cut at three. Make it worth my while.", hit: ["Off the record, that hurt.", "My constituents will hear about this!", "Let's not be hasty."], block: ["I've survived worse scandals.", "That's not how the council sees it."],
+      end: { paid: "A generous donation. I'll name a park after you. A small one.", crushed: "Politics is long, friend. Long and petty.", walked: "Zoning denied. See you at the fundraiser." } },
+    okafor: { act: 2, base: "journalist", who: "Dev Okafor", role: "The Ledger", art: "okafor", room: "newsroom", place: "The Ledger newsroom, 2 a.m.", ar: 0.485, paid: true,
+      pattern: ["oka_front", "oka_follow", "oka_click"], debate: "Journalism in the age of clicks",
+      open: "I've got the bailout memo. And your signature.", hit: ["That's not a denial.", "Ouch. On the record?", "You're spinning, and it's showing."], block: ["Sources confirm otherwise.", "Nice try. Next question."],
+      end: { paid: "Story's... on hold. I'll need it to stay that way.", crushed: "You'll see this story again. I keep everything.", walked: "Front page. Tomorrow. Sleep well." } },
+    hale: { act: 2, base: "regulator", who: "Agnes Hale", role: "Resource Oversight Board", art: "hale", room: "regulator", place: "Her hearing room", ar: 0.667,
+      pattern: ["hale_decree", "hale_audit"], debate: "Regulatory capture and the revolving door",
+      open: "I spent eleven years at a firm like yours. I know where you hide things.", hit: ["Out of order!", "Noted. Unfavourably.", "I'll need that in writing."], block: ["Objection overruled. By me.", "The rules are the rules."],
+      end: { paid: "I'll consider your comment. There may be a board seat in it.", crushed: "Recess. Permanently, for some of us.", walked: "Fined. Next." } },
+    harrow: { act: 2, base: "rival", who: "Bea Harrow", role: "Yield & Residue", art: "harrow", room: "club", place: "The Calder Club, members' bar", ar: 0.52, paid: true,
+      pattern: ["bea_under", "bea_poach", "bea_cds"], debate: "Financialisation: making money from money",
+      open: "Darling, the market's big enough for one of us.", hit: ["How common.", "Oh, you'll pay for that. Literally.", "That's... a decent move."], block: ["I hedged.", "Cute. Is that from a seminar?"],
+      end: { paid: "Splendid. We'll merge our interests. Not our names.", crushed: "I'll be back with a bigger fund.", walked: "I'll buy the debt on whatever's left." } },
+    gray: { act: 2, base: "protest", who: "Commissioner Gray", role: "Calder Police Dept.", art: "gray", room: "policehq", place: "Police HQ, the commissioner's office", ar: 0.52, paid: true, venue: "away",
+      pattern: ["gray_kettle", "gray_ot"], debate: "Protest policing, overtime and who pays",
+      open: "Square's full. I can clear it, or not. Your call. Your money.", hit: ["Easy. I've got a pension.", "That's assault on a public servant.", "Hm. Let's renegotiate."], block: ["The badge stops that.", "Riot gear, pal."],
+      end: { paid: "Square'll be clear by morning. Off the record.", crushed: "I'll remember this at the next riot.", walked: "Overtime's overtime. Pay it." } },
+    crowe: { act: 3, base: "rival", who: "Victor Crowe", role: "Crowe Terminals", art: "crowe", room: "rival", place: "Crowe Terminals, top floor", ar: 0.571,
+      pattern: ["cro_fee", "cro_acq"], debate: "Tech monopolies and the platform tax",
+      open: "I don't build. I acquire. Today I'm acquiring you.", hit: ["A rounding error.", "Hm. My board will notice that.", "Interesting. Annoying."], block: ["I own the platform you said that on.", "Priced in."],
+      end: { paid: "A partnership. I'll own you more slowly.", crushed: "My brother always said you were the clever one.", walked: "Welcome to the platform. Thirty percent." } },
+    rosa: { act: 3, base: "protest", who: "Rosa Lind", role: "The People", art: "rosa", room: "protest", place: "Your lobby glass", ar: 0.63, venue: "lobby",
+      pattern: ["rosa_chant", "rosa_occupy"], debate: "Populism, left and right, at the same door",
+      open: "We're not leaving. We brought snacks.", hit: ["That's the best you've got?", "Shame! SHAME!", "Livestreaming this, by the way."], block: ["The people hold the line.", "We're used to your lot."],
+      end: { paid: "A community fund? We'll audit it. Daily.", crushed: "You can clear a lobby. You can't clear a city.", walked: "Whose lobby? OUR lobby!" } },
+    sorel: { act: 3, base: "journalist", who: "Lena Sorel", role: "Nightjar Capital", art: "sorel", room: "garage", place: "Garage, level B3", ar: 0.71,
+      pattern: ["sor_q", "sor_ex"], debate: "The only honest liar in the market",
+      open: "I'm short your stock. I'd like you to know why.", hit: ["Short-term noise.", "Fine. I'll add a page.", "That's going in the appendix."], block: ["Footnoted.", "My lawyers love that."],
+      end: { paid: "Covered my position. Nice doing business, hypocrite.", crushed: "You'll be a case study. Someday.", walked: "Report drops at nine. Have coffee ready." } },
+    ashby: { act: 3, base: "regulator", who: "Gail Ashby", role: "Lead Analyst", art: "ashby", room: "earnings", place: "The broadcast studio", ar: 0.575,
+      pattern: ["ash_down", "ash_guide"], debate: "Quarterly capitalism",
+      open: "Your numbers don't add up. They multiply.", hit: ["That's not guidance.", "Mm. I'll revise.", "Interesting colour."], block: ["The consensus disagrees.", "Model says no."],
+      end: { paid: "Upgraded to 'hold'. Don't make me regret it.", crushed: "I'll be on the next call too.", walked: "Downgrade. Effective now." } },
+    brennan: { act: 3, base: "hearing", who: "Sen. Walt Brennan", role: "Senate Committee", art: "brennan", room: "senate", place: "The Senate chamber", ar: 0.69, venue: "away",
+      pattern: ["br_contempt", "br_oath", "br_bite", "br_contempt"], debate: "Institutions as theatre",
+      open: "The committee will come to order. You will not.", hit: ["Order! ORDER!", "The witness is out of line!", "I yield. Briefly."], block: ["Asked and answered.", "I've seen better liars."],
+      end: { paid: "The committee thanks the witness for the... candour.", crushed: "Adjourned. But the cameras remember.", walked: "Referred for prosecution. Smile for the cameras." } },
+    /* Bosses */
+    ashby_b: { act: 1, boss: "earnings", who: "Gail Ashby", role: "Lead Analyst, Calder Securities", art: "ashby", room: "earnings", place: "The broadcast studio", ar: 0.575,
+      pattern: ["ash_guidance", "ash_miss", "ash_call", "ash_miss"], debate: "Quarterly capitalism is born",
+      open: "Welcome to the earnings call. The analysts are on the line. All of them.", hit: ["That's not guidance.", "Mm. I'll revise.", "Interesting colour."], block: ["The consensus disagrees.", "Model says no."],
+      end: { paid: "Upgraded to 'buy'. Lunch is on you.", crushed: "Fine. Beat the number. This time.", walked: "Downgrade. The tape doesn't lie." } },
+    sorel_b: { act: 1, boss: "shortseller", who: "Lena Sorel", role: "Nightjar Capital", art: "sorel", room: "garage", place: "Garage, level B3", ar: 0.71,
+      pattern: ["sor_report", "sor_expose", "sor_borrow", "sor_expose"], debate: "Short-sellers: vultures or auditors?",
+      open: "Ninety pages on you. I wrote the index myself.", hit: ["Short-term noise.", "Fine. I'll add a page.", "That's going in the appendix."], block: ["Footnoted.", "My lawyers love that."],
+      end: { paid: "Covered. You're expensive to hate.", crushed: "I'll find you again. You leave footprints.", walked: "Report's out. Enjoy the open." } },
+    varga_b: { act: 2, boss: "strike", who: "Tomas Varga", role: "United Workers", art: "varga", room: "union", place: "The union hall", ar: 0.854,
+      pattern: ["var_chant", "var_picket", "var_general", "var_picket"], debate: "The general strike, one more time",
+      open: "Thirty years I've watched you lot. Today the city stops.", hit: ["We've had worse winters.", "That's a scab move.", "Hm. You've learned."], block: ["Solidarity forever.", "The hall holds."],
+      end: { paid: "Contract signed. Don't think we're friends.", crushed: "You broke a strike. You didn't break us.", walked: "The city's ours today." } },
+    june_b: { act: 2, boss: "strike", who: "June Park", role: "Strike Captain, United Workers", art: "june", room: "union", place: "The union hall", ar: 0.575, paid: true,
+      pattern: ["jun_chant", "var_picket", "var_general", "var_picket"], debate: "The general strike, one more time",
+      open: "Remember me? Thirty years. Now the whole city walks out.", hit: ["You did that in '78 too.", "We're older. Not softer.", "...Still hits."], block: ["The line holds. It always held.", "Solidarity, pal."],
+      end: { paid: "The city gets the contract. You don't get forgiven.", crushed: "Twice. You've broken me twice. Never again.", walked: "Told you we'd be back." } },
+    crowe_b: { act: 2, boss: "bid", who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "rival", place: "Crowe Terminals, top floor", ar: 0.571,
+      pattern: ["cro_green", "cro_strip", "cro_green", "cro_strip"], debate: "Raiders, greenmail and the leveraged buyout",
+      open: "Your board has my number. Shall we call them together?", hit: ["A rounding error.", "Hm. My board will notice that.", "Interesting. Annoying."], block: ["Priced in.", "I bought that argument last year."],
+      end: { paid: "Greenmail accepted. Pleasure.", crushed: "I'll be back when you're cheaper.", walked: "Your bunker's mine. Room by room." } },
+    ticker_b: { act: 2, boss: "crash", who: "The Ticker", role: "The Market", art: "ticker", room: "crash", place: "The trading floor", ar: 0.606,
+      pattern: ["tic_crash", "tic_margin", "tic_drain", "tic_margin"], debate: "The 2008 crash: who caught the falling knife",
+      open: "▼ ▼ ▼  BID: NONE  ASK: EVERYTHING", hit: ["▲ +0.3%", "HALTED.", "...RECALCULATING"], block: ["▼ PRICED IN", "▼ NO BID"],
+      end: { paid: "▲ BAILED OUT. CONGRATULATIONS.", crushed: "▲ RECOVERY (FOR SOME)", walked: "▼ MARGIN CALLED" } }
+  };
+  var SHORT = { dunn: "Dunn", moretti: "Sal", june: "June", mickey: "Mickey", odell: "Ma Odell", delacroix: "Delacroix", okafor: "Okafor", hale: "Hale", harrow: "Bea", gray: "Gray",
+    crowe: "Crowe", rosa: "Rosa", sorel: "Sorel", ashby: "Ashby", brennan: "Brennan", ashby_b: "Ashby", sorel_b: "Sorel", varga_b: "Varga", june_b: "June", crowe_b: "Crowe", ticker_b: "The Ticker" };
+  Object.keys(LD.OPPONENTS).forEach(function (id) { LD.OPPONENTS[id].id = id; LD.OPPONENTS[id].short = SHORT[id] || LD.OPPONENTS[id].who; });
+  LD.oppMoves = MOVES;
+  LD.oppById = function (id) { return LD.OPPONENTS[id] || null; };
+  var BOSS_OPP = { earnings: "ashby_b", shortseller: "sorel_b", strike: "varga_b", bid: "crowe_b", crash: "ticker_b" };
+
+  function fates(state) { var f = state.fy; f.fates = f.fates || {}; return f.fates; }
+  LD.oppFates = function (state) { return state && state.fy ? fates(state) : {}; };
+  function fate(state, id) { var x = state && state.fy && state.fy.fates; return x ? x[id] || null : null; }
+  LD.oppFate = fate;
+  function met(state, id) { var m = state.fy.met || {}; return !!m[id]; }
+
+  /* Which boss slot is filled by whom (June leads the strike if you crushed her in '78). */
+  LD.bossOpp = function (state, bossId) {
+    if (bossId === "strike") { var fj = fate(state, "june"); if (fj && fj.how === "crushed") return "june_b"; }
+    return BOSS_OPP[bossId] || null;
+  };
+  /* Pick the face at the door. enc is the base encounter fy.js chose; kind is the deal kind. */
+  LD.pickOpponent = function (state, enc, kind, rng) {
+    var f = state.fy, act = LD.eraOf(state);
+    var E = LD.ENCOUNTERS && LD.ENCOUNTERS[enc];
+    if (E && E.boss) return LD.bossOpp(state, enc);
+    if (enc === "hearing") return "brennan";
+    var mk = fate(state, "mickey");
+    if (act === 2 && mk && mk.how === "paid" && !met(state, "okafor")) return "okafor";
+    var taken = {}; if (f.bossI === "earnings") taken.ashby = 1; if (f.bossI === "shortseller") taken.sorel = 1; if (f.bossII === "bid") taken.crowe = 1;
+    var pool = Object.keys(LD.OPPONENTS).filter(function (id) { var o = LD.OPPONENTS[id]; return o.act === act && !o.boss && o.base !== "hearing" && !taken[id]; });
+    /* Faces who haven't been met this run come first; a face whose usual beat matches the deal is likelier (×4). */
+    var fresh = pool.filter(function (id) { return !met(state, id); });
+    var want = fresh.length ? fresh : pool.slice();
+    var w = want.map(function (id) {
+      var o = LD.OPPONENTS[id], x = o.base === enc ? 4 : 1;
+      if (act === 1 && enc === "journalist" && id === "mickey") x = 3;
+      if (id === "delacroix" && fate(state, "moretti")) x *= 2;
+      if (id === "june" && f.bossII === "strike") x *= 2;
+      if (id === "dunn" && state.turn <= 2) x *= 2;
+      return x;
+    });
+    var tot = w.reduce(function (a, b) { return a + b; }, 0), r = (rng ? rng() : Math.random()) * tot;
+    for (var i = 0; i < want.length; i++) { r -= w[i]; if (r <= 0) return want[i]; }
+    return want[want.length - 1] || null;
+  };
+  LD.oppIntentDefs = MOVES;
+  if (LD.INTENTS) Object.keys(MOVES).forEach(function (k) { LD.INTENTS[k] = MOVES[k]; });
+
+  /* ---------- Callbacks: "A FAMILIAR FACE" ---------- */
+  /* Returns { id, who, art, pose, line, effect, mod } or null. mod: scrutMult, add (intent +n), noRider, cash (−$n at start), curse */
+  LD.callbackFor = function (state, oppId) {
+    var F = function (id) { return fate(state, id); };
+    var d = F("dunn"), j = F("june"), m = F("mickey"), mo = F("moretti"), od = F("odell");
+    if (oppId === "brennan" && d && d.how === "paid") return { id: "dunn-testifies", who: "Officer Frank Dunn (ret.)", art: "wit-dunn-accuse", inset: true, line: LD.execPronoun(state) + " paid me. Q" + d.q + ". Cash.",
+      effect: "Dunn is the committee's star witness: Scrutiny +25% and a Subpoena in your hand.", mod: { scrutMult: 1.25, curse: "c_subpoena" } };
+    if (oppId === "june_b" && j) return { id: "june-strike", who: "June Park", art: "opp-june-idle", line: "You crushed Local 9 in '78. I kept the minutes.",
+      effect: "June leads the strike, with nothing left to lose: every move +2.", mod: { add: 2 } };
+    if (oppId === "varga_b" && j && j.how === "paid") return { id: "june-scab", who: "June Park", art: "opp-june-paid", line: "Even June took your envelope in '78. The hall hasn't forgotten.",
+      effect: "Half the old guard won't march with Varga: Scrutiny −20%.", mod: { scrutMult: 0.8 } };
+    if (oppId === "okafor" && m && m.how === "paid") return { id: "mickey-buries", who: "Mickey 'the Nail' Russo", art: "opp-mickey-paid", line: "I know a guy at the Ledger's printing plant. Story's going nowhere.",
+      effect: "Mickey buries the story: Scrutiny −30%, Okafor's riders are off. His cut: $3M.", mod: { scrutMult: 0.7, noRider: true, cash: 3 } };
+    if (oppId === "delacroix" && mo) return mo.how === "crushed" ? { id: "moretti-donor", who: "Sal Moretti", art: "opp-moretti-hit", line: "Sal Moretti was my biggest donor. Was.",
+      effect: "Delacroix holds a grudge for his old donor: every move +2.", mod: { add: 2 } } :
+      { id: "moretti-donor", who: "Sal Moretti", art: "opp-moretti-paid", line: "Sal says you're good for it. Sal's never wrong about money.", effect: "Moretti vouched for you: Scrutiny −20%.", mod: { scrutMult: 0.8 } };
+    if (oppId === "gray" && d) return d.how === "crushed" ? { id: "dunn-grudge", who: "Officer Frank Dunn", art: "opp-dunn-defeated", line: "You got Frank Dunn transferred to the harbour patrol. He was one of mine.",
+      effect: "Gray remembers Dunn: every move +2.", mod: { add: 2 } } :
+      { id: "dunn-grudge", who: "Officer Frank Dunn", art: "opp-dunn-paid", line: "Frank Dunn says you tip well. The department noticed.", effect: "Gray expects the same rate: Overtime starts higher (+2), Scrutiny −15%.", mod: { add: 1, scrutMult: 0.85 } };
+    if (oppId === "rosa" && od) return od.how === "crushed" ? { id: "odell-granddaughter", who: "Ma Odell", art: "opp-odell-defeated", line: "You took Gran's stoop. I grew up on it.",
+      effect: "Rosa is Ma Odell's granddaughter: every chant +2.", mod: { add: 2 } } :
+      { id: "odell-granddaughter", who: "Ma Odell", art: "opp-odell-paid", line: "Gran says you kept the boiler running. I still don't trust you.", effect: "Rosa is Ma Odell's granddaughter: Scrutiny −15%.", mod: { scrutMult: 0.85 } };
+    return null;
+  };
+  LD.execPronoun = function (state) { var id = state && state.executiveId; return id === "mara" || id === "imani" ? "She" : "He"; };
+  LD.CALLBACKS = ["dunn-testifies", "june-strike", "june-scab", "mickey-buries", "moretti-donor", "dunn-grudge", "odell-granddaughter"];
+
+  /* Should the Senate call Dunn? (Act III, from Q10, once, if he was paid.) */
+  LD.dunnHearingDue = function (state) {
+    var f = state.fy, d = fate(state, "dunn");
+    return !!(d && d.how === "paid" && LD.eraOf(state) === 3 && state.turn >= 10 && !(f.cbDone && f.cbDone["dunn-testifies"]) && !f.hearing);
+  };
+
+  /* How a fight ended, in story terms. */
+  LD.fightHow = function (fg) {
+    if (!fg || !fg.done) return null;
+    if (fg.done.settled) return "paid";
+    if (fg.done.win) return (fg.bribes | 0) > 0 ? "paid" : "crushed";
+    return "walked";
+  };
+  LD.HOW_LABEL = { paid: "PAID OFF", crushed: "CRUSHED", walked: "THEY WALKED" };
+  LD.oppLine = function (fg, kind, n) {
+    var o = fg && LD.OPPONENTS[fg.opp]; if (!o) return "";
+    if (kind === "open") return o.open;
+    if (kind === "end") return (o.end || {})[LD.fightHow(fg)] || "";
+    var arr = o[kind] || []; if (!arr.length) return "";
+    return arr[Math.abs(n | 0) % arr.length];
+  };
+})();
+</script>
   <script>
 /* Generated by scripts/gen-worldmap.js from Natural Earth 110m (public domain) via world-atlas. */
 (function (root) {
@@ -9189,6 +9729,14 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
 
   function tickerItems(state) {
     var items = (state.log || []).slice(0, 6).map(function (l) { return { text: "Q" + l.turn + " · " + l.text, region: regionInText(l.text) }; });
+    /* The era's own headlines run between yours (fiction: Port Calder, 1978 / 2008 / now). */
+    var era = LD.eraOf ? LD.eraOf(state) : 0, news = era && LD.ERA_NEWS ? LD.ERA_NEWS[era] : null;
+    if (news) {
+      var k = (state.turn * 3) % news.length, out = [];
+      items.forEach(function (it, i) { out.push(it); if (i % 2 === 1) out.push({ text: "📰 " + news[(k + i) % news.length], region: null, era: true }); });
+      if (!items.length) out.push({ text: "📰 " + news[k], region: null, era: true }, { text: "📰 " + news[(k + 1) % news.length], region: null, era: true });
+      items = out.slice(0, 9);
+    }
     if (!items.length) items = [{ text: "Markets open.", region: null }];
     return items;
   }
@@ -9287,7 +9835,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var h = '<div class="desk ' + (dealPhase ? "phase-deal" : "phase-bunker") + (ui.selDeal || ui.selRegion || ui.selNet || ui.selRival != null ? " has-sel" : "") + (ui.globe ? " is-globe" : "") + '">';
     h += '<div class="desk-light" aria-hidden="true"></div>';
     h += '<header class="desk-head"><div class="brand"><div class="wordmark">LAST DIVIDEND<span class="sun" aria-hidden="true"></span></div>' +
-      '<div class="tag">A Brighter Tomorrow, Privately Owned</div></div>' +
+      '<div class="tag">' + (LD.ERAS && LD.eraOf && LD.ERAS[LD.eraOf(state)] ? esc("Port Calder, " + LD.ERAS[LD.eraOf(state)].year.replace("Now", "now") + " · " + LD.ERAS[LD.eraOf(state)].name) : "A Brighter Tomorrow, Privately Owned") + '</div></div>' +
       '<div class="head-right"><div class="rating-plate" aria-label="Credit rating ' + esc(LD.ratingName(state.rating)) + '"><small>Rating</small>' + esc(LD.ratingName(state.rating)) + '</div><div class="q-chip" aria-label="Quarter ' + state.turn + '"><small>' + (LD.actChip ? LD.actChip(state) : "Quarter") + '</small>Q' + state.turn + (state.fy ? "<i>/" + state.fy.rules.finalQ + "</i>" : "") + "</div>" +
       '<button class="icon-btn" id="btn-menu" aria-label="Menu">☰</button></div></header>';
 
@@ -9640,7 +10188,9 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
   var ISLAND_ART = "assets/oasis-island.webp";
   /* One label-free backdrop per faction, same composition (villa left, compound centre, dock right). */
   LD.ISLAND_ART = { mara: "assets/island-mara.webp", reid: "assets/island-reid.webp", imani: "assets/island-imani.webp", julian: "assets/island-julian.webp", soren: "assets/island-soren.webp", cassius: "assets/island-cassius.webp" };
-  function islandArt(state) { return (LD.ISLAND_ART && LD.ISLAND_ART[state.executiveId]) || ISLAND_ART; }
+  function eraOf(state) { return LD.eraOf ? LD.eraOf(state) : 3; }
+  /* The surface evolves per era: a 1978 HQ over a fallout shelter, a 2008 tower over a prepper vault, then the faction island. */
+  function islandArt(state) { var e = eraOf(state); if (e === 1) return "assets/bunker-1.webp"; if (e === 2) return "assets/bunker-2.webp"; return (LD.ISLAND_ART && LD.ISLAND_ART[state.executiveId]) || ISLAND_ART; }
   var RW = 250, RH = 118;
   LD.BUNKER_ROOMS = {
     air: { x: 28, y: 146, name: "Air" },
@@ -9683,7 +10233,34 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     return h + "</g>";
   }
 
-  function unit(id, i, gold) {
+  /* Era props: 1978 civil-defence surplus; 2008 prepper luxury (servers, wine wall, panic room). Act III keeps the techno-luxury set below. */
+  function unitEra(id, i, gold, era) {
+    var x = 40 + i * 62, s = gold ? "#c99428" : "#2a2018";
+    if (era === 1) {
+      if (id === "air") return '<g transform="translate(' + (x + 4) + ' 34)"><rect width="44" height="40" fill="#7d8a5a" stroke="' + s + '" stroke-width="2.5"/><rect x="6" y="6" width="32" height="14" fill="#4c5638"/>' +
+        '<path d="M8 9 h28 M8 13 h28 M8 17 h28" stroke="#2a2f1e" stroke-width="1.4"/><circle cx="22" cy="31" r="7" fill="none" stroke="' + s + '" stroke-width="2.5"/><g><line x1="22" y1="31" x2="29" y2="26" stroke="' + s + '" stroke-width="2.5"/></g><rect x="18" y="-26" width="8" height="26" fill="#9aa08a" stroke="' + s + '" stroke-width="1.5"/><rect x="-2" y="40" width="48" height="18" fill="#6b5a3a"/></g>';
+      if (id === "water") return '<g transform="translate(' + (x + 2) + ' 40)"><rect width="22" height="52" rx="3" fill="#3f6f8a" stroke="' + s + '" stroke-width="2.5"/><rect x="26" width="22" height="52" rx="3" fill="#3f6f8a" stroke="' + s + '" stroke-width="2.5"/>' +
+        '<path d="M0 14 h22 M0 38 h22 M26 14 h22 M26 38 h22" stroke="#24485c" stroke-width="2"/><text x="11" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#f3e3bf">CD</text><text x="37" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#f3e3bf">H₂O</text></g>';
+      if (id === "power") return '<g transform="translate(' + x + ' 48)"><rect width="54" height="40" rx="3" fill="#6b7a4a" stroke="' + s + '" stroke-width="2.5"/><rect x="6" y="8" width="20" height="12" fill="#2a2f1e"/><circle cx="40" cy="22" r="9" fill="#c9b27a" stroke="' + s + '" stroke-width="2"/>' +
+        '<rect x="44" y="-26" width="5" height="26" fill="#3a3a32"/><ellipse class="bk-puff" cx="47" cy="-30" rx="6" ry="4" fill="#9a9488" opacity="0.7"/><rect x="0" y="40" width="54" height="5" fill="#3a3326"/></g>';
+      var p = '<g transform="translate(' + x + ' 26)"><rect x="0" y="0" width="52" height="66" fill="#6b4f30" stroke="' + s + '" stroke-width="2.5"/>';
+      [12, 34, 56].forEach(function (yy) { p += '<rect x="2" y="' + yy + '" width="48" height="3" fill="#3a2a18"/>'; for (var c = 0; c < 5; c++) p += '<rect x="' + (5 + c * 9) + '" y="' + (yy - 9) + '" width="7" height="9" rx="1" fill="' + (["#c9b27a", "#b84a2e", "#d9c79a", "#7d8a5a", "#c9b27a"][c]) + '" stroke="#2a2018" stroke-width="0.8"/>'; });
+      return p + "</g>";
+    }
+    if (id === "air") return '<g transform="translate(' + (x + 2) + ' 36)"><rect width="50" height="44" rx="4" fill="#d6dbe0" stroke="' + s + '" stroke-width="2.5"/>' +
+      '<g stroke="#8a96a0" stroke-width="2">' + [8, 14, 20, 26, 32, 38].map(function (yy) { return '<line x1="6" y1="' + yy + '" x2="44" y2="' + yy + '"/>'; }).join("") + '</g><circle cx="42" cy="6" r="2.4" fill="#2ecc71"/><rect x="-2" y="44" width="54" height="12" fill="#8a96a0"/></g>';
+    if (id === "water") { var w = '<g transform="translate(' + x + ' 30)"><rect width="52" height="62" fill="#c9d2d8" stroke="' + s + '" stroke-width="2"/>';
+      [[4, 6], [27, 6], [4, 34], [27, 34]].forEach(function (pt) { w += '<rect x="' + pt[0] + '" y="' + pt[1] + '" width="21" height="24" rx="6" fill="#7fc8e8" stroke="#3a7fa0" stroke-width="1.5"/><rect x="' + (pt[0] + 7) + '" y="' + (pt[1] - 3) + '" width="7" height="4" fill="#2a6f9a"/>'; });
+      return w + "</g>"; }
+    if (id === "power") { var sv = '<g transform="translate(' + (x + 6) + ' 22)"><rect width="40" height="70" rx="2" fill="#1d2228" stroke="' + s + '" stroke-width="2.5"/>';
+      for (var r = 0; r < 6; r++) sv += '<rect x="4" y="' + (5 + r * 11) + '" width="32" height="8" fill="#2c333b"/><circle class="bk-led" style="animation-delay:' + (r * 0.23).toFixed(2) + 's" cx="31" cy="' + (9 + r * 11) + '" r="1.6" fill="' + (r % 3 ? "#2ecc71" : "#4aa8ff") + '"/>';
+      return sv + "</g>"; }
+    var wn = '<g transform="translate(' + x + ' 26)"><rect width="52" height="66" fill="#5a2a2a" stroke="' + s + '" stroke-width="2.5"/>';
+    for (var ry = 0; ry < 6; ry++) for (var rx = 0; rx < 5; rx++) wn += '<circle cx="' + (6 + rx * 10) + '" cy="' + (7 + ry * 10.5) + '" r="3.4" fill="' + ((rx + ry) % 3 ? "#2a1414" : "#7a1e2e") + '" stroke="#c9a25a" stroke-width="0.6"/>';
+    return wn + "</g>";
+  }
+  function unit(id, i, gold, era) {
+    if (era === 1 || era === 2) return unitEra(id, i, gold, era);
     var x = 40 + i * 62, s = gold ? "#c99428" : "#0a464e";
     if (id === "air") {
       return '<g transform="translate(' + (x + 22) + ' 64)"><rect x="-6" y="-52" width="12" height="30" fill="#cfd8d6" stroke="' + s + '" stroke-width="1.5"/>' +
@@ -9742,7 +10319,11 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     } else {
       var n = Math.min(3, s.level);
       var units = s.stage === "building" ? 1 : n;
-      for (var i = 0; i < units; i++) h += unit(id, i, s.level >= 3 && i === 2);
+      var era = eraOf(state);
+      for (var i = 0; i < units; i++) h += unit(id, i, s.level >= 3 && i === 2, era);
+      /* 2008: the power room hides a panic room; now: the house AI watches every room. */
+      if (era === 2 && id === "power" && s.stage === "done") h += '<g transform="translate(200 40)"><rect width="30" height="52" rx="3" fill="#8a96a0" stroke="#2a2018" stroke-width="2"/><circle cx="15" cy="24" r="9" fill="none" stroke="#2a2018" stroke-width="2.5"/><path d="M15 15 v18 M6 24 h18" stroke="#2a2018" stroke-width="1.6"/><text x="15" y="48" text-anchor="middle" font-size="6" font-weight="700" fill="#2a2018">PANIC</text></g>';
+      if (era === 3 && s.stage === "done") h += '<g class="bk-ai" transform="translate(206 22)"><circle r="7" fill="#0a1a22" stroke="#7fe0ea" stroke-width="1.6"/><circle class="bk-led" r="2.6" fill="#ff5a6a"/></g>';
       if (s.stage === "building") {
         h += scaffold(110, 226);
         h += '<g class="bk-hook"><line x1="170" y1="12" x2="170" y2="34" stroke="#333" stroke-width="1.4"/><rect x="160" y="34" width="20" height="14" fill="#c99428" stroke="#6b4f12"/></g>';
@@ -9859,7 +10440,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       h += '<rect class="bk-hit" x="508" y="64" width="360" height="226"/>';
     }
     h += "</g>";
-    var plaque = (LD.execById(state.executiveId).compound || "Oasis Prime").toUpperCase();
+    var era0 = eraOf(state), plaque = (era0 === 1 ? "Fallout Shelter · 1978" : era0 === 2 ? "Prepper Vault · 2008" : (LD.execById(state.executiveId).compound || "Oasis Prime")).toUpperCase();
     var pw = Math.round(plaque.length * 11.5 + 34);
     h += '<g class="bk-plaque" transform="translate(440 18)"><rect x="' + (-pw / 2) + '" y="-13" width="' + pw + '" height="26" rx="13"/><text y="5" text-anchor="middle" font-size="14" font-weight="700" letter-spacing="3">' + esc(plaque) + "</text></g>";
     return h;
@@ -10026,7 +10607,8 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var acted = state.bunkerActedThisTurn;
     var r = LD.readinessSummary(state);
     var h = '<div class="bk-view' + (ui.mode === "convert" ? " convert-mode" : "") + '">';
-    h += '<div class="bk-top"><div><div class="dz-k">Private bunker · ' + r.ready + "/4 ready" + (state.converting ? " · private supply" : "") + "</div>" +
+    var ERA = LD.ERAS && LD.ERAS[eraOf(state)];
+    h += '<div class="bk-top"><div><div class="dz-k">' + esc(ERA ? ERA.bunker + " · " + ERA.year : "Private bunker") + " · " + r.ready + "/4 ready" + (state.converting ? " · private supply" : "") + "</div>" +
       "<h3>" + (ui.sealed ? "Doors sealed" : locked ? "Sign a deal to order works" : acted ? "Order placed this quarter" : "One order this quarter") + "</h3></div>" +
       '<button class="dz-x" id="bs-close" aria-label="Close">✕</button></div>';
     h += '<div class="bk-stage">' + renderBunkerScene(state, { interactive: !ui.sealed, focus: ui.focus, justBuilt: ui.justBuilt, sealed: ui.sealed, idPrefix: "bv" }) + "</div>";
@@ -10260,7 +10842,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     h += '<g class="fc fc-shock"><path d="M39 34 Q43 31 46 34 M54 34 Q57 31 61 34" stroke="#2a1a10" stroke-width="1.6" fill="none"/><circle cx="43" cy="41" r="2.4" fill="#fff" stroke="#1a110a"/><circle cx="57" cy="41" r="2.4" fill="#fff" stroke="#1a110a"/><circle cx="43" cy="41" r="1" fill="#1a110a"/><circle cx="57" cy="41" r="1" fill="#1a110a"/><rect x="46" y="48" width="8" height="6" rx="3" fill="#4a1410"/></g>';
     return h + "</svg>";
   }
-  function citySvg(stage, decay, holo) {
+  function citySvg(stage, decay, holo, era) {
     var st = holo ? 0 : stage, dv = holo ? 0 : decay;
     var h = '<svg class="of-city" viewBox="0 0 200 110" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
     h += '<rect class="sky" x="0" y="0" width="200" height="110"/>';
@@ -10280,6 +10862,14 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var fires = [0, 0, 1, 3, 5][st] + (st >= 2 && dv > 70 ? 1 : 0);
     var fx = [66, 136, 30, 101, 175, 53];
     for (var k = 0; k < Math.min(fires, fx.length); k++) h += '<g class="fire" style="--k:' + k + '"><path d="M' + fx[k] + ' 62 q3 -9 6 0 q-1 5 -3 6 q-2 -1 -3 -6Z"/><ellipse class="plume" cx="' + (fx[k] + 4) + '" cy="44" rx="10" ry="7"/></g>';
+    /* Era props in the window: 1978 smokestacks and a strike banner; 2008 cranes and a jumbotron; now a sea wall and drones. */
+    if (era === 1) h += '<g class="era-props e1"><rect class="stack" x="56" y="22" width="5" height="58"/><rect class="stack" x="66" y="30" width="4" height="50"/><rect class="stack" x="140" y="26" width="5" height="54"/>' +
+      '<ellipse class="smoke" cx="60" cy="16" rx="9" ry="5"/><ellipse class="smoke" cx="70" cy="10" rx="12" ry="6"/><ellipse class="smoke" cx="146" cy="19" rx="10" ry="5"/>' +
+      '<rect class="banner" x="96" y="58" width="30" height="8"/><text class="banner-t" x="111" y="64" text-anchor="middle">ON STRIKE</text></g>';
+    if (era === 2) h += '<g class="era-props e2"><path class="crane" d="M36 80 V20 M30 22 H70 M66 22 V40 M36 20 L44 28" /><path class="crane" d="M150 80 V28 M146 30 H182 M178 30 V46"/>' +
+      '<rect class="jumbo" x="104" y="40" width="26" height="14"/><text class="jumbo-t" x="117" y="49" text-anchor="middle">▼ 777</text>' +
+      '<rect class="sign" x="82" y="70" width="14" height="6"/><text class="sign-t" x="89" y="74.6" text-anchor="middle">FORECLOSED</text></g>';
+    if (era === 3) h += '<g class="era-props e3"><rect class="wall" x="0" y="76" width="200" height="5"/><path class="drone" d="M40 18 h8 M44 18 v2 M120 12 h8 M124 12 v2 M84 26 h6 M87 26 v2"/></g>';
     h += '<rect class="smog" x="0" y="0" width="200" height="82"/>';
     h += '<rect class="sea" x="0" y="80" width="200" height="30"/>';
     h += '<path class="flood" d="M0 80 Q25 76 50 80 T100 80 T150 80 T200 80 V84 H0Z"/>';
@@ -10319,16 +10909,16 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var quiet = LD.doorQuiet && LD.doorQuiet(state);
     var exec = LD.execById(state.executiveId);
     var m = LD.mods(state);
-    var ring = !!(f.memo);
+    var ring = !!(f.memo), ERA = LD.ERAS && LD.eraOf ? LD.ERAS[LD.eraOf(state)] : null;
     var h = '<div class="panel-k of-head"><span>Q' + state.turn + '<span class="of-ht"> · Office</span></span><span class="of-tools">' +
       (f.deck ? '<button class="of-deckbtn" id="btn-deck" aria-label="Deck, ' + f.deck.length + ' cards">🃏 ' + f.deck.length + "</button>" : "") +
-      (ring ? '<button class="of-phone ringing" id="btn-phone" aria-label="The phone is ringing">☎</button>' : "") +
+      (ring ? '<button class="of-phone ringing" id="btn-phone" aria-label="' + esc(ERA ? ERA.phone : "The phone is ringing") + '">' + (ERA ? ERA.phoneIcon : "☎") + "</button>" : "") +
       (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</span></div>";
     h += '<div class="of-room mood-' + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
     h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';
     if (f.hand) { h += '<div class="of-wallart" aria-hidden="true">'; for (var wi = 0; wi < (f.cap || 5); wi++) { var wa = f.hand[wi] && LD.assetById(f.hand[wi].id); h += wa ? "<i>" + wa.icon + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
     /* Window */
-    h += '<div class="of-window" data-art="office-window"><div class="of-glass">' + citySvg(stage, decay, holo) + '</div>' +
+    h += '<div class="of-window" data-art="office-window"><div class="of-glass">' + citySvg(stage, decay, holo, ERA ? ERA.act : 3) + '</div>' +
       (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "") +
       ogauge("collapse", "☢", "Collapse", state.collapse, false,
         (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
@@ -10356,7 +10946,8 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var f = state.fy, m = f && f.memo && LD.memoById(f.memo.id);
     if (!m) return "";
     var h = '<div class="fy-boss fy-memo"><div class="fy-boss-ico" aria-hidden="true">' + m.icon + "</div>";
-    h += '<div class="dz-k">' + (m.call ? "Incoming call" : "Board call") + " · Q" + state.turn + "</div><h2>" + esc(m.title) + "</h2>";
+    var ERA = LD.ERAS && LD.eraOf ? LD.ERAS[LD.eraOf(state)] : null;
+    h += '<div class="dz-k">' + (ERA ? ERA.phoneIcon + " " + esc(ERA.phone) : m.call ? "Incoming call" : "Board call") + " · Q" + state.turn + "</div><h2>" + esc(m.title) + "</h2>";
     h += '<p class="fy-demand">' + esc(m.body) + "</p>";
     var mm = f.memo;
     if (m.id === "headhunter" && mm.offer) {
@@ -10401,7 +10992,8 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     } else if (kind === "bosses") {
       h += '<div class="fy-head"><div class="dz-k">Boss quarters</div><h2>Who can show up</h2></div><ul class="fy-list ex-list">';
       [["earnings", "shortseller"], ["strike", "bid", "crash"], ["reckoning", "heatdome", "seawall"]].forEach(function (grp, ai) {
-        grp.forEach(function (id) { var b = LD.BOSSES[id]; h += '<li><span class="fy-ico" aria-hidden="true">' + b.icon + "</span><div><b>" + esc(b.name) + "</b> <em>Act " + LD.ACTS[ai].roman + "</em></div></li>"; });
+        grp.forEach(function (id) { var b = LD.BOSSES[id], bo = LD.bossOpp && state && state.fy ? LD.oppById(LD.bossOpp(state, id)) : null, bo0 = !bo && LD.oppById ? LD.oppById({ earnings: "ashby_b", shortseller: "sorel_b", strike: "varga_b", bid: "crowe_b", crash: "ticker_b" }[id]) : null; bo = bo || bo0;
+          h += '<li><span class="fy-ico" aria-hidden="true">' + b.icon + "</span><div><b>" + esc(b.name) + "</b> <em>Act " + LD.ACTS[ai].roman + " · " + esc(LD.ACTS[ai].year) + "</em>" + (bo ? "<span>" + esc(bo.who + " · " + bo.role) + "</span>" : "") + "</div></li>"; });
       });
       h += '</ul><p class="fy-note">Each act draws one boss from its row. The timeline shows yours from the start.</p>';
     }
@@ -10417,7 +11009,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
 
   function actChip(state) {
     var f = state.fy; if (!f) return "Quarter";
-    return "Act " + LD.ACTS[f.act - 1].roman;
+    return "Act " + LD.ACTS[f.act - 1].roman + " · " + LD.ACTS[f.act - 1].year;
   }
 
   function nextBossQ(state) {
@@ -10431,8 +11023,10 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     if (!info) return "";
     var act = LD.ACTS[LD.actOf(q) - 1];
     var h = '<div class="fy-boss b-' + info.id + '"><div class="fy-boss-ico" aria-hidden="true">' + info.icon + "</div>";
-    h += '<div class="dz-k">' + (mode === "confirm" ? "Boss quarter · Q" + q : "Act " + act.roman + " · " + esc(act.name) + " · boss at Q" + q) + ' · <button class="link-btn fy-whoboss fy-explain" data-explain="bosses">ⓘ All bosses</button></div>';
+    var bopp = LD.bossOpp && !info.final ? LD.oppById(LD.bossOpp(state, info.id)) : null;
+    h += '<div class="dz-k">' + (mode === "confirm" ? "Boss quarter · Q" + q : "Act " + act.roman + " · " + esc(act.name) + " (" + esc(act.year) + ") · boss at Q" + q) + ' · <button class="link-btn fy-whoboss fy-explain" data-explain="bosses">ⓘ All bosses</button></div>';
     h += "<h2>" + esc(info.name) + "</h2>";
+    if (bopp) h += '<p class="fy-who">' + esc(bopp.who + " · " + bopp.role) + (state.fy && state.fy.strikeSwap && info.id === "strike" ? " · ★ a familiar face" : "") + "</p>";
     h += '<p class="fy-demand">' + esc(info.demand) + "</p>";
     h += '<div class="fy-outs"><div class="fy-out good"><b>Beat it</b><span>' + esc(info.beat) + ' · +10 ◈</span></div><div class="fy-out bad"><b>Miss it</b><span>' + esc(info.miss) + "</span></div></div>";
     if (mode === "confirm" && info.id === "strike") h += '<p class="fy-note">Unrest now ' + state.unrest + (state.unrest >= 40 ? " · the big hit applies" : " · under 40, the small hit applies") + ".</p>";
@@ -10447,7 +11041,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
   function fyDossier(state) {
     var f = state.fy; if (!f) return "";
     var q = nextBossQ(state), info = q ? LD.bossInfo(state, q) : null;
-    var h = '<div class="target fy-target"><span>⚑</span><b>Act ' + LD.ACTS[f.act - 1].roman + " · " + esc(LD.ACTS[f.act - 1].name) + "</b> Q" + state.turn + " of " + f.rules.finalQ;
+    var h = '<div class="target fy-target"><span>⚑</span><b>Act ' + LD.ACTS[f.act - 1].roman + " · " + esc(LD.ACTS[f.act - 1].name) + " · " + esc(LD.ACTS[f.act - 1].year) + "</b> Q" + state.turn + " of " + f.rules.finalQ;
     if (info) h += '<button class="fy-bosslink" data-boss-q="' + q + '">' + info.icon + " " + esc(info.name) + " · Q" + q + " ▸</button>";
     return h + "</div>";
   }
@@ -10501,7 +11095,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     strike: { who: "Tomas Varga", role: "United Workers", art: "varga", room: "union", place: "The union hall" },
     crash: { who: "The Ticker", role: "The Market", art: "ticker", room: "crash", place: "The trading floor" }
   };
-  var ART_AR = { ashby: 0.575, brennan: 0.69, crowe: 0.571, hale: 0.667, okafor: 0.611, rosa: 0.63, sorel: 0.71, ticker: 0.606, varga: 0.854,
+  var ART_AR = { ashby: 0.575, brennan: 0.69, crowe: 0.571, hale: 0.667, okafor: 0.485, dunn: 0.526, moretti: 0.522, june: 0.575, mickey: 0.534, odell: 0.583, delacroix: 0.521, harrow: 0.52, gray: 0.52, rosa: 0.63, sorel: 0.71, ticker: 0.606, varga: 0.854,
     "back-cassius": 0.817, "back-imani": 0.778, "back-julian": 0.817, "back-mara": 0.778, "back-reid": 0.778, "back-soren": 0.817,
     "front-cassius": 0.867, "front-imani": 0.764, "front-julian": 0.867, "front-mara": 0.764, "front-reid": 0.764, "front-soren": 0.867 };
   var POSES = ["idle", "attack", "hit", "block", "defeated"];
@@ -10509,31 +11103,55 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
   LD.factionFor = function (enc) { return FACTIONS[enc] || FACTIONS.regulator; };
   function execArt(id) { return ART_AR["back-" + id] ? id : "mara"; }
   LD.execFrontArt = function (id) { var k = execArt(id); return { src: "assets/fight/front-" + k + ".webp", ar: ART_AR["front-" + k] }; };
+  /* The face at the door: the act cast (eras.js) or the old faction table for saves from before the eras. */
+  LD.fightFace = function (fg) {
+    var O = fg && fg.opp && LD.oppById ? LD.oppById(fg.opp) : null;
+    if (O) return { who: O.who, short: O.short, role: O.role, art: O.art, room: O.room, place: O.place, ar: O.ar, paid: !!O.paid, opp: O };
+    var F = LD.factionFor(fg ? fg.enc : "regulator");
+    return { who: F.who, short: F.who.split(" ").slice(-1)[0], role: F.role, art: F.art, room: F.room, place: F.place, ar: ART_AR[F.art], paid: false, opp: null };
+  };
+  function homeRoom(fg) { var a = LD.actOf ? LD.actOf(Math.min(12, fg.q || 1)) : 3; return a < 3 ? "home-" + a : "home"; }
+  /* What they say right now (speech bubble). */
+  function bubbleText(state, fg, ui) {
+    if (ui.say && ui.say.t) return ui.say;
+    if (fg.done) return { t: LD.oppLine(fg, "end"), k: "end" };
+    if (fg.round === 1 && !fg.played) return { t: LD.oppLine(fg, "open"), k: "open" };
+    var I = fg.intent && LD.INTENTS[fg.intent.k];
+    return { t: I && I.say ? I.say : "", k: "move" };
+  }
   function sceneHtml(state, fg, ui) {
-    var F = LD.factionFor(fg.enc), venue = LD.fightVenue(fg);
-    var room = venue === "home" ? "home" : F.room;
+    var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
+    var room = venue === "home" ? homeRoom(fg) : F.room;
     var stage = LD.cityStage ? LD.cityStage(state) : 0;
-    var base = fg.done && fg.done.win ? "defeated" : "idle";
+    var how = fg.done ? fg.done.how || (fg.done.win ? "crushed" : fg.done.settled ? "paid" : "walked") : null;
+    var base = !fg.done ? "idle" : how === "crushed" ? "defeated" : how === "paid" ? (F.paid ? "paid" : "idle") : "attack";
     var ex = execArt(state.executiveId);
     var h = '<div class="df-stage sc v-' + venue + " room-" + room + (ui.enter ? " enter" : "") + '" data-room="' + room + '" data-venue="' + venue + '" data-city="' + stage + '">';
     h += '<div class="sc-room" aria-hidden="true" style="background-image:url(assets/fight/room-' + room + '.webp)"></div><div class="sc-haze" aria-hidden="true"></div>';
-    h += '<div class="sc-opp" id="sc-opp" data-base="' + base + '" data-pose="' + base + '" style="--ar:' + (ART_AR[F.art] || 0.6) + '" aria-hidden="true">';
-    POSES.forEach(function (p) { h += '<img class="p-' + p + '" src="assets/fight/opp-' + F.art + "-" + p + '.webp" alt="" draggable="false">'; });
+    h += '<div class="sc-opp" id="sc-opp" data-base="' + base + '" data-pose="' + base + '" style="--ar:' + (F.ar || ART_AR[F.art] || 0.6) + '" aria-hidden="true">';
+    POSES.concat(F.paid ? ["paid"] : []).forEach(function (p) { h += '<img class="p-' + p + '" src="assets/fight/opp-' + F.art + "-" + p + '.webp" alt="" draggable="false">'; });
     h += "</div>";
+    var bt = F.opp ? bubbleText(state, fg, ui) : null;
+    if (bt && bt.t) h += '<div class="sc-bubble k-' + bt.k + '" id="sc-bubble" role="status" aria-live="polite"><b>' + esc(F.short) + "</b>" + esc(bt.t) + "</div>";
+    if (fg.cb && !fg.done && fg.round === 1 && !fg.played && !ui.cbHide) {
+      var cb = fg.cb, img = cb.art ? "assets/fight/" + cb.art + ".webp" : "";
+      h += '<div class="sc-cb' + (cb.inset ? " is-witness" : "") + '" id="sc-cb" role="note"><div class="sc-cb-k">★ A FAMILIAR FACE ★</div>' +
+        (img ? '<img src="' + img + '" alt="" draggable="false">' : "") + '<div class="sc-cb-t"><b>' + esc(cb.who) + '</b><q>' + esc(cb.line) + "</q><em>" + esc(cb.effect) + '</em></div><button class="sc-cb-ok" id="sc-cb-ok">Face them ▸</button></div>';
+    }
     h += '<div class="sc-you" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
     h += '<div class="sc-place" aria-hidden="true">' + (venue === "home" ? "🚪 Your office · they came to you" : venue === "lobby" ? "🏢 Your lobby · through the glass" : "↩ Out the back door · " + esc(F.place)) + "</div>";
-    if (fg.done) h += '<div class="sc-stamp ' + (fg.done.win ? "win" : fg.done.settled ? "settled" : "lost") + '" aria-hidden="true">' + (fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
+    if (fg.done) h += '<div class="sc-stamp ' + (how || "lost") + '" aria-hidden="true">' + (F.opp && LD.HOW_LABEL[how] ? LD.HOW_LABEL[how] : fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
     return h;
   }
   LD.renderFight = function (state, ui) {
     ui = ui || {};
     var f = state.fy, fg = f.fight; if (!fg) return "";
     var it = fg.done ? null : LD.fightIntent(state);
-    var F = LD.factionFor(fg.enc), venue = LD.fightVenue(fg);
+    var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
     var pct = fg.max ? Math.max(0, Math.round(100 * Math.max(0, fg.scrut) / fg.max)) : 0;
     var h = '<div class="door-in fight2' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + '" data-enc="' + fg.enc + '">';
     var kind = fg.boss ? "Boss" : fg.elite ? "Elite" : venue === "home" ? "Home turf" : venue === "lobby" ? "At the glass" : "Away";
-    h += '<header class="df-top"><div class="df-title"><small>' + kind + " · Q" + fg.q + " · " + esc(fg.dealTitle || "") + "</small><b>" + esc(F.who) + "</b><em>" + esc(F.role) + " · " + esc(fg.name) + "</em></div>" +
+    h += '<header class="df-top"><div class="df-title"><small>' + kind + " · Q" + fg.q + " · " + esc(fg.dealTitle || "") + "</small><b>" + esc(F.who) + (fg.cb ? ' <i class="df-cbchip" title="A familiar face">★</i>' : "") + "</b><em>" + esc(F.opp ? F.role : F.role + " · " + (fg.encName || fg.name)) + "</em></div>" +
       '<div class="df-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small>' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></div>" +
       '<button class="icon-btn df-help" id="df-help" aria-label="How fights work">?</button></header>';
     h += sceneHtml(state, fg, ui);
@@ -10541,7 +11159,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div></div>";
     if (it) {
       var thr = it.through, ico = METER_ICO[it.meter] || "!";
-      h += '<div class="df-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><div class="df-k">Next, ' + esc(F.who.split(" ").slice(-1)[0]) + " will</div>" +
+      h += '<div class="df-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><div class="df-k">Next, ' + esc(F.short) + " will</div>" +
         '<div class="di-main"><span class="di-ico" aria-hidden="true">' + ico + '</span><b>' + esc(it.label) + " " + it.n + "</b></div>" +
         '<div class="di-math">Block <b>' + it.block + "</b> · through <b>" + thr + "</b> → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " (×½)" : "") + "</div>" +
         (it.rtext ? '<div class="di-rider' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</div>" : "") +
@@ -10552,7 +11170,10 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
       var d = fg.done, L = d.leaks, bits = [];
       if (L.cash) bits.push("−$" + L.cash + "M"); if (L.unrest) bits.push("unrest +" + L.unrest); if (L.collapse) bits.push("collapse +" + L.collapse); if (L.heat) bits.push("Heat +" + L.heat);
       var bye = venue === "home" || venue === "lobby" ? "Show them out ▸" : "Back to the office ▸";
-      h += '<div class="df-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status"><b>' + (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + "</b>" +
+      var how2 = d.how, O2 = F.opp, remember = O2 && !O2.boss && O2.act < 3 && how2 !== "walked";
+      var endLine = O2 ? '<div class="sc-ending h-' + how2 + '"><i class="sc-end-stamp">' + esc(LD.HOW_LABEL[how2] || "") + "</i>" +
+        (remember ? "<em>They'll remember this.</em>" : how2 === "walked" ? "<em>" + esc(F.short) + " walks out with what they came for.</em>" : "") + "</div>" : "";
+      h += '<div class="df-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status">' + endLine + '<b>' + (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + "</b>" +
         "<span>" + esc(d.win ? (d.notes.join(" · ") || "The deal closes.") : d.settled ? "No bonus, no more damage. " + (d.notes.join(" · ")) : "The deal still signs. " + (d.notes.join(" · ") || "")) + "</span>" +
         (bits.length ? '<span class="df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") +
         '<button class="btn btn-coral df-close" id="df-close">' + bye + "</button></div>";
@@ -10580,8 +11201,8 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
   LD.renderReward = function (state, ui) {
     ui = ui || {};
     var f = state.fy, r = f.reward; if (!r) return "";
-    var lf = r.from || {}, E = LD.ENCOUNTERS[lf.enc] || { name: "The door" };
-    var head = '<header class="rw-head"><small>' + (lf.win ? "Won · " : lf.settled ? "Settled · " : "Lost · ") + esc(E.name) + " · Q" + (lf.q || state.turn) + "</small>";
+    var lf = r.from || {}, E = LD.ENCOUNTERS[lf.enc] || { name: "The door" }, LO = lf.opp && LD.oppById ? LD.oppById(lf.opp) : null;
+    var head = '<header class="rw-head"><small>' + (lf.how && LD.HOW_LABEL[lf.how] ? LD.HOW_LABEL[lf.how].charAt(0) + LD.HOW_LABEL[lf.how].slice(1).toLowerCase() + " · " : lf.win ? "Won · " : lf.settled ? "Settled · " : "Lost · ") + esc(LO ? LO.who : E.name) + " · Q" + (lf.q || state.turn) + "</small>";
     var h = '<div class="rw-in">';
     if (!r.itemDone && r.item) {
       var it = LD.itemById(r.item), full = f.drawer.length >= f.dcap;
@@ -10882,8 +11503,17 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var t = document.querySelector(".lvup-burst");
     if (t && t.parentNode) t.parentNode.removeChild(t);
   }
+  /* Era skin: run screens wear the act's era (1978 / 2008 / now); title, rulebook, Boardroom and history stay timeless Art Deco. */
+  function syncEra(name) {
+    var nm = name || screen, run = !!(state && !state.ended && (nm === "desk" || nm === "bunker" || nm === "deal"));
+    var act = run && LD.actOf ? LD.actOf(Math.min(12, state.turn || 1)) : 0;
+    if (LD.applyEra) LD.applyEra(act);
+    [1, 2, 3].forEach(function (n) { document.body.classList.toggle("era-" + n, act === n); });
+    return act;
+  }
   function show(name) {
     hideLevelUpToast();
+    syncEra(name);
     if (typeof PN !== "undefined" && PN.on && (name !== "desk" || PN.mode === "tip")) pennyStop();
     screen = name;
     document.body.classList.toggle("on-desk", name === "desk");
@@ -11164,6 +11794,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
   }
 
   function renderDesk(from) {
+    syncEra("desk");
     var el = $("screen-desk");
     el.innerHTML = LD.renderDesk(state, uiOpts());
     bindDesk();
@@ -12073,7 +12704,7 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     SFX.play("loot");
   }
   /* ---------- Drop 1: the door, the reward, the deck ---------- */
-  var DF = { logT: null, busy: false, start: null, arm: 0 };
+  var DF = { logT: null, busy: false, start: null, arm: 0, say: null, cbHide: false };
   var RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
   function doorEl() { return $("door"); }
   function doorOpen() { var d = doorEl(); return !!(d && d.classList.contains("on")); }
@@ -12157,15 +12788,16 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     if (!state || !state.fy || !state.fy.fight) return;
     hideOverlay();
     if (!DF.start) DF.start = state;
-    DF.busy = false; DF.arm = 0;
+    DF.busy = false; DF.arm = 0; DF.say = null; DF.cbHide = false;
     paintFight(null, true);
     SFX.play("knock", Math.max(1, LD.doorLevel(state)));
     if (!state.fy.fight.done) setTimeout(function () { if (doorOpen() && PN.mode !== "tour") pennyTip("fight"); }, 700);
   }
   function paintFight(flashU, enter) {
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
-    showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced() }), "df-mode");
+    showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide }), "df-mode");
     var root = doorEl();
+    var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"); if (cb && cb.parentNode) cb.parentNode.removeChild(cb); });
     Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
       b.addEventListener("click", function () { playCard(+b.getAttribute("data-u")); });
     });
@@ -12191,8 +12823,10 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     state = res.state; persistRun();
     SFX.play("flip");
     var fg = state.fy.fight;
-    paintFight();
     var dS = s0 - Math.max(0, fg.scrut), dB = fg.block - b0;
+    DF.cbHide = true;
+    DF.say = fg.done || !LD.oppLine ? null : dS > 0 ? { t: LD.oppLine(fg, "hit", fg.played), k: "hit" } : dB > 0 ? { t: LD.oppLine(fg, "block", fg.played), k: "block" } : DF.say;
+    paintFight();
     scPlayAnim(cardHtml, cardRect, dS, dB);
     if (dS > 0) dfFloat("−" + dS + " Scrutiny", "good big", ".df-scrut");
     if (dB > 0) dfFloat("Block +" + dB, "good", "#df-intent");
@@ -12207,8 +12841,11 @@ body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 
     var prev = state;
     var res = LD.fightEndRound(state);
     if (!res.ok) { dfLog(res.error); return; }
-    DF.busy = true;
+    DF.busy = true; DF.cbHide = true;
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
+    var bub = $("sc-bubble"), I0 = res.intent && LD.INTENTS[res.intent.k];
+    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(I0.say || ""); }
+    DF.say = null;
     scAttackAnim(res.hit && res.hit.n);
     SFX.play(res.hit.n ? "bad" : "tick");
     setTimeout(function () {

@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Last Dividend">
-  <title>Last Dividend — World Map Proof</title>
+  <title>Last Dividend</title>
   <meta name="description" content="A short browser demo of a dark satirical roguelite. Not a Play Store build.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%230a464e' width='64' height='64'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='28' fill='%23f8ecd2' font-family='Georgia,serif'%3ELD%3C/text%3E%3C/svg%3E">
   <style>
@@ -935,10 +935,15 @@ body.on-desk .shell { width: 100%; max-width: none; padding: 0; }
 .spark .line.down { stroke: var(--bad); }
 .holdings { font-size: 16px; color: var(--ink-muted); }
 .holdings b { color: var(--teal); }
-.ticker { overflow: hidden; }
-.tick-wrap { overflow: hidden; white-space: nowrap; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
-.tick-run { display: inline-block; animation: ticker 40s linear infinite; font-size: 16px; padding-top: 4px; }
-.tick-run span { margin-right: 36px; }
+.ticker { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); }
+.tick-wrap { overflow: hidden; white-space: nowrap; mask-image: none; -webkit-mask-image: none; padding: 0 12px; }
+.tick-run { display: block; position: relative; animation: none; font-size: 16px; padding-top: 0; height: 1.35em; }
+.tick-msg { display: none; width: 100%; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.35; background: none; border: 0; color: inherit; font: inherit; text-align: left; padding: 0; cursor: pointer; }
+.tick-msg.on { display: block; }
+.tick-run .tick-msg::before, .tick-run .tick-item::before { content: none; }
+.tick-run span, .tick-run .tick-item { margin-right: 8px; padding: 0 4px; }
+.tick-run .tick-gap { margin: 0 10px; padding: 0 8px; color: var(--gold-hi, #f3d98f); opacity: 0.75; }
+.tick-run .tick-gap::before { content: none; }
 .tick-run span::before { content: "● "; color: var(--coral); }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .bunker-card { display: flex; flex-direction: column; gap: 4px; position: relative; cursor: pointer; transition: transform 0.2s; }
@@ -1420,7 +1425,9 @@ body.on-desk { background: #05201b; }
   .tag::before, .tag::after { display: none; }
   .tag { letter-spacing: 0.12em; }
 }
-.dz-k { color: var(--gold-hi); }
+.dz-k { color: var(--gold-hi); display: flex; flex-wrap: wrap; gap: 0 8px; align-items: baseline; }
+.dz-kind, .dz-reg { white-space: nowrap; }
+.dz-reg::before { content: "· "; color: var(--gold-line); }
 .dz, .dash-meters, .bunker-card { position: relative; }
 .dz::after, .dash-meters::after {
   content: ""; position: absolute; inset: 5px; border-radius: 13px; pointer-events: none;
@@ -1844,7 +1851,8 @@ h1, h2, h3 { color: var(--gold-hi); }
 .shop-item { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 14px; background: var(--glass-deco); border: 1px solid var(--gold-line); box-shadow: var(--deco-inset); }
 .shop-item.owned { border-color: rgba(63, 224, 184, 0.6); }
 .si-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.si-head b { color: var(--ivory); }
+.si-head b { color: var(--ivory); min-width: 0; display: flex; flex-direction: column; gap: 1px; line-height: 1.2; }
+.si-firm { display: block; font: 600 11px var(--font-sans); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ivory-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .si-head em { font-style: normal; color: var(--gold-hi); font-weight: 800; white-space: nowrap; }
 .shop-item.owned .si-head em { color: #7ff2c8; }
 .si-text, .si-alt { margin: 0; font-size: 13px; color: var(--ivory-muted) !important; }
@@ -1854,8 +1862,10 @@ h1, h2, h3 { color: var(--gold-hi); }
 /* End: Shareholder Letter */
 .end-hero { position: relative; }
 .end-hero img { width: 100%; display: block; border-radius: 14px; }
-.end-stamp { position: absolute; right: 6%; top: 10%; transform: rotate(-8deg); padding: 10px 18px; border: 4px double #ff6a5a; color: #ffd2c4; background: rgba(60, 10, 6, 0.65); font: 800 26px var(--font-serif); text-transform: uppercase; letter-spacing: 0.06em; text-align: center; animation: dzpop 0.5s cubic-bezier(.2,1.4,.4,1) 0.4s both; }
+.end-stamp { position: absolute; right: 6%; top: 10%; transform: rotate(-8deg); padding: 10px 18px; border: 4px double #ff6a5a; color: #ffd2c4; background: rgba(60, 10, 6, 0.65); font: 800 26px var(--font-serif); text-transform: uppercase; letter-spacing: 0.06em; text-align: center; animation: dzpop 0.5s cubic-bezier(.2,1.4,.4,1) 0.4s both; max-width: 54%; }
+.end-stamp.challenge { border: 3px solid #f3d98f; color: #fff6d8; background: #102018; box-shadow: 0 10px 30px rgba(0,0,0,0.65), 0 0 0 4px rgba(8,20,14,0.9); text-shadow: none; font-size: 20px; line-height: 1.15; padding: 10px 14px; }
 .end-stamp small { display: block; font: 600 12px var(--font-sans); letter-spacing: 0.04em; text-transform: none; }
+.end-stamp.challenge small { color: #f3d98f; margin-top: 4px; }
 .letter { margin: 16px 0; padding: 18px 20px; border-radius: 6px; background: linear-gradient(180deg, #fbf3dc, #efe0b8); color: #2a1d06; box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 0 0 1px #c9a24a, inset 0 0 0 6px #fbf3dc, inset 0 0 0 7px #c9a24a; }
 .letter .kicker { color: #8a6412 !important; }
 .letter-head p { font-family: var(--font-serif); font-style: italic; color: #4a3610 !important; margin: 4px 0 10px; }
@@ -1977,7 +1987,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 @keyframes pnPop { from { transform: scale(0.96) translateY(10px); opacity: 0.2; } }
 .penny .pn-face { width: 230px; height: 307px; object-fit: contain; object-position: bottom; margin-right: -38px; margin-bottom: -18px; position: relative; z-index: 2; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.55)); pointer-events: none; }
 .penny.box-top .pn-face { width: 165px; height: 220px; margin-bottom: -10px; }
-.penny .pn-card { position: relative; flex: 1; min-width: 0; padding: 30px 26px 16px 56px; border-radius: 6px;
+.penny .pn-card { position: relative; flex: 1; min-width: 0; padding: 30px 108px 16px 56px; border-radius: 6px;
   background: linear-gradient(180deg, rgba(10, 58, 48, 0.94), rgba(4, 30, 25, 0.96));
   border: 2px solid #d4af37; box-shadow: inset 0 0 0 5px rgba(4, 30, 25, 0.95), inset 0 0 0 6px rgba(212, 175, 55, 0.65), 0 18px 40px rgba(0,0,0,0.55), 0 0 30px rgba(212,175,55,0.18);
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #f6edd7; }
@@ -1997,10 +2007,12 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 .penny .pn-next, .penny .pn-alt { min-height: 44px; padding: 0 20px; border-radius: 8px; border: 2px solid #d4af37; background: linear-gradient(180deg, #0e4a3d, #052a22); color: #f6edd7; font: 800 17px var(--font-sans, sans-serif); cursor: pointer; }
 .penny .pn-next:hover, .penny .pn-next:focus-visible { background: linear-gradient(180deg, #f0cf7a, #a87a22); color: #1e1404; outline: none; box-shadow: 0 0 0 3px rgba(243,210,122,0.45); }
 .penny.is-action .pn-next { font-size: 15px; opacity: 0.92; }
-.penny .pn-skip { position: absolute; right: 0; bottom: -2px; transform: translateY(100%); min-height: 36px; padding: 4px 6px; background: none; border: 0; color: #fbf3df; font: 700 17px var(--font-sans, sans-serif); text-shadow: 0 2px 6px rgba(0,0,0,0.9); cursor: pointer; text-decoration: underline; text-decoration-color: rgba(243,210,122,0.5); text-underline-offset: 4px; }
+.penny .pn-skip { position: absolute; right: 10px; top: 8px; transform: none; min-height: 32px; padding: 2px 8px; background: none; border: 0; color: #fbf3df; font: 700 14px var(--font-sans, sans-serif); text-shadow: 0 2px 6px rgba(0,0,0,0.9); cursor: pointer; text-decoration: underline; text-decoration-color: rgba(243,210,122,0.5); text-underline-offset: 4px; z-index: 2; }
 .penny .pn-skip:focus-visible { outline: 2px solid #f3d27a; border-radius: 4px; }
-.penny.box-top .pn-skip { bottom: auto; top: auto; }
-.penny .pn-box { margin-bottom: 26px; }
+.penny.box-top .pn-skip { bottom: auto; top: 8px; transform: none; }
+.penny.is-tip .pn-blk { pointer-events: none; }
+.penny.is-tip .pn-box, .penny.is-tip .pn-arrow { pointer-events: auto; }
+.penny .pn-box { margin-bottom: 0; }
 .penny.is-passive .pn-box { left: 18px; transform: none; width: min(560px, calc(100vw - 36px)); }
 .penny.is-passive .pn-face { width: 150px; height: 200px; }
 .penny.is-passive .pn-text { font-size: 18px; }
@@ -2008,7 +2020,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 .howto-pick { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; }
 .howto-pick img { width: 96px; height: 128px; object-fit: contain; }
 @media (max-width: 720px) {
-  .penny .pn-box { left: 8px; right: 8px; bottom: 10px; transform: none; width: auto; display: block; margin-bottom: 30px; }
+  .penny .pn-box { left: 8px; right: 8px; bottom: 10px; transform: none; width: auto; display: block; margin-bottom: 0; }
   .penny .pn-face { position: absolute; left: -2px; bottom: calc(100% - 30px); width: 96px; height: 128px; margin: 0; }
   .penny.box-top .pn-face { width: 96px; height: 128px; bottom: auto; top: calc(100% - 26px); }
   .penny.box-top .pn-box { top: 8px; margin-bottom: 0; }
@@ -2019,8 +2031,8 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
   .penny .pn-count { font-size: 15px; margin-top: 22px; }
   .penny .pn-text { font-size: 17px; line-height: 1.42; min-height: 0; }
   .penny .pn-next { font-size: 15px; padding: 0 14px; }
-  .penny .pn-skip { font-size: 15px; }
-  .penny.box-top .pn-skip { transform: translateY(100%); }
+  .penny .pn-skip { font-size: 13px; }
+  .penny.box-top .pn-skip { transform: none; }
   .penny.is-passive .pn-box { left: 8px; width: auto; }
   .penny.is-passive .pn-face { width: 80px; height: 106px; }
 }
@@ -2120,9 +2132,10 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
   .bunker-card { grid-area: bunk; width: 108px; padding: 6px; min-height: 0; }
   .bunker-card .bc-scene { display: none; }
   .bunker-card .bc-cta { font-size: 12px; }
-  .ticker { grid-area: news; padding: 4px 8px; align-self: stretch; }
+  .bunker-card .bc-cta.locked { color: var(--ivory-muted); font-weight: 600; opacity: 0.85; font-style: italic; }
+  .ticker { grid-area: news; padding: 4px 16px; align-self: stretch; }
   .ticker .panel-k { display: none; }
-  .tick-wrap { height: 1.3em; overflow: hidden; }
+  .tick-wrap { height: 1.3em; overflow: hidden; padding: 0 8px; }
   .rivals { grid-area: rivals; padding: 4px 8px; }
 }
 
@@ -2180,7 +2193,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 }
 .boardroom .shop-item { padding: 8px 10px; gap: 2px; border-radius: 12px; }
 .boardroom .si-text, .boardroom .si-alt {
-  font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2;
+  font-size: 12px; display: -webkit-box; -webkit-line-clamp: 4;
   -webkit-box-orient: vertical; overflow: hidden;
 }
 .boardroom .si-up, .boardroom .si-down { font-size: 12px; }
@@ -2193,7 +2206,7 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
 .boardroom .history-mini { font-size: 13px; margin: 6px 0 0; padding: 0; list-style: none; overflow: hidden; }
 .boardroom .history-mini li { padding: 6px 0; border-bottom: 1px solid var(--gold-line); }
 
-.end-page .end-hero { height: 100px !important; aspect-ratio: auto !important; margin: 8px 0; flex: none; }
+.end-page .end-hero { height: 160px !important; aspect-ratio: auto !important; margin: 8px 0; flex: none; }
 .end-page h2 { font-size: 24px; flex: none; }
 .end-page .end-mark { font-size: 13px; }
 .end-page .end-body {
@@ -2293,6 +2306,7 @@ body:has(#screen-tutorial.on) .shell {
   font-size: 12px; line-height: 1.25; margin: 0;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+.exec-card.on p { -webkit-line-clamp: 4; }
 .exec-page .loadout { flex: 1; min-height: 0; overflow: hidden; margin-top: 8px; }
 .exec-page .loadout h3 { font-size: 16px; margin: 6px 0 4px; }
 .exec-page .loadout p.muted {
@@ -2308,7 +2322,7 @@ body:has(#screen-tutorial.on) .shell {
 .exec-page .btn-row .btn { min-height: 44px; }
 @media (max-height: 780px) {
   .exec-card p { display: none; }
-  .exec-card.on p { display: -webkit-box; -webkit-line-clamp: 2; }
+  .exec-card.on p { display: -webkit-box; -webkit-line-clamp: 4; }
   .exec-page .loadout p.muted { display: none; }
   #screen-title .title-sunny { padding: 12px 14px !important; gap: 8px !important; }
   .title-sunny h1.wordmark { font-size: clamp(32px, 10vw, 52px) !important; }
@@ -3035,9 +3049,14 @@ body:has(#screen-tutorial.on) .shell,
 .df-frame { fill: #3b2410; stroke: var(--gold); stroke-width: 2; }
 .df-dark { fill: #0a0705; }
 .df-leaf { fill: #5a3818; stroke: rgba(226, 191, 99, 0.6); }
-.df-who { position: relative; font-size: clamp(48px, 11vh, 120px); line-height: 1; margin-bottom: 6%; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.7)); animation: df-in 0.5s ease-out; }
+.df-who { position: relative; font-size: clamp(88px, 22vh, 180px); line-height: 1; margin-bottom: 8%; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.75)); animation: df-step 0.45s ease-out both; }
+.df-who-glow { position: absolute; left: 50%; bottom: 8%; width: 70%; height: 24%; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(243,217,143,0.45), transparent 70%); pointer-events: none; }
+.df-floor { fill: rgba(0,0,0,0.55); }
+.df-door { background: radial-gradient(ellipse at 50% 18%, rgba(70,48,22,0.5), rgba(8,6,4,0.15) 62%); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+.df-door .df-who { margin-top: auto; margin-bottom: 14%; }
 .is-boss .df-frame { stroke: #ff7a5c; } .is-boss .df-who { filter: drop-shadow(0 0 18px rgba(255, 90, 60, 0.6)); }
-@keyframes df-in { from { transform: translateY(18px) scale(0.85); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes df-in { from { transform: translateY(10px) scale(0.96); opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes df-step { from { transform: translateY(16px) scale(0.94); opacity: 1; } to { transform: none; opacity: 1; } }
 .df-scrut { align-self: start; }
 .df-k { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ivory-muted); }
 .df-k b { font: 700 24px var(--font-serif); color: var(--gold-hi); letter-spacing: 0; }
@@ -3165,7 +3184,7 @@ body:has(#screen-tutorial.on) .shell,
   .rw-foot #rw-take { min-width: 0; flex: 1 1 100%; }
 }
 @media (max-height: 760px) and (max-width: 600px) {
-  .df-who { font-size: 44px; } .dc-txt { -webkit-line-clamp: 2; } .df-stage { padding: 6px; }
+  .df-who { font-size: 72px; } .dc-txt { -webkit-line-clamp: 2; } .df-stage { padding: 6px; }
   .rw-cards .dc { min-height: 180px; }
 }
 @media (min-width: 601px) and (max-height: 780px) {
@@ -3210,6 +3229,14 @@ body:has(#screen-tutorial.on) .shell,
   .desk .phase-pill { flex-shrink: 0; }
   .desk #rail-wrap .rq { max-height: 50px; overflow: hidden; gap: 2px; }
   .desk #rail-wrap .rq .fx-chip { font-size: 10px; padding: 1px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+}
+
+
+/* Cleanup 2026-11-14 */
+.door-in.is-done .df-log { display: none; }
+.bunker-card .bc-cta.locked, .bc-cta.locked { color: var(--ivory-muted); font-weight: 600; opacity: 0.88; font-style: italic; }
+@media (prefers-reduced-motion: reduce) {
+  .df-who { animation: none !important; }
 }
 </style>
   <script>
@@ -3948,7 +3975,7 @@ body:has(#screen-tutorial.on) .shell,
     },
     {
       title: "The Fiscal Year",
-      body: "A run is three acts of four quarters. Each act ends in a boss quarter: the Earnings Call (Q4), a General Strike or a Hostile Takeover Bid (Q8), and the Reckoning (Q12), which ends the year. After every quarter you pick one of three Assets for your Portfolio (five slots), or skip for cash. Beat a boss for a rare draft. Bosses vary from run to run, and about once an act a Board Memo asks you to choose. Each executive levels up from runs and earns small perks."
+      body: "A run is three acts of four quarters. Q4 and Q8 end in a card fight at the door (an Earnings Call or a Short-Seller Report, then a General Strike, a Hostile Takeover or a Market Crash). Q12 is The Reckoning, which tests your bunker. Every deal sends someone to your door. Win those fights to earn new cards. Assets are rarer trophies for the office wall, and the phone rings with calls — a Headhunter, a distressed sale, an old friend. Each executive levels up from runs and earns small perks."
     },
     {
       title: "Then finish the shelter",
@@ -5612,7 +5639,7 @@ body:has(#screen-tutorial.on) .shell,
     var items = [];
     LD.EXECUTIVES.forEach(function (ex) {
       if (ex.unlocked || !ex.price) return;
-      items.push({ key: "exec:" + ex.id, wing: "seats", name: ex.name + " · " + ex.firm, price: ex.price,
+      items.push({ key: "exec:" + ex.id, wing: "seats", name: ex.name, firm: ex.firm, price: ex.price,
         text: ex.blurb, alt: ex.unlock === "win-run" ? "or evacuate once" : ex.unlock === "three-runs" ? "or finish three runs" : "" });
     });
     LD.PERKS.forEach(function (p) {
@@ -7971,7 +7998,7 @@ body:has(#screen-tutorial.on) .shell,
     html += '<button class="btn btn-ghost" id="btn-how">How to play</button>';
     html += '<div class="seed-row"><label class="field-label" for="seed-input">Seed</label><input id="seed-input" type="text" inputmode="text" autocomplete="off" placeholder="random" value="' + escapeHtml(seedDraft) + '">';
     html += '<button class="btn" id="btn-roll" type="button">Roll</button></div>';
-    html += '<p class="demo-note">World-map proof · browser demo';
+    html += '<p class="demo-note">Browser demo';
     if (meta.finished) {
       html += " · " + meta.finished + " run" + (meta.finished === 1 ? "" : "s") + " · " + meta.wins + " evacuated";
     }
@@ -8112,7 +8139,7 @@ body:has(#screen-tutorial.on) .shell,
   function shopCard(meta, it) {
     var owned = LD.itemOwned(meta, it.key);
     var afford = meta.dividends >= it.price;
-    var html = '<div class="shop-item' + (owned ? " owned" : "") + '"><div class="si-head"><b>' + escapeHtml(it.name) + "</b><em>" + (owned ? "Owned" : "◈ " + it.price) + "</em></div>";
+    var html = '<div class="shop-item' + (owned ? " owned" : "") + '"><div class="si-head"><b>' + escapeHtml(it.name) + (it.firm ? '<span class="si-firm">' + escapeHtml(it.firm) + "</span>" : "") + "</b><em>" + (owned ? "Owned" : "◈ " + it.price) + "</em></div>";
     if (it.up) html += '<div class="si-up">▲ ' + escapeHtml(it.up) + '</div><div class="si-down">▼ ' + escapeHtml(it.down) + "</div>";
     if (it.text) html += '<p class="si-text">' + escapeHtml(it.text) + "</p>";
     if (it.alt && !owned) html += '<p class="si-alt">' + escapeHtml(it.alt) + "</p>";
@@ -8201,7 +8228,7 @@ body:has(#screen-tutorial.on) .shell,
       html += '<div class="end-mark ' + e.kind + '">' + (e.kind === "win" ? "Evacuation successful" : "The run is over") + " · " + escapeHtml(LD.ratingName(state.rating)) + "</div>";
       html += "<h2>" + escapeHtml(e.title) + "</h2>";
       html += '<div class="end-hero ' + e.kind + '"><img src="' + escapeHtml(assetUrl(END_ART[e.kind] || "end-lose")) + '" alt="">';
-      if (opts.newRating != null) html += '<div class="end-stamp">Downgraded to ' + escapeHtml(LD.ratingName(opts.newRating)) + "<small>new rating unlocked for " + escapeHtml(exec.name) + "</small></div>";
+      if (opts.newRating != null) html += '<div class="end-stamp challenge">New challenge unlocked: ' + escapeHtml(LD.ratingName(opts.newRating)) + "<small>Harder rules for " + escapeHtml(exec.name) + "</small></div>";
       html += "</div>";
       html += '<p class="end-body">' + escapeHtml(e.body) + "</p>";
       var ready = readinessSummary(state);
@@ -8462,7 +8489,7 @@ body:has(#screen-tutorial.on) .shell,
   /* Layout of map decorations around a region anchor (map units). */
   var OFF = { pin: [0, -30], flag: [24, 2], plant: [-26, 12], hazard: [10, 34], protest: [-14, 36] };
   /* Hand-tuned anchor nudges so props stay on land. */
-  var NUDGE = { na: [0, 0], sam: [6, -6], eu: [-4, 2], af: [0, -8], me: [-6, 2], sa: [-6, -4], ea: [6, 4], oc: [6, -4] };
+  var NUDGE = { na: [0, 0], sam: [8, -8], eu: [-22, -10], af: [-4, -8], me: [4, 16], sa: [14, 10], ea: [22, -10], oc: [8, -4] };
 
   function anchor(id) {
     var a = LD.WORLD_MAP.anchors[id];
@@ -8753,17 +8780,41 @@ body:has(#screen-tutorial.on) .shell,
     /* Deal pins */
     h += '<g class="pins">';
     if (state.phase === "deal" && !state.ended && !ui.hidePins) {
+      var pinXY = {};
+      state.offered.forEach(function (dealId) {
+        var rid = W.pins[dealId];
+        if (rid) pinXY[dealId] = atP(rid, "pin", P);
+      });
+      (function spread(ids) {
+        var min = 108, guard = 10;
+        while (guard--) {
+          var moved = false;
+          for (var a = 0; a < ids.length; a++) {
+            for (var b = a + 1; b < ids.length; b++) {
+              var pa = pinXY[ids[a]], pb = pinXY[ids[b]];
+              if (!pa || !pb) continue;
+              var dx = pb[0] - pa[0], dy = pb[1] - pa[1], dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+              if (dist >= min) continue;
+              var push = (min - dist) / 2, nx = dx / dist, ny = dy / dist;
+              pa[0] -= nx * push; pa[1] -= ny * push;
+              pb[0] += nx * push; pb[1] += ny * push;
+              moved = true;
+            }
+          }
+          if (!moved) break;
+        }
+      })(state.offered);
       var placed = [];
       state.offered.forEach(function (dealId) {
-        var rid0 = W.pins[dealId];
-        if (rid0) { var q = atP(rid0, "pin", P); placed.push([q[0] - 30, q[1] - 40, q[0] + 30, q[1] + 30]); }
+        var q = pinXY[dealId];
+        if (q) placed.push([q[0] - 34, q[1] - 44, q[0] + 34, q[1] + 34]);
       });
       var tagDy = {};
       state.offered.forEach(function (dealId) {
         var rid1 = W.pins[dealId];
         if (!rid1) return;
         var d1 = LD.dealById(dealId);
-        var q1 = atP(rid1, "pin", P);
+        var q1 = pinXY[dealId] || atP(rid1, "pin", P);
         var t1 = KIND_LABEL[LD.dealKind(d1)].toUpperCase() + " " + cardTag(state, d1);
         var w1 = Math.round(t1.length * 12.5 + 26);
         var opts = [[0, 46], [0, -66], [0, 82], [w1 / 2 + 34, -8], [-w1 / 2 - 34, -8], [0, 118]];
@@ -8783,7 +8834,7 @@ body:has(#screen-tutorial.on) .shell,
         if (!rid) return;
         var d = LD.dealById(dealId);
         var kind = LD.dealKind(d);
-        var p = atP(rid, "pin", P);
+        var p = pinXY[dealId] || atP(rid, "pin", P);
         var cls = "pin k-" + kind + (selDeal === dealId ? " sel" : "") + (coachDeal === dealId ? " coach" : "");
         h += '<g class="' + cls + '" data-deal="' + dealId + '" transform="translate(' + p[0] + " " + p[1] + ')" style="--i:' + i + '"' +
           (interactive ? ' tabindex="0" role="button" aria-label="' + esc(pinAria(state, dealId)) + '"' : "") + ">";
@@ -8976,17 +9027,20 @@ body:has(#screen-tutorial.on) .shell,
     h += rivalPanel(state, ui);
     h += '<div class="panel ticker" aria-label="News"><div class="panel-k">News</div><div class="tick-wrap"><div class="tick-run">';
     var items = tickerItems(state);
-    function tickItem(t, hidden) {
-      return t.region ? '<button class="tick-item" data-region="' + t.region + '"' + (hidden ? ' tabindex="-1" aria-hidden="true"' : "") + ">" + esc(t.text) + "</button>" : "<span" + (hidden ? ' aria-hidden="true"' : "") + ">" + esc(t.text) + "</span>";
+    function tickItem(t, i) {
+      var cls = "tick-msg" + (i === 0 ? " on" : "");
+      return t.region
+        ? '<button class="tick-item ' + cls + '" data-region="' + t.region + '"' + (i ? ' tabindex="-1"' : "") + ">" + esc(t.text) + "</button>"
+        : '<span class="' + cls + '">' + esc(t.text) + "</span>";
     }
-    h += items.map(function (t) { return tickItem(t, false); }).join("") + items.map(function (t) { return tickItem(t, true); }).join("");
+    h += items.map(function (t, i) { return tickItem(t, i); }).join("");
     h += "</div></div></div>";
     var bunkerReady = !dealPhase && !state.bunkerActedThisTurn;
     h += '<button class="panel bunker-card' + (bunkerReady ? " ready" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card">' +
       '<div class="panel-k">Floor hatch · bunker ' + esc(bunkerTally(state)) + (state.converting ? " · private" : "") + "</div>" +
       '<div class="bc-scene">' + LD.renderBunkerScene(state, { mini: true, idPrefix: "bm" }) + "</div>" +
       (ui.coach === "bunker" && ui.coachText ? '<div class="coach-inline">' + esc(ui.coachText) + "</div>" : "") +
-      '<div class="bc-cta">' + (dealPhase ? "Sign a deal to unlock" : state.bunkerActedThisTurn ? "Works ordered this quarter" : "Tap to build ▸") + "</div></button>";
+      '<div class="bc-cta' + (dealPhase ? " locked" : "") + '">' + (dealPhase ? "Opens after you sign" : state.bunkerActedThisTurn ? "Works ordered this quarter" : "Tap to build ▸") + "</div></button>";
     h += "</aside>";
 
     h += '<footer class="hand">';
@@ -9071,7 +9125,9 @@ body:has(#screen-tutorial.on) .shell,
     var art = LD.dealArtKey(dealId);
     if (art) h += '<img class="dz-art" src="' + esc(LD.assetUrl(art)) + '" alt="">';
     h += '<div class="dz-copy">';
-    h += '<div class="dz-k">' + esc(d.kicker) + " · " + esc(LD.REGION_NAMES[rid] || "") + (d.pack ? " · " + esc((LD.PACKS.filter(function (p) { return p.id === d.pack; })[0] || {}).name || "") : "") + "</div>";
+    h += '<div class="dz-k"><span class="dz-kind">' + esc(d.kicker) + "</span>" +
+      (rid ? '<span class="dz-reg">' + esc(LD.REGION_NAMES[rid]) + "</span>" : "") +
+      (d.pack ? '<span class="dz-reg">' + esc((LD.PACKS.filter(function (p) { return p.id === d.pack; })[0] || {}).name || "") + "</span>" : "") + "</div>";
     h += "<h3>" + esc(d.title) + "</h3>";
     h += "</div></div>";
     h += '<p class="dz-body">' + esc(d.body) + "</p>";
@@ -10089,7 +10145,7 @@ body:has(#screen-tutorial.on) .shell,
     h += '<div class="dz-k">' + (mode === "confirm" ? "Boss quarter · Q" + q : "Act " + act.roman + " · " + esc(act.name) + " · boss at Q" + q) + ' · <button class="link-btn fy-whoboss fy-explain" data-explain="bosses">ⓘ All bosses</button></div>';
     h += "<h2>" + esc(info.name) + "</h2>";
     h += '<p class="fy-demand">' + esc(info.demand) + "</p>";
-    h += '<div class="fy-outs"><div class="fy-out good"><b>Beat it</b><span>' + esc(info.beat) + (info.final ? " · + 10 ◈" : " · a rare card, an Asset and loot · + 10 ◈") + '</span></div><div class="fy-out bad"><b>Miss it</b><span>' + esc(info.miss) + "</span></div></div>";
+    h += '<div class="fy-outs"><div class="fy-out good"><b>Beat it</b><span>' + esc(info.beat) + ' · +10 ◈</span></div><div class="fy-out bad"><b>Miss it</b><span>' + esc(info.miss) + "</span></div></div>";
     if (mode === "confirm" && info.id === "strike") h += '<p class="fy-note">Unrest now ' + state.unrest + (state.unrest >= 40 ? " · the big hit applies" : " · under 40, the small hit applies") + ".</p>";
     if (mode === "confirm" && info.choice) h += '<p class="fy-note">Cash now ' + money(state.cash) + ". It resolves when you end the quarter.</p>";
     if (mode === "confirm" && info.id === "crash") h += '<p class="fy-note">Cash now ' + money(state.cash) + " · after the drop about " + money(state.cash - Math.round(state.cash * 0.3)) + (state.cash - Math.round(state.cash * 0.3) >= info.line ? " · you ride it out" : " · not enough to ride it out") + ".</p>";
@@ -10133,9 +10189,15 @@ body:has(#screen-tutorial.on) .shell,
   }
   LD.cardFace = cardFace;
   function doorFigure(fg) {
-    return '<div class="df-door" aria-hidden="true"><svg viewBox="0 0 100 140" preserveAspectRatio="none"><rect class="df-frame" x="6" y="4" width="88" height="136" rx="4"/>' +
-      '<rect class="df-dark" x="14" y="12" width="72" height="128"/><path class="df-leaf" d="M14 12 L4 20 L4 140 L14 140 Z"/></svg>' +
-      '<span class="df-who">' + fg.icon + "</span></div>";
+    return '<div class="df-door is-in" aria-hidden="true"><svg viewBox="0 0 100 140" preserveAspectRatio="none">' +
+      '<defs><radialGradient id="df-hall" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#3a2a18"/><stop offset="55%" stop-color="#140c08"/><stop offset="100%" stop-color="#070504"/></radialGradient>' +
+      '<radialGradient id="df-lamp" cx="50%" cy="8%" r="80%"><stop offset="0%" stop-color="#f3d98f" stop-opacity="0.55"/><stop offset="45%" stop-color="#f3d98f" stop-opacity="0.08"/><stop offset="100%" stop-color="#f3d98f" stop-opacity="0"/></radialGradient></defs>' +
+      '<rect class="df-frame" x="6" y="4" width="88" height="136" rx="4"/>' +
+      '<rect class="df-dark" x="14" y="12" width="72" height="128" fill="url(#df-hall)"/>' +
+      '<rect x="14" y="12" width="72" height="128" fill="url(#df-lamp)"/>' +
+      '<ellipse class="df-floor" cx="50" cy="124" rx="26" ry="8"/>' +
+      '<path class="df-leaf" d="M14 12 L3 22 L3 140 L14 140 Z"/></svg>' +
+      '<span class="df-who"><span class="df-who-glow" aria-hidden="true"></span>' + fg.icon + "</span></div>";
   }
   LD.renderFight = function (state, ui) {
     ui = ui || {};
@@ -10487,7 +10549,12 @@ body:has(#screen-tutorial.on) .shell,
     if (b && (b.classList.contains("open") || b.scrollHeight > b.clientHeight + 2)) { b.classList.toggle("open"); }
   });
 
+  function hideLevelUpToast() {
+    var t = document.querySelector(".lvup-burst");
+    if (t && t.parentNode) t.parentNode.removeChild(t);
+  }
   function show(name) {
+    hideLevelUpToast();
     if (typeof PN !== "undefined" && PN.on && (name !== "desk" || PN.mode === "tip")) pennyStop();
     screen = name;
     document.body.classList.toggle("on-desk", name === "desk");
@@ -10718,10 +10785,15 @@ body:has(#screen-tutorial.on) .shell,
     hidePins = false;
     persistRun();
     enterPlay();
-    if (PN.forceStart) { PN.forceStart = false; pennySave(function (p) { p.offered = true; }); pennyStart(); }
-    else if (rating === 0) pennyAutoOffer();
-    if (PN.on) { if (state.fy) state.fy.actIntro = 0; persistRun(); }
-    else fyAfterOpen();
+    var startTour = false;
+    if (PN.forceStart) { PN.forceStart = false; pennySave(function (p) { p.offered = true; }); startTour = true; }
+    else if (rating === 0 && pennyShouldOffer()) { pennySave(function (p) { p.offered = true; }); startTour = true; }
+    PN.pendingOffer = startTour;
+    fyAfterOpen();
+    if (PN.pendingOffer && !($("overlay") && $("overlay").classList.contains("on"))) {
+      PN.pendingOffer = false;
+      pennyStart({ offer: true });
+    }
   }
 
   function enterPlay() {
@@ -10766,7 +10838,25 @@ body:has(#screen-tutorial.on) .shell,
     var el = $("screen-desk");
     el.innerHTML = LD.renderDesk(state, uiOpts());
     bindDesk();
+    armTicker();
     if (from) animateMeters(from);
+  }
+  var tickerTimer = null;
+  function armTicker() {
+    if (tickerTimer) { clearInterval(tickerTimer); tickerTimer = null; }
+    var wrap = document.querySelector(".desk .tick-wrap");
+    if (!wrap) return;
+    var items = wrap.querySelectorAll(".tick-msg");
+    if (items.length < 2) return;
+    var i = 0;
+    tickerTimer = setInterval(function () {
+      if (!document.body.contains(wrap)) { clearInterval(tickerTimer); tickerTimer = null; return; }
+      items[i].classList.remove("on");
+      if (items[i].tagName === "BUTTON") items[i].tabIndex = -1;
+      i = (i + 1) % items.length;
+      items[i].classList.add("on");
+      if (items[i].tagName === "BUTTON") items[i].tabIndex = 0;
+    }, 4200);
   }
 
   function animateMeters(from) {
@@ -11661,6 +11751,8 @@ body:has(#screen-tutorial.on) .shell,
   function showDoor(html, mode) { var d = doorEl(); d.hidden = false; d.className = "door-screen on " + (mode || ""); d.innerHTML = html; }
   function hideDoor() { var d = doorEl(); if (!d) return; d.className = "door-screen"; d.hidden = true; d.innerHTML = ""; }
   function dfLog(t) {
+    var root = document.querySelector(".door-in");
+    if (root && root.classList.contains("is-done")) return;
     var el = $("df-log"); if (!el || !t) return;
     el.textContent = t; el.classList.add("on");
     clearTimeout(DF.logT); DF.logT = setTimeout(function () { var e2 = $("df-log"); if (e2) e2.classList.remove("on"); }, 2400);
@@ -11681,6 +11773,7 @@ body:has(#screen-tutorial.on) .shell,
     if (!state.fy.fight.done) setTimeout(function () { if (doorOpen() && PN.mode !== "tour") pennyTip("fight"); }, 700);
   }
   function paintFight(flashU) {
+    if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
     showDoor(LD.renderFight(state, { flashU: flashU }), "df-mode");
     var root = doorEl();
     Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
@@ -11774,6 +11867,7 @@ body:has(#screen-tutorial.on) .shell,
     fyNext(700);
   }
   function openReward() {
+    if (PN.mode === "tip") pennyCloseTip();
     if (!state.fy.reward) { finishDoor(); return; }
     if (!DF.start) DF.start = state;
     RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
@@ -11905,7 +11999,11 @@ body:has(#screen-tutorial.on) .shell,
     f.actIntro = 0;
     persistRun();
     var q = [4, 8, f.rules.finalQ][act - 1];
-    showBossCard(q, function () { if (act === 1) pennyTip("boss"); fyNext(500); });
+    showBossCard(q, function () {
+      if (PN.pendingOffer) { PN.pendingOffer = false; pennyStart({ offer: true }); }
+      else if (act === 1) pennyTip("boss");
+      fyNext(500);
+    });
   }
   function showBossConfirm() {
     var info = LD.bossInfo(state, state.turn);
@@ -12013,6 +12111,7 @@ body:has(#screen-tutorial.on) .shell,
     paintEnd();
   }
   function paintEnd() {
+    if (endLetter) hideLevelUpToast();
     var meta = loadMeta();
     var info = lastEnd && lastEnd.seed === state.seed && lastEnd.turn === state.turn ? lastEnd : null;
     $("screen-end").innerHTML = LD.renderEnd(state, { payout: info ? info.payout : null, newRating: info ? info.newRating : null, meta: meta, letter: endLetter, xp: info ? info.xp : null });
@@ -12058,6 +12157,7 @@ body:has(#screen-tutorial.on) .shell,
   }
 
   function showOverlay(title, body, actions, bind) {
+    hideLevelUpToast();
     var ov = $("overlay");
     ov.hidden = false;
     ov.className = "overlay on";
@@ -12337,8 +12437,8 @@ body:has(#screen-tutorial.on) .shell,
       var full = !step.passive;
       blks[0].style.cssText = full ? "left:0;top:0;width:100vw;height:" + ((window.visualViewport && visualViewport.height) || window.innerHeight) + "px;" : "display:none";
       for (var i = 1; i < 4; i++) blks[i].style.cssText = "display:none";
-      el.classList.remove("box-top");
-      pennyAvoidDeal(box);
+      el.classList.add("box-top");
+      pennyAvoidControls(box);
       return;
     }
     if (!PN.scrolled) {
@@ -12371,23 +12471,65 @@ body:has(#screen-tutorial.on) .shell,
     arrow.style.left = Math.max(4, Math.min(vw - 60, cx - 30)) + "px";
     arrow.style.top = Math.max(4, Math.min(vh - 74, ay)) + "px";
     arrow.classList.toggle("up", up);
-    pennyAvoidDeal(box);
+    pennyAvoidControls(box);
   }
-  /* Wide screens: never let Penny (card or portrait) sit on the open deal card. */
-  function pennyAvoidDeal(box) {
-    box.style.left = ""; box.style.width = ""; box.style.transform = "";
-    var vw = window.innerWidth;
-    if (vw <= 720) return;
+  function pennyHits(box, nodes) {
+    var b = box.getBoundingClientRect();
+    var skip = box.querySelector(".pn-skip");
+    var sr = skip ? skip.getBoundingClientRect() : null;
+    for (var i = 0; i < nodes.length; i++) {
+      if (!pvis(nodes[i])) continue;
+      var d = nodes[i].getBoundingClientRect();
+      var ix = Math.min(b.right, d.right) - Math.max(b.left, d.left);
+      var iy = Math.min(b.bottom, d.bottom) - Math.max(b.top, d.top);
+      if (ix > 6 && iy > 6) return true;
+      if (sr) {
+        var sx = Math.min(sr.right, d.right) - Math.max(sr.left, d.left);
+        var sy = Math.min(sr.bottom, d.bottom) - Math.max(sr.top, d.top);
+        if (sx > 4 && sy > 4) return true;
+      }
+    }
+    return false;
+  }
+  /* Keep Penny off the deal card, End Quarter, the forecast rail, the ticker and the fight hand. */
+  function pennyAvoidControls(box) {
+    box.style.left = ""; box.style.width = ""; box.style.top = ""; box.style.bottom = ""; box.style.transform = "";
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var el = PN.el;
     var dz = document.querySelector(".desk.has-sel .deal-dz, .desk.has-sel #dossier");
-    if (!dz || !pvis(dz)) return;
-    var d = dz.getBoundingClientRect(), b = box.getBoundingClientRect();
-    var ix = Math.min(b.right, d.right) - Math.max(b.left, d.left), iy = Math.min(b.bottom, d.bottom) - Math.max(b.top, d.top);
-    if (ix <= 0 || iy <= 0) return;
-    if (d.right < vw * 0.5) {
-      var left = d.right + 10;
-      box.style.transform = "none"; box.style.left = left + "px"; box.style.width = Math.max(320, Math.min(860, vw - left - 12)) + "px";
-    } else if (d.left > vw * 0.5) {
-      box.style.transform = "none"; box.style.left = "12px"; box.style.width = Math.max(320, Math.min(860, d.left - 22)) + "px";
+    if (vw > 720 && dz && pvis(dz)) {
+      var d = dz.getBoundingClientRect(), b = box.getBoundingClientRect();
+      var ix = Math.min(b.right, d.right) - Math.max(b.left, d.left), iy = Math.min(b.bottom, d.bottom) - Math.max(b.top, d.top);
+      if (ix > 0 && iy > 0) {
+        if (d.right < vw * 0.5) {
+          var left = d.right + 10;
+          box.style.transform = "none"; box.style.left = left + "px"; box.style.width = Math.max(320, Math.min(860, vw - left - 12)) + "px";
+        } else if (d.left > vw * 0.5) {
+          box.style.transform = "none"; box.style.left = "12px"; box.style.width = Math.max(320, Math.min(860, d.left - 22)) + "px";
+        }
+      }
+    }
+    var avoid = document.querySelectorAll("#btn-endq, #rail-wrap, .desk .ticker, .office .ticker, #door .df-hand, #door .df-actions, #df-end, #df-settle, #df-close, #df-shred");
+    if (!pennyHits(box, avoid)) return;
+    el.classList.add("box-top");
+    box.style.left = ""; box.style.top = ""; box.style.bottom = ""; box.style.transform = "";
+    if (!pennyHits(box, avoid)) return;
+    var w = Math.max(280, Math.min(520, Math.floor(vw * 0.44)));
+    var tries = [
+      { left: 12, top: 64, width: w },
+      { left: Math.max(12, vw - 12 - w), top: 64, width: w },
+      { left: 12, top: Math.max(56, Math.floor(vh * 0.22)), width: Math.min(w, 420) },
+      { left: Math.max(12, vw - 12 - Math.min(w, 420)), top: Math.max(56, Math.floor(vh * 0.22)), width: Math.min(w, 420) }
+    ];
+    for (var i = 0; i < tries.length; i++) {
+      var p = tries[i];
+      el.classList.add("box-top");
+      box.style.transform = "none";
+      box.style.left = p.left + "px";
+      box.style.top = p.top + "px";
+      box.style.bottom = "auto";
+      box.style.width = p.width + "px";
+      if (!pennyHits(box, avoid)) return;
     }
   }
 
@@ -12496,16 +12638,23 @@ body:has(#screen-tutorial.on) .shell,
     pennyStop();
   }
   function pennyMuteTips() { pennySave(function (p) { p.tipsOff = true; }); pennyCloseTip(); }
-  function pennyAutoOffer() {
+  function pennyShouldOffer() {
     var m = pennyMeta();
     if (m.penny.offered || m.penny.done) return false;
-    var fresh = (m.finished | 0) === 0 && (!m.history || !m.history.length);
+    return (m.finished | 0) === 0 && (!m.history || !m.history.length);
+  }
+  function pennyAutoOffer() {
+    if (!pennyShouldOffer()) return false;
     pennySave(function (p) { p.offered = true; });
-    if (!fresh) return false;
     pennyStart({ offer: true });
     return true;
   }
 
+  document.addEventListener("pointerdown", function (e) {
+    if (PN.mode !== "tip" || !PN.on) return;
+    if (e.target && e.target.closest && e.target.closest(".pn-box")) return;
+    pennyCloseTip();
+  }, true);
   document.addEventListener("keydown", function (e) {
     if (!PN.on || !PN.el || PN.el.hidden) return;
     if (e.key === "Escape" || e.key === "Esc") {

@@ -21,6 +21,20 @@ Every run is one fiscal year: 3 acts of 4 quarters.
 - **Executive levels.** Each executive earns XP and levels up, unlocking small passive perks.
 - **Sound.** Generated WebAudio effects and a low ambient bed start after your first tap. Toggle them on the title screen or in the in-run Menu; the choice is remembered.
 
+## The office, the briefcase and loot
+
+- **The office.** Your executive sits at a desk on screen and reacts: confident, nervous or panicking as unrest and collapse rise, and gleeful or shocked after big deals. The old meter bar is gone. The three numbers live in the room:
+  - **Cash:** a ticker on the desk.
+  - **Unrest:** a gauge by the door. The knocks go from a polite tap to pounding, then shaking with voices and a sign outside, and get louder and more frequent. The sound respects the mute toggle, and reduced motion turns the shaking off.
+  - **Collapse:** a gauge on the window frame. The mainland across the water decays in 5 stages (Clear skies → Haze → Smog alerts → Fires → Blackout). Collapse and your choices both drive it: Squeeze deals and unpaid crises add smog and fires, and Soothe deals bring repairs and lights. From Smog alerts on, the city adds unrest every quarter.
+  - Tap the room to get the full explanation.
+- **The briefcase.** It holds 5 Asset slots with rarity glow and lit set bonuses, plus a desk drawer for office items (3 slots, 4 at executive Lv10).
+- **Office items (13).**
+  - Active items work once per act or once per run: Bribe the Doorman, PR Blitz, Charity Gala, Lobbyist Hotline, Exclusive Contract, Rush Order, Cloud Seeding, Private Security, Emergency Liquidity, Hush Money and Prefab Pod.
+  - Fixtures are always on and have a hidden cost: the Soundproofed Door makes crisis pay-offs dearer and silences the warning, and the Holo-Window fakes a calm view while the gauge stays true.
+- **Loot.** Loot drops from boss wins, Board Memos, crises and some deals, and shows a reveal card. You can keep it, swap it for a drawer item (the old one is sold) or sell it.
+- **Asset Prospectus.** Opened from the title screen, it records every Asset, item and Liability you have seen and held, across runs.
+
 ## Fonts
 
 This build embeds subsets of Playfair Display, Zilla Slab, and Source Sans Pro, licensed under the SIL Open Font License 1.1. See `FONT-LICENSES.txt` and `OFL-1.1.txt`.

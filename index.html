@@ -2772,6 +2772,243 @@ body:has(#screen-tutorial.on) .shell,
   .m-pop, .boss-banner, .boss-shake, .fy-draft.reveal .fy-card, .fy-draft.reveal .fy-card::after, .lvup-burst, .lvup-burst .lb-rays, .lvup-burst .lb-card, .meter.rise .m-bar span, .meter.fall .m-bar span { animation: none !important; }
   .m-pop { opacity: 1; transform: translateY(-8px); }
 }
+/* =====================================================================
+   The office: executive, door (unrest), window (collapse), desk (cash).
+   Default = band (phones, portrait tablets); landscape >= 900 = stacked room.
+   Each layer has data-art for painted art later.
+   ===================================================================== */
+.desk .office { position: relative; padding: 6px 8px; min-width: 0; overflow: hidden; }
+.office .of-head { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; }
+.office .of-room { position: relative; display: grid; gap: 4px; min-height: 0; border-radius: 10px; overflow: hidden;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) minmax(0, 0.62fr); grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "win exec door" "win desk door"; height: 92px;
+  background: linear-gradient(180deg, #123b30 0%, #0c2a22 70%, #2a1f12 100%); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, .35); }
+.of-layer { position: absolute; inset: 0; pointer-events: none; background-size: cover; background-position: center; }
+.of-wall { background-image: repeating-linear-gradient(90deg, rgba(212, 175, 55, .07) 0 1px, transparent 1px 22px); }
+.of-window { grid-area: win; position: relative; min-width: 0; min-height: 0; margin: 4px 0 4px 4px; border-radius: 6px; border: 2px solid #b8963a; box-shadow: inset 0 0 0 1px #3d2f0f, 0 0 0 1px rgba(0, 0, 0, .4); overflow: visible; background: #071a14; }
+.of-glass { overflow: hidden; border-radius: 4px; }
+.of-glass, .of-city { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.of-window::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #b8963a; opacity: .7; pointer-events: none; }
+.of-exec { grid-area: exec; position: relative; min-width: 0; min-height: 0; display: flex; align-items: flex-end; justify-content: center; }
+.of-fig { width: auto; height: 100%; max-width: 100%; display: block; transform-origin: 50% 100%; }
+.of-chair { fill: #3a2614; stroke: #b8963a; stroke-width: 1.2; }
+.of-desk { grid-area: desk; position: relative; min-width: 0; display: flex; align-items: center; justify-content: center; }
+.of-desksvg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.of-desksvg .dtop { fill: #4a3016; stroke: #d4af37; stroke-width: .8; }
+.of-desksvg .stack rect { fill: #6fbf73; stroke: #2e6b33; stroke-width: .5; }
+.of-desksvg .lamp { fill: #b8963a; } .of-desksvg .lampshade { fill: #d4af37; }
+.of-door { grid-area: door; position: relative; min-width: 0; min-height: 0; margin: 4px 4px 4px 0; display: flex; align-items: stretch; justify-content: center; }
+.of-doorsvg { height: 100%; width: 100%; display: block; }
+.of-doorsvg .dframe { fill: #2a1a0c; stroke: #b8963a; stroke-width: 1.5; }
+.of-doorsvg .dpanel { fill: #5a3a1c; stroke: #8a6a34; stroke-width: 1; }
+.of-doorsvg .glass { fill: #cfe7dc; opacity: .75; }
+.of-doorsvg .knob, .of-doorsvg .plate { fill: #d4af37; }
+.of-doorsvg .stud { fill: #b8963a; }
+.of-doorsvg .gap { fill: #f6e2a8; opacity: .5; }
+.of-doorsvg .feet, .of-doorsvg .sign, .of-doorsvg .heads { fill: #1b120c; opacity: 0; transition: opacity .3s; }
+.of-room.door-1 .of-doorsvg .heads { opacity: .25; }
+.of-room.door-2 .of-doorsvg .feet { opacity: .85; }
+.of-room.door-2 .of-doorsvg .heads { opacity: .55; }
+.of-room.door-3 .of-doorsvg .feet, .of-room.door-3 .of-doorsvg .heads { opacity: .9; }
+.of-room.door-3 .of-doorsvg .sign { opacity: .8; }
+.of-room.door-3 .of-doorsvg .gap { fill: #ff5a3c; opacity: .95; }
+.of-room.door-3 .of-door { filter: drop-shadow(0 0 6px rgba(255, 90, 60, .55)); }
+.of-room.quiet .of-doorsvg .feet, .of-room.quiet .of-doorsvg .heads, .of-room.quiet .of-doorsvg .sign { opacity: 0; }
+.of-room.quiet .of-doorsvg .gap { fill: #f6e2a8; opacity: .4; }
+.of-room.padded .of-doorsvg .dpanel { fill: #6b1f2a; }
+.of-knock, .of-voices { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); font: 800 11px/1 var(--font-sans); color: #fff3df; background: rgba(168, 50, 30, .9); padding: 2px 5px; border-radius: 6px; opacity: 0; pointer-events: none; white-space: nowrap; z-index: 3; }
+.of-voices { top: 6%; background: rgba(20, 10, 6, .85); font-size: 10px; opacity: .95; }
+.of-door.knocking .of-knock { animation: knockpop .6s ease-out; }
+.of-room.door-1 .of-door.knocking .of-doorsvg .dleaf { animation: rattle1 .35s ease-in-out; }
+.of-room.door-2 .of-door.knocking .of-doorsvg .dleaf { animation: rattle2 .45s ease-in-out; }
+.of-room.door-3 .of-door.knocking .of-doorsvg .dleaf { animation: rattle3 .6s ease-in-out; }
+.of-room.door-3 .of-doorsvg .dleaf { animation: shake3 2.4s ease-in-out infinite; transform-origin: 50% 100%; }
+.of-doorsvg .dleaf { transform-box: fill-box; transform-origin: 50% 50%; }
+@keyframes knockpop { 0% { opacity: 0; transform: translate(-50%, 4px) scale(.7); } 25% { opacity: 1; transform: translate(-50%, 0) scale(1.1); } 100% { opacity: 0; transform: translate(-50%, -6px); } }
+@keyframes rattle1 { 0%,100% { transform: none; } 50% { transform: translateX(.6px); } }
+@keyframes rattle2 { 0%,100% { transform: none; } 20% { transform: translateX(-1.5px) rotate(-.6deg); } 60% { transform: translateX(1.5px) rotate(.6deg); } }
+@keyframes rattle3 { 0%,100% { transform: none; } 15% { transform: translateX(-3px) rotate(-1.5deg); } 35% { transform: translateX(3px) rotate(1.5deg); } 55% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+@keyframes shake3 { 0%,100% { transform: none; } 92% { transform: none; } 94% { transform: translateX(-1px); } 96% { transform: translateX(1px); } }
+
+/* Moods + reactions */
+.of-fig .fc { display: none; }
+.of-room.mood-confident .fc-confident, .of-room.mood-nervous .fc-nervous, .of-room.mood-panic .fc-panic { display: inline; }
+.of-room.react-glee .fc { display: none; } .of-room.react-glee .fc-glee { display: inline; }
+.of-room.react-shock .fc { display: none; } .of-room.react-shock .fc-shock { display: inline; }
+.of-room.mood-panic .of-fig { animation: panicjit .5s steps(2) infinite; }
+.of-room.react-glee .of-fig { animation: gleebob .5s ease-out 2; }
+.of-room.react-shock .of-fig { animation: shockback .5s ease-out; }
+.of-fig .sweat { animation: sweat 1.6s ease-in infinite; }
+@keyframes panicjit { 0% { transform: translateX(-.6px); } 100% { transform: translateX(.6px); } }
+@keyframes gleebob { 50% { transform: translateY(-4px) scale(1.03); } }
+@keyframes shockback { 30% { transform: translateY(2px) scale(.97); } }
+@keyframes sweat { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(6px); opacity: 0; } }
+
+/* City stages */
+.of-city .sky { fill: #8fd3e8; transition: fill .6s; }
+.of-city .sun { fill: #fff2b8; }
+.of-city .bd rect:first-child { fill: #1f4a52; transition: fill .6s; }
+.of-city .win { fill: #ffd76a; transition: opacity .6s; }
+.of-city .bd.dark rect:first-child { fill: #141a1c; }
+.of-city .bd.dark .win { opacity: 0; }
+.of-city .smog { fill: #7a5a2a; opacity: 0; transition: opacity .6s; }
+.of-city .sea { fill: #1d6f86; }
+.of-city .flood { fill: #1d6f86; opacity: 0; }
+.of-city .glint { stroke: #d9f6ff; stroke-width: 1.2; opacity: .7; }
+.of-city .isle { fill: #c9a25a; } .of-city .palm { stroke: #1f5a2a; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.of-city .fire path { fill: #ff7a2a; animation: flick .5s ease-in-out infinite alternate; animation-delay: calc(var(--k) * .13s); transform-box: fill-box; transform-origin: 50% 100%; }
+.of-city .plume { fill: #3a3430; opacity: .55; animation: plume 3s ease-in-out infinite; animation-delay: calc(var(--k) * .4s); }
+.of-city .scan { fill: url(#none); fill: rgba(127, 224, 234, .08); }
+@keyframes flick { from { transform: scaleY(.85); } to { transform: scaleY(1.15); } }
+@keyframes plume { 0%,100% { transform: translateY(0); opacity: .45; } 50% { transform: translateY(-4px); opacity: .65; } }
+.city-1 .of-city .sky { fill: #b9c9b8; } .city-1 .of-city .smog { opacity: .18; } .city-1 .of-city .sun { fill: #fff0c8; }
+.city-2 .of-city .sky { fill: #c2a874; } .city-2 .of-city .smog { opacity: .32; } .city-2 .of-city .sun { fill: #ffd27a; } .city-2 .of-city .sea { fill: #2f5a5a; }
+.city-3 .of-city .sky { fill: #8a5a34; } .city-3 .of-city .smog { opacity: .45; fill: #4a3220; } .city-3 .of-city .sun { fill: #ff9a4a; } .city-3 .of-city .sea { fill: #2a3f3a; } .city-3 .of-city .glint { opacity: .25; }
+.city-4 .of-city .sky { fill: #5a1e14; } .city-4 .of-city .smog { opacity: .55; fill: #2a1610; } .city-4 .of-city .sun { fill: #ff4a2a; } .city-4 .of-city .sea { fill: #1f2a26; } .city-4 .of-city .flood { opacity: 1; fill: #1f2a26; transform: translateY(-5px); } .city-4 .of-city .glint { opacity: 0; }
+.of-room.holo .of-glass::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(127, 224, 234, .12) 0 1px, transparent 1px 3px); pointer-events: none; }
+.of-tag { position: absolute; right: 4px; top: 3px; font: 800 9px/1 var(--font-sans); letter-spacing: .12em; color: #7fe0ea; background: rgba(4, 30, 25, .8); padding: 2px 4px; border-radius: 4px; z-index: 2; }
+
+/* Gauges: readable numbers on the window frame, by the door, on the desk */
+.office .of-g { position: absolute; z-index: 4; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 4px; padding: 2px 6px 3px; border-radius: 8px;
+  background: rgba(4, 22, 18, .9); box-shadow: inset 0 0 0 1px rgba(212, 175, 55, .55), 0 2px 6px rgba(0, 0, 0, .45); min-width: 0; margin: 0; width: max-content; white-space: nowrap; }
+.office .of-g .m-lab { font: 700 9px/1 var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ivory-muted, #cfc4a8); white-space: nowrap; display: flex; gap: 2px; align-items: center; }
+.office .of-g .m-lab i { font-style: normal; }
+.office .of-g .m-val { font: 800 17px/1 var(--font-serif); color: #fff6df; justify-self: end; }
+.office .of-g .m-bar { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: rgba(255, 255, 255, .14); margin-top: 2px; overflow: hidden; }
+.office .of-g .m-bar span { display: block; height: 100%; border-radius: 2px; transition: width .9s cubic-bezier(.2,.8,.3,1); }
+.office .m-cash .m-bar span { background: #d4af37; }
+.office .m-unrest .m-bar span { background: #e0703a; }
+.office .m-collapse .m-bar span { background: #e05a48; }
+.office .of-g .m-sub { display: none; grid-column: 1 / -1; font-size: 10px; line-height: 1.2; color: var(--ivory-muted, #cfc4a8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.office .m-collapse { left: 4px; bottom: 4px; }
+.office .m-unrest { right: 0; bottom: 4px; }
+.office .m-cash { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.office .m-unrest .m-lab span, .office .of-g .m-lab { }
+.of-room.door-2 .m-unrest { box-shadow: inset 0 0 0 1px #e0703a, 0 0 10px rgba(224, 112, 58, .5); }
+.of-room.door-3 .m-unrest { box-shadow: inset 0 0 0 1.5px #ff5a3c, 0 0 14px rgba(255, 90, 60, .7); }
+.of-room.city-3 .m-collapse, .of-room.city-4 .m-collapse { box-shadow: inset 0 0 0 1.5px #ff5a3c, 0 0 12px rgba(255, 90, 60, .6); }
+.office .m-pop { top: -14px; right: auto; left: 50%; transform: translateX(-50%); }
+@keyframes mpopc { 0% { transform: translate(-50%, 6px) scale(.6); opacity: 0; } 15% { transform: translate(-50%, -4px) scale(1.15); opacity: 1; } 30% { transform: translate(-50%, -6px) scale(1); } 80% { opacity: 1; } 100% { transform: translate(-50%, -22px); opacity: 0; } }
+.office .m-pop { animation-name: mpopc; }
+.office .meter.rise, .office .meter.fall { }
+.office .pf-chip { margin-left: auto; }
+
+.office .of-g { display: flex !important; flex-wrap: wrap; align-items: center; column-gap: 4px; row-gap: 0; }
+.office .of-g .m-bar { flex: 1 0 100%; }
+/* Band: the desk ticker rides in the header row, one line */
+.office .of-room .of-desk { height: 22px; }
+.office > .m-cash { top: 5px; bottom: auto; left: 50%; transform: translateX(-50%); }
+@media (max-width: 899px) and (orientation: portrait), (max-width: 699px) { .office > .m-cash { left: 30px; transform: none; } }
+.office .m-cash .m-bar { display: none; }
+.office .m-cash .m-val { color: #9ff0a8; text-shadow: 0 0 6px rgba(120, 255, 140, .5); }
+.office .of-head { margin: 0 0 3px; }
+/* Narrow band: tighter labels */
+@media (max-width: 420px) {
+  .office .of-ht { display: none; }
+  .office .pf-chip .pf-fc { display: none; }
+  .office .of-g { padding: 1px 4px 2px; }
+  .office .of-g .m-lab { font-size: 8px; letter-spacing: .04em; }
+  .office .of-g .m-val { font-size: 15px; }
+  .office .of-room { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, .7fr); }
+}
+/* Landscape side column: a full room — window across the top, executive at the desk, the door on the right */
+@media (orientation: landscape) and (min-width: 900px) {
+  .office .of-room { height: clamp(150px, calc(var(--app-h, 100dvh) * 0.27), 280px); grid-template-columns: minmax(0, 1fr) minmax(0, .55fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1.05fr) auto;
+    grid-template-areas: "win door" "exec door" "desk desk"; grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr) minmax(0, .5fr); }
+  .office .of-room .of-desk { height: 34px; }
+  .office .m-cash .m-bar { display: block; }
+  .of-window { margin: 4px 0 0 4px; }
+  .of-door { margin: 4px 4px 0 0; }
+  .of-desk { height: 34px; }
+  .office .m-collapse { left: 4px; bottom: 4px; max-width: calc(100% - 8px); }
+  .office > .m-cash { left: auto; right: 14px; top: auto; bottom: 11px; transform: none; }
+  .of-desksvg .stack { transform: translateX(8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .of-fig, .of-fig .sweat, .of-city .fire path, .of-city .plume, .of-doorsvg .dleaf, .of-room.door-3 .of-doorsvg .dleaf { animation: none !important; }
+  .of-door.knocking .of-knock { animation: none; opacity: 1; }
+}
+/* ===== Briefcase (inventory), loot reveal, Asset Prospectus ===== */
+.pf-chip .pf-act { font-size: 11px; font-weight: 800; color: #1a1205; background: var(--gold-hi, #f3d98f); border-radius: 999px; padding: 0 5px; margin-left: 2px; }
+.bcase { gap: 8px; }
+.bc-grid, .bc-drawer { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 8px; }
+.bc-tile { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 0; min-height: 70px; padding: 6px 4px; border-radius: 12px; cursor: pointer; font: inherit; color: inherit;
+  background: linear-gradient(180deg, rgba(20, 70, 56, .9), rgba(6, 30, 24, .95)); border: 1.5px solid rgba(212, 175, 55, .35); }
+.bc-tile .bc-ico { font-size: 28px; line-height: 1; }
+.bc-tile .bc-nm { font-size: 12px; font-weight: 700; line-height: 1.15; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; max-width: 100%; }
+.bc-tile.empty { border-style: dashed; opacity: .5; cursor: default; }
+.bc-tile.r-u { border-color: rgba(111, 168, 255, .8); box-shadow: 0 0 10px rgba(111, 168, 255, .25); }
+.bc-tile.r-r { border-color: var(--gold); box-shadow: 0 0 14px rgba(243, 217, 143, .4); }
+.bc-tile.r-l { border-color: var(--gold); box-shadow: 0 0 18px rgba(243, 217, 143, .6); background: linear-gradient(180deg, #1a1a12, #050505); }
+.bc-tile.set-on::after { content: "★"; position: absolute; right: 4px; top: 2px; font-size: 12px; color: var(--gold-hi, #f3d98f); text-shadow: 0 0 6px rgba(243, 217, 143, .9); }
+.bc-tile.sel, .bc-dslot.sel .bc-tile { outline: 3px solid var(--gold-hi, #f3d98f); outline-offset: 1px; }
+.bc-liabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.bc-liab { font: inherit; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 999px; border: 1px solid rgba(255, 90, 60, .7); background: rgba(120, 30, 20, .45); color: #ffd9cf; cursor: pointer; }
+.bc-liab.sel { outline: 2px solid #ffb19a; }
+.bc-sets { display: flex; flex-wrap: wrap; gap: 6px; }
+.bc-set { font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid rgba(212, 175, 55, .3); color: var(--ivory-muted, #cfc4a8); }
+.bc-set.on { border-color: var(--gold); color: #1a1205; background: linear-gradient(180deg, #f3d98f, #c99a2e); font-weight: 800; box-shadow: 0 0 12px rgba(243, 217, 143, .5); }
+.bc-dk { margin-top: 2px; }
+.bc-dslot { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.bc-dslot .bc-tile { min-height: 64px; }
+.bc-st { font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 1px 6px; border-radius: 999px; }
+.bc-st.ready { background: rgba(80, 200, 140, .25); color: #9ff0c8; }
+.bc-st.used { background: rgba(255, 255, 255, .08); color: #a9a08a; }
+.bc-st.on { background: rgba(127, 224, 234, .18); color: #9feaf2; }
+.bc-use { min-height: 36px; padding: 4px 6px; font-size: 13px; }
+.bc-use[aria-disabled="true"] { opacity: .5; }
+.bc-detail { margin: 0; font-size: 13px; line-height: 1.35; padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, .05); min-height: 2.7em; }
+.bc-detail em { font-style: normal; font-size: 11px; color: var(--gold-hi, #f3d98f); margin-right: 4px; }
+.bc-why { display: block; color: #ffb19a; font-weight: 700; }
+.bc-why.flash { animation: whyflash .5s ease-out 2; }
+@keyframes whyflash { 50% { color: #fff; text-shadow: 0 0 8px #ff5a3c; } }
+@media (max-width: 520px) {
+  .bc-grid { gap: 5px; } .bc-drawer { gap: 6px; }
+  .bc-tile { min-height: 58px; padding: 4px 2px; border-radius: 10px; }
+  .bc-tile .bc-ico { font-size: 22px; }
+  .bc-tile .bc-nm { font-size: 10px; }
+  .bc-grid .bc-tile .bc-nm { -webkit-line-clamp: 2; }
+  .bc-dslot .bc-tile { min-height: 56px; }
+  .bcase .fy-fc { font-size: 12px; padding: 4px 8px; }
+  .bc-detail { font-size: 12px; }
+}
+@media (max-height: 760px) { .bcase { gap: 6px; } .bc-tile { min-height: 54px; } .bc-dslot .bc-tile { min-height: 52px; } .bc-use { min-height: 32px; } }
+
+.loot { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.loot-card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 18px 10px; border-radius: 16px; width: min(380px, 100%); overflow: hidden;
+  background: linear-gradient(180deg, #123a28, #06180f); border: 2px solid rgba(212, 175, 55, .5); }
+.loot.r-u .loot-card { border-color: rgba(111, 168, 255, .9); box-shadow: 0 0 26px rgba(111, 168, 255, .35); }
+.loot.r-r .loot-card { border-color: var(--gold); box-shadow: 0 0 36px rgba(243, 217, 143, .55); }
+.loot-rays { position: absolute; inset: -50%; background: repeating-conic-gradient(rgba(243, 217, 143, .12) 0 9deg, transparent 9deg 24deg); animation: lbspin 16s linear infinite; pointer-events: none; }
+.loot-ico { position: relative; font-size: 58px; line-height: 1.1; filter: drop-shadow(0 0 14px rgba(243, 217, 143, .6)); }
+.loot-card b { position: relative; font-family: var(--font-serif); font-size: 24px; }
+.loot-card em { position: relative; font-style: normal; font-size: 12px; color: var(--gold-hi, #f3d98f); letter-spacing: .06em; text-transform: uppercase; }
+.loot-card p { position: relative; margin: 2px 0 0; font-size: 14px; line-height: 1.35; }
+.loot.reveal .loot-card { animation: lootin .7s cubic-bezier(.2,1.3,.4,1) both; }
+.loot.reveal .loot-ico { animation: lootico .9s cubic-bezier(.2,1.5,.4,1) .15s both; }
+@keyframes lootin { 0% { transform: perspective(700px) rotateY(90deg) scale(.8); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes lootico { 0% { transform: scale(.2) rotate(-30deg); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.loot-swap { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; width: 100%; }
+.loot-swap .bc-tile { min-height: 56px; }
+.overlay.loot-mode .panel > .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.overlay.loot-mode .panel > .btn-row > :only-child { grid-column: 1 / -1; }
+@media (max-height: 760px) { .loot-ico { font-size: 44px; } .loot-card { padding: 10px 14px 8px; } .loot-card b { font-size: 20px; } }
+
+.prosp { gap: 8px; }
+.pr-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.pr-count { margin: 0; font-size: 13px; }
+.pr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; }
+.pr-cell { aspect-ratio: 1; min-height: 40px; border-radius: 10px; font-size: 22px; line-height: 1; display: grid; place-items: center; cursor: pointer; font-family: inherit;
+  background: rgba(255, 255, 255, .05); border: 1.5px solid rgba(212, 175, 55, .25); color: #cfc4a8; }
+.pr-cell.unseen { color: rgba(255, 255, 255, .35); font-weight: 800; font-size: 18px; }
+.pr-cell.seen { filter: grayscale(.7); opacity: .8; }
+.pr-cell.found.r-c { border-color: rgba(212, 175, 55, .6); }
+.pr-cell.found.r-u { border-color: rgba(111, 168, 255, .9); box-shadow: 0 0 10px rgba(111, 168, 255, .35); }
+.pr-cell.found.r-r, .pr-cell.found.r-l { border-color: var(--gold); box-shadow: 0 0 12px rgba(243, 217, 143, .5); }
+.pr-cell.found.liab { border-color: rgba(255, 90, 60, .8); }
+.pr-cell.sel { outline: 3px solid var(--gold-hi, #f3d98f); }
+@media (max-width: 520px) { .pr-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; } .pr-cell { font-size: 18px; min-height: 0; border-radius: 8px; } }
+@media (prefers-reduced-motion: reduce) { .loot-rays, .loot.reveal .loot-card, .loot.reveal .loot-ico, .bc-why.flash { animation: none !important; } }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -2982,7 +3219,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Crisis Logistics",
       firm: "Crowe Terminals",
       blurb: "More cash, more heat, and bad news takes an extra quarter to arrive. Use the time.",
-      start: { cash: 56, unrest: 24, collapse: 22 },
+      start: { cash: 58, unrest: 21, collapse: 22 },
       perks: { delayBonus: 1, tags: ["logistics"] },
       compound: "Port Sovereign",
       unlock: "three-runs",
@@ -2994,7 +3231,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Chief Optimism Officer",
       firm: "Halcyon Systems",
       blurb: "The air plant is already humming. Air installs cost less. The servers run hot, and so does the clock.",
-      start: { cash: 30, unrest: 14, collapse: 24, air: 1, airQuality: "sound" },
+      start: { cash: 34, unrest: 14, collapse: 24, air: 1, airQuality: "sound" },
       perks: { airUpgradeDiscount: 4, dealAffinity: "divert-filters", tags: ["air"] },
       compound: "Cloud Atrium",
       unlock: "buy",
@@ -3845,6 +4082,7 @@ body:has(#screen-tutorial.on) .shell,
     state.offered = picked.slice(0, 3);
     return state;
   }
+  LD.offerDeals = offerDeals;
 
   /* Listed cash of a payload, including Disaster Capitalism collapse scaling. */
   function payloadCash(state, payload) {
@@ -4052,6 +4290,7 @@ body:has(#screen-tutorial.on) .shell,
     var cost = quality === "cheap" ? row.cheap : row.sound;
     var um = m.upgradeMult;
     if (state.converting && execById(state.executiveId).perks && execById(state.executiveId).perks.privateWorks) um *= execById(state.executiveId).perks.privateWorks;
+    if (LD.fyRushMult) um *= LD.fyRushMult(state);
     if (um !== 1) cost = Math.round(cost * um);
     if (quality === "cheap" && m.cheapExtra) cost += m.cheapExtra;
     var exec = execById(state.executiveId);
@@ -5094,6 +5333,10 @@ body:has(#screen-tutorial.on) .shell,
     /* Fiscal Year: XP per executive and one-time first clears per executive × rating. Ratings carry over. */
     if (!meta.xp || typeof meta.xp !== "object") meta.xp = {};
     if (!Array.isArray(meta.fyClears)) meta.fyClears = [];
+    /* Asset Prospectus: what you have seen and found, across runs. */
+    if (!meta.codex || typeof meta.codex !== "object") meta.codex = {};
+    if (!meta.codex.seen || typeof meta.codex.seen !== "object") meta.codex.seen = {};
+    if (!meta.codex.found || typeof meta.codex.found !== "object") meta.codex.found = {};
     /* Executive seats earned under the old gates stay yours. */
     LD.EXECUTIVES.forEach(function (ex) {
       if (!ex.unlocked && ex.unlock !== "buy" && LD.isExecutiveUnlocked(ex.id, { finished: meta.finished, wins: meta.wins, owned: [] })) {
@@ -5515,6 +5758,7 @@ body:has(#screen-tutorial.on) .shell,
   LD.FY = {
     QUARTERS: 12, ACT_LEN: 4, SEAL_Q: 9,
     CAP: 5, SKIP_CASH: 3, DIVEST_CASH: 4,
+    DRAWER: 3,            /* desk-drawer slots for office items */
     INFLATION: 0.25,      /* bunker works +25% per act ("construction inflation") */
     BOSS_BASE: 1.6        /* boss strength at AAA */
   };
@@ -5590,6 +5834,131 @@ body:has(#screen-tutorial.on) .shell,
   LD.FY_ASSETS.forEach(function (a) { BY_ID[a.id] = a; });
   LD.LIABILITIES.forEach(function (l) { l.liability = true; BY_ID[l.id] = l; });
   function cardById(id) { return BY_ID[id] || null; }
+
+  /* ---------- Office: the mainland city, the door, the executive's nerve ---------- */
+  LD.OFFICE = { DOOR: [20, 40, 60], CITY: [22, 40, 58, 76], CITY_MIN: -15, CITY_MAX: 30 };
+  function cityDecay(state) { var f = fy(state); return Math.max(0, Math.round(state.collapse * 0.85 + ((f && f.city) || 0))); }
+  LD.cityDecay = cityDecay;
+  LD.cityStage = function (state) { var d = cityDecay(state), st = 0; LD.OFFICE.CITY.forEach(function (x) { if (d >= x) st++; }); return st; };
+  LD.CITY_NAMES = ["Clear skies", "Haze", "Smog alerts", "Fires on the mainland", "Blackout city"];
+  LD.doorLevel = function (state) { var u = state.unrest, D = LD.OFFICE.DOOR; return u >= D[2] ? 3 : u >= D[1] ? 2 : u >= D[0] ? 1 : 0; };
+  LD.DOOR_NAMES = ["A polite tap", "Knocking", "Pounding", "They're at the door"];
+  LD.execMood = function (state) { var u = state.unrest, c = state.collapse; return u >= 60 || c >= 78 ? "panic" : u >= 35 || c >= 55 ? "nervous" : "confident"; };
+  function cityAdd(state, n) { var f = fy(state); if (!f) return; f.city = clamp((f.city || 0) + n, LD.OFFICE.CITY_MIN, LD.OFFICE.CITY_MAX); }
+  LD.fyCityAdd = cityAdd;
+
+  /* ---------- Office items: the desk drawer (active abilities and office fixtures) ---------- */
+  LD.ITEMS = [
+    { id: "doorman", r: "C", icon: "🛎️", name: "Bribe the Doorman", per: "act", cost: 5, text: "Use: unrest −8, and the door stays quiet this quarter. Costs $5M." },
+    { id: "prblitz", r: "C", icon: "📺", name: "PR Blitz", per: "act", cost: 8, text: "Use: repair the mainland (city −10), unrest −3, collapse −2. Costs $8M." },
+    { id: "gala", r: "C", icon: "🥂", name: "Charity Gala", per: "act", phase: "deal", text: "Use before signing: your next Soothe deal this quarter refunds $6M and repairs the city." },
+    { id: "hotline", r: "U", icon: "☎️", name: "Lobbyist Hotline", per: "act", phase: "deal", text: "Use before signing: redraw this quarter's three deals." },
+    { id: "contract", r: "U", icon: "📜", name: "Exclusive Contract", per: "act", phase: "deal", text: "Use before signing: your next Squeeze deal this quarter pays ×1.5, and its fallout lands ×1.5." },
+    { id: "rush", r: "U", icon: "🚚", name: "Rush Order", per: "act", text: "Use: bunker works cost 30% less for the rest of this quarter." },
+    { id: "cloud", r: "U", icon: "🌧️", name: "Cloud Seeding", per: "act", text: "Use: collapse −6 now. The rain falls on the mainland instead (city +8)." },
+    { id: "security", r: "U", icon: "🚓", name: "Private Security", per: "act", text: "Use: unrest −10 now. The crackdown burns blocks (city +8, collapse +2)." },
+    { id: "soundproof", r: "U", icon: "🔇", name: "Soundproofed Door", office: true, text: "Office: unrest −2 every quarter (you stop answering). Hidden cost: crisis pay-offs cost $4M more, and the door stops warning you." },
+    { id: "holo", r: "U", icon: "🖼️", name: "Holo-Window", office: true, text: "Office: the window shows a calm city. Investors love it: +$3M every quarter. Hidden cost: collapse +1 every quarter." },
+    { id: "liquidity", r: "R", icon: "💰", name: "Emergency Liquidity", per: "run", text: "Use once: +$20M now, unrest +5." },
+    { id: "hush", r: "R", icon: "🤐", name: "Hush Money", per: "run", cost: 10, text: "Use once: settle every Liability. Costs $10M." },
+    { id: "pod", r: "R", icon: "🧩", name: "Prefab Pod", per: "run", cost: 12, text: "Use once: your lowest bunker room gains a level (an empty room gets Discount Lv 1). Costs $12M." }
+  ];
+  var ITEM_BY = {}; LD.ITEMS.forEach(function (it) { ITEM_BY[it.id] = it; });
+  LD.itemById = function (id) { return ITEM_BY[id] || null; };
+  LD.ITEM_SELL = { C: 4, U: 6, R: 8 };
+  function hasItem(state, id) { var f = fy(state); return !!(f && f.drawer && f.drawer.some(function (d) { return d.id === id; })); }
+  LD.hasItem = hasItem;
+  function itemReady(state, d) {
+    var f = fy(state), it = ITEM_BY[d.id]; if (!it || it.office) return false;
+    return it.per === "act" ? d.used !== f.act : !d.used;
+  }
+  LD.itemReady = itemReady;
+  /* Why an item can't be used right now (null when it can). */
+  LD.itemBlock = function (state, id) {
+    var f = fy(state); if (!f || state.ended) return "Not now.";
+    var d = (f.drawer || []).filter(function (x) { return x.id === id; })[0], it = ITEM_BY[id];
+    if (!d || !it) return "Not in your drawer.";
+    if (it.office) return "Always on while it sits in your drawer.";
+    if (!itemReady(state, d)) return it.per === "act" ? "Used this act. Ready again next act." : "Already used this run.";
+    if (it.cost && state.cash < it.cost) return "Needs $" + it.cost + "M.";
+    if (it.phase === "deal" && state.phase !== "deal") return "Use it before you sign this quarter's deal.";
+    if (id === "rush" && state.bunkerActedThisTurn) return "Your bunker order for this quarter is already placed.";
+    if (id === "rush" && f.rushQ === state.turn) return "Already rushing this quarter.";
+    if (id === "hush" && !f.hand.some(function (h) { var c = cardById(h.id); return c && c.liability; })) return "No Liabilities to settle.";
+    if (id === "pod" && LD.SYSTEMS.every(function (x) { return state.bunker[x.id].level >= 3; })) return "Every room is already at Lv 3.";
+    if (id === "hotline" && (f.draft || f.memo || f.loot)) return "Finish the open card first.";
+    return null;
+  };
+  LD.fyUseItem = function (state, id) {
+    state = clone(state);
+    var f = fy(state), why = LD.itemBlock(state, id);
+    if (why) return { ok: false, error: why, state: state };
+    var it = ITEM_BY[id], d = f.drawer.filter(function (x) { return x.id === id; })[0], t = state.turn, msg = "";
+    if (it.cost) state.cash -= it.cost;
+    function un(n) { state.unrest = clamp(state.unrest + n, 0, LD.MAX_UNREST); }
+    function col(n) { state.collapse = clamp(state.collapse + n, 0, LD.MAX_COLLAPSE); }
+    switch (id) {
+      case "doorman": un(-8); f.quietQ = t; msg = "The doorman takes the envelope. Unrest −8; the door goes quiet."; break;
+      case "prblitz": cityAdd(state, -10); un(-3); col(-2); msg = "Ribbon cuttings across the mainland. City repaired, unrest −3, collapse −2."; break;
+      case "gala": f.galaQ = t; msg = "Gala booked. Your next Soothe deal this quarter refunds $6M and repairs the city."; break;
+      case "contract": f.contractQ = t; msg = "Contract drafted. Your next Squeeze deal this quarter pays ×1.5, fallout ×1.5."; break;
+      case "hotline":
+        state.recentDealIds = (state.recentDealIds || []).concat(state.offered || []);
+        LD.offerDeals(state, fyRng(state, "hotline:" + t + ":" + f.act));
+        if (LD.placePins) LD.placePins(state);
+        msg = "A few calls later, the table has new deals."; break;
+      case "rush": f.rushQ = t; msg = "Rush order: bunker works −30% for the rest of this quarter."; break;
+      case "cloud": col(-6); cityAdd(state, 8); msg = "The clouds open over the mainland. Collapse −6, city +8."; break;
+      case "security": un(-10); cityAdd(state, 8); col(2); msg = "Security clears the streets. Unrest −10; blocks burn (city +8, collapse +2)."; break;
+      case "liquidity": state.cash += 20; un(5); msg = "The bailout line opens. +$20M, unrest +5."; break;
+      case "hush": var gone = f.hand.filter(function (h) { var c = cardById(h.id); return c && c.liability; }).map(function (h) { return h.id; });
+        gone.forEach(function (g) { removeCard(state, g); }); msg = "Settled out of court: " + gone.map(function (g) { return cardById(g).name; }).join(", ") + "."; break;
+      case "pod": var low = LD.SYSTEMS.map(function (x) { return x.id; }).sort(function (a, b) { return state.bunker[a].level - state.bunker[b].level; })[0];
+        var b0 = state.bunker[low]; b0.level += 1; if (b0.level === 1 || !b0.quality) b0.quality = "cheap";
+        msg = "A prefab pod docks. Your " + low + " room reaches Lv " + b0.level + "."; break;
+    }
+    d.used = it.per === "act" ? f.act : true;
+    f.itemsUsed = (f.itemsUsed || 0) + 1;
+    rebuildMods(state);
+    state.log.unshift({ turn: t, text: it.name + ": " + msg });
+    return { ok: true, state: state, text: msg, item: it };
+  };
+  LD.fyRushMult = function (state) { var f = fy(state); return f && f.rushQ === state.turn ? 0.7 : 1; };
+  LD.doorQuiet = function (state) { var f = fy(state); return !!(f && (f.quietQ === state.turn || hasItem(state, "soundproof"))); };
+
+  /* Loot: boss wins, some memos and some deals drop an office item. */
+  function rollLoot(state, src) {
+    var f = fy(state); if (!f || f.loot || state.ended) return null;
+    var rng = fyRng(state, "loot:" + src + ":" + state.turn + ":" + (f.lootN || 0));
+    var held = {}; f.drawer.forEach(function (d) { held[d.id] = 1; });
+    var W = { C: 50, U: 38, R: src === "boss" ? 30 : 12 };
+    var pool = []; LD.ITEMS.forEach(function (it) { if (!held[it.id]) for (var i = 0; i < W[it.r]; i++) pool.push(it.id); });
+    if (!pool.length) return null;
+    var id = pool[Math.floor(rng() * pool.length)];
+    f.loot = { id: id, src: src, q: state.turn }; f.lootN = (f.lootN || 0) + 1;
+    state.log.unshift({ turn: state.turn, text: "Loot: " + ITEM_BY[id].name + " (" + ({ boss: "boss beaten", memo: "board memo", deal: "deal perk" })[src] + ")." });
+    return f.loot;
+  }
+  LD.fyRollLoot = rollLoot;
+  /* keep: true keeps it (replaceId when the drawer is full), false sells it. */
+  LD.fyTakeLoot = function (state, keep, replaceId) {
+    state = clone(state);
+    var f = fy(state); if (!f || !f.loot) return { ok: false, error: "No loot on the desk.", state: state };
+    var it = ITEM_BY[f.loot.id], sold = null, text;
+    if (!keep) { state.cash += LD.ITEM_SELL[it.r]; text = "Sold " + it.name + " for $" + LD.ITEM_SELL[it.r] + "M."; }
+    else {
+      if (f.drawer.length >= f.dcap) {
+        if (!replaceId || !hasItem(state, replaceId)) return { ok: false, error: "Your drawer is full. Choose an item to sell.", state: state, needReplace: true };
+        var ri = ITEM_BY[replaceId]; f.drawer = f.drawer.filter(function (d) { return d.id !== replaceId; });
+        state.cash += LD.ITEM_SELL[ri.r]; sold = ri;
+      }
+      f.drawer.push({ id: it.id, used: null });
+      text = it.name + " goes in the drawer" + (sold ? ", " + sold.name + " sold (+$" + LD.ITEM_SELL[sold.r] + "M)" : "") + ".";
+    }
+    f.loot = null;
+    state.log.unshift({ turn: state.turn, text: text });
+    return { ok: true, state: state, text: text, item: it, kept: !!keep, sold: sold };
+  };
 
   /* ---------- Bosses ---------- */
   LD.BOSSES = {
@@ -5780,7 +6149,8 @@ body:has(#screen-tutorial.on) .shell,
       bossII: "strike",
       draft: null, used: {}, drafts: 0, skips: 0, rerolls: lv >= 5 ? 1 : 0, rerolled: 0,
       cap: lv >= 10 ? 6 : LD.FY.CAP, skipCash: lv >= 8 ? 5 : LD.FY.SKIP_CASH, lastBoss: null,
-      memo: null, memoQs: seedMemoQs(state.seed), memosSeen: [], credit: {}, picks: []
+      memo: null, memoQs: seedMemoQs(state.seed), memosSeen: [], credit: {}, picks: [],
+      drawer: [], dcap: lv >= 10 ? 4 : LD.FY.DRAWER, loot: null, city: 0, lootN: 0
     };
     var sb = seedBosses(state.seed); state.fy.bossI = sb.bossI; state.fy.bossII = sb.bossII; state.fy.bossIII = sb.bossIII;
     if (lv >= 2) state.cash += 3;
@@ -5824,6 +6194,11 @@ body:has(#screen-tutorial.on) .shell,
     if (!f.picks) f.picks = f.hand.filter(function (h) { var c = cardById(h.id); return c && !c.liability; }).map(function (h) { return h.id; });
     if (!f.bossI) f.bossI = "earnings";
     if (!f.bossIII) f.bossIII = "reckoning";
+    if (!Array.isArray(f.drawer)) f.drawer = [];
+    if (!f.dcap) f.dcap = LD.FY.DRAWER;
+    if (f.loot === undefined) f.loot = null;
+    if (typeof f.city !== "number") f.city = 0;
+    if (typeof f.lootN !== "number") f.lootN = 0;
     return state;
   }
   LD.upgradeFY = upgradeFY;
@@ -5833,7 +6208,7 @@ body:has(#screen-tutorial.on) .shell,
   }
   LD.ensureFY = function (state) { ensureFY(state); return upgradeFY(state); };
 
-  function blockDeal(state) { var f = fy(state); return f && f.draft ? "Choose this quarter's acquisition first." : f && f.memo ? "Answer the board memo first." : null; }
+  function blockDeal(state) { var f = fy(state); return f && f.loot ? "Open your loot first." : f && f.draft ? "Choose this quarter's acquisition first." : f && f.memo ? "Answer the board memo first." : null; }
   LD.fyBlockDeal = blockDeal;
 
   /* Run summary: what each held Asset did for you (cash, unrest, collapse, quarters held). */
@@ -5881,6 +6256,21 @@ body:has(#screen-tutorial.on) .shell,
     if (paid && state.collapse >= 60 && has(state, "short")) cash(5, "short");
     if (calm && has(state, "classaction")) { removeCard(state, "classaction"); notes.push("Class Action settled"); }
     if (crisis && f.rules.crisisUnrest) { state.unrest = clamp(state.unrest + f.rules.crisisUnrest, 0, LD.MAX_UNREST); notes.push("+" + f.rules.crisisUnrest + " unrest (crisis season)"); }
+    /* Office items */
+    var t = state.turn;
+    if (ext && f.contractQ === t) {
+      f.contractQ = null;
+      if (paid) { var bonus = Math.max(2, Math.round(listed * 0.5)); state.cash += bonus; notes.push("+" + bonus + " cash (Exclusive Contract)"); }
+      fresh.forEach(function (i) { i.unrest = Math.round((i.unrest || 0) * 1.5); i.collapse = Math.round((i.collapse || 0) * 1.5); });
+    }
+    if (calm && f.galaQ === t) { f.galaQ = null; state.cash += 6; cityAdd(state, -6); notes.push("+6 cash, city repaired (Charity Gala)"); }
+    if (crisis && payload.cost && hasItem(state, "soundproof")) { state.cash = Math.max(0, state.cash - 4); notes.push("−4 cash (you never heard it coming)"); }
+    /* The mainland remembers: Squeeze darkens blocks, Soothe relights them. */
+    if (ext) cityAdd(state, 3);
+    if (calm) cityAdd(state, -3);
+    if (crisis && !payload.cost) cityAdd(state, 2);
+    var lr = fyRng(state, "dealloot:" + t + ":" + deal.id)();
+    if (lr < (crisis ? 0.25 : 0.06)) rollLoot(state, "deal");
   }
   LD.fyOnDeal = fyOnDeal;
 
@@ -5909,6 +6299,10 @@ body:has(#screen-tutorial.on) .shell,
     if (has(state, "brine") && LD.plantCount && LD.plantCount(state)) cr("brine", "collapse", -LD.plantCount(state));
     if (has(state, "classaction")) { state.unrest = clamp(state.unrest + 2, 0, LD.MAX_UNREST); ev("Class Action: unrest +2. Sign a Soothe deal to settle.", "liability"); }
     if (setOn(state, "time")) { state.collapse = clamp(state.collapse - 1, 0, LD.MAX_COLLAPSE); ev("Long View: collapse −1."); }
+    if (hasItem(state, "soundproof")) { state.unrest = clamp(state.unrest - 2, 0, LD.MAX_UNREST); ev("Soundproofed Door: you stop answering. Unrest −2.", "item"); }
+    if (hasItem(state, "holo")) { state.cash += 3; state.collapse = clamp(state.collapse + 1, 0, LD.MAX_COLLAPSE); ev("Holo-Window: investors admire the view (+$3M). Nobody fixes what nobody sees: collapse +1.", "item"); }
+    var cst = LD.cityStage(state);
+    if (cst >= 2) { var cu = cst - 1; state.unrest = clamp(state.unrest + cu, 0, LD.MAX_UNREST); ev("The mainland looks back across the water: unrest +" + cu + ".", "city"); }
     if (has(state, "narrative")) {
       var cap = 10, cut = 0;
       state.pending.forEach(function (i) { if (!i.install && i.due <= t && (i.unrest || 0) > 0) { var k = Math.min(i.unrest, cap); cut += i.unrest - k; cap -= k; i.unrest = k; } });
@@ -5966,7 +6360,7 @@ body:has(#screen-tutorial.on) .shell,
         text = info.name + ": collapse +" + info.hit + (info.missUnrest ? ", unrest +" + info.missUnrest : "") + "." + flooded;
       }
       if (has(state, "mole")) { removeCard(state, "mole"); text += " The mole is unmasked."; }
-      if (beaten) { f.bosses += 1; f.beatNow = true; }
+      if (beaten) { f.bosses += 1; f.beatNow = true; if (!info.final) f.bossLoot = true; }
       f.lastBoss = { id: info.id, q: t, beaten: beaten, text: text };
       f.bossLog.push({ id: info.id, q: t, beaten: beaten });
       ev(text + (beaten && !info.final ? " Rare draft unlocked, +10 ◈." : beaten ? " +10 ◈." : ""), "boss", { boss: info.id, beaten: beaten });
@@ -6058,6 +6452,7 @@ body:has(#screen-tutorial.on) .shell,
     }
     rebuildMods(state);
     f.memo = null;
+    if (fyRng(state, "memoloot:" + t + ":" + choice)() < 0.35) rollLoot(state, "memo");
     var opt = A ? m.a : m.b;
     state.log.unshift({ turn: t, text: m.title + ": " + opt.label + ". " + (msg || opt.text) + "." });
     return { ok: true, state: state, text: msg || opt.text, memo: m, choice: A ? "a" : "b" };
@@ -6082,6 +6477,7 @@ body:has(#screen-tutorial.on) .shell,
       f.actIntro = f.act;
     }
     rebuildMods(state);
+    if (f.bossLoot) { f.bossLoot = false; rollLoot(state, "boss"); }
     var d = makeDraft(state, f.beatNow || f.nextRare);
     if (f.nextRare) f.nextRare = false;
     f.beatNow = false;
@@ -6155,6 +6551,9 @@ body:has(#screen-tutorial.on) .shell,
     var f = fy(state); if (!f) return { cash: 0, unrest: 0, collapse: 0, items: [] };
     var t = state.turn, u = f.used, out = { cash: 0, unrest: 0, collapse: 0, items: [] };
     function add(id, c, un, co, txt) { out.cash += c; out.unrest += un; out.collapse += co; var cd = cardById(id); out.items.push({ id: id, icon: cd ? cd.icon : "", name: cd ? cd.name : id, text: txt, cash: c, unrest: un, collapse: co }); }
+    if (hasItem(state, "soundproof")) { out.unrest -= 2; out.items.push({ id: "soundproof", icon: "🔇", name: "Soundproofed Door", text: "unrest −2" }); }
+    if (hasItem(state, "holo")) { out.cash += 3; out.collapse += 1; out.items.push({ id: "holo", icon: "🖼️", name: "Holo-Window", text: "+$3M, collapse +1" }); }
+    var cst0 = LD.cityStage(state); if (cst0 >= 2) { out.unrest += cst0 - 1; out.items.push({ id: "city", icon: "🏙️", name: "The mainland", text: "unrest +" + (cst0 - 1) }); }
     if (has(state, "astro")) add("astro", 0, -2, 0, "unrest −2");
     if (has(state, "plantmgr")) { var pc = LD.plantCount ? LD.plantCount(state) : 0; if (pc) add("plantmgr", 2 * pc, 0, 0, "+$" + 2 * pc + "M"); }
     if (has(state, "toll")) { var oc = LD.ownedCount ? LD.ownedCount(state) : 1; add("toll", oc, t % 2 === 0 ? 1 : 0, 0, "+$" + oc + "M" + (t % 2 === 0 ? ", unrest +1" : "")); }
@@ -6551,7 +6950,7 @@ body:has(#screen-tutorial.on) .shell,
     if (meta.finished) {
       html += " · " + meta.finished + " run" + (meta.finished === 1 ? "" : "s") + " · " + meta.wins + " evacuated";
     }
-    html += ' · <button class="link-btn" id="btn-history">History</button> · <button class="link-btn" id="btn-sound">' + (LD.SFX ? LD.SFX.label() : "🔊 Sound on") + "</button></p>";
+    html += ' · <button class="link-btn" id="btn-history">History</button> · <button class="link-btn" id="btn-prosp">Prospectus</button> · <button class="link-btn" id="btn-sound">' + (LD.SFX ? LD.SFX.label() : "🔊 Sound on") + "</button></p>";
     html += "</div></div>";
     html += '<div class="title-art" aria-label="Your future holdings">' + titleMap() + "</div>";
     html += "</div>";
@@ -7548,13 +7947,7 @@ body:has(#screen-tutorial.on) .shell,
     var last = hist.length ? hist[hist.length - 1].cash : state.cash;
     var delta = state.cash - (prev == null ? last : (state.turn === hist[hist.length - 1].turn ? prev : last));
     h += '<aside class="dash">';
-    h += '<div class="panel dash-meters"><div class="panel-k"><span>Q' + state.turn + " Performance</span>" + (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</div><div class=\"meters\">";
-    h += meter("cash", "Cash", state.cash, delta ? (delta > 0 ? "▲ " : "▼ ") + money(Math.abs(delta)) + " this Q" : "steady", true);
-    h += meter("unrest", "Unrest", state.unrest, state.unrest >= LD.mods(state).crisisNoPayAt ? "Past being bought" : state.unrest >= 48 ? "Crises likely" : state.unrest >= 40 ? "Restless" : "Manageable", false, [[48, "Crisis deals likely from 48"], [LD.mods(state).crisisNoPayAt, "Crises cannot be paid off from " + LD.mods(state).crisisNoPayAt]]);
-    h += meter("collapse", "Collapse", state.collapse, "~" + LD.forecastQuarters(state) + "Q to breach · +" + LD.collapseTickAmountPreview(state) + "/Q", false, [[55, "Crisis deals likely from 55"]]);
-    h += "</div>";
-    h += '<div class="spark-row">' + sparkline(state) +
-      '<div class="holdings"><b>' + LD.ownedCount(state) + "</b> regions<br><b>" + LD.plantCount(state) + "</b> plants</div></div></div>";
+    h += '<div class="panel dash-meters office">' + LD.renderOffice(state, { cashSub: delta ? (delta > 0 ? "▲ " : "▼ ") + money(Math.abs(delta)) + " this Q" : "steady" }) + "</div>";
     h += rivalPanel(state, ui);
     h += '<div class="panel ticker" aria-label="News"><div class="panel-k">News</div><div class="tick-wrap"><div class="tick-run">';
     var items = tickerItems(state);
@@ -8340,30 +8733,104 @@ body:has(#screen-tutorial.on) .shell,
     return h + "</div>";
   }
 
-  function renderPortfolio(state) {
+  function itemTile(it, cls, attrs, inner) {
+    return '<button class="bc-tile ' + cls + '" ' + attrs + '><span class="bc-ico" aria-hidden="true">' + it.icon + '</span><span class="bc-nm">' + esc(it.name) + "</span>" + (inner || "") + "</button>";
+  }
+  /* The briefcase (Portfolio Assets + Liabilities) and the desk drawer (office items). ui.sel = selected id. */
+  function renderPortfolio(state, ui) {
+    ui = ui || {};
     var f = state.fy;
     var assets = f.hand.filter(function (hd) { var c = LD.assetById(hd.id); return c && !c.liability; });
     var liab = f.hand.filter(function (hd) { var c = LD.assetById(hd.id); return c && c.liability; });
-    var h = '<div class="fy-pfsheet"><div class="fy-head"><div class="dz-k">Portfolio · ' + LD.fySlotsUsed(state) + "/" + f.cap + " slots</div><h2>Your Assets</h2></div>";
+    var sel = ui.sel || (assets[0] && assets[0].id) || ((f.drawer || [])[0] && f.drawer[0].id) || null;
+    var h = '<div class="fy-pfsheet bcase"><div class="fy-head"><div class="dz-k">Briefcase · ' + LD.fySlotsUsed(state) + "/" + f.cap + " · Drawer " + (f.drawer || []).length + "/" + (f.dcap || 3) + "</div><h2>Assets &amp; desk drawer</h2></div>";
     var fc = LD.fyForecast(state);
-    h += '<p class="fy-fc"><b>At quarter close:</b> ' + (fc.items.length ? fc.items.map(function (it) { return it.icon + " " + esc(it.text); }).join(" · ") : "nothing automatic. Your Assets act when you sign deals.") + "</p>";
-    h += '<ul class="fy-list">';
-    if (!assets.length) h += '<li class="fy-empty">No Assets yet. After every quarter you pick one of three.</li>';
-    assets.forEach(function (hd) {
-      var c = LD.assetById(hd.id);
-      h += '<li class="' + RCLS[c.r] + '"><span class="fy-ico" aria-hidden="true">' + c.icon + "</span><div><b>" + esc(c.name) + "</b> <em>" + esc(LD.RARITY[c.r].name) + "</em><span>" + esc(c.text) + "</span></div></li>";
-    });
-    liab.forEach(function (hd) {
-      var c = LD.assetById(hd.id);
-      var gone = hd.id === "audit" && hd.actOf !== f.act;
-      h += '<li class="liab' + (gone ? " spent" : "") + '"><span class="fy-ico" aria-hidden="true">' + c.icon + "</span><div><b>" + esc(c.name) + "</b> <em>Liability" + (gone ? " · expired" : "") + "</em><span>" + esc(c.text) + "</span></div></li>";
-    });
-    h += "</ul>";
+    h += '<p class="fy-fc"><b>At quarter close:</b> ' + (fc.items.length ? fc.items.map(function (it) { return it.icon + " " + esc(it.text); }).join(" · ") : "nothing automatic.") + "</p>";
+    h += '<div class="bc-grid" style="--n:' + f.cap + '">';
+    for (var i = 0; i < f.cap; i++) {
+      var hd = assets[i];
+      if (!hd) { h += '<div class="bc-tile empty" aria-label="Empty slot"><span class="bc-ico">＋</span><span class="bc-nm">Empty</span></div>'; continue; }
+      var c = LD.assetById(hd.id), on = LD.ARCHETYPES[c.arch].set && LD.fyArchCount(state, c.arch) >= LD.ARCHETYPES[c.arch].set;
+      h += itemTile(c, RCLS[c.r] + (on ? " set-on" : "") + (sel === c.id ? " sel" : ""), 'data-bsel="' + c.id + '" aria-pressed="' + (sel === c.id) + '"');
+    }
+    h += "</div>";
+    if (liab.length) h += '<div class="bc-liabs">' + liab.map(function (hd) { var c = LD.assetById(hd.id); return '<button class="bc-liab' + (sel === c.id ? " sel" : "") + '" data-bsel="' + c.id + '">' + c.icon + " " + esc(c.name) + "</button>"; }).join("") + "</div>";
     var sets = [];
-    Object.keys(LD.ARCHETYPES).forEach(function (k) { var n = LD.fyArchCount(state, k); if (n && LD.ARCHETYPES[k].set) sets.push(setLine(state, k, 0)); });
-    if (sets.length) h += '<p class="fy-sets">' + sets.map(esc).join(" · ") + "</p>";
+    Object.keys(LD.ARCHETYPES).forEach(function (k) {
+      var A = LD.ARCHETYPES[k], n = LD.fyArchCount(state, k); if (!A.set || !n) return;
+      var on = n >= A.set;
+      sets.push('<span class="bc-set' + (on ? " on" : "") + '" title="' + esc(A.setText) + '">' + (on ? "★ " : "") + esc(A.setName) + " " + Math.min(n, A.set) + "/" + A.set + (on ? " · " + esc(A.setText) : "") + "</span>");
+    });
+    if (sets.length) h += '<div class="bc-sets">' + sets.join("") + "</div>";
+    h += '<div class="dz-k bc-dk">Desk drawer · office items</div><div class="bc-drawer" style="--n:' + (f.dcap || 3) + '">';
+    for (var j = 0; j < (f.dcap || 3); j++) {
+      var d = (f.drawer || [])[j];
+      if (!d) { h += '<div class="bc-tile empty drawer"><span class="bc-ico">＋</span><span class="bc-nm">Empty drawer</span></div>'; continue; }
+      var it = LD.itemById(d.id), why = LD.itemBlock(state, d.id);
+      var status = it.office ? '<span class="bc-st on">Always on</span>' : !LD.itemReady(state, d) ? '<span class="bc-st used">' + (it.per === "act" ? "Used this act" : "Used") + "</span>" : '<span class="bc-st ready">' + (it.per === "act" ? "Once per act" : "Once per run") + "</span>";
+      h += '<div class="bc-dslot ' + RCLS[it.r] + (sel === it.id ? " sel" : "") + '">' + itemTile(it, "drawer", 'data-bsel="' + it.id + '"', status) +
+        (it.office ? "" : '<button class="btn bc-use' + (why ? "" : " btn-coral") + '" data-use="' + it.id + '"' + (why ? ' aria-disabled="true"' : "") + ">" + (why ? "Use" : "Use ▸") + "</button>") + "</div>";
+    }
+    h += "</div>";
+    /* Detail line for the selected tile */
+    var dc = sel && (LD.assetById(sel) || LD.itemById(sel));
+    if (dc) {
+      var isItem = !!LD.itemById(sel) && !LD.assetById(sel);
+      var w2 = isItem ? LD.itemBlock(state, sel) : null;
+      var kind = isItem ? (dc.office ? "Office fixture" : dc.per === "act" ? "Active · once per act" : "Active · once per run") : dc.liability ? "Liability" : LD.RARITY[dc.r].name + " · " + LD.ARCHETYPES[dc.arch].name;
+      h += '<p class="bc-detail"><b>' + dc.icon + " " + esc(dc.name) + "</b> <em>" + esc(kind) + "</em> " + esc(dc.text) + (isItem && w2 && !dc.office ? ' <span class="bc-why">' + esc(w2) + "</span>" : "") + "</p>";
+    } else h += '<p class="bc-detail">Tap an Asset or item for details. Loot from bosses, memos and some deals fills the drawer.</p>';
     return h + "</div>";
   }
+
+  /* Loot reveal */
+  LD.renderLoot = function (state, ui) {
+    ui = ui || {};
+    var f = state.fy, L = f.loot; if (!L) return "";
+    var it = LD.itemById(L.id), full = f.drawer.length >= f.dcap;
+    var src = { boss: "Boss beaten", memo: "A board memo sweetener", deal: "A deal perk" }[L.src] || "Loot";
+    var h = '<div class="loot ' + RCLS[it.r] + (ui.reveal ? " reveal" : "") + '"><div class="dz-k">Loot · ' + esc(src) + "</div>";
+    h += '<div class="loot-card"><div class="loot-rays" aria-hidden="true"></div><div class="loot-ico" aria-hidden="true">' + it.icon + "</div><b>" + esc(it.name) + '</b><em>' + esc(LD.RARITY[it.r].name) + " · " + (it.office ? "Office fixture" : it.per === "act" ? "Once per act" : "Once per run") + "</em><p>" + esc(it.text) + "</p></div>";
+    if (full) {
+      h += '<p class="fy-rq">Drawer full (' + f.drawer.length + "/" + f.dcap + "). Swap one out (sold for cash), or sell the new item.</p><div class=\"loot-swap\">";
+      f.drawer.forEach(function (d) { var o = LD.itemById(d.id); h += '<button class="bc-tile ' + RCLS[o.r] + '" data-swap="' + o.id + '"><span class="bc-ico">' + o.icon + '</span><span class="bc-nm">Swap ' + esc(o.name) + " · +$" + LD.ITEM_SELL[o.r] + "M</span></button>"; });
+      h += "</div>";
+    }
+    return h + "</div>";
+  };
+
+  /* Office explain sheet: what the room is telling you */
+  LD.officeExplain = function (state) {
+    var stage = LD.cityStage(state), door = LD.doorLevel(state), m = LD.mods(state), mood = LD.execMood(state);
+    var h = '<div class="fy-pfsheet ex-sheet"><div class="fy-head"><div class="dz-k">Your office</div><h2>Reading the room</h2></div><ul class="fy-list ex-list">';
+    h += '<li><span class="fy-ico">$</span><div><b>Cash ' + money(state.cash) + "</b><span>The desk ticker. Pays for bunker works, crisis pay-offs, bosses and some items.</span></div></li>";
+    h += '<li><span class="fy-ico">✊</span><div><b>Unrest ' + state.unrest + " · " + esc(LD.doorQuiet(state) ? (LD.hasItem(state, "soundproof") ? "Soundproofed" : "Quiet this quarter") : LD.DOOR_NAMES[door]) + "</b><span>The door. Knocks at 20, pounding at 40, the mob at 60. Crises likely from 48, unpayable from " + m.crisisNoPayAt + ", removed at " + LD.MAX_UNREST + ".</span></div></li>";
+    h += '<li><span class="fy-ico">☢</span><div><b>Collapse ' + state.collapse + " · " + esc(LD.CITY_NAMES[stage]) + "</b><span>The window. Rises about +" + LD.collapseTickAmountPreview(state) + " a quarter; breach in ~" + LD.forecastQuarters(state) + "Q. Squeeze deals darken the mainland, Soothe deals relight it. From Smog alerts on, the mainland adds unrest each quarter (now +" + Math.max(0, stage - 1) + ").</span></div></li>";
+    h += '<li><span class="fy-ico">🙂</span><div><b>Your executive: ' + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + "</b><span>Nervous from unrest 35 or collapse 55; panicking from unrest 60 or collapse 78.</span></div></li>";
+    return h + "</ul></div>";
+  };
+
+  /* Asset Prospectus: everything you have seen and found, across runs */
+  LD.renderProspectus = function (meta, ui) {
+    ui = ui || {};
+    var cx = (meta && meta.codex) || { seen: {}, found: {} };
+    var tab = ui.tab || "assets";
+    var list = tab === "items" ? LD.ITEMS : tab === "liabs" ? LD.LIABILITIES : LD.FY_ASSETS;
+    var found = list.filter(function (x) { return cx.found[x.id]; }).length, seen = list.filter(function (x) { return cx.seen[x.id] || cx.found[x.id]; }).length;
+    var h = '<div class="fy-pfsheet prosp"><div class="fy-head"><div class="dz-k">Asset Prospectus · kept across runs</div><h2>The collection</h2></div>';
+    h += '<div class="pr-tabs" role="tablist">' + [["assets", "Assets " + LD.FY_ASSETS.length], ["items", "Office items " + LD.ITEMS.length], ["liabs", "Liabilities " + LD.LIABILITIES.length]].map(function (t) { return '<button class="lens-btn' + (tab === t[0] ? " on" : "") + '" role="tab" aria-selected="' + (tab === t[0]) + '" data-ptab="' + t[0] + '">' + t[1] + "</button>"; }).join("") + "</div>";
+    h += '<p class="pr-count">Found <b>' + found + "</b> · seen <b>" + seen + "</b> of " + list.length + "</p>";
+    h += '<div class="pr-grid">';
+    list.forEach(function (x) {
+      var st = cx.found[x.id] ? "found" : cx.seen[x.id] ? "seen" : "unseen";
+      h += '<button class="pr-cell ' + st + " " + (x.r ? RCLS[x.r] : "liab") + (ui.sel === x.id ? " sel" : "") + '" data-psel="' + x.id + '" aria-label="' + esc(st === "unseen" ? "Unknown" : x.name) + '">' + (st === "unseen" ? "?" : x.icon) + "</button>";
+    });
+    h += "</div>";
+    var dx = ui.sel && (LD.assetById(ui.sel) || LD.itemById(ui.sel));
+    var dst = dx ? (cx.found[dx.id] ? "found" : cx.seen[dx.id] ? "seen" : "unseen") : null;
+    h += '<p class="bc-detail">' + (dx ? (dst === "unseen" ? "<b>? Unknown</b> Not seen yet. Keep drafting, beating bosses and answering memos." : "<b>" + dx.icon + " " + esc(dx.name) + "</b> <em>" + (dst === "found" ? "Found" : "Seen") + (dx.r ? " · " + esc(LD.RARITY[dx.r].name) : "") + "</em> " + esc(dx.text)) : "Tap a cell for details. Glowing cells are ones you have held.") + "</p>";
+    return h + "</div>";
+  };
 
   function fcText(fc) {
     var b = [];
@@ -8376,10 +8843,132 @@ body:has(#screen-tutorial.on) .shell,
     var f = state.fy; if (!f) return "";
     var icons = f.hand.map(function (hd) { var c = LD.assetById(hd.id); return c ? '<i class="' + (c.liability ? "liab" : "") + '">' + c.icon + "</i>" : ""; }).join("");
     var fc = LD.fyForecast(state), ft = fcText(fc);
-    return '<button class="pf-chip" id="btn-portfolio" aria-label="Portfolio, ' + LD.fySlotsUsed(state) + " of " + f.cap + " slots" + (ft ? ". At quarter close: " + ft : "") + '">💼 ' + LD.fySlotsUsed(state) + "/" + f.cap +
+    var rd = (f.drawer || []).filter(function (d) { return LD.itemReady(state, d); }).length;
+    return '<button class="pf-chip" id="btn-portfolio" aria-label="Briefcase, ' + LD.fySlotsUsed(state) + " of " + f.cap + " slots" + (rd ? ", " + rd + " drawer item" + (rd > 1 ? "s" : "") + " ready" : "") + (ft ? ". At quarter close: " + ft : "") + '">💼 ' + LD.fySlotsUsed(state) + "/" + f.cap + (rd ? '<span class="pf-act">⚡' + rd + "</span>" : "") +
       (ft ? '<span class="pf-fc ' + (fc.cash - fc.unrest - 2 * fc.collapse >= 0 ? "up" : "down") + '" title="At quarter close: ' + esc(ft) + '">▸ ' + esc(ft.split(" · ")[0]) + (ft.indexOf(" · ") > 0 ? " +" : "") + "</span>" : '<span class="pf-icons">' + icons + "</span>") + "</button>";
   }
   LD.fyForecastText = function (state) { return fcText(LD.fyForecast(state)); };
+
+  /* ---------- The office: executive, door (unrest), window on the mainland (collapse), desk (cash) ----------
+     Layered markup with data-art slots so painted art can replace each layer later. */
+  var EXEC_LOOK = {
+    mara: { skin: "#e8b48f", hair: "#3a2416", suit: "#0f5a4c", style: "bob" },
+    reid: { skin: "#f0c7a2", hair: "#c9a25a", suit: "#1d2f4a", style: "short" },
+    imani: { skin: "#8a5a3c", hair: "#1b120c", suit: "#5a1f3a", style: "puff" },
+    julian: { skin: "#f2cfb0", hair: "#6b4a2b", suit: "#2a2a2a", style: "side" },
+    soren: { skin: "#f5d6bd", hair: "#e9e2cf", suit: "#24414f", style: "short" },
+    cassius: { skin: "#b07a52", hair: "#2a1d14", suit: "#3b2f12", style: "bald" }
+  };
+  function hairSvg(look) {
+    var c = look.hair;
+    if (look.style === "bob") return '<path d="M30 40 Q30 18 50 17 Q70 18 70 40 L70 52 Q66 44 64 34 Q50 30 36 34 Q34 44 30 52Z" fill="' + c + '"/>';
+    if (look.style === "puff") return '<circle cx="50" cy="24" r="17" fill="' + c + '"/><circle cx="35" cy="31" r="9" fill="' + c + '"/><circle cx="65" cy="31" r="9" fill="' + c + '"/>';
+    if (look.style === "side") return '<path d="M32 36 Q34 18 52 18 Q68 19 69 34 Q58 26 44 30 Q38 31 32 36Z" fill="' + c + '"/>';
+    if (look.style === "bald") return '<path d="M33 34 Q36 22 50 21 Q64 22 67 34 Q60 28 50 28 Q40 28 33 34Z" fill="' + c + '" opacity="0.55"/>';
+    return '<path d="M33 35 Q34 19 50 19 Q66 19 67 35 Q60 27 50 27 Q40 27 33 35Z" fill="' + c + '"/>';
+  }
+  function execSvg(state) {
+    var look = EXEC_LOOK[state.executiveId] || EXEC_LOOK.mara;
+    var h = '<svg class="of-fig" viewBox="0 0 100 100" aria-hidden="true">';
+    h += '<rect class="of-chair" x="22" y="34" width="56" height="66" rx="14"/>';
+    h += '<path d="M24 100 Q24 66 50 64 Q76 66 76 100Z" fill="' + look.suit + '"/>';
+    h += '<path d="M44 66 L50 80 L56 66Z" fill="#f4efe2"/><path d="M48.5 68 L50 84 L51.5 68Z" fill="#b8323a"/>';
+    h += '<rect x="45" y="54" width="10" height="12" fill="' + look.skin + '"/>';
+    h += '<ellipse cx="50" cy="40" rx="17" ry="19" fill="' + look.skin + '"/>';
+    h += hairSvg(look);
+    /* faces: one group per mood/reaction, CSS shows the right one */
+    h += '<g class="fc fc-confident"><path d="M40 37 Q43 35 46 37 M54 37 Q57 35 60 37" stroke="#2a1a10" stroke-width="1.6" fill="none"/><circle cx="43" cy="41" r="1.7" fill="#1a110a"/><circle cx="57" cy="41" r="1.7" fill="#1a110a"/><path d="M42 49 Q50 55 58 49" stroke="#7a2a20" stroke-width="2" fill="none" stroke-linecap="round"/></g>';
+    h += '<g class="fc fc-nervous"><path d="M40 35 L46 37 M60 35 L54 37" stroke="#2a1a10" stroke-width="1.6"/><circle cx="43" cy="41" r="1.7" fill="#1a110a"/><circle cx="57" cy="41" r="1.7" fill="#1a110a"/><path d="M43 51 Q46 49 50 51 Q54 53 57 51" stroke="#7a2a20" stroke-width="1.8" fill="none"/><path class="sweat" d="M66 32 Q68 37 66 39 Q64 37 66 32Z" fill="#9fe0ff"/></g>';
+    h += '<g class="fc fc-panic"><path d="M39 36 L46 33 M61 36 L54 33" stroke="#2a1a10" stroke-width="1.8"/><circle cx="43" cy="41" r="2.6" fill="#fff" stroke="#1a110a" stroke-width="1"/><circle cx="57" cy="41" r="2.6" fill="#fff" stroke="#1a110a" stroke-width="1"/><circle cx="43" cy="41" r="1" fill="#1a110a"/><circle cx="57" cy="41" r="1" fill="#1a110a"/><ellipse cx="50" cy="51" rx="4" ry="5" fill="#4a1410"/><path class="sweat" d="M67 30 Q69 36 67 38 Q65 36 67 30Z M32 33 Q34 38 32 40 Q30 38 32 33Z" fill="#9fe0ff"/></g>';
+    h += '<g class="fc fc-glee"><path d="M40 36 Q43 33 46 36 M54 36 Q57 33 60 36" stroke="#2a1a10" stroke-width="1.6" fill="none"/><path d="M40 41 Q43 38 46 41 M54 41 Q57 38 60 41" stroke="#1a110a" stroke-width="1.8" fill="none"/><path d="M41 48 Q50 58 59 48Z" fill="#5a1a14"/><text x="74" y="30" font-size="13" fill="#f3d98f">$</text></g>';
+    h += '<g class="fc fc-shock"><path d="M39 34 Q43 31 46 34 M54 34 Q57 31 61 34" stroke="#2a1a10" stroke-width="1.6" fill="none"/><circle cx="43" cy="41" r="2.4" fill="#fff" stroke="#1a110a"/><circle cx="57" cy="41" r="2.4" fill="#fff" stroke="#1a110a"/><circle cx="43" cy="41" r="1" fill="#1a110a"/><circle cx="57" cy="41" r="1" fill="#1a110a"/><rect x="46" y="48" width="8" height="6" rx="3" fill="#4a1410"/></g>';
+    return h + "</svg>";
+  }
+  function citySvg(stage, decay, holo) {
+    var st = holo ? 0 : stage, dv = holo ? 0 : decay;
+    var h = '<svg class="of-city" viewBox="0 0 200 110" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
+    h += '<rect class="sky" x="0" y="0" width="200" height="110"/>';
+    h += '<circle class="sun" cx="160" cy="' + (22 + st * 4) + '" r="9"/>';
+    var B = [[4, 48, 12], [17, 40, 9], [27, 54, 14], [42, 34, 8], [51, 46, 12], [64, 28, 10], [75, 44, 13], [89, 36, 9], [99, 52, 12], [112, 30, 11], [124, 42, 9], [134, 50, 13], [148, 38, 10], [159, 47, 12], [172, 33, 9], [182, 45, 14]];
+    var darkN = Math.round(Math.max(0, Math.min(1, (dv - 12) / 80)) * B.length);
+    var order = [5, 11, 2, 14, 8, 0, 12, 3, 9, 15, 6, 1, 13, 4, 10, 7];
+    var dark = {}; for (var i = 0; i < darkN; i++) dark[order[i]] = 1;
+    h += '<g class="skyline">';
+    B.forEach(function (b, i) {
+      var x = b[0], top = 80 - b[1], w = b[2];
+      h += '<g class="bd' + (dark[i] ? " dark" : "") + '"><rect x="' + x + '" y="' + top + '" width="' + w + '" height="' + b[1] + '"/>';
+      for (var yy = top + 4; yy < 76; yy += 6) for (var xx = x + 2; xx < x + w - 2; xx += 4) if ((xx * 7 + yy * 3 + i) % 5 !== 0) h += '<rect class="win" x="' + xx + '" y="' + yy + '" width="1.6" height="2.4"/>';
+      h += "</g>";
+    });
+    h += "</g>";
+    var fires = [0, 0, 1, 3, 5][st] + (st >= 2 && dv > 70 ? 1 : 0);
+    var fx = [66, 136, 30, 101, 175, 53];
+    for (var k = 0; k < Math.min(fires, fx.length); k++) h += '<g class="fire" style="--k:' + k + '"><path d="M' + fx[k] + ' 62 q3 -9 6 0 q-1 5 -3 6 q-2 -1 -3 -6Z"/><ellipse class="plume" cx="' + (fx[k] + 4) + '" cy="44" rx="10" ry="7"/></g>';
+    h += '<rect class="smog" x="0" y="0" width="200" height="82"/>';
+    h += '<rect class="sea" x="0" y="80" width="200" height="30"/>';
+    h += '<path class="flood" d="M0 80 Q25 76 50 80 T100 80 T150 80 T200 80 V84 H0Z"/>';
+    h += '<path class="glint" d="M20 92 h18 M70 98 h24 M130 90 h16 M160 101 h22"/>';
+    h += '<path class="isle" d="M0 110 V100 Q30 94 62 104 L70 110Z"/><path class="palm" d="M18 100 Q19 90 21 84 M21 84 q-8 -1 -12 3 M21 84 q7 -3 12 1 M21 84 q-3 -6 -8 -7 M21 84 q4 -6 9 -6"/>';
+    if (holo) h += '<rect class="scan" x="0" y="0" width="200" height="110"/>';
+    return h + "</svg>";
+  }
+  function doorSvg(lv, quiet, padded) {
+    var h = '<svg class="of-doorsvg" viewBox="0 0 60 100" aria-hidden="true">';
+    h += '<rect class="dframe" x="4" y="4" width="52" height="96" rx="3"/>';
+    h += '<g class="dleaf"><rect class="dpanel" x="9" y="9" width="42" height="88" rx="2"/>';
+    if (padded) { for (var r = 0; r < 4; r++) for (var c = 0; c < 3; c++) h += '<circle class="stud" cx="' + (16 + c * 14) + '" cy="' + (20 + r * 20) + '" r="1.6"/>'; }
+    h += '<rect class="glass" x="16" y="15" width="28" height="30" rx="2"/>';
+    h += '<g class="sign"><rect x="21" y="18" width="18" height="11"/><rect x="29" y="29" width="2" height="16"/></g>';
+    h += '<g class="heads"><circle cx="22" cy="40" r="5"/><circle cx="36" cy="38" r="6"/></g>';
+    h += '<circle class="knob" cx="44" cy="58" r="2.6"/><rect class="plate" x="22" y="56" width="16" height="5" rx="1"/></g>';
+    h += '<rect class="gap" x="9" y="96" width="42" height="3"/>';
+    h += '<g class="feet"><rect x="16" y="96" width="7" height="3"/><rect x="34" y="96" width="8" height="3"/></g>';
+    h += "</svg>";
+    return h;
+  }
+  function ogauge(cls, icon, label, num, isMoney, sub, title) {
+    var pct = isMoney ? Math.max(0, Math.min(100, num)) : Math.max(0, Math.min(100, num));
+    return '<div class="meter of-g m-' + cls + '" data-num="' + num + '"' + (isMoney ? ' data-money="1"' : "") + ' title="' + esc(title || "") + '" role="meter" aria-label="' + esc(label) + " " + (isMoney ? money(num) : num) + (isMoney ? "" : " of 100") + '" aria-valuenow="' + num + '" aria-valuemin="0" aria-valuemax="100">' +
+      '<span class="m-lab"><i aria-hidden="true">' + icon + "</i>" + esc(label) + "</span>" +
+      '<b class="m-val">' + (isMoney ? money(num) : num) + "</b>" +
+      '<div class="m-bar"><span style="width:' + pct + '%"></span></div>' + (sub ? '<small class="m-sub">' + esc(sub) + "</small>" : "") + "</div>";
+  }
+  LD.renderOffice = function (state, o) {
+    o = o || {};
+    var f = state.fy || {};
+    var mood = LD.execMood ? LD.execMood(state) : "confident";
+    var door = LD.doorLevel ? LD.doorLevel(state) : 0;
+    var stage = LD.cityStage ? LD.cityStage(state) : 0, decay = LD.cityDecay ? LD.cityDecay(state) : state.collapse;
+    var holo = LD.hasItem && LD.hasItem(state, "holo"), padded = LD.hasItem && LD.hasItem(state, "soundproof");
+    var quiet = LD.doorQuiet && LD.doorQuiet(state);
+    var exec = LD.execById(state.executiveId);
+    var m = LD.mods(state);
+    var h = '<div class="panel-k of-head"><span>Q' + state.turn + '<span class="of-ht"> · Office</span></span>' + (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</div>";
+    h += '<div class="of-room mood-' + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
+    h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';
+    /* Window */
+    h += '<div class="of-window" data-art="office-window"><div class="of-glass">' + citySvg(stage, decay, holo) + '</div>' +
+      (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "") +
+      ogauge("collapse", "☢", "Collapse", state.collapse, false,
+        (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
+        "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
+    /* Executive */
+    h += '<div class="of-exec" data-art="office-exec" aria-label="' + esc(exec.name) + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + '">' + execSvg(state) + "</div>";
+    /* Desk + cash */
+    var bills = Math.max(0, Math.min(8, Math.round(state.cash / 8)));
+    var stack = ""; for (var i = 0; i < bills; i++) stack += '<rect x="' + (6 + (i % 2) * 3) + '" y="' + (26 - i * 3.2) + '" width="26" height="3" rx="0.8"/>';
+    h += '<div class="of-desk" data-art="office-desk"><svg class="of-desksvg" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><rect class="dtop" x="0" y="4" width="120" height="30" rx="2"/><g class="stack">' + stack + '</g><rect class="lamp" x="96" y="0" width="3" height="10"/><path class="lampshade" d="M90 2 h15 l-3 -6 h-9z"/></svg></div>';
+    var cashG = ogauge("cash", "$", "Cash", state.cash, true, o.cashSub || "", "Cash " + money(state.cash) + ". Buys bunker works, crisis pay-offs and boss demands.");
+    /* Door + unrest */
+    var dn = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
+    h += '<div class="of-door" data-art="office-door">' + doorSvg(door, quiet, padded) + '<span class="of-knock" aria-hidden="true">' + (door >= 3 ? "BANG!" : door >= 2 ? "THUD" : "knock") + "</span>" +
+      (door >= 3 && !quiet ? '<span class="of-voices" aria-hidden="true">“Open up!”</span>' : "") +
+      ogauge("unrest", "✊", "Unrest", state.unrest, false, dn,
+        "Unrest " + state.unrest + "/100 · " + dn + ". Crisis deals likely from 48; crises cannot be paid off from " + m.crisisNoPayAt + "; the board removes you at " + LD.MAX_UNREST + ".") + "</div>";
+    h += "</div>" + cashG;
+    return h;
+  };
+
 
   /* Board Memo card */
   function memoCard(state) {
@@ -8528,6 +9117,15 @@ body:has(#screen-tutorial.on) .shell,
     try { localStorage.setItem(LD.SAVE_KEY, JSON.stringify(meta)); } catch (e) {}
   }
 
+  /* Asset Prospectus: remember what the player has seen and found (meta, across runs). */
+  function codexMark(ids, found) {
+    if (!ids || !ids.length) return;
+    var meta = loadMeta(); var cx = meta.codex || (meta.codex = { seen: {}, found: {} });
+    cx.seen = cx.seen || {}; cx.found = cx.found || {};
+    var ch = false;
+    ids.forEach(function (id) { if (!id) return; if (!cx.seen[id]) { cx.seen[id] = 1; ch = true; } if (found && !cx.found[id]) { cx.found[id] = 1; ch = true; } });
+    if (ch) saveMeta(meta);
+  }
   function persistRun() {
     var meta = loadMeta();
     meta.midRun = state && !state.ended ? state : null;
@@ -8612,7 +9210,16 @@ body:has(#screen-tutorial.on) .shell,
       win: function () { [392, 523, 659, 784].forEach(function (f, i) { tone(f, 0.5, "triangle", 0.05, i * 0.14); }); tone(1046, 0.9, "sine", 0.05, 0.6); },
       lose: function () { [330, 294, 262, 196].forEach(function (f, i) { tone(f, 0.45, "sawtooth", 0.035, i * 0.2, f * 0.97); }); noise(0.9, 0.06, 0.2, 250, 0.5, "lowpass"); },
       bad: function () { tone(180, 0.18, "square", 0.03, 0, 150); },
-      good: function () { tone(784, 0.1, "triangle", 0.04); tone(1046, 0.14, "triangle", 0.04, 0.06); }
+      good: function () { tone(784, 0.1, "triangle", 0.04); tone(1046, 0.14, "triangle", 0.04, 0.06); },
+      knock: function (lv) {
+        lv = lv | 0;
+        var n = [2, 3, 4, 6][lv], gap = [0.3, 0.2, 0.15, 0.1][lv], vol = [0.06, 0.12, 0.2, 0.28][lv];
+        for (var i = 0; i < n; i++) { noise(0.07, vol, i * gap, 260 + lv * 40, 1.2, "lowpass"); tone(95 - lv * 6, 0.09, "sine", vol * 0.9, i * gap, 55); }
+        if (lv >= 2) noise(0.25, vol * 0.4, n * gap, 1200, 3);
+        if (lv >= 3) { for (var k = 0; k < 4; k++) noise(0.35, 0.05, 0.1 + k * 0.28, 520 + k * 90, 6); }
+      },
+      item: function () { tone(660, 0.08, "triangle", 0.05); tone(990, 0.12, "triangle", 0.05, 0.07); noise(0.12, 0.05, 0.04, 3000, 1, "highpass"); },
+      loot: function () { noise(0.3, 0.06, 0, 2200, 0.8, "highpass"); [784, 988, 1175, 1568].forEach(function (f, i) { tone(f, 0.3, "sine", 0.05, 0.25 + i * 0.08); }); }
     };
     function ambStart() {
       var c = ensure(); if (!c || amb || muted) return;
@@ -8703,6 +9310,8 @@ body:has(#screen-tutorial.on) .shell,
     });
     $("seed-input").addEventListener("input", function () { seedDraft = this.value; });
     $("btn-how").addEventListener("click", function () { tick(); openHowTo(false); });
+    var pro = $("btn-prosp");
+    if (pro) pro.addEventListener("click", function () { tick(); openProspectus("assets"); });
     var snd = $("btn-sound");
     if (snd) snd.addEventListener("click", function () { SFX.toggle(); tick(); snd.textContent = SFX.label(); });
     $("btn-history").addEventListener("click", function () { tick(); show("history"); renderHistory(); });
@@ -9350,13 +9959,16 @@ body:has(#screen-tutorial.on) .shell,
   function applyDeal(id, choice) {
     var prev = state;
     var res = LD.selectDeal(state, id, choice);
-    if (!res.ok) { if (state.fy && state.fy.memo) { openMemo(); return; } flash(res.error); return; }
+    if (!res.ok) { if (state.fy && state.fy.loot) { openLoot(); return; } if (state.fy && state.fy.memo) { openMemo(); return; } flash(res.error); return; }
     state = res.state;
     clearSel();
     persistRun();
     renderDesk(prev);
     SFX.play("pick");
     pennyEmit("signed");
+    var dcash = state.cash - prev.cash, dun = state.unrest - prev.unrest, dco = state.collapse - prev.collapse;
+    if (dcash >= 15) officeReact("glee"); else if (dun >= 8 || dco >= 5) officeReact("shock");
+    if (state.fy && state.fy.loot) setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.loot && !$("overlay").classList.contains("on")) openLoot(); }, 1100);
     var rid = res.region ? res.region.regionId : (prev.world && prev.world.pins[id]);
     if (rid) {
       var dc = state.cash - prev.cash;
@@ -9553,6 +10165,7 @@ body:has(#screen-tutorial.on) .shell,
   function endQuarter(opts) {
     opts = opts || {};
     if (closing) return;
+    if (state.fy && state.fy.loot && !state.ended) { openLoot(); return; }
     if (state.fy && state.fy.memo && !state.ended) { openMemo(); return; }
     if (state.phase !== "deal" && !opts.confirmed && LD.bossInfo && LD.bossInfo(state, state.turn)) { showBossConfirm(); return; }
     if (state.phase !== "deal") SFX.play("endq");
@@ -9666,6 +10279,8 @@ body:has(#screen-tutorial.on) .shell,
   function fyAfterOpen() {
     if (!state || state.ended || !state.fy) return;
     if (LD.upgradeFY) { LD.upgradeFY(state); persistRun(); }
+    codexMark(state.fy.hand.map(function (h) { return h.id; }).concat((state.fy.drawer || []).map(function (d) { return d.id; })), true);
+    if (state.fy.loot) { openLoot(); return; }
     if (state.fy.draft) { openDraft(); return; }
     if (state.fy.memo) { openMemo(); return; }
     if (state.fy.actIntro) { showActIntro(); return; }
@@ -9705,6 +10320,7 @@ body:has(#screen-tutorial.on) .shell,
   }
   function openDraft() {
     dr.sel = null; dr.replacing = false; dr.reveal = !reduced();
+    codexMark(state.fy.draft.offer, false);
     paintDraft();
     dr.reveal = false;
     var n = state.fy.draft.offer.length;
@@ -9754,6 +10370,7 @@ body:has(#screen-tutorial.on) .shell,
     if (res.skipped) floatCenter("Cash back +$" + state.fy.skipCash + "M", "cash");
     else {
       SFX.play("pick");
+      codexMark([res.asset.id, res.rider && res.rider.id], true);
       floatCenter(res.asset.icon + " " + res.asset.name + " acquired", "good big");
       if (res.divested) floatCenter("Divested " + res.divested.name + " +$" + LD.FY.DIVEST_CASH + "M", "cash", 400, 40);
       if (res.rider) floatCenter("⚠ Rider: " + res.rider.name, "bad", 700, 80);
@@ -9762,12 +10379,98 @@ body:has(#screen-tutorial.on) .shell,
     if (chip) { chip.classList.remove("pop"); void chip.offsetWidth; chip.classList.add("pop"); }
     fyNext(900);
   }
-  function openPortfolio(fromDraft) {
-    showFy(LD.renderPortfolio(state), '<button class="btn btn-coral" id="fy-pf-close">' + (fromDraft ? "Back to the draft" : "Close") + "</button>", function () {
+  function openPortfolio(fromDraft, sel) {
+    showFy(LD.renderPortfolio(state, { sel: sel }), '<button class="btn btn-coral" id="fy-pf-close">' + (fromDraft ? "Back to the draft" : "Close") + "</button>", function () {
       $("fy-pf-close").addEventListener("click", function () { tick(); if (fromDraft) paintDraft(); else hideOverlay(); });
+      Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-bsel]"), function (b) {
+        b.addEventListener("click", function (e) { e.stopPropagation(); tick(); openPortfolio(fromDraft, b.getAttribute("data-bsel")); });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-use]"), function (b) {
+        b.addEventListener("click", function (e) { e.stopPropagation(); useItem(b.getAttribute("data-use"), fromDraft); });
+      });
       if (!fromDraft) $("overlay").onclick = function (e) { if (e.target === $("overlay")) { tick(); hideOverlay(); } };
     }, true);
   }
+  function useItem(id, fromDraft) {
+    var why = LD.itemBlock(state, id);
+    if (why) { SFX.play("bad"); openPortfolio(fromDraft, id); var bd = document.querySelector("#overlay .bc-why"); if (bd) { bd.classList.remove("flash"); void bd.offsetWidth; bd.classList.add("flash"); } return; }
+    var prev = state;
+    var res = LD.fyUseItem(state, id);
+    if (!res.ok) { flash(res.error); return; }
+    state = res.state;
+    persistRun();
+    hideOverlay();
+    if (id === "hotline") clearSel();
+    renderDesk(prev);
+    SFX.play("item");
+    floatCenter(res.item.icon + " " + res.item.name, "good big");
+    floatCenter(res.text, "cash", 350, 40);
+    if (id === "doorman" || id === "security") officeReact("glee");
+    if (fromDraft && state.fy.draft) setTimeout(paintDraft, 900);
+  }
+  function openLoot(swapSel) {
+    var L = state.fy && state.fy.loot; if (!L) return;
+    var it = LD.itemById(L.id), f = state.fy, full = f.drawer.length >= f.dcap;
+    codexMark([L.id], false);
+    var acts = (full ? "" : '<button class="btn btn-coral" id="lt-keep">Keep · drawer ' + (f.drawer.length + 1) + "/" + f.dcap + "</button>") +
+      '<button class="btn" id="lt-sell">Sell it · +$' + LD.ITEM_SELL[it.r] + "M</button>";
+    showFy(LD.renderLoot(state, { reveal: !reduced() }), acts, function () {
+      function take(keep, rep) {
+        tick();
+        var prev = state;
+        var res = LD.fyTakeLoot(state, keep, rep);
+        if (!res.ok) { flash(res.error); return; }
+        state = res.state; persistRun(); hideOverlay(); renderDesk(prev);
+        if (keep) { codexMark([it.id], true); SFX.play("item"); floatCenter(it.icon + " " + it.name + " · in the drawer", "good big"); }
+        else floatCenter("Sold +$" + LD.ITEM_SELL[it.r] + "M", "cash");
+        var chip = $("btn-portfolio"); if (chip) { chip.classList.remove("pop"); void chip.offsetWidth; chip.classList.add("pop"); }
+        fyNext(900);
+      }
+      var k = $("lt-keep"); if (k) k.addEventListener("click", function () { take(true); });
+      $("lt-sell").addEventListener("click", function () { take(false); });
+      Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-swap]"), function (b) { b.addEventListener("click", function () { take(true, b.getAttribute("data-swap")); }); });
+    }, true);
+    $("overlay").classList.add("loot-mode");
+    SFX.play("loot");
+  }
+  function openOfficeExplain() {
+    showFy(LD.officeExplain(state), '<button class="btn btn-coral" id="of-ex-close">Close</button>', function () {
+      $("of-ex-close").addEventListener("click", function () { tick(); hideOverlay(); });
+      $("overlay").onclick = function (e) { if (e.target === $("overlay")) { tick(); hideOverlay(); } };
+    }, true);
+  }
+  function openProspectus(tab, sel) {
+    showFy(LD.renderProspectus(loadMeta(), { tab: tab, sel: sel }), '<button class="btn btn-coral" id="pr-close">Close</button>', function () {
+      $("pr-close").addEventListener("click", function () { tick(); hideOverlay(); });
+      Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-ptab]"), function (b) { b.addEventListener("click", function () { tick(); openProspectus(b.getAttribute("data-ptab")); }); });
+      Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-psel]"), function (b) { b.addEventListener("click", function () { tick(); openProspectus(tab, b.getAttribute("data-psel")); }); });
+    }, true);
+  }
+  /* Office: executive reactions and the door */
+  function officeReact(kind) {
+    var room = document.querySelector(".desk .office .of-room"); if (!room) return;
+    room.classList.remove("react-glee", "react-shock"); void room.offsetWidth; room.classList.add("react-" + kind);
+    setTimeout(function () { room.classList.remove("react-" + kind); }, 1800);
+  }
+  var KN = { last: 0, q: null };
+  function knockNow() {
+    if (!state || !state.fy || state.ended) return;
+    var door = document.querySelector(".desk .office .of-door"); if (!door) return;
+    var lv = LD.doorLevel(state);
+    door.classList.remove("knocking"); void door.offsetWidth; door.classList.add("knocking");
+    setTimeout(function () { door.classList.remove("knocking"); }, 700);
+    SFX.play("knock", lv);
+    KN.last = Date.now();
+  }
+  setInterval(function () {
+    if (screen !== "desk" || !state || state.ended || !state.fy || document.hidden) return;
+    if ($("overlay").classList.contains("on") || closing) return;
+    if (LD.doorQuiet(state)) return;
+    var lv = LD.doorLevel(state), every = [0, 18000, 10000, 6000][lv];
+    if (KN.q !== state.turn) { KN.q = state.turn; if (Date.now() - KN.last > 2500) setTimeout(knockNow, 1200); return; }
+    if (every && Date.now() - KN.last > every) knockNow();
+  }, 1000);
+  LD.knockNow = knockNow;
   function showBossCard(q, after) {
     showFy(LD.renderBossCard(state, q, "intro"), '<button class="btn btn-coral" id="fy-boss-ok">Understood</button>', function () {
       $("fy-boss-ok").addEventListener("click", function () { tick(); hideOverlay(); if (after) after(); });
@@ -9827,6 +10530,12 @@ body:has(#screen-tutorial.on) .shell,
   function bindFyDesk() {
     var pf = $("btn-portfolio");
     if (pf) pf.addEventListener("click", function (e) { e.stopPropagation(); tick(); openPortfolio(false); });
+    var room = document.querySelector(".desk .office .of-room");
+    if (room) { room.setAttribute("role", "button"); room.setAttribute("tabindex", "0"); room.setAttribute("aria-label", "Your office: tap to read the room");
+      room.addEventListener("click", function (e) { e.stopPropagation(); tick(); openOfficeExplain(); });
+      room.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tick(); openOfficeExplain(); } }); }
+    var cg = document.querySelector(".desk .office > .m-cash");
+    if (cg) cg.addEventListener("click", function (e) { e.stopPropagation(); tick(); openOfficeExplain(); });
     bindBossLinks($("rail-wrap"));
   }
 
@@ -10016,7 +10725,7 @@ body:has(#screen-tutorial.on) .shell,
       target: function () { return pq("#bk-panel .bp-buy") || pq("#bk-panel"); },
       act: function () { clickEl(pq('#bk-panel [data-up][data-q="sound"]:not([disabled])') || pq("#bk-panel [data-up]:not([disabled])")); } },
     { id: "meters", n: 5, face: "smug", next: true,
-      text: "Your three numbers. <b>Cash</b> buys everything. <b>Unrest</b> is how angry the street is: at 100 they're in the lobby. <b>Collapse</b> is the world itself: at 100 it's over, bunker or not.",
+      text: "Your office holds your three numbers. <b>Cash</b> is on the desk and buys everything. <b>Unrest</b> is the door: the angrier the street, the harder they knock, and at 100 they're inside. <b>Collapse</b> is the city out the window: at 100 it's over, bunker or not.",
       wait: function () { return bunkerOpen() || !!pq("#overlay.on"); },
       target: function () { return pq(".desk .dash-meters"); } },
     { id: "rail", n: 6, face: "worried", next: true,

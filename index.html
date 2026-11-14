@@ -3255,6 +3255,256 @@ body:has(#screen-tutorial.on) .shell,
 @media (prefers-reduced-motion: reduce) {
   .df-who { animation: none !important; }
 }
+
+/* =====================================================================
+   Matte overhaul 2026-11-14: gouache-and-ink poster look, fight scenes,
+   Art Deco cards. Flat colour, ink lines, paper grain. No gloss, no glow.
+   ===================================================================== */
+:root {
+  --gold: #c9942a;
+  --gold-hi: #f1dba0;
+  --gold-soft: rgba(201, 148, 42, 0.55);
+  --gold-line: rgba(201, 148, 42, 0.8);
+  --ivory: #f6ecd4;
+  --ivory-muted: rgba(246, 236, 212, 0.78);
+  --emerald: #1f4f52;
+  --emerald-deep: #12302f;
+  --lacquer: rgba(20, 48, 50, 0.92);
+  --lacquer-solid: #183a3c;
+  --glass-deco: rgba(24, 58, 61, 0.95);
+  --deco-shadow: 3px 4px 0 rgba(10, 22, 24, 0.5);
+  --deco-inset: inset 0 0 0 1px rgba(241, 219, 160, 0.16);
+  --ink-line: #14211f;
+  --paper-c: #f3e6c8;
+  --terra: #c0482f;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.27  0 0 0 0 0.15  0 0 0 .5 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+}
+html, body { background: #183a3c; }
+body { background-image: var(--grain); background-size: 160px 160px; }
+.desk {
+  background:
+    var(--grain),
+    linear-gradient(180deg, rgba(18, 44, 46, 0.62) 0%, rgba(18, 44, 46, 0.38) 35%, rgba(18, 44, 46, 0.55) 75%, rgba(14, 34, 36, 0.86) 100%),
+    url("assets/fight/room-hub.webp") center 38% / cover no-repeat,
+    #183a3c;
+  background-size: 160px 160px, auto, cover, auto;
+}
+.desk-light { display: none; }
+body:not(.on-desk) { background: var(--grain), linear-gradient(180deg, rgba(18, 44, 46, 0.8), rgba(14, 34, 36, 0.9)), url("assets/fight/room-hub.webp") center / cover fixed no-repeat, #183a3c; background-size: 160px 160px, auto, cover, auto; }
+.wordmark { background: none; -webkit-text-fill-color: var(--gold-hi); color: var(--gold-hi); filter: drop-shadow(2px 2px 0 var(--ink-line)); }
+.wordmark .sun { background: #f1c75a; box-shadow: 0 0 0 2px var(--ink-line); }
+.tag { text-shadow: 1px 1px 0 var(--ink-line); }
+.panel, .dz, .card { backdrop-filter: none; -webkit-backdrop-filter: none; border: 2px solid var(--ink-line); box-shadow: var(--deco-shadow), inset 0 0 0 1px rgba(201, 148, 42, 0.45); background-image: var(--grain); background-size: 160px 160px; }
+.q-chip, .icon-btn, .phase-pill { box-shadow: var(--deco-shadow); border: 2px solid var(--ink-line); }
+.board-slab { box-shadow: 0 10px 0 -2px #5a3f18, 0 10px 0 0 var(--ink-line), 4px 16px 0 rgba(10, 22, 24, 0.45), 0 0 0 2px var(--ink-line) inset; }
+.board-slab::before { box-shadow: inset 0 0 0 2px rgba(241, 219, 160, 0.6), inset 0 0 0 6px rgba(24, 58, 61, 0.5); }
+.board-slab::after { display: none; }
+.board-tilt::after { background: none; box-shadow: none; }
+.map .region.owned .top { filter: none; stroke-width: 2; }
+.map .pin .drop { filter: drop-shadow(2px 2px 0 rgba(20, 33, 31, 0.6)); }
+.office .m-cash .m-val { text-shadow: none; color: #b6e3a0; }
+.end-q.live::after { display: none; }
+.end-q.live { background: var(--terra); box-shadow: var(--deco-shadow); border: 2px solid var(--ink-line); }
+.end-q { background: #24474a; box-shadow: var(--deco-shadow); }
+.btn-coral { background: var(--terra); box-shadow: 3px 3px 0 rgba(10, 22, 24, 0.5); border: 2px solid var(--ink-line); color: #fff8e6; }
+.btn-sign { background: #1f6a5c; box-shadow: var(--deco-shadow), inset 0 0 0 1px var(--gold-hi); }
+.of-room.door-2 .m-unrest { box-shadow: inset 0 0 0 2px #e0703a; }
+.of-room.door-3 .m-unrest { box-shadow: inset 0 0 0 2px #ff5a3c; }
+.of-room.city-3 .m-collapse, .of-room.city-4 .m-collapse { box-shadow: inset 0 0 0 2px #ff5a3c; }
+.of-room.door-3 .of-door { filter: none; }
+
+/* ---------- The office hub, painted ---------- */
+.office .of-room { background: #3a5b5a url("assets/fight/room-hub.webp") center 42% / cover no-repeat; box-shadow: inset 0 0 0 2px var(--ink-line); }
+.office .of-room::before { content: ""; position: absolute; inset: 0; background: var(--grain); background-size: 160px 160px; opacity: 0.6; pointer-events: none; z-index: 0; }
+.of-wall { background: none; }
+.of-window { border: 3px solid var(--ink-line); box-shadow: 2px 2px 0 rgba(10, 22, 24, 0.45); background: #e9d9b6; border-radius: 2px; }
+.of-window::after { background: var(--ink-line); opacity: 0.9; }
+.of-city .sky { fill: #f1dba0; }
+.of-city .sun { fill: #fff3d0; stroke: var(--ink-line); stroke-width: 0.6; }
+.of-city .bd rect:first-child { fill: #2f6f6a; stroke: var(--ink-line); stroke-width: 0.5; }
+.of-city .win { fill: #f3e6c8; }
+.of-city .bd.dark rect:first-child { fill: #23302f; }
+.of-city .sea { fill: #3f7f86; } .of-city .flood { fill: #3f7f86; }
+.of-city .glint { stroke: #f3e6c8; opacity: 0.6; }
+.of-city .isle { fill: #c9942a; }
+.of-city .fire path { fill: #e0703a; }
+.of-city .plume { fill: #4a3a30; }
+.city-1 .of-city .sky { fill: #e6cf9a; } .city-1 .of-city .smog { fill: #9a7a4a; }
+.city-2 .of-city .sky { fill: #d9a86a; } .city-2 .of-city .smog { fill: #8a5a2a; }
+.city-3 .of-city .sky { fill: #b8653f; } .city-3 .of-city .smog { fill: #4a3220; }
+.city-4 .of-city .sky { fill: #6a2a1e; } .city-4 .of-city .smog { fill: #2a1610; }
+.of-doorsvg .dframe { fill: #2a2018; stroke: var(--ink-line); stroke-width: 2; }
+.of-doorsvg .dpanel { fill: #a8743a; stroke: var(--ink-line); stroke-width: 1.2; }
+.of-doorsvg .glass { fill: #ece0c2; opacity: 0.95; }
+.of-doorsvg .knob, .of-doorsvg .plate { fill: #c9942a; }
+.of-exec { z-index: 1; }
+.of-portrait { height: 100%; width: auto; max-width: 100%; aspect-ratio: var(--ar, 0.76); object-fit: contain; object-position: bottom; display: block; transform-origin: 50% 100%; filter: drop-shadow(2px 0 0 rgba(20, 33, 31, 0.35)); }
+.of-mood { position: absolute; right: 8%; top: 4%; font-size: 14px; line-height: 1; pointer-events: none; }
+.of-room.mood-nervous .of-mood::after { content: "💧"; animation: sweat 1.6s ease-in infinite; display: inline-block; }
+.of-room.mood-panic .of-mood::after { content: "‼"; color: #ff5a3c; font-weight: 900; font-size: 18px; text-shadow: 1px 1px 0 var(--ink-line); }
+.of-room.react-glee .of-mood::after { content: "$"; color: #b6e3a0; font: 900 18px var(--font-serif); text-shadow: 1px 1px 0 var(--ink-line); }
+.of-room.react-shock .of-mood::after { content: "!"; color: #ff5a3c; font: 900 18px var(--font-serif); text-shadow: 1px 1px 0 var(--ink-line); }
+.of-room.mood-panic .of-portrait { animation: panicjit 0.5s steps(2) infinite; }
+.of-room.react-glee .of-portrait { animation: gleebob 0.5s ease-out 2; }
+.of-room.react-shock .of-portrait { animation: shockback 0.5s ease-out; }
+.office .of-g { background: rgba(20, 40, 42, 0.92); box-shadow: inset 0 0 0 1px rgba(201, 148, 42, 0.6), 2px 2px 0 rgba(10, 22, 24, 0.5); }
+.of-wallart i { border-color: var(--ink-line); background: var(--paper-c); box-shadow: 1px 1px 0 rgba(10, 22, 24, 0.5); }
+
+/* ---------- Fight screen ---------- */
+.door-screen { background: var(--grain), #1b3437; background-size: 160px 160px; }
+.door-screen.rw-mode, .door-screen.dk-mode { background: var(--grain), #1b3437; background-size: 160px 160px; }
+.fight2 .df-title b { color: var(--gold-hi); text-shadow: 2px 2px 0 var(--ink-line); }
+.fight2 .df-round { background: var(--paper-c); color: var(--ink-line); border: 2px solid var(--ink-line); box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
+.fight2 .df-round small, .fight2 .df-round i { color: #6a5530; }
+.fight2 .df-stage.sc { display: block; position: relative; padding: 0; overflow: hidden; border-radius: 6px; border: 3px solid var(--ink-line); background: #e9d9b6; box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.45); isolation: isolate; }
+.sc-room { position: absolute; inset: 0; background-size: cover; background-position: center 38%; z-index: 0; }
+.sc-room::after { content: ""; position: absolute; inset: 0; background: var(--grain); background-size: 160px 160px; opacity: 0.55; }
+.sc-haze { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.sc[data-city="1"] .sc-haze { background: linear-gradient(180deg, rgba(154, 122, 74, 0.16), transparent 60%); }
+.sc[data-city="2"] .sc-haze { background: linear-gradient(180deg, rgba(138, 90, 42, 0.26), rgba(138, 90, 42, 0.06) 70%); }
+.sc[data-city="3"] .sc-haze { background: linear-gradient(180deg, rgba(184, 101, 63, 0.34), rgba(74, 50, 32, 0.12) 70%); }
+.sc[data-city="4"] .sc-haze { background: linear-gradient(180deg, rgba(106, 42, 30, 0.45), rgba(42, 22, 16, 0.22) 75%); }
+.sc-opp { position: absolute; z-index: 2; bottom: 0; left: 57%; height: 88%; aspect-ratio: var(--ar, 0.6); transform: translateX(-50%); transform-origin: 50% 100%; }
+.sc-opp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; opacity: 0; filter: drop-shadow(3px 0 0 rgba(20, 33, 31, 0.28)); user-select: none; -webkit-user-drag: none; }
+.sc-opp[data-pose="idle"] .p-idle, .sc-opp[data-pose="attack"] .p-attack, .sc-opp[data-pose="hit"] .p-hit, .sc-opp[data-pose="block"] .p-block, .sc-opp[data-pose="defeated"] .p-defeated { opacity: 1; }
+.sc-you { position: absolute; z-index: 3; bottom: -2%; left: -4%; height: 46%; aspect-ratio: var(--ar, 0.8); transform-origin: 30% 100%; }
+.sc-you img { width: 100%; height: 100%; object-fit: contain; object-position: 0 100%; display: block; filter: drop-shadow(-2px -2px 0 rgba(20, 33, 31, 0.25)); }
+.sc-place { position: absolute; z-index: 4; right: 8px; bottom: 8px; max-width: 46%; padding: 3px 8px; font: 700 11px/1.2 var(--font-sans); letter-spacing: 0.04em; color: var(--paper-c); background: rgba(20, 33, 31, 0.86); border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fight2 .df-scrut { position: absolute; z-index: 5; left: 10px; top: 10px; width: min(44%, 300px); padding: 6px 10px 7px; border-radius: 4px; background: var(--paper-c); color: var(--ink-line); border: 2px solid var(--ink-line); box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4); }
+.fight2 .df-k { color: #6a5530; }
+.fight2 .df-k b { color: var(--terra); font-size: 22px; }
+.fight2 .df-bar { background: #d9c7a0; box-shadow: inset 0 0 0 1.5px var(--ink-line); height: 12px; }
+.fight2 .df-bar i { background: var(--terra); }
+.fight2 .df-goal { color: #1f5f52; font-size: 12px; font-weight: 600; line-height: 1.25; }
+.fight2 .df-intent { position: absolute; z-index: 5; right: 10px; top: 10px; width: min(42%, 290px); padding: 7px 12px 8px; border-radius: 16px; background: #fffaf0; color: var(--ink-line); border: 2px solid var(--ink-line); box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4); overflow: visible; }
+.fight2 .df-intent::after { content: ""; position: absolute; left: 18%; bottom: -11px; width: 18px; height: 18px; background: #fffaf0; border-right: 2px solid var(--ink-line); border-bottom: 2px solid var(--ink-line); transform: rotate(45deg) skew(12deg, 12deg); }
+.fight2 .df-intent.blocked { background: #e6f2ea; } .fight2 .df-intent.blocked::after { background: #e6f2ea; }
+.fight2 .di-main b { color: var(--terra); font-size: 22px; }
+.fight2 .blocked .di-main b { color: #1f6a5c; }
+.fight2 .di-ico { background: var(--ink-line); color: var(--paper-c); box-shadow: none; width: 30px; height: 30px; }
+.fight2 .di-math { font-size: 13px; color: #2a3a38; } .fight2 .di-math b { color: var(--terra); }
+.fight2 .di-rider { color: #6a5530; } .fight2 .di-rider.live { color: var(--terra); }
+.fight2 .di-notes { color: #1f6a5c; }
+.fight2 .df-intent.firing { animation: df-fire2 0.42s ease-in; }
+@keyframes df-fire2 { 40% { transform: scale(1.06) rotate(-1deg); background: #ffd9c9; } }
+.sc-stamp { position: absolute; z-index: 6; left: 50%; top: 38%; transform: translate(-50%, -50%) rotate(-9deg); padding: 4px 18px; font: 800 clamp(26px, 5.4vw, 52px)/1.05 var(--font-serif); text-transform: uppercase; letter-spacing: 0.04em; color: var(--terra); border: 5px double var(--terra); border-radius: 6px; background: rgba(243, 230, 200, 0.86); white-space: nowrap; animation: sc-stamp 0.32s 0.32s cubic-bezier(.2, 1.6, .4, 1) both; pointer-events: none; }
+.sc-stamp.lost { color: var(--ink-line); border-color: var(--ink-line); }
+.sc-stamp.settled { color: #8a6418; border-color: #8a6418; }
+@keyframes sc-stamp { from { transform: translate(-50%, -50%) rotate(-9deg) scale(2.2); opacity: 0; } to { transform: translate(-50%, -50%) rotate(-9deg) scale(1); opacity: 1; } }
+/* Entrances: visitors walk in from your door; away fights open with a back-door wipe */
+.sc.enter.v-home .sc-opp { animation: sc-walkin 0.55s ease-out both; }
+.sc.enter.v-lobby .sc-opp { animation: sc-rise 0.45s ease-out both; }
+.sc.enter.v-away .sc-opp { animation: sc-rise 0.45s 0.2s ease-out both; }
+.sc.enter .sc-you { animation: sc-youin 0.4s ease-out both; }
+.sc.enter.v-away::after { content: ""; position: absolute; inset: 0; z-index: 9; background: var(--ink-line); animation: sc-wipe 0.5s ease-in forwards; pointer-events: none; }
+@keyframes sc-walkin { from { transform: translateX(10%) scale(0.92); opacity: 0; } to { transform: translateX(-50%); opacity: 1; } }
+@keyframes sc-rise { from { transform: translateX(-50%) translateY(8%); opacity: 0; } to { transform: translateX(-50%); opacity: 1; } }
+@keyframes sc-youin { from { transform: translate(-12%, 14%); } to { transform: none; } }
+@keyframes sc-wipe { from { transform: translateX(0); } to { transform: translateX(102%); } }
+/* Beats */
+.sc-opp.shake { animation: sc-shake 0.42s ease-out; }
+.sc-opp.lunge { animation: sc-lunge 0.46s ease-out; }
+.sc-opp.brace { animation: sc-brace 0.4s ease-out; }
+.sc-you.flick { animation: sc-flick 0.28s ease-out; }
+.sc-you.recoil { animation: sc-recoil 0.36s ease-out; }
+@keyframes sc-shake { 0% { transform: translateX(-50%); } 15% { transform: translateX(-44%) rotate(2deg); } 35% { transform: translateX(-55%) rotate(-1.5deg); } 55% { transform: translateX(-47%); } 75% { transform: translateX(-52%); } 100% { transform: translateX(-50%); } }
+@keyframes sc-lunge { 0% { transform: translateX(-50%); } 35% { transform: translateX(-56%) translateY(3%) scale(1.12); } 100% { transform: translateX(-50%); } }
+@keyframes sc-brace { 0% { transform: translateX(-50%); } 40% { transform: translateX(-49%) translateY(2%) scale(0.97); } 100% { transform: translateX(-50%); } }
+@keyframes sc-flick { 40% { transform: translate(5%, -6%) rotate(3deg); } }
+@keyframes sc-recoil { 30% { transform: translate(-6%, 5%) rotate(-3deg); } }
+#sc-fxlayer { position: fixed; inset: 0; pointer-events: none; z-index: 60; overflow: hidden; }
+.sc-fly { position: absolute; transform-origin: 50% 50%; will-change: transform; }
+.sc-fly.go { transition: transform 0.28s cubic-bezier(.55, 0, .8, .45); }
+.sc-fly > .dc { width: 100%; height: 100%; margin: 0; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45); }
+.sc-fly::before { content: ""; position: absolute; left: -110%; top: 22%; width: 160%; height: 56%; transform-origin: 100% 50%; transform: rotate(var(--ang, 0deg)); background: repeating-linear-gradient(180deg, var(--ink-line) 0 3px, transparent 3px 10px); -webkit-mask-image: linear-gradient(90deg, transparent, #000); mask-image: linear-gradient(90deg, transparent, #000); opacity: 0; transition: opacity 0.08s; z-index: -1; }
+.sc-fly.go::before { opacity: 0.85; }
+.sc-burst { position: absolute; transform: translate(-50%, -50%); animation: sc-pop 0.58s ease-out forwards; }
+.sc-burst span { display: inline-block; padding: 18px 24px; font: 800 26px/1 var(--font-serif); color: #fff8e6; background: var(--terra); text-shadow: 2px 2px 0 var(--ink-line); white-space: nowrap;
+  clip-path: polygon(50% 0, 61% 18%, 82% 6%, 78% 30%, 100% 34%, 84% 52%, 98% 72%, 75% 72%, 72% 96%, 55% 80%, 38% 100%, 33% 78%, 10% 86%, 18% 64%, 0 50%, 18% 36%, 8% 14%, 32% 20%); }
+.sc-burst.shield span { background: #1f6a5c; clip-path: polygon(50% 0, 100% 14%, 92% 62%, 50% 100%, 8% 62%, 0 14%); padding: 16px 22px 24px; font-size: 20px; }
+.sc-burst.ouch span { background: #f3e6c8; color: var(--terra); text-shadow: none; filter: drop-shadow(3px 3px 0 var(--ink-line)); }
+@keyframes sc-pop { 0% { transform: translate(-50%, -50%) scale(0.3) rotate(-12deg); opacity: 0; } 18% { transform: translate(-50%, -50%) scale(1.15) rotate(4deg); opacity: 1; } 32% { transform: translate(-50%, -50%) scale(1) rotate(0); } 75% { opacity: 1; } 100% { transform: translate(-50%, -80%) scale(0.96); opacity: 0; } }
+.fight2 .df-result { background: var(--paper-c); color: var(--ink-line); border: 2px solid var(--ink-line); box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45); }
+.fight2 .df-result b { color: var(--ink-line); } .fight2 .df-result.win b { color: #1f6a5c; } .fight2 .df-result.lost b { color: var(--terra); }
+.fight2 .df-leaks { color: var(--terra); }
+.fight2 .df-log { background: var(--paper-c); color: var(--ink-line); border: 2px solid var(--ink-line); box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45); font-weight: 600; }
+.fight2 .df-inf i { background: rgba(0, 0, 0, 0.35); box-shadow: inset 0 0 0 1.5px var(--gold); }
+.fight2 .df-inf i.on { background: #e8b84a; box-shadow: 0 0 0 1.5px var(--ink-line); }
+.fight2 .df-pile { background: var(--paper-c); color: var(--ink-line); border: 2px solid var(--ink-line); }
+.fight2 .df-settle { background: #24474a; color: var(--ivory); border: 2px solid var(--ink-line); box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45); }
+/* Landscape: the stage is a wide strip, so the cast stands taller and the panels flank them */
+@media (min-aspect-ratio: 1/1) {
+  .sc-opp { height: 100%; left: 52%; }
+  .sc-you { height: 66%; left: 3%; }
+  .fight2 .df-scrut { left: auto; right: 10px; top: auto; bottom: 34px; width: min(30%, 290px); }
+  .fight2 .df-intent { width: min(30%, 290px); }
+  .fight2 .df-intent::after { left: -10px; bottom: 40%; transform: rotate(135deg) skew(12deg, 12deg); }
+  .sc-place { right: auto; left: 50%; transform: translateX(-50%); bottom: 6px; }
+}
+@media (max-width: 600px) {
+  .fight2 .df-scrut, .fight2 .df-intent { width: 47%; padding: 5px 8px; }
+  .fight2 .df-k b, .fight2 .di-main b { font-size: 18px; }
+  .fight2 .df-goal { font-size: 11px; }
+  .sc-opp { height: 72%; }
+  .sc-you { height: 34%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-opp, .sc-you, .sc-stamp, .sc.enter::after, .sc-burst, .fight2 .df-intent.firing { animation: none !important; }
+  .sc.enter.v-away::after { display: none; }
+  .sc-fly { display: none; }
+}
+
+/* ---------- Cards: cream Art Deco, cost gem, name banner, art window, type ribbon ---------- */
+.dc { --rim: #9aa3a6; --rim2: #c9cfd1; --tc: #d8cbb0; padding: 7px 7px 6px; gap: 4px; border-radius: 9px; color: var(--ink-line);
+  background: var(--grain), var(--paper-c); background-size: 160px 160px, auto;
+  border: 3px solid var(--rim); box-shadow: inset 0 0 0 2px var(--paper-c), inset 0 0 0 3px var(--rim2), 3px 4px 0 rgba(0, 0, 0, 0.42); align-items: stretch; justify-content: flex-start; }
+.dc::before { display: none; }
+.dc:not(.no):not(div):hover { transform: translateY(-4px); box-shadow: inset 0 0 0 2px var(--paper-c), inset 0 0 0 3px var(--rim2), 4px 8px 0 rgba(0, 0, 0, 0.42); }
+.dc.sel { box-shadow: inset 0 0 0 2px var(--paper-c), inset 0 0 0 3px var(--rim2), 0 0 0 3px var(--terra), 4px 8px 0 rgba(0, 0, 0, 0.42); }
+.dc.no { opacity: 0.55; filter: grayscale(0.6); }
+.dc.r-u { --rim: #a8743a; --rim2: #d9b27a; }
+.dc.r-r { --rim: #c9942a; --rim2: #f1dba0; border-style: double; border-width: 5px; }
+.dc.r-r::after { content: ""; position: absolute; left: 50%; top: -1px; width: 46px; height: 12px; transform: translateX(-50%); background: conic-gradient(from 270deg at 50% 0, transparent 0deg, #c9942a 0 12deg, transparent 0 24deg, #c9942a 0 36deg, transparent 0 48deg, #c9942a 0 60deg, transparent 0 72deg, #c9942a 0 84deg, transparent 0 96deg, #c9942a 0 108deg, transparent 0 120deg, #c9942a 0 132deg, transparent 0 144deg, #c9942a 0 156deg, transparent 0 168deg, #c9942a 0 180deg, transparent 0); pointer-events: none; }
+.dc.r-m { --rim: #2f6f6a; --rim2: #8fc3b8; }
+.dc.t-curse { --rim: #a8432e; --rim2: #e09a82; --tc: #c0482f; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'><path d='M62 0 L55 22 L66 34 L52 58 L60 70 L48 96 L56 112 L44 140' fill='none' stroke='%23a8432e' stroke-width='1.6' opacity='.55'/><path d='M0 40 L14 46 L22 40 L34 52' fill='none' stroke='%23a8432e' stroke-width='1.2' opacity='.45'/><path d='M100 88 L86 92 L80 104 L68 106' fill='none' stroke='%23a8432e' stroke-width='1.2' opacity='.45'/></svg>") center / 100% 100% no-repeat, var(--grain), #ecd3c0; background-size: 100% 100%, 160px 160px, auto; border-color: var(--rim); border-style: dashed solid; }
+.t-shared { --tc: #d8cbb0; } .t-lob { --tc: #e2b04e; } .t-law { --tc: #8fb3c2; } .t-pr { --tc: #e8a08c; } .t-fel { --tc: #a6cfbc; } .t-room { --tc: #c4b4d6; } .t-priv { --tc: #ecd07e; }
+.dc-cost { left: -3px; top: -3px; z-index: 2; width: 34px; height: 34px; min-width: 0; padding: 0; border-radius: 5px; transform: rotate(45deg) scale(0.82); background: #1f5f63; border: 2px solid var(--paper-c); box-shadow: 0 0 0 2px var(--ink-line); color: #fff4d6; display: grid; place-items: center; font: 800 12px/1 var(--font-sans); }
+.dc-cost em { font-style: normal; transform: rotate(-45deg); white-space: nowrap; }
+.dc-cost.cash { background: #3d6b2f; width: 40px; height: 40px; }
+.dc-cost.cash em { font-size: 10px; }
+.dc-name { display: block; margin: 0 -7px; padding: 3px 10px 3px 24px; background: var(--tc); color: var(--ink-line); font: 700 13.5px/1.12 var(--font-serif); text-align: center; border-top: 1.5px solid var(--ink-line); border-bottom: 1.5px solid var(--ink-line); clip-path: polygon(0 0, 100% 0, 97% 50%, 100% 100%, 0 100%, 3% 50%); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dc.up .dc-name { color: #0f4f42; } .dc.up .dc-name sup { color: var(--terra); }
+.dc-art { position: relative; flex: 1 1 auto; min-height: 36px; border: 2px solid var(--ink-line); border-radius: 3px; background-color: #2f6f6a; background-size: cover; background-position: center; display: grid; place-items: center;
+  background-image: repeating-conic-gradient(from 0deg at 50% 100%, rgba(241, 219, 160, 0.35) 0 6deg, transparent 6deg 14deg); }
+.dc-art[style] .dc-ico { display: none; }
+.dc-art .dc-ico { font-size: 26px; filter: saturate(0.7) sepia(0.2); }
+.dc-stats { position: absolute; right: 3px; bottom: 3px; top: auto; display: flex; gap: 3px; }
+.dc-stats i { min-width: 24px; height: 22px; padding: 0 5px; border-radius: 3px; border: 1.5px solid var(--ink-line); font: 800 13px/1 var(--font-sans); display: inline-flex; align-items: center; gap: 2px; box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4); }
+.dc-stats i small { font-size: 8px; opacity: 0.85; }
+.dc-p { background: var(--terra); color: #fff8e6; } .dc-d { background: #1f6a5c; color: #fff8e6; box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4); }
+.dc-type { margin: 0 -7px; padding: 1px 6px; background: var(--ink-line); color: var(--gold-hi); font: 700 9px/1.4 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dc-txt { flex: none; font-size: 12px; line-height: 1.22; color: #22302e; text-align: center; -webkit-line-clamp: 3; font-weight: 600; }
+.dc-why { background: rgba(20, 33, 31, 0.9); color: #ffc9b8; }
+.dc.mini { padding: 6px 6px 5px; } .dc.mini .dc-name { font-size: 12px; } .dc.mini .dc-art { min-height: 30px; } .dc.mini .dc-txt { font-size: 11px; -webkit-line-clamp: 2; }
+.dc.big { padding: 8px 8px 7px; } .dc.big .dc-name { font-size: 16px; padding-left: 28px; } .dc.big .dc-art { min-height: 90px; } .dc.big .dc-txt { font-size: 13.5px; -webkit-line-clamp: 4; }
+.dc.chip { background: var(--paper-c); padding: 4px 8px; }
+.dc.chip .dc-art { display: none; }
+.dc.chip .dc-name { margin: 0; padding: 0; background: none; border: 0; clip-path: none; text-align: left; }
+.dc.chip .dc-cost { transform: none; width: auto; height: 20px; padding: 0 6px; border-radius: 999px; border: 0; box-shadow: none; }
+.dc.chip .dc-cost em { transform: none; }
+.dk-cards .dc, .rw-deck .dc { min-height: 150px; }
+@media (max-width: 600px) {
+  .dc { padding: 5px 5px 5px; gap: 3px; }
+  .dc-name { margin: 0 -5px; font-size: 12px; padding: 2px 6px 2px 20px; }
+  .dc-type { margin: 0 -5px; font-size: 8px; }
+  .dc-txt { font-size: 11px; -webkit-line-clamp: 3; }
+  .dc-cost { width: 30px; height: 30px; font-size: 11px; }
+  .dc-stats i { min-width: 20px; height: 19px; font-size: 12px; }
+}
+/* Matte pass: flat pedestal, cash chip clear of the office title */
+.pedestal i:nth-child(1) { background: rgba(24, 58, 61, .55); box-shadow: none; }
+.pedestal i { border-color: #b98a2e; }
+@media (min-width: 600px) and (max-width: 899px) and (orientation: portrait) { .office > .m-cash { left: 50%; transform: translateX(-50%); } }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -7167,6 +7417,16 @@ body:has(#screen-tutorial.on) .shell,
     return "regulator";
   }
   LD.encounterFor = function (state, dealId) { return encFor(state, LD.dealById(dealId)); };
+  /* Where the fight happens: visitors come through your front door ("home"), or you slip out the back door to their turf ("away").
+     Bosses and the Senate always pull you away; protests are always at your lobby glass. Otherwise it alternates by quarter. */
+  LD.fightVenue = function (fg) {
+    if (!fg) return "home";
+    if (fg.venue) return fg.venue;
+    var E = LD.ENCOUNTERS[fg.enc] || {};
+    if (E.boss || E.elite) return "away";
+    if (fg.enc === "protest") return "lobby";
+    return (fg.q | 0) % 2 === 0 ? "away" : "home";
+  };
   function fightRounds(state, encId) {
     var E = LD.ENCOUNTERS[encId];
     if (E.boss) return LD.DOOR.BOSS_ROUNDS + ((state.rating | 0) >= 10 ? 1 : 0);
@@ -7253,6 +7513,7 @@ body:has(#screen-tutorial.on) .shell,
       leaks: { cash: 0, unrest: 0, collapse: 0, heat: 0 }, log: [], rs: 1, done: null, intent: null
     };
     if (enc !== "protest" && LD.doorLevel(state) >= 3 && !E.boss && !E.elite) fg.pattern = LD.ENCOUNTERS.protest.pattern.slice();
+    fg.venue = LD.fightVenue(fg);
     if (enc === "protest" && (state.rating | 0) >= 5) fg.swell = 0;
     fg.scrut = fg.max = scrutinyFor(state, enc);
     fg.rs = Math.floor(r() * 4294967295) >>> 0 || 7;
@@ -10073,7 +10334,7 @@ body:has(#screen-tutorial.on) .shell,
         (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
         "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
     /* Executive */
-    h += '<div class="of-exec" data-art="office-exec" aria-label="' + esc(exec.name) + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + '">' + execSvg(state) + "</div>";
+    h += '<div class="of-exec" data-art="office-exec" aria-label="' + esc(exec.name) + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + '">' + (function () { var fa = LD.execFrontArt(state.executiveId); return '<img class="of-portrait" src="' + fa.src + '" alt="" draggable="false" style="--ar:' + fa.ar + '"><span class="of-mood" aria-hidden="true"></span>'; })() + "</div>";
     /* Desk + cash */
     var bills = Math.max(0, Math.min(8, Math.round(state.cash / 8)));
     var stack = ""; for (var i = 0; i < bills; i++) stack += '<rect x="' + (6 + (i % 2) * 3) + '" y="' + (26 - i * 3.2) + '" width="26" height="3" rx="0.8"/>';
@@ -10195,53 +10456,92 @@ body:has(#screen-tutorial.on) .shell,
   var TYPE_CLS = { Shared: "t-shared", Lobbyist: "t-lob", Lawyer: "t-law", PR: "t-pr", Fellow: "t-fel", Curse: "t-curse", Room: "t-room", Private: "t-priv" };
   var METER_ICO = { cash: "$", unrest: "✊", collapse: "☢", heat: "🔥" };
   var METER_NAME = { cash: "Cash", unrest: "Unrest", collapse: "Collapse", heat: "Heat" };
+  var CARD_ART = {};
+  ["talking","nocomment","externalize","codb","synergy","golden","presence","backup","cutcorners","privsec","carveout","campaign",
+   "zoning","stall","whisper","fasttrack","revolving","darkmoney","objection","buryit","billable","nda","discovery","injunction",
+   "settle","countersue","astro","oped","spin","tnp","photoop","crisiscomms","study","funded","unsettled","longterm",
+   "c_class","c_subpoena","c_whistle","c_leak","c_crack","c_stranded"].forEach(function (k) { CARD_ART[k] = "assets/cardart/card-" + k + ".webp"; });
+  LD.CARD_ART = CARD_ART;
+  var RAR_NAME = { S: "Starter", C: "Common", U: "Uncommon", R: "Rare", M: "Fixture", X: "Curse" };
   function cardFace(id, up, opts) {
     opts = opts || {};
     var o = LD.cardValues(id, up), d = LD.cardDef(id); if (!o || !d) return "";
     var tag = opts.tag || "button";
-    var cls = "dc " + (TYPE_CLS[d.t] || "t-shared") + " r-" + String(d.r || "C").toLowerCase() + (up ? " up" : "") + (opts.cls ? " " + opts.cls : "") + (opts.why ? " no" : "");
+    var rr = String(d.r || "C").toLowerCase();
+    var cls = "dc " + (TYPE_CLS[d.t] || "t-shared") + " r-" + rr + (up ? " up" : "") + (opts.cls ? " " + opts.cls : "") + (opts.why ? " no" : "");
     var attrs = (opts.attrs || "") + (tag === "button" ? ' type="button"' : "") + (opts.why && tag === "button" ? ' aria-disabled="true"' : "");
     var cost = o.unplay ? "—" : (o.cash ? "$" + o.cash + "M" + (opts.cost ? "+" + opts.cost + "◆" : "") : (opts.cost != null ? opts.cost : o.cost || 0) + "◆");
     var stats = "";
-    if (opts.p || o.p) stats += '<i class="dc-p" title="Pressure">' + (opts.p != null ? opts.p : o.p) + "</i>";
-    if (opts.d || o.d) stats += '<i class="dc-d" title="Deniability">' + (opts.d != null ? opts.d : o.d) + "</i>";
+    if (opts.p || o.p) stats += '<i class="dc-p" title="Pressure"><small>P</small>' + (opts.p != null ? opts.p : o.p) + "</i>";
+    if (opts.d || o.d) stats += '<i class="dc-d" title="Deniability"><small>D</small>' + (opts.d != null ? opts.d : o.d) + "</i>";
     var label = (d.name + (up ? "+" : "")) + ". " + cost + ". " + LD.cardText(id, up) + (opts.why ? " " + opts.why : "");
+    var art = CARD_ART[id];
     return "<" + tag + ' class="' + cls + '"' + attrs + ' aria-label="' + esc(label) + '">' +
-      '<span class="dc-cost">' + esc(cost) + "</span>" + (stats ? '<span class="dc-stats">' + stats + "</span>" : "") +
-      '<span class="dc-ico" aria-hidden="true">' + d.icon + "</span>" +
+      '<span class="dc-cost' + (o.cash ? " cash" : "") + '"><em>' + esc(cost) + "</em></span>" +
       '<b class="dc-name">' + esc(d.name) + (up ? "<sup>+</sup>" : "") + "</b>" +
+      '<span class="dc-art"' + (art ? ' style="background-image:url(' + art + ')"' : "") + '><span class="dc-ico" aria-hidden="true">' + d.icon + "</span>" +
+      (stats ? '<span class="dc-stats">' + stats + "</span>" : "") + "</span>" +
+      '<span class="dc-type">' + esc(d.t === "Curse" ? "Curse" : d.t) + (d.r && d.r !== "X" ? " · " + (RAR_NAME[d.r] || "") : "") + "</span>" +
       '<span class="dc-txt">' + esc(LD.cardText(id, up)) + "</span>" +
-      '<span class="dc-type">' + esc(d.t === "Curse" ? "Curse" : d.t) + (d.r && d.r !== "S" && d.r !== "X" ? " · " + ({ C: "Common", U: "Uncommon", R: "Rare" })[d.r] : "") + "</span>" +
       (opts.why ? '<span class="dc-why">' + esc(opts.why) + "</span>" : "") +
       "</" + tag + ">";
   }
   LD.cardFace = cardFace;
-  function doorFigure(fg) {
-    return '<div class="df-door is-in" aria-hidden="true"><svg viewBox="0 0 100 140" preserveAspectRatio="none">' +
-      '<defs><radialGradient id="df-hall" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#3a2a18"/><stop offset="55%" stop-color="#140c08"/><stop offset="100%" stop-color="#070504"/></radialGradient>' +
-      '<radialGradient id="df-lamp" cx="50%" cy="8%" r="80%"><stop offset="0%" stop-color="#f3d98f" stop-opacity="0.55"/><stop offset="45%" stop-color="#f3d98f" stop-opacity="0.08"/><stop offset="100%" stop-color="#f3d98f" stop-opacity="0"/></radialGradient></defs>' +
-      '<rect class="df-frame" x="6" y="4" width="88" height="136" rx="4"/>' +
-      '<rect class="df-dark" x="14" y="12" width="72" height="128" fill="url(#df-hall)"/>' +
-      '<rect x="14" y="12" width="72" height="128" fill="url(#df-lamp)"/>' +
-      '<ellipse class="df-floor" cx="50" cy="124" rx="26" ry="8"/>' +
-      '<path class="df-leaf" d="M14 12 L3 22 L3 140 L14 140 Z"/></svg>' +
-      '<span class="df-who"><span class="df-who-glow" aria-hidden="true"></span>' + fg.icon + "</span></div>";
+
+  /* ---------- Fight scenes: one shared stage, a room and a face per faction ---------- */
+  var FACTIONS = {
+    regulator: { who: "Agnes Hale", role: "Federal Regulator", art: "hale", room: "regulator", place: "Her hearing room" },
+    rival: { who: "Victor Crowe", role: "Crowe Terminals", art: "crowe", room: "rival", place: "Crowe Terminals, top floor" },
+    bid: { who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "rival", place: "Crowe Terminals, top floor" },
+    protest: { who: "Rosa Lind", role: "The People", art: "rosa", room: "protest", place: "Your lobby glass" },
+    journalist: { who: "Dev Okafor", role: "The Ledger", art: "okafor", room: "journalist", place: "The Ledger's front steps" },
+    hearing: { who: "Sen. Walt Brennan", role: "Senate Committee", art: "brennan", room: "senate", place: "The Senate chamber" },
+    earnings: { who: "Gail Ashby", role: "Lead Analyst", art: "ashby", room: "earnings", place: "The broadcast studio" },
+    shortseller: { who: "Lena Sorel", role: "Nightjar Capital", art: "sorel", room: "garage", place: "Garage, level B3" },
+    strike: { who: "Tomas Varga", role: "United Workers", art: "varga", room: "union", place: "The union hall" },
+    crash: { who: "The Ticker", role: "The Market", art: "ticker", room: "crash", place: "The trading floor" }
+  };
+  var ART_AR = { ashby: 0.575, brennan: 0.69, crowe: 0.571, hale: 0.667, okafor: 0.611, rosa: 0.63, sorel: 0.71, ticker: 0.606, varga: 0.854,
+    "back-cassius": 0.817, "back-imani": 0.778, "back-julian": 0.817, "back-mara": 0.778, "back-reid": 0.778, "back-soren": 0.817,
+    "front-cassius": 0.867, "front-imani": 0.764, "front-julian": 0.867, "front-mara": 0.764, "front-reid": 0.764, "front-soren": 0.867 };
+  var POSES = ["idle", "attack", "hit", "block", "defeated"];
+  LD.FACTIONS = FACTIONS;
+  LD.factionFor = function (enc) { return FACTIONS[enc] || FACTIONS.regulator; };
+  function execArt(id) { return ART_AR["back-" + id] ? id : "mara"; }
+  LD.execFrontArt = function (id) { var k = execArt(id); return { src: "assets/fight/front-" + k + ".webp", ar: ART_AR["front-" + k] }; };
+  function sceneHtml(state, fg, ui) {
+    var F = LD.factionFor(fg.enc), venue = LD.fightVenue(fg);
+    var room = venue === "home" ? "home" : F.room;
+    var stage = LD.cityStage ? LD.cityStage(state) : 0;
+    var base = fg.done && fg.done.win ? "defeated" : "idle";
+    var ex = execArt(state.executiveId);
+    var h = '<div class="df-stage sc v-' + venue + " room-" + room + (ui.enter ? " enter" : "") + '" data-room="' + room + '" data-venue="' + venue + '" data-city="' + stage + '">';
+    h += '<div class="sc-room" aria-hidden="true" style="background-image:url(assets/fight/room-' + room + '.webp)"></div><div class="sc-haze" aria-hidden="true"></div>';
+    h += '<div class="sc-opp" id="sc-opp" data-base="' + base + '" data-pose="' + base + '" style="--ar:' + (ART_AR[F.art] || 0.6) + '" aria-hidden="true">';
+    POSES.forEach(function (p) { h += '<img class="p-' + p + '" src="assets/fight/opp-' + F.art + "-" + p + '.webp" alt="" draggable="false">'; });
+    h += "</div>";
+    h += '<div class="sc-you" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
+    h += '<div class="sc-place" aria-hidden="true">' + (venue === "home" ? "🚪 Your office · they came to you" : venue === "lobby" ? "🏢 Your lobby · through the glass" : "↩ Out the back door · " + esc(F.place)) + "</div>";
+    if (fg.done) h += '<div class="sc-stamp ' + (fg.done.win ? "win" : fg.done.settled ? "settled" : "lost") + '" aria-hidden="true">' + (fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
+    return h;
   }
   LD.renderFight = function (state, ui) {
     ui = ui || {};
     var f = state.fy, fg = f.fight; if (!fg) return "";
     var it = fg.done ? null : LD.fightIntent(state);
+    var F = LD.factionFor(fg.enc), venue = LD.fightVenue(fg);
     var pct = fg.max ? Math.max(0, Math.round(100 * Math.max(0, fg.scrut) / fg.max)) : 0;
-    var h = '<div class="door-in' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + '" data-enc="' + fg.enc + '">';
-    h += '<header class="df-top"><div class="df-title"><small>' + (fg.boss ? "Boss · Q" + fg.q : fg.elite ? "Elite · Q" + fg.q : "At the door · Q" + fg.q) + " · " + esc(fg.dealTitle || "") + "</small><b>" + esc(fg.name) + "</b><em>" + esc(fg.sub || "") + "</em></div>" +
+    var h = '<div class="door-in fight2' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + '" data-enc="' + fg.enc + '">';
+    var kind = fg.boss ? "Boss" : fg.elite ? "Elite" : venue === "home" ? "Home turf" : venue === "lobby" ? "At the glass" : "Away";
+    h += '<header class="df-top"><div class="df-title"><small>' + kind + " · Q" + fg.q + " · " + esc(fg.dealTitle || "") + "</small><b>" + esc(F.who) + "</b><em>" + esc(F.role) + " · " + esc(fg.name) + "</em></div>" +
       '<div class="df-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small>' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></div>" +
-      '<button class="icon-btn df-help" id="df-help" aria-label="How door fights work">?</button></header>';
-    h += '<div class="df-stage">' + doorFigure(fg);
+      '<button class="icon-btn df-help" id="df-help" aria-label="How fights work">?</button></header>';
+    h += sceneHtml(state, fg, ui);
     h += '<div class="df-scrut"><div class="df-k">Scrutiny <b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
       '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div></div>";
     if (it) {
       var thr = it.through, ico = METER_ICO[it.meter] || "!";
-      h += '<div class="df-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><div class="df-k">Intends to</div>' +
+      h += '<div class="df-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><div class="df-k">Next, ' + esc(F.who.split(" ").slice(-1)[0]) + " will</div>" +
         '<div class="di-main"><span class="di-ico" aria-hidden="true">' + ico + '</span><b>' + esc(it.label) + " " + it.n + "</b></div>" +
         '<div class="di-math">Block <b>' + it.block + "</b> · through <b>" + thr + "</b> → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " (×½)" : "") + "</div>" +
         (it.rtext ? '<div class="di-rider' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</div>" : "") +
@@ -10251,10 +10551,11 @@ body:has(#screen-tutorial.on) .shell,
     if (fg.done) {
       var d = fg.done, L = d.leaks, bits = [];
       if (L.cash) bits.push("−$" + L.cash + "M"); if (L.unrest) bits.push("unrest +" + L.unrest); if (L.collapse) bits.push("collapse +" + L.collapse); if (L.heat) bits.push("Heat +" + L.heat);
+      var bye = venue === "home" || venue === "lobby" ? "Show them out ▸" : "Back to the office ▸";
       h += '<div class="df-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status"><b>' + (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + "</b>" +
-        "<span>" + esc(d.win ? (d.notes.join(" · ") || "The door closes.") : d.settled ? "No bonus, no more damage. " + (d.notes.join(" · ")) : "The deal still signs. " + (d.notes.join(" · ") || "")) + "</span>" +
+        "<span>" + esc(d.win ? (d.notes.join(" · ") || "The deal closes.") : d.settled ? "No bonus, no more damage. " + (d.notes.join(" · ")) : "The deal still signs. " + (d.notes.join(" · ") || "")) + "</span>" +
         (bits.length ? '<span class="df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") +
-        '<button class="btn btn-coral df-close" id="df-close">' + (d.win || d.settled ? "Close the door ▸" : "Close the door ▸") + "</button></div>";
+        '<button class="btn btn-coral df-close" id="df-close">' + bye + "</button></div>";
     } else {
       h += '<div class="df-hud"><div class="df-inf" aria-label="Influence ' + fg.inf + '"><small>Influence</small>';
       for (var i = 0; i < Math.max(fg.inf, LD.DOOR.INF); i++) h += '<i class="' + (i < fg.inf ? "on" : "") + '"></i>';
@@ -11791,18 +12092,79 @@ body:has(#screen-tutorial.on) .shell,
     var r = a.getBoundingClientRect(), b = root.getBoundingClientRect();
     placeFloat(fx, r.left - b.left + r.width / 2, r.top - b.top + r.height / 2, text, cls, delay);
   }
+  /* ---------- Fight scene animation: card flies, opponent reacts; their intent lunges back ---------- */
+  var SC = { t: null };
+  function scPose(pose, ms, extra) {
+    var o = $("sc-opp"); if (!o) return;
+    clearTimeout(SC.t);
+    o.setAttribute("data-pose", pose);
+    o.classList.remove("shake", "lunge", "brace"); void o.offsetWidth;
+    if (extra) o.classList.add(extra);
+    SC.t = setTimeout(function () { var o2 = $("sc-opp"); if (!o2) return; o2.setAttribute("data-pose", o2.getAttribute("data-base") || "idle"); o2.classList.remove("shake", "lunge", "brace"); }, ms || 420);
+  }
+  function scLayer() {
+    var l = document.getElementById("sc-fxlayer");
+    if (!l) { l = document.createElement("div"); l.id = "sc-fxlayer"; l.setAttribute("aria-hidden", "true"); document.body.appendChild(l); }
+    return l;
+  }
+  function scBurst(text, cls, target, delay) {
+    var t = typeof target === "string" ? document.querySelector(target) : target;
+    if (!t || !doorOpen()) return;
+    var r = t.getBoundingClientRect();
+    var el = document.createElement("div");
+    el.className = "sc-burst " + (cls || "");
+    el.innerHTML = "<span>" + text + "</span>";
+    el.style.left = (r.left + r.width * 0.5) + "px";
+    el.style.top = (r.top + r.height * 0.3) + "px";
+    if (delay) el.style.animationDelay = delay + "ms";
+    scLayer().appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 650 + (delay || 0));
+  }
+  function scPlayAnim(cardHtml, rect, dS, dB) {
+    var opp = $("sc-opp"), you = $("sc-you"), root = document.querySelector(".door-in"), fx = scLayer();
+    var hitPose = dS > 0 ? "hit" : dB > 0 ? "block" : null;
+    var react = function () {
+      if (hitPose === "hit") { scPose("hit", 440, "shake"); scBurst("−" + dS, "pow", opp); }
+      else if (hitPose === "block") { scPose("block", 440, "brace"); scBurst("Block +" + dB, "shield", you || opp); }
+    };
+    if (you) { you.classList.remove("flick"); void you.offsetWidth; you.classList.add("flick"); }
+    if (reduced() || !rect || !cardHtml || !opp || !root || !fx) { react(); return; }
+    var b = { left: 0, top: 0 }, tr = (hitPose === "block" && you ? you : opp).getBoundingClientRect();
+    var fly = document.createElement("div");
+    fly.className = "sc-fly";
+    fly.innerHTML = cardHtml.replace(/^<button/, "<div").replace(/<\/button>$/, "</div>");
+    fly.style.left = (rect.left - b.left) + "px"; fly.style.top = (rect.top - b.top) + "px";
+    fly.style.width = rect.width + "px"; fly.style.height = rect.height + "px";
+    fx.appendChild(fly);
+    var dx = (tr.left + tr.width * 0.5) - (rect.left + rect.width * 0.5), dy = (tr.top + tr.height * (hitPose === "block" ? 0.4 : 0.38)) - (rect.top + rect.height * 0.5);
+    var ang = Math.atan2(dy, dx) * 180 / Math.PI;
+    fly.style.setProperty("--ang", ang + "deg");
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      fly.classList.add("go");
+      fly.style.transform = "translate(" + dx + "px," + dy + "px) rotate(" + (dx > 0 ? 14 : -14) + "deg) scale(0.42)";
+    }); });
+    setTimeout(function () { if (fly.parentNode) fly.parentNode.removeChild(fly); react(); }, 290);
+  }
+  function scAttackAnim(n) {
+    var you = $("sc-you");
+    scPose("attack", 460, "lunge");
+    setTimeout(function () {
+      if (you) { you.classList.remove("recoil"); void you.offsetWidth; if (n) you.classList.add("recoil"); }
+      scBurst(n ? "Hit " + n : "Blocked!", n ? "ouch" : "shield", you || "#sc-opp");
+    }, reduced() ? 0 : 200);
+  }
   function openFight() {
     if (!state || !state.fy || !state.fy.fight) return;
     hideOverlay();
     if (!DF.start) DF.start = state;
     DF.busy = false; DF.arm = 0;
-    paintFight();
+    paintFight(null, true);
     SFX.play("knock", Math.max(1, LD.doorLevel(state)));
     if (!state.fy.fight.done) setTimeout(function () { if (doorOpen() && PN.mode !== "tour") pennyTip("fight"); }, 700);
   }
-  function paintFight(flashU) {
+  function paintFight(flashU, enter) {
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
-    showDoor(LD.renderFight(state, { flashU: flashU }), "df-mode");
+    showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced() }), "df-mode");
     var root = doorEl();
     Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
       b.addEventListener("click", function () { playCard(+b.getAttribute("data-u")); });
@@ -11822,6 +12184,8 @@ body:has(#screen-tutorial.on) .shell,
       return;
     }
     var prev = state, fg0 = state.fy.fight, s0 = fg0.scrut, b0 = fg0.block;
+    var cardEl = document.querySelector('.df-hand [data-u="' + u + '"]');
+    var cardRect = cardEl ? cardEl.getBoundingClientRect() : null, cardHtml = cardEl ? cardEl.outerHTML : "";
     var res = LD.fightPlay(state, u);
     if (!res.ok) { SFX.play("bad"); dfLog(res.error); return; }
     state = res.state; persistRun();
@@ -11829,6 +12193,7 @@ body:has(#screen-tutorial.on) .shell,
     var fg = state.fy.fight;
     paintFight();
     var dS = s0 - Math.max(0, fg.scrut), dB = fg.block - b0;
+    scPlayAnim(cardHtml, cardRect, dS, dB);
     if (dS > 0) dfFloat("−" + dS + " Scrutiny", "good big", ".df-scrut");
     if (dB > 0) dfFloat("Block +" + dB, "good", "#df-intent");
     if (state.cash !== prev.cash) dfFloat((state.cash > prev.cash ? "+$" : "−$") + Math.abs(state.cash - prev.cash) + "M", state.cash > prev.cash ? "cash" : "cost", ".df-meters", 120);
@@ -11844,6 +12209,7 @@ body:has(#screen-tutorial.on) .shell,
     if (!res.ok) { dfLog(res.error); return; }
     DF.busy = true;
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
+    scAttackAnim(res.hit && res.hit.n);
     SFX.play(res.hit.n ? "bad" : "tick");
     setTimeout(function () {
       DF.busy = false;

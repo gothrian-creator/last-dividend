@@ -12,28 +12,66 @@ You can also open `index.html` directly in a browser from a local copy (keep the
 
 Every run is one fiscal year: 3 acts of 4 quarters.
 
-- **Boss quarters.** Each act ends in a boss quarter, drawn per run: Q4 is the Earnings Call or a Short-Seller Report; Q8 is a General Strike, a Hostile Takeover Bid or a Market Crash; Q12 is The Reckoning (Superstorm season, Heat Dome or Sea Wall). A banner announces the boss quarter, and a boss card warns you before you end it.
-- **Quarterly acquisitions.** After each quarter, pick 1 of 3 Assets for free, or skip it for cash. 36 Assets come in four rarities and form sets. Your Portfolio holds 5; a full Portfolio means divesting one. Some drafts carry a Liability rider. The Portfolio chip forecasts what your Assets do at quarter close.
-- **Board Memos.** About once per act the board sends a memo with two options, each with a price.
-- **Go private.** Converting keeps 70% of deal cash (Cassius keeps 80%) and lifts the surcharges on public works.
-- **Sealing.** The bunker can be sealed from Q9, after the Act II boss.
-- **Credit ratings.** Each tier from AAA to D adds one rule. Wins pay ×(1 + 0.3 × tier) Dividends, plus a one-time bonus on the first clear of each rating.
-- **Executive levels.** Each executive earns XP and levels up, unlocking small passive perks.
-- **Sound.** Generated WebAudio effects and a low ambient bed start after your first tap. Toggle them on the title screen or in the in-run Menu; the choice is remembered.
+- **Boss quarters.** Q4 (the Earnings Call or a Short-Seller Report) and Q8 (a General Strike, a Hostile Takeover Bid or a Market Crash) are 3-round card fights at the door (4 rounds at D). The year ends with The Reckoning (Superstorm season, Heat Dome or Sea Wall), which stays a bunker check.
+- **Go private.** Converting keeps 70% of deal cash (Cassius keeps 80%) and lifts the surcharges on public works. It also adds 2 Private Security cards to your deck and 3 free shreds.
+- **Sealing.** You can seal the bunker from Q9.
+- **Credit ratings.** Each tier from AAA to D adds one rule, and the door fights get harder through those rules. Wins pay ×(1 + 0.3 × tier) Dividends, plus a one-time bonus on the first clear of each rating.
+- **Executive levels.** XP unlocks small perks: an extra signature card, an upgraded starter, and others.
 
-## The office, the briefcase and loot
+## Card fights at the door (Drop 1)
 
-- **The office.** Your executive sits at a desk on screen and reacts: confident, nervous or panicking as unrest and collapse rise, and gleeful or shocked after big deals. The old meter bar is gone. The three numbers live in the room:
-  - **Cash:** a ticker on the desk.
-  - **Unrest:** a gauge by the door. The knocks go from a polite tap to pounding, then shaking with voices and a sign outside, and get louder and more frequent. The sound respects the mute toggle, and reduced motion turns the shaking off.
-  - **Collapse:** a gauge on the window frame. The mainland across the water decays in 5 stages (Clear skies → Haze → Smog alerts → Fires → Blackout). Collapse and your choices both drive it: Squeeze deals and unpaid crises add smog and fires, and Soothe deals bring repairs and lights. From Smog alerts on, the city adds unrest every quarter.
-  - Tap the room to get the full explanation.
-- **The briefcase.** It holds 5 Asset slots with rarity glow and lit set bonuses, plus a desk drawer for office items (3 slots, 4 at executive Lv10).
-- **Office items (13).**
-  - Active items work once per act or once per run: Bribe the Doorman, PR Blitz, Charity Gala, Lobbyist Hotline, Exclusive Contract, Rush Order, Cloud Seeding, Private Security, Emergency Liquidity, Hush Money and Prefab Pod.
-  - Fixtures are always on and have a hidden cost: the Soundproofed Door makes crisis pay-offs dearer and silences the warning, and the Holo-Window fakes a calm view while the gauge stays true.
-- **Loot.** Loot drops from boss wins, Board Memos, crises and some deals, and shows a reveal card. You can keep it, swap it for a drawer item (the old one is sold) or sell it.
-- **Asset Prospectus.** Opened from the title screen, it records every Asset, item and Liability you have seen and held, across runs.
+Every deal you sign sends someone to the door:
+
+| Deal | Encounter | Its intents | A win gives |
+|---|---|---|---|
+| Squeeze | The Regulator | Fine, Audit | +10% on the deal |
+| Acquire | Rival Bid | Undercut, Outbid | the rival's seal slips a quarter |
+| Crisis | The Protest | Chant, Swell | unrest −3 |
+| Soothe | The Journalist | Question, Expose | an upgrade token |
+
+A fixer at Heat 3 brings the Senate Hearing, an elite fight.
+
+- **The fight.**
+  - Each round you get 3 Influence (◆) and 5 cards.
+  - Ordinary fights last 2 rounds; Q1 is a 1-round tutorial.
+  - Pressure lowers Scrutiny, and at 0 you win.
+  - The intent badge shows what lands when you end the round, and on which meter (cash, unrest, collapse at half, or Heat). Deniability blocks it point for point. Some intents have riders, such as a Subpoena or a Leak curse, or losing a claim.
+  - Settling costs $0.5M per Scrutiny point left.
+  - Losing still signs the deal, but the region takes stress.
+  - `LD.DOOR.ONE_ROUND` switches ordinary fights to 1 round if quarters run long.
+  - On short phones the desk monitor keeps its height, the forecast rail goes to one line per chip, and the "Pick a deal" pill is hidden (the End Quarter button says it).
+- **The deck.**
+  - You start with 4 Talking Points, 4 No Comment and your executive's signature fixer, who brings 2 cards.
+  - Fixers (Lobbyists, Lawyers, PR people and Fellows) are card packages with a quarterly retainer. Hire them when the Headhunter calls, at most 4 on the roster. Letting one go removes their cards.
+  - A bunker room at Lv 2 adds a room card.
+  - Liabilities are now curse cards: Class Action, Subpoena, Whistleblower, Leak, Crack, Stranded Asset.
+- **Rewards.** After each fight you pick 1 of 3 cards (2 after a loss), or shred a card (starts at $6M, +$3M each time), or skip it for $3M. Cards can be upgraded once each, using tokens won from the Journalist. Loot items also ride on rewards.
+- **Assets.** Assets are rarer now, about 3 to 5 a run. They come from boss wins, the Hearing, act openings (after Q1, Q4 and Q8) and calls. They hang as trophies on the office wall, which holds 5. Set bonuses are gone.
+- **Calls.** Board memos are now phone calls: the phone on the desk rings. New calls: the Headhunter, a Distressed Sale and an Old Friend at the Agency.
+- **Scaling.** Scrutiny and intents grow with:
+  - the act;
+  - the rating tier (via its rules: bosses +6% from AA+, curse riders from AA, louder Protests from BB, a 4th boss round at D);
+  - city decay;
+  - unrest at the door, which makes Protests louder;
+  - holding a lot of cash, which brings Regulator scrutiny.
+
+## The office
+
+- **The office is the hub.**
+  - The map is the desk monitor.
+  - Encounters knock at the door; the window shows the city collapsing.
+  - Assets hang as wall trophies.
+  - The briefcase holds 3 items.
+  - The phone rings with calls, and the deck button shows your cards and fixers.
+  - The bunker is under the floor hatch.
+- **The executive.** Your executive reacts to unrest and collapse: confident, nervous or panicking.
+- **Office items.** Active items work once per act or once per run. The Soundproofed Door and the Holo-Window are now wall Assets.
+- **Asset Prospectus.** Opened from the title screen, it records everything you have seen and held, across runs.
+- **Saves.** Saves from older builds convert on load:
+  - Liabilities become curses.
+  - A pending draft becomes skip cash.
+  - Pending loot moves to the next reward.
+  - A briefcase over 3 items is sold down.
 
 ## Fonts
 

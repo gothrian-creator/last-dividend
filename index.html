@@ -3009,6 +3009,208 @@ body:has(#screen-tutorial.on) .shell,
 .pr-cell.sel { outline: 3px solid var(--gold-hi, #f3d98f); }
 @media (max-width: 520px) { .pr-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; } .pr-cell { font-size: 18px; min-height: 0; border-radius: 8px; } }
 @media (prefers-reduced-motion: reduce) { .loot-rays, .loot.reveal .loot-card, .loot.reveal .loot-ico, .bc-why.flash { animation: none !important; } }
+/* =====================================================================
+   Drop 1: the door fight, rewards, deck (emerald glass, gold deco)
+   ===================================================================== */
+.door-screen { position: fixed; inset: 0; z-index: 35; display: none; background: radial-gradient(120% 80% at 50% 0%, rgb(20, 84, 70), rgb(3, 20, 16) 70%); color: var(--ivory); overflow: hidden; }
+.door-screen.on { display: block; }
+.door-screen.rw-mode, .door-screen.dk-mode { background: radial-gradient(120% 80% at 50% 0%, rgb(26, 70, 52), rgb(3, 18, 14) 70%); }
+.door-in, .rw-in, .dk-in { position: relative; height: var(--app-h, 100dvh); max-width: 1180px; margin: 0 auto; display: grid; gap: 8px; padding: max(8px, env(safe-area-inset-top)) 12px max(8px, env(safe-area-inset-bottom)); min-height: 0; }
+.door-in { grid-template-rows: auto minmax(0, 1fr) auto auto auto; }
+.door-in.is-done { grid-template-rows: auto minmax(0, 1fr) auto; }
+.df-top, .rw-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.df-title { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.df-title small, .rw-head small { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ivory-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.df-title b { font-family: var(--font-serif); font-size: 24px; line-height: 1.1; color: var(--gold-hi); }
+.df-title em { font-style: normal; font-size: 13px; color: var(--ivory-muted); }
+.df-round { text-align: center; min-width: 58px; padding: 4px 8px; border-radius: 12px; border: 1px solid var(--gold-line); background: rgba(0, 0, 0, 0.3); font: 700 22px var(--font-serif); color: var(--gold-hi); line-height: 1; }
+.df-round small { display: block; font: 700 10px var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ivory-muted); margin-bottom: 2px; }
+.df-round i { font-style: normal; font-size: 13px; color: var(--ivory-muted); }
+.df-help { flex: none; }
+.df-stage { position: relative; display: grid; grid-template-columns: minmax(110px, 0.9fr) minmax(0, 1.1fr); grid-template-rows: auto 1fr; column-gap: 12px; row-gap: 8px; min-height: 0; align-items: stretch;
+  padding: 10px; border-radius: 16px; border: 1px solid var(--gold-line); background: linear-gradient(180deg, rgba(60, 40, 18, 0.35), rgba(0, 0, 0, 0.35)); box-shadow: var(--deco-inset); }
+.df-door { grid-row: 1 / 3; position: relative; min-height: 0; display: flex; align-items: flex-end; justify-content: center; max-width: 260px; width: 100%; justify-self: center; }
+.df-door svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.df-door::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: 0; height: 18%; background: radial-gradient(50% 60% at 50% 100%, rgba(243, 217, 143, 0.25), transparent); pointer-events: none; }
+.df-frame { fill: #3b2410; stroke: var(--gold); stroke-width: 2; }
+.df-dark { fill: #0a0705; }
+.df-leaf { fill: #5a3818; stroke: rgba(226, 191, 99, 0.6); }
+.df-who { position: relative; font-size: clamp(48px, 11vh, 120px); line-height: 1; margin-bottom: 6%; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.7)); animation: df-in 0.5s ease-out; }
+.is-boss .df-frame { stroke: #ff7a5c; } .is-boss .df-who { filter: drop-shadow(0 0 18px rgba(255, 90, 60, 0.6)); }
+@keyframes df-in { from { transform: translateY(18px) scale(0.85); opacity: 0; } to { transform: none; opacity: 1; } }
+.df-scrut { align-self: start; }
+.df-k { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ivory-muted); }
+.df-k b { font: 700 24px var(--font-serif); color: var(--gold-hi); letter-spacing: 0; }
+.df-bar { height: 14px; border-radius: 999px; background: rgba(0, 0, 0, 0.45); box-shadow: inset 0 0 0 1px var(--gold-line); overflow: hidden; margin: 4px 0; }
+.df-bar i { display: block; height: 100%; background: linear-gradient(90deg, #e8b04a, #ff7a5c); transition: width 0.35s ease-out; }
+.df-goal { font-size: 13px; color: #9ff5de; }
+.df-intent { align-self: end; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 8px 10px; border-radius: 12px; background: rgba(120, 20, 10, 0.35); box-shadow: inset 0 0 0 1px rgba(255, 120, 90, 0.7); overflow: hidden; }
+.df-intent.blocked { background: rgba(10, 90, 70, 0.35); box-shadow: inset 0 0 0 1px rgba(63, 224, 184, 0.7); }
+.di-main { display: flex; align-items: center; gap: 8px; }
+.di-main b { font: 700 24px var(--font-serif); color: #ffd2c4; }
+.blocked .di-main b { color: #9ff5de; }
+.di-ico { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; background: rgba(0, 0, 0, 0.4); box-shadow: inset 0 0 0 1px currentColor; flex: none; }
+.di-math { font-size: 14px; } .di-math b { color: var(--gold-hi); }
+.di-rider { font-size: 12px; color: var(--ivory-muted); } .di-rider.live { color: #ffb3a1; font-weight: 700; }
+.di-notes { font-size: 12px; color: #9ff5de; }
+.df-hud { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.df-inf { display: flex; align-items: center; gap: 6px; }
+.df-inf small { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ivory-muted); }
+.df-inf i { width: 16px; height: 16px; transform: rotate(45deg); background: rgba(0, 0, 0, 0.4); box-shadow: inset 0 0 0 1px var(--gold-line); }
+.df-inf i.on { background: linear-gradient(135deg, #f3d98f, #c9942a); box-shadow: 0 0 8px rgba(243, 217, 143, 0.6); }
+.df-inf b { font: 700 18px var(--font-serif); color: var(--gold-hi); margin-left: 4px; }
+.df-piles { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--ivory-muted); }
+.df-pile { min-height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--gold-line); background: rgba(0, 0, 0, 0.3); color: var(--gold-hi); font: 700 13px var(--font-sans); cursor: pointer; }
+.df-hand { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 168px); justify-content: center; gap: 8px; min-height: 0; }
+.df-empty { grid-column: 1 / -1; text-align: center; color: var(--ivory-muted); margin: 18px 0; }
+.df-actions { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; }
+.df-actions .btn { min-height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+.df-actions .btn small { font-size: 12px; font-weight: 600; opacity: 0.85; }
+.df-cash { position: absolute; right: 14px; top: calc(max(8px, env(safe-area-inset-top)) + 58px); font-size: 12px; font-weight: 700; color: var(--ivory-muted); pointer-events: none; display: none; }
+.df-log { position: absolute; left: 50%; bottom: calc(max(8px, env(safe-area-inset-bottom)) + 66px); transform: translateX(-50%); max-width: 92%; padding: 6px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.75); border: 1px solid var(--gold-line); font-size: 14px; pointer-events: none; opacity: 0; transition: opacity 0.2s; text-align: center; z-index: 6; }
+.df-log.on { opacity: 1; }
+.door-in .fx { position: absolute; inset: 0; pointer-events: none; z-index: 7; }
+.df-result { align-self: end; display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 16px; text-align: center; border: 1px solid var(--gold-line); background: rgba(0, 0, 0, 0.45); animation: df-in 0.4s ease-out; }
+.df-result b { font: 700 28px var(--font-serif); color: var(--gold-hi); }
+.df-result.win b { color: #9ff5de; } .df-result.lost b { color: #ffb3a1; }
+.df-result span { font-size: 15px; }
+.df-leaks { color: #ffb3a1; font-size: 14px !important; }
+.df-close { min-height: 54px; margin-top: 4px; }
+/* Card faces */
+.dc { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; min-width: 0; min-height: 0; padding: 22px 8px 8px; border-radius: 14px; cursor: pointer; font: inherit; color: var(--ivory);
+  background: linear-gradient(180deg, rgba(16, 72, 60, 0.98), rgba(4, 28, 22, 0.98)); border: 1px solid var(--gold-line); box-shadow: var(--deco-inset), 0 6px 14px rgba(0, 0, 0, 0.4); overflow: hidden; transition: transform 0.12s, box-shadow 0.12s; }
+.dc::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: var(--tc, #3fe0b8); }
+.dc:not(.no):not(div):hover { transform: translateY(-4px); box-shadow: 0 0 0 2px var(--gold), 0 10px 20px rgba(0, 0, 0, 0.5); }
+.dc:active { transform: scale(0.97); }
+.dc.no { opacity: 0.5; cursor: not-allowed; }
+.dc.sel { box-shadow: 0 0 0 3px var(--gold), 0 0 24px rgba(243, 217, 143, 0.5); transform: translateY(-4px); }
+.dc.pop { animation: dc-pop 0.35s; }
+@keyframes dc-pop { 50% { transform: scale(1.06); } }
+.t-shared { --tc: #c9c3b0; } .t-lob { --tc: #e8b04a; } .t-law { --tc: #6fa8ff; } .t-pr { --tc: #ff8fb0; } .t-fel { --tc: #9ff5de; } .t-room { --tc: #b08cff; } .t-priv { --tc: #f3d98f; }
+.t-curse { --tc: #ff5a3c; background: linear-gradient(180deg, rgba(70, 16, 12, 0.98), rgba(24, 6, 4, 0.98)); border-color: rgba(255, 120, 90, 0.7); }
+.dc.r-r { border-color: var(--gold); } .dc.up .dc-name { color: #9ff5de; }
+.dc-cost { position: absolute; left: 6px; top: 8px; min-width: 28px; height: 22px; padding: 0 6px; border-radius: 999px; display: grid; place-items: center; font: 800 12px var(--font-sans); color: #1b1305; background: linear-gradient(180deg, #f3d98f, #c9942a); }
+.dc-stats { position: absolute; right: 6px; top: 8px; display: flex; gap: 3px; }
+.dc-stats i { font-style: normal; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 6px; display: grid; place-items: center; font: 800 13px var(--font-sans); }
+.dc-p { background: #b8402f; color: #fff; } .dc-d { background: #0e6b5a; color: #fff; box-shadow: inset 0 0 0 1px #9ff5de; }
+.dc-ico { font-size: 28px; line-height: 1.1; }
+.dc-name { font-family: var(--font-serif); font-size: 15px; line-height: 1.15; color: var(--gold-hi); }
+.dc-txt { font-size: 12px; line-height: 1.25; color: var(--ivory); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+.dc-type { margin-top: auto; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ivory-muted); }
+.dc-why { position: absolute; left: 4px; right: 4px; bottom: 4px; padding: 2px 4px; border-radius: 6px; background: rgba(0, 0, 0, 0.8); font-size: 11px; color: #ffb3a1; }
+.dc.mini { padding: 20px 6px 6px; }
+.dc.mini .dc-ico { font-size: 20px; } .dc.mini .dc-name { font-size: 13px; } .dc.mini .dc-txt { font-size: 11px; -webkit-line-clamp: 3; }
+.dc.big { padding: 26px 10px 10px; } .dc.big .dc-ico { font-size: 40px; } .dc.big .dc-name { font-size: 18px; } .dc.big .dc-txt { font-size: 14px; -webkit-line-clamp: 5; }
+/* Reward */
+.rw-in { grid-template-rows: auto minmax(0, 1fr) auto; max-width: 920px; align-content: stretch; }
+.rw-head { flex-direction: column; align-items: center; text-align: center; gap: 0; }
+.rw-head h2 { margin: 2px 0 0 !important; font-size: 26px !important; color: var(--gold-hi); }
+.rw-sub { margin: 2px 0 0; font-size: 13px; color: var(--ivory-muted); }
+.rw-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 220px)); justify-content: center; gap: 12px; min-height: 0; align-content: center; }
+.rw-cards .dc { min-height: 220px; max-height: 100%; }
+.rw-cards:has(.dc:nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 220px)); }
+.rw-assets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; min-height: 0; align-content: center; }
+.rw-item { justify-self: center; align-self: center; width: min(420px, 100%); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 20px; border-radius: 18px; border: 1px solid var(--gold); background: rgba(0, 0, 0, 0.35); animation: df-in 0.45s ease-out; }
+.rw-ico { font-size: 56px; } .rw-item b { font: 700 22px var(--font-serif); color: var(--gold-hi); } .rw-item em { font-style: normal; font-size: 12px; color: var(--ivory-muted); }
+.rw-foot { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.rw-foot .btn { min-height: 48px; }
+.rw-foot #rw-take { min-width: 200px; }
+.rw-q { margin: 0; text-align: center; font-size: 14px; }
+.rw-deck, .dk-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; min-height: 0; overflow: auto; align-content: start; padding: 2px; }
+.rw-deck .dc, .dk-cards .dc { min-height: 132px; }
+.rw-in:has(.rw-deck) { grid-template-rows: auto auto minmax(0, 1fr) auto; }
+.rw-in:has(.rw-minis) { grid-template-rows: auto auto auto minmax(0, 1fr) auto; }
+.rw-minis { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; align-content: start; }
+/* Deck view (a collection: may scroll) */
+.dk-in { grid-template-rows: auto auto auto minmax(0, 1fr) auto; max-width: 980px; }
+.dk-fixers { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.dk-fixer { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px; background: rgba(0, 0, 0, 0.3); box-shadow: inset 0 0 0 1px var(--gold-line); }
+.dk-fixer > div { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dk-fixer b { color: var(--gold-hi); font-size: 14px; } .dk-fixer em { font-style: normal; font-size: 11px; color: var(--ivory-muted); } .dk-heat { font-size: 12px; }
+.dk-fi { font-size: 26px; }
+.dk-fire { min-height: 44px; padding: 0 10px; font-size: 13px; }
+.dk-foot { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.dk-foot .btn { min-height: 48px; }
+/* Office hub additions */
+.of-wallart { position: absolute; left: 34%; right: 30%; top: 4%; display: flex; gap: 3px; justify-content: center; z-index: 3; pointer-events: none; }
+.of-wallart i { font-style: normal; width: 20px; height: 22px; display: grid; place-items: center; font-size: 12px; border: 2px solid var(--gold); border-radius: 2px; background: rgba(20, 12, 4, 0.8); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+.of-wallart i.empty { opacity: 0.35; border-style: dashed; }
+.of-phone, .of-deckbtn { display: inline-flex; align-items: center; gap: 4px; min-height: 30px; padding: 2px 9px; border-radius: 999px; cursor: pointer; font: 800 12px var(--font-sans); color: var(--gold-hi); background: rgba(0, 0, 0, 0.3); border: 1px solid var(--gold-line); white-space: nowrap; }
+.of-phone.ringing { animation: ring 0.6s infinite; background: #a8301f; color: #fff; }
+@keyframes ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+.of-head .of-tools { display: inline-flex; gap: 4px; margin-left: auto; align-items: center; }
+.of-head .of-tools .pf-chip { margin-left: 0; max-width: none; }
+.pin-enc { font-size: 0.95em; margin-right: 2px; }
+.dz-enc { display: flex; align-items: center; gap: 8px; padding: 6px 10px; margin: 6px 0; border-radius: 10px; background: rgba(120, 20, 10, 0.25); box-shadow: inset 0 0 0 1px rgba(255, 120, 90, 0.5); font-size: 14px; }
+.dz-enc b { color: var(--gold-hi); }
+.dz-enc span.ic { font-size: 22px; }
+.board-tilt::after { content: "DESK MONITOR"; position: absolute; left: 50%; bottom: -2px; transform: translateX(-50%); font: 800 9px var(--font-sans); letter-spacing: 0.22em; color: rgba(243, 217, 143, 0.55); pointer-events: none; }
+.memo-mode .fy-memo .dz-k::before { content: "☎ "; }
+/* Phones and short screens */
+@media (max-width: 600px) {
+  .door-in { gap: 6px; padding-left: 8px; padding-right: 8px; }
+  .df-title b { font-size: 20px; } .df-title em { display: none; }
+  .df-stage { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); padding: 8px; column-gap: 8px; }
+  .df-who { font-size: 64px; }
+  .df-k b, .di-main b { font-size: 20px; }
+  .df-hand { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-columns: auto; }
+  .dc { padding: 22px 5px 6px; } .dc-ico { font-size: 22px; } .dc-name { font-size: 13px; } .dc-txt { font-size: 11px; -webkit-line-clamp: 3; }
+  .df-actions .btn { min-height: 50px; }
+  .rw-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .rw-cards .dc { min-height: 200px; } .dc.big { padding: 24px 6px 8px; } .dc.big .dc-ico { font-size: 30px; } .dc.big .dc-name { font-size: 15px; } .dc.big .dc-txt { font-size: 12px; -webkit-line-clamp: 7; }
+  .rw-assets { grid-template-columns: 1fr; gap: 6px; }
+  .rw-assets .fy-card { flex-direction: row; text-align: left; padding: 8px 10px; }
+  .rw-assets .fy-ico { width: 52px; height: 52px; font-size: 30px; flex: none; }
+  .rw-foot .btn { min-height: 46px; padding: 0 12px; font-size: 14px; }
+  .rw-foot #rw-take { min-width: 0; flex: 1 1 100%; }
+}
+@media (max-height: 760px) and (max-width: 600px) {
+  .df-who { font-size: 44px; } .dc-txt { -webkit-line-clamp: 2; } .df-stage { padding: 6px; }
+  .rw-cards .dc { min-height: 180px; }
+}
+@media (min-width: 601px) and (max-height: 780px) {
+  .df-hand .dc { min-height: 150px; } .df-who { font-size: 64px; }
+  .df-title b { font-size: 21px; }
+  .rw-cards .dc { min-height: 200px; }
+}
+@media (min-width: 601px) { .df-hand .dc { min-height: 170px; } }
+@media (prefers-reduced-motion: reduce) { .df-who, .df-result, .rw-item, .dc.pop, .of-phone.ringing { animation: none !important; } .df-bar i { transition: none; } }
+.df-meters { display: flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 700; }
+.df-meters b { font: 700 17px var(--font-serif); color: var(--gold-hi); }
+.df-intent.firing { animation: df-fire 0.42s ease-in; }
+@keyframes df-fire { 40% { transform: scale(1.06); box-shadow: inset 0 0 0 2px #ff7a5c, 0 0 30px rgba(255, 90, 60, 0.6); } }
+.dc.shake, .df-settle.armed { animation: shake 0.35s; }
+.df-settle.armed { box-shadow: 0 0 0 2px #ff7a5c; }
+.overlay.deck-mode .dk-in { height: auto; max-height: calc(var(--app-h, 100dvh) - 120px); padding: 0; grid-template-rows: auto auto auto minmax(0, 1fr); }
+.overlay.deck-mode .panel { width: min(980px, 100%); }
+.dk-fire.armed { background: #a8301f; color: #fff; }
+@media (max-width: 600px) { .df-meters { font-size: 12px; gap: 5px; } .df-meters b { font-size: 15px; } .df-inf small { display: none; } }
+.rw-deck { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; overflow: hidden; }
+.rw-deck .dc.chip { min-height: 44px; }
+.dc.chip { flex-direction: row; align-items: center; text-align: left; gap: 6px; padding: 4px 8px 4px 8px; min-height: 44px; border-radius: 10px; }
+.dc.chip::before { top: 0; bottom: 0; left: 0; right: auto; width: 4px; height: auto; }
+.dc.chip .dc-cost { position: static; flex: none; min-width: 26px; height: 20px; font-size: 11px; }
+.dc.chip .dc-ico { font-size: 18px; flex: none; }
+.dc.chip .dc-name { font-size: 13px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dc.chip .dc-txt, .dc.chip .dc-type, .dc.chip .dc-stats { display: none; }
+.dc.chip .dc-why { display: none; }
+.dc.chip.no { opacity: 0.4; }
+@media (max-width: 600px) { .rw-deck { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; } .dc.chip { padding: 2px 5px; gap: 4px; } .dc.chip .dc-cost { display: none; } .dc.chip .dc-name { font-size: 12px; white-space: normal; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; } }
+.rw-foot .btn, .df-actions .btn, .dk-foot .btn { width: auto; margin: 0; }
+.rw-foot .btn { flex: 0 1 auto; }
+.df-meters span, .df-piles span, .df-pile { white-space: nowrap; }
+@media (max-width: 600px) { .rw-foot .btn { flex: 1 1 30%; } .df-piles span { display: none; } }
+.overlay.deck-mode .dk-in { width: 100%; }
+/* Short phones in a boss quarter: the boss banner stays one line so the map keeps room for its pins. */
+@media (max-height: 760px) and (max-width: 699px) {
+  .desk .phase-pill.boss { font-size: 12px; line-height: 1.25; padding: 4px 10px; margin: 2px auto 3px; max-width: 96%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Short phones: keep the desk monitor tall enough for its pins; the forecast rail goes to one line per chip instead. */
+  .desk .board-tilt { min-height: 96px; }
+  .desk .phase-pill:not(.boss) { display: none; } /* the End Quarter button already says what to do next */
+  .desk .phase-pill { flex-shrink: 0; }
+  .desk #rail-wrap .rq { max-height: 50px; overflow: hidden; gap: 2px; }
+  .desk #rail-wrap .rq .fx-chip { font-size: 10px; padding: 1px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+}
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -3047,6 +3249,7 @@ body:has(#screen-tutorial.on) .shell,
     <section id="screen-history" class="screen" aria-label="Run history"></section>
     <section id="screen-boardroom" class="screen" aria-label="The Boardroom"></section>
   </div>
+  <div id="door" class="door-screen" role="dialog" aria-modal="true" aria-label="At the door" hidden></div>
   <div id="overlay" class="overlay" role="dialog" aria-modal="true" hidden></div>
 
   <script>
@@ -3219,7 +3422,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Crisis Logistics",
       firm: "Crowe Terminals",
       blurb: "More cash, more heat, and bad news takes an extra quarter to arrive. Use the time.",
-      start: { cash: 58, unrest: 21, collapse: 22 },
+      start: { cash: 70, unrest: 19, collapse: 20 },
       perks: { delayBonus: 1, tags: ["logistics"] },
       compound: "Port Sovereign",
       unlock: "three-runs",
@@ -4309,6 +4512,7 @@ body:has(#screen-tutorial.on) .shell,
     if (state.bunker.water.level >= 2 && systemId === "food" && level === 2) cost -= 6;
     if (state.bunker.power.level >= 2 && (systemId === "air" || systemId === "water") && level === 2) cost -= 4;
     if (level === 3 && LD.fyLv3Discount) cost -= LD.fyLv3Discount(state);
+    if (LD.fyPermitCut) cost -= LD.fyPermitCut(state);
     if (hasFlag(state, "freightCharter")) {
       cost = Math.floor(cost * 0.7);
     }
@@ -4371,6 +4575,7 @@ body:has(#screen-tutorial.on) .shell,
 
   function bunkerGuard(state) {
     if (state.ended) return "Run already ended.";
+    var busyB = LD.fyBusy ? LD.fyBusy(state) : null; if (busyB) return busyB;
     if (state.phase !== "bunker") return "Choose a deal first.";
     if (state.bunkerActedThisTurn) return "Bunker action already taken this quarter.";
     if (state.ap < LD.BUNKER_AP) return "No action points remain.";
@@ -4458,7 +4663,7 @@ body:has(#screen-tutorial.on) .shell,
   }
 
   function canBeginConversion(state) {
-    return !state.ended && state.phase === "bunker" && !state.bunkerActedThisTurn && !state.converting && state.ap >= LD.BUNKER_AP;
+    return !(LD.fyBusy && LD.fyBusy(state)) && !state.ended && state.phase === "bunker" && !state.bunkerActedThisTurn && !state.converting && state.ap >= LD.BUNKER_AP;
   }
 
   function beginConversion(state, systemId, quality) {
@@ -4488,6 +4693,7 @@ body:has(#screen-tutorial.on) .shell,
       if (state.cash < cost + fee) return { ok: false, error: "Not enough cash (" + (cost + fee) + " required).", state: state };
     }
     state.converting = true;
+    if (LD.fyOnConvert) LD.fyOnConvert(state);
     if (fee) state.cash -= fee;
     if (systemId) {
       if (hasFlag(state, "skilledCrew")) {
@@ -4714,6 +4920,8 @@ body:has(#screen-tutorial.on) .shell,
     if (state.phase === "deal" || !state.dealPickedThisTurn) {
       return { ok: false, error: "Choose a deal before closing the quarter.", state: state };
     }
+    var busyC = LD.fyBusy ? LD.fyBusy(state) : null;
+    if (busyC) return { ok: false, error: busyC, state: state };
     var fired = (LD.fyPreClose ? LD.fyPreClose(state, opts) : []).concat(applyPendingDue(state));
     var worldEvents = LD.spreadCrises ? LD.spreadCrises(state) : [];
     worldEvents = worldEvents.concat(LD.resolveWorldQuarter ? LD.resolveWorldQuarter(state) : []);
@@ -4752,6 +4960,8 @@ body:has(#screen-tutorial.on) .shell,
     state = deepClone(state);
     if (state.ended) return { ok: false, error: "Run already ended.", state: state };
     if (state.phase !== "bunker") return { ok: false, error: "Choose a deal first.", state: state };
+    var busyE = LD.fyBusy ? LD.fyBusy(state) : null;
+    if (busyE) return { ok: false, error: busyE, state: state };
     if (state.turn < LD.MIN_EVAC_TURN) {
       return { ok: false, error: "The bunker cannot be sealed before quarter " + LD.MIN_EVAC_TURN + ".", state: state };
     }
@@ -4764,7 +4974,7 @@ body:has(#screen-tutorial.on) .shell,
   }
 
   function canEvacuate(state) {
-    return !state.ended && state.phase === "bunker" && state.turn >= LD.MIN_EVAC_TURN;
+    return !state.ended && state.phase === "bunker" && state.turn >= LD.MIN_EVAC_TURN && !(LD.fyBusy && LD.fyBusy(state));
   }
 
   function restart(state, opts) {
@@ -5024,6 +5234,7 @@ body:has(#screen-tutorial.on) .shell,
 
   function regionGuard(state, regionId) {
     if (state.ended) return "Run already ended.";
+    var busyR = LD.fyBusy ? LD.fyBusy(state) : null; if (busyR) return busyR;
     if (!state.world) return "No map.";
     var r = state.world.regions[regionId];
     if (!r) return "Unknown region.";
@@ -5184,16 +5395,16 @@ body:has(#screen-tutorial.on) .shell,
   /* Fiscal Year ladder: every tier adds a rule (cumulative). Engine-side rules live in LD.fyRules. */
   LD.RATINGS = [
     { id: "AAA", text: "The Fiscal Year: 3 acts, 3 boss quarters, seal from Q9", apply: function () {} },
-    { id: "AA+", text: "Guidance raised: bosses hit 15% harder", apply: function () {} },
-    { id: "AA", text: "Activist money: 1 in 4 drafts carries a Liability rider", apply: function () {} },
+    { id: "AA+", text: "Guidance raised: bosses hit 6% harder (15% at D)", apply: function () {} },
+    { id: "AA", text: "Activist money: 1 in 4 card rewards carries a curse rider", apply: function () {} },
     { id: "A", text: "Tight credit: bunker works +8%", apply: function (m) { m.upgradeMult *= 1.08; } },
     { id: "BBB", text: "Talent war: chief engineer +$6M", apply: function (m) { m.engineerCost += 6; } },
-    { id: "BB", text: "Crisis season: every crisis +3 unrest", apply: function () {} },
-    { id: "B", text: "Inherited lawsuit: start with a Class Action", apply: function () {} },
-    { id: "CCC", text: "Paper trail: delayed fallout ×1.2", apply: function (m) { m.delayMult = 1.2; } },
-    { id: "CC", text: "Building codes: Discount Lv 2 never holds (Sound or Lv 3 only)", apply: function () {} },
+    { id: "BB", text: "Crisis season: every crisis +3 unrest, and Protests start louder (+2)", apply: function () {} },
+    { id: "B", text: "Inherited lawsuit: start with a Class Action curse in your deck", apply: function () {} },
+    { id: "CCC", text: "Paper trail: delayed fallout ×1.2, and curses can't be shredded in Act III", apply: function (m) { m.delayMult = 1.2; } },
+    { id: "CC", text: "Building codes: Discount Lv 2 never holds (Sound or Lv 3 only); Cut Corners cracks half the time", apply: function () {} },
     { id: "C", text: "Credit crunch: start cash −$4M", apply: function (m) { m.startDelta.cash -= 4; } },
-    { id: "D", text: "The Reckoning comes early: the final boss lands at Q11, and collapse starts 5 higher", apply: function () {} }
+    { id: "D", text: "The Reckoning comes early: the final boss lands at Q11, collapse starts 5 higher, and boss fights get a 4th round", apply: function () {} }
   ];
   LD.PERK_CAP_RATING = 5; /* at BB and below only one Perquisite slot works */
 
@@ -5624,6 +5835,7 @@ body:has(#screen-tutorial.on) .shell,
   LD.LEAK = { unrest: 5, delay: 2 };
   function sabotageGuard(state) {
     if (state.ended) return "Run already ended.";
+    var busyS = LD.fyBusy ? LD.fyBusy(state) : null; if (busyS) return busyS;
     if (state.world.actedTurn === state.turn) return "One regional order per quarter.";
     return null;
   }
@@ -5820,7 +6032,10 @@ body:has(#screen-tutorial.on) .shell,
     { id: "privgrid", r: "R", arch: "network", icon: "🔋", name: "Private Grid", text: "Going private keeps 15% more deal cash (max 90%)" },
     { id: "disfut", r: "U", arch: "crisis", icon: "🌪️", name: "Disaster Futures", text: "+$3M each quarter a crisis is on offer" },
     { id: "futures", r: "U", arch: "time", icon: "⏳", name: "Futures Desk", text: "Delayed collapse from your deals lands 1 quarter later" },
-    { id: "rolodex", r: "U", arch: "corp", icon: "📇", name: "Golden Rolodex", text: "Drafts show 4 Assets" }
+    { id: "rolodex", r: "U", arch: "corp", icon: "📇", name: "Golden Rolodex", text: "At the door you hold 6 cards, not 5" },
+    { id: "chief", r: "R", arch: "corp", icon: "🗂️", name: "Chief of Staff", text: "+1◆ in the first round of every fight" },
+    { id: "soundproof", r: "U", arch: "pr", icon: "🔇", name: "Soundproofed Door", text: "Unrest −2 every quarter (you stop answering). Hidden cost: crisis pay-offs cost $4M more, and the door stops warning you" },
+    { id: "holo", r: "U", arch: "corp", icon: "🖼️", name: "Holo-Window", text: "The window shows a calm city: +$3M every quarter. Hidden cost: collapse +1 every quarter" }
   ];
   LD.LIABILITIES = [
     { id: "classaction", icon: "⚖️", name: "Class Action", text: "+2 unrest per quarter until you sign a Soothe deal" },
@@ -5857,10 +6072,8 @@ body:has(#screen-tutorial.on) .shell,
     { id: "rush", r: "U", icon: "🚚", name: "Rush Order", per: "act", text: "Use: bunker works cost 30% less for the rest of this quarter." },
     { id: "cloud", r: "U", icon: "🌧️", name: "Cloud Seeding", per: "act", text: "Use: collapse −6 now. The rain falls on the mainland instead (city +8)." },
     { id: "security", r: "U", icon: "🚓", name: "Private Security", per: "act", text: "Use: unrest −10 now. The crackdown burns blocks (city +8, collapse +2)." },
-    { id: "soundproof", r: "U", icon: "🔇", name: "Soundproofed Door", office: true, text: "Office: unrest −2 every quarter (you stop answering). Hidden cost: crisis pay-offs cost $4M more, and the door stops warning you." },
-    { id: "holo", r: "U", icon: "🖼️", name: "Holo-Window", office: true, text: "Office: the window shows a calm city. Investors love it: +$3M every quarter. Hidden cost: collapse +1 every quarter." },
     { id: "liquidity", r: "R", icon: "💰", name: "Emergency Liquidity", per: "run", text: "Use once: +$20M now, unrest +5." },
-    { id: "hush", r: "R", icon: "🤐", name: "Hush Money", per: "run", cost: 10, text: "Use once: settle every Liability. Costs $10M." },
+    { id: "hush", r: "R", icon: "🤐", name: "Hush Money", per: "run", cost: 10, text: "Use once: every curse leaves your deck. Costs $10M." },
     { id: "pod", r: "R", icon: "🧩", name: "Prefab Pod", per: "run", cost: 12, text: "Use once: your lowest bunker room gains a level (an empty room gets Discount Lv 1). Costs $12M." }
   ];
   var ITEM_BY = {}; LD.ITEMS.forEach(function (it) { ITEM_BY[it.id] = it; });
@@ -5884,9 +6097,9 @@ body:has(#screen-tutorial.on) .shell,
     if (it.phase === "deal" && state.phase !== "deal") return "Use it before you sign this quarter's deal.";
     if (id === "rush" && state.bunkerActedThisTurn) return "Your bunker order for this quarter is already placed.";
     if (id === "rush" && f.rushQ === state.turn) return "Already rushing this quarter.";
-    if (id === "hush" && !f.hand.some(function (h) { var c = cardById(h.id); return c && c.liability; })) return "No Liabilities to settle.";
+    if (id === "hush" && !(f.deck || []).some(function (c) { return isCurse(c.id); })) return "No curses in your deck.";
     if (id === "pod" && LD.SYSTEMS.every(function (x) { return state.bunker[x.id].level >= 3; })) return "Every room is already at Lv 3.";
-    if (id === "hotline" && (f.draft || f.memo || f.loot)) return "Finish the open card first.";
+    if (id === "hotline" && (f.draft || f.memo || f.loot || f.reward || f.fight)) return "Finish what's on the desk first.";
     return null;
   };
   LD.fyUseItem = function (state, id) {
@@ -5911,11 +6124,13 @@ body:has(#screen-tutorial.on) .shell,
       case "cloud": col(-6); cityAdd(state, 8); msg = "The clouds open over the mainland. Collapse −6, city +8."; break;
       case "security": un(-10); cityAdd(state, 8); col(2); msg = "Security clears the streets. Unrest −10; blocks burn (city +8, collapse +2)."; break;
       case "liquidity": state.cash += 20; un(5); msg = "The bailout line opens. +$20M, unrest +5."; break;
-      case "hush": var gone = f.hand.filter(function (h) { var c = cardById(h.id); return c && c.liability; }).map(function (h) { return h.id; });
-        gone.forEach(function (g) { removeCard(state, g); }); msg = "Settled out of court: " + gone.map(function (g) { return cardById(g).name; }).join(", ") + "."; break;
+      case "hush": var gone = f.deck.filter(function (c) { return isCurse(c.id); });
+        f.deck = f.deck.filter(function (c) { return !isCurse(c.id); });
+        if (f.fight && !f.fight.done) { var gu = gone.map(function (c) { return c.u; }); ["hand", "draw", "disc"].forEach(function (p) { f.fight[p] = f.fight[p].filter(function (x) { return gu.indexOf(x) === -1; }); }); }
+        msg = "Settled out of court: " + gone.length + " curse" + (gone.length === 1 ? "" : "s") + " gone."; break;
       case "pod": var low = LD.SYSTEMS.map(function (x) { return x.id; }).sort(function (a, b) { return state.bunker[a].level - state.bunker[b].level; })[0];
         var b0 = state.bunker[low]; b0.level += 1; if (b0.level === 1 || !b0.quality) b0.quality = "cheap";
-        msg = "A prefab pod docks. Your " + low + " room reaches Lv " + b0.level + "."; break;
+        msg = "A prefab pod docks. Your " + low + " room reaches Lv " + b0.level + "."; syncRoomCards(state); break;
     }
     d.used = it.per === "act" ? f.act : true;
     f.itemsUsed = (f.itemsUsed || 0) + 1;
@@ -5924,7 +6139,7 @@ body:has(#screen-tutorial.on) .shell,
     return { ok: true, state: state, text: msg, item: it };
   };
   LD.fyRushMult = function (state) { var f = fy(state); return f && f.rushQ === state.turn ? 0.7 : 1; };
-  LD.doorQuiet = function (state) { var f = fy(state); return !!(f && (f.quietQ === state.turn || hasItem(state, "soundproof"))); };
+  LD.doorQuiet = function (state) { var f = fy(state); return !!(f && (f.quietQ === state.turn || has(state, "soundproof"))); };
 
   /* Loot: boss wins, some memos and some deals drop an office item. */
   function rollLoot(state, src) {
@@ -5980,11 +6195,12 @@ body:has(#screen-tutorial.on) .shell,
   function rulesFor(tier) {
     tier = tier | 0;
     return {
-      bossMult: tier >= 10 ? 1.3 : tier >= 1 ? 1.15 : 1,
+      bossMult: tier >= 10 ? 1.15 : tier >= 1 ? 1.06 : 1,
       riderChance: tier >= 2 ? 0.25 : 0,
       crisisUnrest: tier >= 5 ? 3 : 0,
       startCurse: tier >= 6,
       crackedDiscount: tier >= 8,
+      paperTrail: tier >= 7,
       finalQ: tier >= 10 ? 11 : 12,
       startCollapse: tier >= 10 ? 5 : 0
     };
@@ -5995,9 +6211,11 @@ body:has(#screen-tutorial.on) .shell,
   LD.actOf = actOf;
   function fy(state) { return state && state.fy; }
   function has(state, id) { var f = fy(state); if (!f) return false; for (var i = 0; i < f.hand.length; i++) if (f.hand[i].id === id) return true; return false; }
+  LD.has = has;
   function hasActive(state, id) { var f = fy(state); if (!f) return false; for (var i = 0; i < f.hand.length; i++) if (f.hand[i].id === id && ((id !== "audit" && id !== "toxic") || f.hand[i].actOf === f.act)) return true; return false; }
   function archCount(state, arch) { return fy(state) ? fy(state).hand.filter(function (h) { var c = cardById(h.id); return c && c.arch === arch; }).length : 0; }
-  function setOn(state, arch) { var a = LD.ARCHETYPES[arch]; return !!(a && a.set && archCount(state, arch) >= a.set); }
+  /* Drop 1: Cartels (set bonuses) are cut; synergies live on cards. */
+  function setOn() { return false; }
   function slotsUsed(state) { return fy(state).hand.filter(function (h) { var c = cardById(h.id); return c && (!c.liability || h.id === "stranded"); }).length; }
   function bossQuarters(state) { return [4, 8, fy(state) ? fy(state).rules.finalQ : 12]; }
   function bossAt(state, q) {
@@ -6014,6 +6232,15 @@ body:has(#screen-tutorial.on) .shell,
     if (!id) return null;
     var k = bossK(state), b = LD.BOSSES[id];
     var info = { id: id, q: q == null ? state.turn : q, name: b.name, icon: b.icon, kicker: b.kicker, final: !!b.final };
+    if (!b.final && fy(state).deck && LD.ENCOUNTERS && LD.ENCOUNTERS[id]) {
+      var E = LD.ENCOUNTERS[id], st0 = { turn: info.q, rating: state.rating, cash: state.cash, fy: fy(state) };
+      var sc = Math.round((info.q <= 4 ? LD.DOOR.SCRUT[4] : LD.DOOR.SCRUT[8]) * (1 + LD.DOOR.TIER * (state.rating | 0)) * fy(state).rules.bossMult);
+      var rounds = LD.DOOR.BOSS_ROUNDS + ((state.rating | 0) >= 10 ? 1 : 0);
+      info.fight = true; info.scrutiny = sc; info.rounds = rounds;
+      info.demand = "A card fight at the door: Scrutiny " + sc + ", " + rounds + " rounds. " + E.pattern.slice(0, rounds).map(function (k) { return LD.INTENTS[k].label; }).join(", then ") + ".";
+      info.beat = "Win: a rare card reward, an Asset for the wall, and loot"; info.miss = "Lose: what got through lands on your meters";
+      return info;
+    }
     if (id === "earnings") { info.ask = Math.round(15 * k); info.missUnrest = Math.round(12 * k); info.missCollapse = 4; info.choice = true;
       info.demand = "Hit the number: pay a $" + info.ask + "M special dividend.";
       info.beat = "Pay $" + info.ask + "M"; info.miss = "Guidance cut: unrest +" + info.missUnrest + ", collapse +4"; }
@@ -6053,14 +6280,14 @@ body:has(#screen-tutorial.on) .shell,
   LD.MAX_LEVEL = 10;
   LD.LEVEL_PERKS = [
     { lv: 2, text: "Start cash +$3M" },
-    { lv: 3, text: "Signing bonus: start with a Common Asset" },
+    { lv: 3, text: "Signing bonus: a second copy of your signature card" },
     { lv: 4, text: "Chief engineer −$3M" },
-    { lv: 5, text: "One draft reroll per run" },
+    { lv: 5, text: "One card-reward reroll per run" },
     { lv: 6, text: "Start collapse −2" },
     { lv: 7, text: "Start cash another +$3M" },
-    { lv: 8, text: "Skipping a draft pays $5M" },
-    { lv: 9, text: "Signing bonus upgrades to a Preferred Asset" },
-    { lv: 10, text: "Portfolio holds 6 Assets" }
+    { lv: 8, text: "Skipping a card reward pays $5M" },
+    { lv: 9, text: "Start with one Talking Points already upgraded" },
+    { lv: 10, text: "Your wall holds 6 Assets" }
   ];
   function levelCost(n) { return 100 + 25 * (n - 1); }
   function levelFromXp(xp) {
@@ -6130,11 +6357,12 @@ body:has(#screen-tutorial.on) .shell,
     f.hand.push({ id: id, actOf: f.act });
     if (id === "buyback") state.cash += 8;
   }
+  /* Drop 1: Liabilities arrive as curse cards in your deck. */
   function addLiability(state, rng) {
-    var pool = LD.LIABILITIES.filter(function (x) { return x.id !== "stranded" || slotsUsed(state) < fy(state).cap; });
-    var l = pool[Math.floor(rng() * pool.length)];
-    addCard(state, l.id);
-    return l;
+    var pool = ["c_class", "c_subpoena", "c_whistle", "c_leak", "c_stranded"];
+    var id = pool[Math.floor(rng() * pool.length)];
+    addCurse(state, id);
+    return LD.cardDef(id);
   }
 
   /* createRun hook. opts.level = executive level (meta). */
@@ -6150,23 +6378,15 @@ body:has(#screen-tutorial.on) .shell,
       draft: null, used: {}, drafts: 0, skips: 0, rerolls: lv >= 5 ? 1 : 0, rerolled: 0,
       cap: lv >= 10 ? 6 : LD.FY.CAP, skipCash: lv >= 8 ? 5 : LD.FY.SKIP_CASH, lastBoss: null,
       memo: null, memoQs: seedMemoQs(state.seed), memosSeen: [], credit: {}, picks: [],
-      drawer: [], dcap: lv >= 10 ? 4 : LD.FY.DRAWER, loot: null, city: 0, lootN: 0
+      drawer: [], dcap: LD.FY.DRAWER, loot: null, city: 0, lootN: 0
     };
     var sb = seedBosses(state.seed); state.fy.bossI = sb.bossI; state.fy.bossII = sb.bossII; state.fy.bossIII = sb.bossIII;
     if (lv >= 2) state.cash += 3;
     if (lv >= 7) state.cash += 3;
     if (lv >= 6) state.collapse = Math.max(0, state.collapse - 2);
-    var rng = fyRng(state, "start");
-    if (lv >= 3) {
-      var want = lv >= 9 ? "U" : "C";
-      var pool = LD.FY_ASSETS.filter(function (a) { return a.r === want && a.id !== "buyback"; });
-      var pick = pool[Math.floor(rng() * pool.length)];
-      addCard(state, pick.id);
-      state.log.unshift({ turn: state.turn, text: "Signing bonus: " + pick.name + " joins your Portfolio." });
-      state.fy.picks.push(pick.id);
-    }
+    initDeck(state);
     if (rules.startCollapse) state.collapse += rules.startCollapse;
-    if (rules.startCurse) { addCard(state, "classaction"); state.log.unshift({ turn: state.turn, text: "Inherited lawsuit: a Class Action follows you in." }); }
+    if (rules.startCurse) { addDeckCard(state, "c_class", null, 0); state.log.unshift({ turn: state.turn, text: "Inherited lawsuit: a Class Action curse is in your deck." }); }
     rebuildMods(state);
     return state;
   }
@@ -6199,6 +6419,7 @@ body:has(#screen-tutorial.on) .shell,
     if (f.loot === undefined) f.loot = null;
     if (typeof f.city !== "number") f.city = 0;
     if (typeof f.lootN !== "number") f.lootN = 0;
+    if (!(f.v >= 2)) upgradeV2(state);
     return state;
   }
   LD.upgradeFY = upgradeFY;
@@ -6208,7 +6429,7 @@ body:has(#screen-tutorial.on) .shell,
   }
   LD.ensureFY = function (state) { ensureFY(state); return upgradeFY(state); };
 
-  function blockDeal(state) { var f = fy(state); return f && f.loot ? "Open your loot first." : f && f.draft ? "Choose this quarter's acquisition first." : f && f.memo ? "Answer the board memo first." : null; }
+  function blockDeal(state) { var f = fy(state); return !f ? null : f.fight ? "Someone is still at the door." : f.reward ? "Take your reward first." : f.loot ? "Open your loot first." : f.draft ? "Choose this quarter's acquisition first." : f.memo ? "Answer the phone first." : null; }
   LD.fyBlockDeal = blockDeal;
 
   /* Run summary: what each held Asset did for you (cash, unrest, collapse, quarters held). */
@@ -6264,13 +6485,19 @@ body:has(#screen-tutorial.on) .shell,
       fresh.forEach(function (i) { i.unrest = Math.round((i.unrest || 0) * 1.5); i.collapse = Math.round((i.collapse || 0) * 1.5); });
     }
     if (calm && f.galaQ === t) { f.galaQ = null; state.cash += 6; cityAdd(state, -6); notes.push("+6 cash, city repaired (Charity Gala)"); }
-    if (crisis && payload.cost && hasItem(state, "soundproof")) { state.cash = Math.max(0, state.cash - 4); notes.push("−4 cash (you never heard it coming)"); }
+    if (crisis && payload.cost && has(state, "soundproof")) { state.cash = Math.max(0, state.cash - 4); notes.push("−4 cash (you never heard it coming)"); }
     /* The mainland remembers: Squeeze darkens blocks, Soothe relights them. */
     if (ext) cityAdd(state, 3);
     if (calm) cityAdd(state, -3);
     if (crisis && !payload.cost) cityAdd(state, 2);
     var lr = fyRng(state, "dealloot:" + t + ":" + deal.id)();
-    if (lr < (crisis ? 0.25 : 0.06)) rollLoot(state, "deal");
+    if (lr < (crisis ? 0.25 : 0.06) && !f.lootNext) { var li = pickLoot(state, "deal", fyRng(state, "dealloot2:" + t)); if (li) { f.lootNext = li; notes.push("loot on the way"); } }
+    if (f.deck) {
+      var rid = state.world && state.world.pins ? state.world.pins[deal.id] : null;
+      var claimed = !!(state.world && state.world.lastClaim && state.world.lastClaim.turn === t && state.world.lastClaim.regionId === rid);
+      var dcash = paid && LD.dealCashAmount ? LD.dealCashAmount(state, listed, deal) : 0;
+      makeFight(state, deal, choiceId, { cash: dcash, claimed: claimed });
+    }
   }
   LD.fyOnDeal = fyOnDeal;
 
@@ -6299,8 +6526,8 @@ body:has(#screen-tutorial.on) .shell,
     if (has(state, "brine") && LD.plantCount && LD.plantCount(state)) cr("brine", "collapse", -LD.plantCount(state));
     if (has(state, "classaction")) { state.unrest = clamp(state.unrest + 2, 0, LD.MAX_UNREST); ev("Class Action: unrest +2. Sign a Soothe deal to settle.", "liability"); }
     if (setOn(state, "time")) { state.collapse = clamp(state.collapse - 1, 0, LD.MAX_COLLAPSE); ev("Long View: collapse −1."); }
-    if (hasItem(state, "soundproof")) { state.unrest = clamp(state.unrest - 2, 0, LD.MAX_UNREST); ev("Soundproofed Door: you stop answering. Unrest −2.", "item"); }
-    if (hasItem(state, "holo")) { state.cash += 3; state.collapse = clamp(state.collapse + 1, 0, LD.MAX_COLLAPSE); ev("Holo-Window: investors admire the view (+$3M). Nobody fixes what nobody sees: collapse +1.", "item"); }
+    if (has(state, "soundproof")) { state.unrest = clamp(state.unrest - 2, 0, LD.MAX_UNREST); ev("Soundproofed Door: you stop answering. Unrest −2.", "item"); }
+    if (has(state, "holo")) { state.cash += 3; state.collapse = clamp(state.collapse + 1, 0, LD.MAX_COLLAPSE); ev("Holo-Window: investors admire the view (+$3M). Nobody fixes what nobody sees: collapse +1.", "item"); }
     var cst = LD.cityStage(state);
     if (cst >= 2) { var cu = cst - 1; state.unrest = clamp(state.unrest + cu, 0, LD.MAX_UNREST); ev("The mainland looks back across the water: unrest +" + cu + ".", "city"); }
     if (has(state, "narrative")) {
@@ -6311,8 +6538,16 @@ body:has(#screen-tutorial.on) .shell,
     if (has(state, "geo") && !(u.geo && u.geo[f.act]) && (state.collapse >= 55 || t % 4 === 0)) { u.geo = u.geo || {}; u.geo[f.act] = 1; state.collapse = clamp(state.collapse - 6, 0, LD.MAX_COLLAPSE); cr("geo", "collapse", -6); ev("Geoengineering Pilot: collapse −6."); }
     if (has(state, "loyalty") && !u.loyal && state.unrest >= 85) { u.loyal = 1; cr("loyalty", "unrest", 70 - state.unrest); state.unrest = 70; ev("Board Loyalty: the board closes ranks. Unrest drops to 70."); }
     if (has(state, "toobig") && !u.toobig && state.collapse >= 88 && !isReady(state)) { u.toobig = 1; cr("toobig", "collapse", 80 - state.collapse); state.collapse = 80; ev("Too Big To Fail: the bailout lands. Collapse resets to 80."); }
+    if (f.bill) { state.cash = Math.max(0, state.cash - f.bill); ev("Billable hours: −$" + f.bill + "M.", "card"); f.bill = 0; }
+    var pay = 0; (f.fixers || []).forEach(function (r) { var x = LD.fixerById(r.id); if (x) pay += x.pay; });
+    if (pay) { state.cash = Math.max(0, state.cash - pay); ev("Fixer retainers: −$" + pay + "M.", "card"); }
     var info = bossInfo(state, t);
-    f.beatNow = false;
+    if (info && !info.final) info = null;
+    if (info && f.deck) {
+      var cracks = f.deck.filter(function (c) { return c.id === "c_crack"; }).length, hit0 = [];
+      for (var ci = 0; ci < cracks; ci++) { var wk = LD.SYSTEMS.map(function (x) { return x.id; }).filter(function (sid) { return state.bunker[sid].quality === "cheap" && state.bunker[sid].level > 0; }).sort(function (a, b) { return state.bunker[b].level - state.bunker[a].level; })[0]; if (wk) { state.bunker[wk].level -= 1; hit0.push(wk); } }
+      if (hit0.length) ev("The Reckoning finds your Cracks: " + hit0.join(", ") + " lose a level.", "card");
+    }
     if (info) {
       var beaten = true, text = "";
       var refuse = opts.bossChoice === "refuse";
@@ -6363,7 +6598,7 @@ body:has(#screen-tutorial.on) .shell,
       if (beaten) { f.bosses += 1; f.beatNow = true; if (!info.final) f.bossLoot = true; }
       f.lastBoss = { id: info.id, q: t, beaten: beaten, text: text };
       f.bossLog.push({ id: info.id, q: t, beaten: beaten });
-      ev(text + (beaten && !info.final ? " Rare draft unlocked, +10 ◈." : beaten ? " +10 ◈." : ""), "boss", { boss: info.id, beaten: beaten });
+      ev(text + (beaten ? " +10 ◈." : ""), "boss", { boss: info.id, beaten: beaten });
     }
     return out;
   }
@@ -6399,18 +6634,24 @@ body:has(#screen-tutorial.on) .shell,
     { id: "union", icon: "📋", title: "Union Drive", body: "The bunker crews have started using the word 'we'.",
       a: { label: "Crush it", text: "+$8M now; in 2Q, unrest +12" }, b: { label: "Recognise it", text: "−$6M, unrest −8" } },
     { id: "activist", icon: "🦅", title: "Activist Investor", body: "A fund with a bird logo wants a board seat and a 'clean-up'.",
-      a: { label: "Give them the seat", text: "Take a random Liability; your next draft is rare" }, b: { label: "Refuse", text: "Nothing happens" } },
+      a: { label: "Give them the seat", text: "A random curse joins your deck; your next card reward is rare" }, b: { label: "Refuse", text: "Nothing happens" } },
     { id: "space", icon: "🚀", title: "Space Billionaire", body: "He collects bunker rooms. He also collects people who say no.",
       need: function (s) { return LD.SYSTEMS.some(function (x) { return s.bunker[x.id].level === 1; }); },
       a: { label: "Sell a Lv 1 room", text: "+$20M; one Lv 1 room goes back to Lv 0" }, b: { label: "Decline", text: "Nothing happens" } },
     { id: "collab", icon: "🤳", title: "Influencer Collab", body: "'Ten Bunkers You Won't Believe Exist'. Number four is yours.",
-      a: { label: "Post it", text: "+$5M, unrest +2, and a random Common Asset" }, b: { label: "Decline", text: "Nothing happens" } },
+      a: { label: "Post it", text: "+$5M, unrest +2, and a random Common Asset for the wall" }, b: { label: "Decline", text: "Nothing happens" } },
     { id: "taxholiday", icon: "🏝️", title: "Tax Holiday", body: "A grateful ministry offers a holiday. The building inspectors are less grateful.",
-      a: { label: "Take it", text: "+$12M; Building Audit Liability (works +15% this act)" }, b: { label: "Decline", text: "Nothing happens" } },
+      a: { label: "Take it", text: "+$12M, and a Subpoena curse joins your deck" }, b: { label: "Decline", text: "Nothing happens" } },
     { id: "pension", icon: "👴", title: "The Pension Fund", body: "Thirty thousand retirees. One very liquid fund.",
       a: { label: "Borrow from it", text: "+$14M now; in 3Q, unrest +14" }, b: { label: "Leave it alone", text: "Nothing happens" } },
     { id: "drought", icon: "🏜️", title: "Drought Emergency Powers", body: "The governor will sign anything that sounds like a plan.",
-      a: { label: "Write the plan", text: "+$9M, collapse +3" }, b: { label: "Fund the reservoirs", text: "−$9M, collapse −4" } }
+      a: { label: "Write the plan", text: "+$9M, collapse +3" }, b: { label: "Fund the reservoirs", text: "−$9M, collapse −4" } },
+    { id: "headhunter", icon: "📇", title: "The Headhunter", body: "Two fixers are between engagements. Each brings their own cards, and a retainer.", hire: true, call: true,
+      a: { label: "Hire the first", text: "" }, b: { label: "Hire the second", text: "" }, c: { label: "Not now", text: "Nothing happens" } },
+    { id: "distressed", icon: "🏚️", title: "Distressed Sale", body: "A rival is liquidating. One framed Asset, priced to move.", call: true,
+      a: { label: "Buy it", text: "−$10M, it goes on your wall" }, b: { label: "Pass", text: "Nothing happens" } },
+    { id: "oldfriend", icon: "🕵️", title: "An Old Friend at the Agency", body: "Someone you went to school with has a favour to offer. Favours talk.", call: true,
+      a: { label: "Take the favour", text: "A free card, and a Leak curse" }, b: { label: "Hang up", text: "Nothing happens" } }
   ];
   var MEMO_BY = {}; LD.MEMOS.forEach(function (m) { MEMO_BY[m.id] = m; });
   LD.memoById = function (id) { return MEMO_BY[id] || null; };
@@ -6418,12 +6659,33 @@ body:has(#screen-tutorial.on) .shell,
     var f = fy(state);
     if (!f.memoQs || f.memoQs.indexOf(state.turn) === -1 || state.turn >= f.rules.finalQ) return null;
     var rng = fyRng(state, "memo:" + state.turn);
-    var pool = LD.MEMOS.filter(function (m) { return f.memosSeen.indexOf(m.id) === -1 && (!m.need || m.need(state)); });
+    var pool = LD.MEMOS.filter(function (m) { return f.memosSeen.indexOf(m.id) === -1 && (!m.need || m.need(state)) && !m.hire && (f.deck || !m.call); });
     if (!pool.length) return null;
     var m = pool[Math.floor(rng() * pool.length)];
     f.memosSeen.push(m.id);
     f.memo = { id: m.id, q: state.turn };
+    if (m.id === "distressed") { var da = drawAssets(state, 1, true, rng); if (!da.length) { f.memo = null; return null; } f.memo.asset = da[0]; }
+    if (m.id === "oldfriend") { var pc = rollCards(state, 1, false, rng); f.memo.card = pc[0] || "spin"; }
     return f.memo;
+  }
+  /* The headhunter calls once per act, on a quarter without another call. */
+  function headhunterQ(state) {
+    var f = fy(state), qs = [[2, 3], [6, 7, 5], [10, 9]], out = [];
+    qs.forEach(function (opts) { for (var i = 0; i < opts.length; i++) if ((f.memoQs || []).indexOf(opts[i]) === -1) { out.push(opts[i]); break; } });
+    return out;
+  }
+  function maybeCall(state) {
+    var f = fy(state);
+    if (f.deck && headhunterQ(state).indexOf(state.turn) !== -1 && state.turn < f.rules.finalQ && f.fixers.length < LD.DOOR.FIXER_CAP) {
+      var rng = fyRng(state, "hh:" + state.turn);
+      var pool = LD.FIXERS.filter(function (x) { return !x.sig && !f.fixers.some(function (r) { return r.id === x.id; }); });
+      if (pool.length >= 1) {
+        pool = rng.shuffle(pool);
+        f.memo = { id: "headhunter", q: state.turn, offer: pool.slice(0, 2).map(function (x) { return x.id; }) };
+        return f.memo;
+      }
+    }
+    return maybeMemo(state);
   }
   function fyMemo(state, choice) {
     state = clone(state);
@@ -6441,21 +6703,27 @@ body:has(#screen-tutorial.on) .shell,
       case "wedding": if (A) { cash(-4); f.baseMods.engineerCost -= 6; } break;
       case "summit": if (A) { col(-5); state.bunkerActedThisTurn = true; } else { cash(12); col(4); } break;
       case "union": if (A) { cash(8); later(2, 12, "The union you crushed finds a louder name."); } else { cash(-6); un(-8); } break;
-      case "activist": if (A) { var l = addLiability(state, fyRng(state, "activist:" + t)); f.nextRare = true; msg = "Liability taken: " + l.name + ". Your next draft is rare."; } break;
+      case "activist": if (A) { var l = addLiability(state, fyRng(state, "activist:" + t)); f.nextRare = true; msg = "Curse taken: " + l.name + ". Your next card reward is rare."; } break;
       case "space": if (A) { var r1 = LD.SYSTEMS.map(function (x) { return x.id; }).filter(function (id) { return state.bunker[id].level === 1; })[0]; if (r1) { state.bunker[r1].level = 0; cash(20); msg = "Sold the " + r1 + " room: +$20M."; } } break;
       case "collab": if (A) { cash(5); un(2);
           if (slotsUsed(state) < f.cap) { var pool = LD.FY_ASSETS.filter(function (a) { return a.r === "C" && !has(state, a.id); }); var pk = pool[Math.floor(fyRng(state, "collab:" + t)() * pool.length)]; if (pk) { addCard(state, pk.id); f.picks.push(pk.id); msg = "The post goes viral. " + pk.name + " joins your Portfolio."; } }
           else msg = "The post goes viral. No room for a sponsor in your Portfolio."; } break;
-      case "taxholiday": if (A) { cash(12); addCard(state, "audit"); } break;
+      case "taxholiday": if (A) { cash(12); addCurse(state, "c_subpoena", "the tax holiday"); } break;
+      case "headhunter": var off = f.memo.offer || [];
+        if (choice === "a" || choice === "b") { var fx0 = off[choice === "a" ? 0 : 1]; if (fx0 && f.fixers.length < LD.DOOR.FIXER_CAP) { var hx = hire(state, fx0); msg = hx ? "Hired " + hx.name + ". " + hx.cards.length + " cards join your deck; $" + hx.pay + "M a quarter." : ""; } }
+        else msg = "You let the headhunter go to voicemail.";
+        break;
+      case "distressed": if (A && f.memo.asset) { if (state.cash >= 10 && slotsUsed(state) < f.cap) { cash(-10); addCard(state, f.memo.asset); f.picks.push(f.memo.asset); msg = cardById(f.memo.asset).name + " goes up on the wall (−$10M)."; } else msg = "No room on the wall, or no cash."; } break;
+      case "oldfriend": if (A) { var gift = f.memo.card; if (gift) { addDeckCard(state, gift, null, 0); addCurse(state, "c_leak", "an old friend talks"); msg = LD.cardDef(gift).name + " joins your deck, and so does a Leak."; } } break;
       case "pension": if (A) { cash(14); later(3, 14, "The retirees notice the hole in the fund."); } break;
       case "drought": if (A) { cash(9); col(3); } else { cash(-9); col(-4); } break;
     }
     rebuildMods(state);
     f.memo = null;
-    if (fyRng(state, "memoloot:" + t + ":" + choice)() < 0.35) rollLoot(state, "memo");
-    var opt = A ? m.a : m.b;
-    state.log.unshift({ turn: t, text: m.title + ": " + opt.label + ". " + (msg || opt.text) + "." });
-    return { ok: true, state: state, text: msg || opt.text, memo: m, choice: A ? "a" : "b" };
+    if (fyRng(state, "memoloot:" + t + ":" + choice)() < 0.35 && !f.lootNext && f.deck) f.lootNext = pickLoot(state, "memo", fyRng(state, "memoloot2:" + t));
+    var opt = choice === "c" ? m.c : A ? m.a : m.b;
+    state.log.unshift({ turn: t, text: m.title + ": " + ((opt && opt.label) || "") + ". " + (msg || (opt && opt.text) || "") + "." });
+    return { ok: true, state: state, text: msg || opt.text, memo: m, choice: choice };
   }
   LD.fyMemo = fyMemo;
   LD.memoAffordable = function (state, choice) {
@@ -6463,6 +6731,7 @@ body:has(#screen-tutorial.on) .shell,
     var need = { leak: 8, celebrity: 6, troll: 10, wedding: 4, union: 6, drought: 9 };
     if (choice === "a" && ["leak", "celebrity", "troll", "wedding"].indexOf(m.id) !== -1) return state.cash >= need[m.id];
     if (choice === "b" && (m.id === "union" || m.id === "drought")) return state.cash >= need[m.id];
+    if (choice === "a" && m.id === "distressed") return state.cash >= 10 && slotsUsed(state) < state.fy.cap;
     return true;
   };
 
@@ -6477,11 +6746,10 @@ body:has(#screen-tutorial.on) .shell,
       f.actIntro = f.act;
     }
     rebuildMods(state);
-    if (f.bossLoot) { f.bossLoot = false; rollLoot(state, "boss"); }
-    var d = makeDraft(state, f.beatNow || f.nextRare);
-    if (f.nextRare) f.nextRare = false;
+    if (f.deck) syncRoomCards(state);
+    var d = f.deck ? makeReward(state) : makeDraft(state, f.beatNow || f.nextRare);
     f.beatNow = false;
-    if (!state.ended) maybeMemo(state);
+    if (!state.ended) maybeCall(state);
     return d;
   }
   LD.fyAfterClose = fyAfterClose;
@@ -6531,7 +6799,8 @@ body:has(#screen-tutorial.on) .shell,
 
   /* Overtime Crew: once per act, the first bunker order of a quarter leaves the bunker open for one more. */
   LD.fyAfterBunker = function (state) {
-    var f = fy(state); if (!f || !has(state, "overtime")) return false;
+    var f = fy(state); if (f && f.deck) syncRoomCards(state);
+    if (!f || !has(state, "overtime")) return false;
     var u = f.used; u.ot = u.ot || {};
     if (u.ot[f.act]) return false;
     u.ot[f.act] = 1;
@@ -6551,8 +6820,11 @@ body:has(#screen-tutorial.on) .shell,
     var f = fy(state); if (!f) return { cash: 0, unrest: 0, collapse: 0, items: [] };
     var t = state.turn, u = f.used, out = { cash: 0, unrest: 0, collapse: 0, items: [] };
     function add(id, c, un, co, txt) { out.cash += c; out.unrest += un; out.collapse += co; var cd = cardById(id); out.items.push({ id: id, icon: cd ? cd.icon : "", name: cd ? cd.name : id, text: txt, cash: c, unrest: un, collapse: co }); }
-    if (hasItem(state, "soundproof")) { out.unrest -= 2; out.items.push({ id: "soundproof", icon: "🔇", name: "Soundproofed Door", text: "unrest −2" }); }
-    if (hasItem(state, "holo")) { out.cash += 3; out.collapse += 1; out.items.push({ id: "holo", icon: "🖼️", name: "Holo-Window", text: "+$3M, collapse +1" }); }
+    if (has(state, "soundproof")) { out.unrest -= 2; out.items.push({ id: "soundproof", icon: "🔇", name: "Soundproofed Door", text: "unrest −2" }); }
+    if (has(state, "holo")) { out.cash += 3; out.collapse += 1; out.items.push({ id: "holo", icon: "🖼️", name: "Holo-Window", text: "+$3M, collapse +1" }); }
+    var pay0 = 0; (f.fixers || []).forEach(function (r) { var x = LD.fixerById(r.id); if (x) pay0 += x.pay; });
+    if (pay0) { out.cash -= pay0; out.items.push({ id: "retainers", icon: "💼", name: "Fixer retainers", text: "−$" + pay0 + "M", cash: -pay0, unrest: 0, collapse: 0 }); }
+    if (f.bill) { out.cash -= f.bill; out.items.push({ id: "bill", icon: "⏱️", name: "Billable hours", text: "−$" + f.bill + "M", cash: -f.bill, unrest: 0, collapse: 0 }); }
     var cst0 = LD.cityStage(state); if (cst0 >= 2) { out.unrest += cst0 - 1; out.items.push({ id: "city", icon: "🏙️", name: "The mainland", text: "unrest +" + (cst0 - 1) }); }
     if (has(state, "astro")) add("astro", 0, -2, 0, "unrest −2");
     if (has(state, "plantmgr")) { var pc = LD.plantCount ? LD.plantCount(state) : 0; if (pc) add("plantmgr", 2 * pc, 0, 0, "+$" + 2 * pc + "M"); }
@@ -6593,6 +6865,759 @@ body:has(#screen-tutorial.on) .shell,
       if (has(state, "redund")) return true;
     }
     return null;
+  };
+
+  /* ================= DROP 1 · The Door: card fights, the deck, fixers, rewards, calls =================
+     Every deal sends someone to the office door. You answer with a hand of fixer cards.
+     Influence 3 and a hand of 5 never grow; power comes from the cards. Your meters are your health. */
+  LD.DOOR = {
+    INF: 3, HAND: 5, ROUNDS: 2, BOSS_ROUNDS: 3,
+    SETTLE: 0.5,                 /* $M per point of Scrutiny left */
+    SHRED: 6, SHRED_STEP: 3,     /* shred cost, +3 each time */
+    SKIP: 3,                     /* skip a reward: +$3M */
+    FIXER_CAP: 4,
+    METER: { cash: 1, unrest: 1, collapse: 0.5 },
+    SCRUT: { 1: 7, 2: 9, 3: 11, 4: 22, 5: 12, 6: 13, 7: 14, 8: 28, 9: 15, 10: 16, 11: 17, 12: 17 },
+    TIER: 0,                     /* extra enemy Scrutiny/intents per rating tier (tiers already scale bosses, Protests and riders) */
+    INTENT: [0, 4, 7, 10],       /* per act; +1 in later rounds */
+    ONE_ROUND: false             /* the "quarter takes too long" lever */
+  };
+  LD.CARD_TYPES = { Shared: "Shared", Lobbyist: "Lobbyist", Lawyer: "Lawyer", PR: "PR flack", Fellow: "Fellow", Curse: "Curse", Room: "Bunker room", Private: "Go private" };
+  LD.CARD_RARITY = { S: "Starter", C: "Common", U: "Uncommon", R: "Rare", M: "Special", X: "Curse" };
+  LD.CARDS = [
+    { id: "talking", t: "Shared", r: "S", icon: "🗣️", name: "Talking Points", cost: 1, p: 4, up: { p: 6 } },
+    { id: "nocomment", t: "Shared", r: "S", icon: "🤐", name: "No Comment", cost: 1, d: 4, up: { d: 6 } },
+    { id: "externalize", t: "Shared", r: "C", icon: "🏭", name: "Externalize", cost: 0, p: 7, col: 2, up: { p: 10 }, flavor: "The window shows where it went." },
+    { id: "codb", t: "Shared", r: "C", icon: "💸", name: "Cost of Doing Business", cost: 0, sp: "codb", up: { mult: 1.2 } },
+    { id: "synergy", t: "Shared", r: "C", icon: "📎", name: "Synergy Memo", cost: 1, p: 2, draw: 2, up: { p: 4 } },
+    { id: "golden", t: "Shared", r: "C", icon: "🪙", name: "Golden Handshake", cost: 0, cash: 4, d: 7, up: { d: 10 } },
+    { id: "presence", t: "Shared", r: "U", icon: "👔", name: "Executive Presence", cost: 1, p: 5, d: 2, up: { p: 7, d: 3 } },
+    { id: "backup", t: "Room", r: "M", icon: "🔋", name: "Backup Generator", cost: 1, d: 7, up: { d: 10 }, flavor: "Added by a Sound bunker room at Lv 2." },
+    { id: "cutcorners", t: "Room", r: "M", icon: "🪚", name: "Cut Corners", cost: 0, d: 5, ex: true, sp: "crack", up: { d: 7 }, flavor: "Added by a Discount bunker room at Lv 2." },
+    { id: "privsec", t: "Private", r: "M", icon: "🚓", name: "Private Security", cost: 1, d: 10, un: 2, up: { d: 14 } },
+    { id: "carveout", t: "Lobbyist", r: "C", icon: "✂️", name: "Carve-out", cost: 1, p: 5, win: "carve", up: { p: 7 } },
+    { id: "campaign", t: "Lobbyist", r: "C", icon: "🎟️", name: "Campaign Contribution", cost: 0, cash: 2, p: 8, up: { p: 11 } },
+    { id: "zoning", t: "Lobbyist", r: "U", icon: "🗺️", name: "Zoning Variance", cost: 1, p: 6, win: "zoning", up: { p: 8 } },
+    { id: "stall", t: "Lobbyist", r: "U", icon: "⏸️", name: "Stall the Rival", cost: 2, sp: "cancel", win: "stall", up: { cost: 1 } },
+    { id: "whisper", t: "Lobbyist", r: "U", icon: "🤫", name: "Guidance Whisper", cost: 1, sp: "whisper", up: { cost: 0 } },
+    { id: "fasttrack", t: "Lobbyist", r: "U", icon: "📝", name: "Fast-Track Permit", cost: 1, p: 4, win: "permit", up: { p: 6 } },
+    { id: "revolving", t: "Lobbyist", r: "R", icon: "🚪", name: "Revolving Door", cost: 2, sp: "cut40", ex: true, expose: 30, up: { cost: 1 } },
+    { id: "darkmoney", t: "Lobbyist", r: "R", icon: "🕳️", name: "Dark Money", cost: 0, cash: 10, p: 15, up: { p: 20 } },
+    { id: "objection", t: "Lawyer", r: "C", icon: "🙅", name: "Objection", cost: 1, d: 6, up: { d: 8 } },
+    { id: "buryit", t: "Lawyer", r: "C", icon: "🪦", name: "Bury It", cost: 1, d: 4, win: "bury", up: { d: 6 } },
+    { id: "billable", t: "Lawyer", r: "C", icon: "⏱️", name: "Billable Hours", cost: 0, draw: 2, d: 2, bill: 1, up: { draw: 3 } },
+    { id: "nda", t: "Lawyer", r: "C", icon: "📄", name: "Non-Disclosure", cost: 1, d: 4, draw: 1, up: { d: 6 } },
+    { id: "discovery", t: "Lawyer", r: "U", icon: "🗄️", name: "Discovery Delay", cost: 1, d: 4, sp: "defer", up: { cost: 0 } },
+    { id: "injunction", t: "Lawyer", r: "U", icon: "⚖️", name: "Injunction", cost: 2, d: 12, sp: "noswell", up: { d: 16 } },
+    { id: "settle", t: "Lawyer", r: "U", icon: "🤝", name: "Settle Quietly", cost: 0, cash: 5, sp: "purge", ex: true, up: { cash: 2 } },
+    { id: "countersue", t: "Lawyer", r: "R", icon: "🧑‍⚖️", name: "Countersue", cost: 2, p: 6, sp: "cancel", ex: true, up: { p: 10 } },
+    { id: "astro", t: "PR", r: "C", icon: "📣", name: "Astroturf Rally", cost: 1, p: 5, sp: "vsprotest", expose: 20, up: { p: 7 } },
+    { id: "oped", t: "PR", r: "C", icon: "📰", name: "Op-ed", cost: 1, p: 3, d: 3, up: { p: 4, d: 4 } },
+    { id: "spin", t: "PR", r: "C", icon: "🌀", name: "Spin Cycle", cost: 1, p: 3, draw: 1, up: { p: 5 } },
+    { id: "tnp", t: "PR", r: "U", icon: "🙏", name: "Thoughts and Prayers", cost: 0, d: 3, sp: "vsprotestd", up: { d: 5 } },
+    { id: "photoop", t: "PR", r: "U", icon: "📸", name: "Photo Op", cost: 2, p: 8, win: "photo", up: { p: 11 } },
+    { id: "crisiscomms", t: "PR", r: "R", icon: "📡", name: "Crisis Comms", cost: 2, p: 7, d: 7, up: { p: 9, d: 9 } },
+    { id: "study", t: "Fellow", r: "C", icon: "🧪", name: "Commission a Study", cost: 1, sp: "nextinf", up: { cost: 0 } },
+    { id: "funded", t: "Fellow", r: "C", icon: "📊", name: "Industry-Funded Study", cost: 1, p: 5, win: "cool", up: { p: 7 } },
+    { id: "unsettled", t: "Fellow", r: "U", icon: "❓", name: "Unsettled Science", cost: 1, d: 3, sp: "halfcol", up: { d: 6 } },
+    { id: "longterm", t: "Fellow", r: "R", icon: "🔭", name: "Long-Term Outlook", cost: 1, sp: "cut30", ex: true, up: { cost: 0 } },
+    { id: "c_class", t: "Curse", r: "X", icon: "⚖️", name: "Class Action", unplay: true, sp: "classaction" },
+    { id: "c_subpoena", t: "Curse", r: "X", icon: "📜", name: "Subpoena", cost: 1, sp: "discardpay" },
+    { id: "c_whistle", t: "Curse", r: "X", icon: "📯", name: "Whistleblower", unplay: true, sp: "drawheat" },
+    { id: "c_leak", t: "Curse", r: "X", icon: "💧", name: "Leak", unplay: true },
+    { id: "c_crack", t: "Curse", r: "X", icon: "🧱", name: "Crack", unplay: true, sp: "crackroom" },
+    { id: "c_stranded", t: "Curse", r: "X", icon: "🪨", name: "Stranded Asset", unplay: true, sp: "noshred" }
+  ];
+  var CARD_BY = {}; LD.CARDS.forEach(function (c) { CARD_BY[c.id] = c; });
+  LD.cardDef = function (id) { return CARD_BY[id] || null; };
+  /* A card's numbers after its one upgrade. */
+  function cv(id, up) {
+    var c = CARD_BY[id]; if (!c) return null;
+    var o = {}; Object.keys(c).forEach(function (k) { o[k] = c[k]; });
+    if (up && c.up) Object.keys(c.up).forEach(function (k) { o[k] = c.up[k]; });
+    o.upgraded = !!up;
+    return o;
+  }
+  LD.cardValues = cv;
+  var SP_TEXT = {
+    codb: function (o) { return "Pay this round's intent in cash at ×" + (o.mult || 1.5) + " instead of taking it."; },
+    cancel: function () { return "Cancel this round's intent."; },
+    whisper: function () { return "Intents −30% this round."; },
+    cut40: function () { return "Scrutiny −40%."; },
+    cut30: function () { return "Scrutiny −30%."; },
+    defer: function () { return "Whatever gets through this round is halved and lands next quarter, with no riders."; },
+    noswell: function () { return "Protest intents stop growing."; },
+    purge: function () { return "Remove a curse from your deck for good."; },
+    nextinf: function () { return "Next round +1◆."; },
+    halfcol: function () { return "Intents that raise collapse are halved this fight."; },
+    crack: function () { return "25% chance to add a Crack."; },
+    vsprotest: function () { return "Doubled against Protests."; },
+    vsprotestd: function () { return "Doubled against Protests."; },
+    classaction: function () { return "Unplayable. Protest intents +2 while it's in your hand."; },
+    discardpay: function () { return "Clogs your hand. Pay 1◆ to discard it."; },
+    drawheat: function () { return "Unplayable. When drawn: your hottest fixer gets Heat +1."; },
+    crackroom: function () { return "Unplayable. At the Reckoning, each Crack takes a level off a Discount room."; },
+    noshred: function () { return "Unplayable. Only Settle Quietly removes it."; }
+  };
+  var WIN_TEXT = { carve: "Win: a Squeeze deal pays +$3M.", zoning: "Win: the deal's region loses 1 stress.", stall: "Win against a Rival Bid: their seal slips 1 quarter.",
+    permit: "Win: your next bunker work this quarter −$4M.", bury: "Win: the deal's delayed fallout −25%.", photo: "Win: city −8, a block lights back up.", cool: "Win: collapse −1." };
+  LD.cardText = function (id, up) {
+    var o = cv(id, up); if (!o) return "";
+    if (CARD_BY[id] && CARD_BY[id].t === "Curse" && LD.curseText) return LD.curseText(id);
+    var b = [];
+    if (o.p) b.push(o.p + " Pressure");
+    if (o.d) b.push(o.d + " Deniability");
+    var s = b.join(" and ") + (b.length ? "." : "");
+    if (o.draw) s += (s ? " " : "") + "Draw " + o.draw + ".";
+    if (o.sp && SP_TEXT[o.sp]) s += (s ? " " : "") + SP_TEXT[o.sp](o);
+    if (o.col) s += " Collapse +" + o.col + ".";
+    if (o.un) s += " Unrest +" + o.un + ".";
+    if (o.bill) s += " $" + o.bill + "M due at close.";
+    if (o.ex) s += " Exhausts.";
+    if (o.expose) s += " Exposure " + o.expose + "%.";
+    if (o.win) s += " " + WIN_TEXT[o.win];
+    return s.trim();
+  };
+  LD.cardCostText = function (id, up) {
+    var o = cv(id, up); if (!o) return "";
+    if (o.unplay) return "—";
+    if (o.cash) return "$" + o.cash + "M";
+    return o.cost + "◆";
+  };
+
+  /* Fixers are card packages with a face. Hiring adds their cards; firing takes them away. */
+  LD.FIXERS = [
+    { id: "hollis", t: "Lawyer", icon: "💼", name: "Hollis Grange", role: "water-rights lawyer", cards: ["buryit", "objection"], pay: 1, sig: "mara" },
+    { id: "chip", t: "Lobbyist", icon: "📞", name: "Chip Calloway", role: "ex-utility commissioner", cards: ["carveout", "stall"], pay: 1, sig: "reid" },
+    { id: "pike", t: "Fellow", icon: "🎓", name: "Dr. Wendell Pike", role: "Institute for Abundant Futures", cards: ["study", "unsettled"], pay: 1, sig: "imani" },
+    { id: "ines", t: "Lawyer", icon: "🛃", name: "Ines Varga", role: "customs counsel", cards: ["discovery", "billable"], pay: 1, sig: "julian" },
+    { id: "tamsin", t: "PR", icon: "🎧", name: "Tamsin Rook", role: "Chief Listening Officer", cards: ["oped", "astro"], pay: 1, sig: "soren" },
+    { id: "bryce", t: "Lobbyist", icon: "🏛️", name: "Bryce Pemberton-Hale", role: "ex-Treasury", cards: ["campaign", "carveout"], pay: 1, sig: "cassius" },
+    { id: "dex", t: "Lobbyist", icon: "🍸", name: "Dex Marlowe", role: "K Street lobbyist", cards: ["zoning", "whisper", "fasttrack"], pay: 2 },
+    { id: "priya", t: "Lawyer", icon: "⚖️", name: "Priya Saltonstall", role: "litigator, never loses", cards: ["objection", "injunction", "settle"], pay: 3 },
+    { id: "gus", t: "PR", icon: "📺", name: "Gus Fenn", role: "spin doctor", cards: ["spin", "photoop", "tnp"], pay: 2 },
+    { id: "lorne", t: "Fellow", icon: "🔬", name: "Dr. Lorne Bask", role: "Center for Balanced Climate", cards: ["funded", "study"], pay: 1 },
+    { id: "margo", t: "Lawyer", icon: "🕶️", name: "Margo Pell", role: "fixer-at-large", cards: ["nda", "buryit"], pay: 2 }
+  ];
+  var FIXER_BY = {}; LD.FIXERS.forEach(function (x) { FIXER_BY[x.id] = x; });
+  LD.fixerById = function (id) { return FIXER_BY[id] || null; };
+  function sigFixer(execId) { return LD.FIXERS.filter(function (x) { return x.sig === execId; })[0] || LD.FIXERS[0]; }
+  LD.sigFixer = sigFixer;
+
+  function addDeckCard(state, id, fx, up) {
+    var f = fy(state); f.uid = (f.uid || 0) + 1;
+    var c = { u: f.uid, id: id, up: up ? 1 : 0, fx: fx || null };
+    f.deck.push(c);
+    return c;
+  }
+  function deckCard(state, u) { var d = fy(state).deck; for (var i = 0; i < d.length; i++) if (d[i].u === u) return d[i]; return null; }
+  LD.deckCard = deckCard;
+  function isCurse(id) { var c = CARD_BY[id]; return !!(c && c.t === "Curse"); }
+  LD.isCurse = isCurse;
+  var CURSE_TEXT = { c_class: "Unplayable. While in your hand, Protest intents +2.", c_subpoena: "Costs 1◆ to file away, or it sits in your hand.", c_whistle: "Unplayable. Drawing it adds Heat to a fixer.",
+    c_leak: "Unplayable. Takes a slot in your hand.", c_crack: "Unplayable. At the Reckoning, a Discount room loses a level.", c_stranded: "Unplayable. Can't be shredded: only Settle Quietly removes it." };
+  LD.curseText = function (id) { return CURSE_TEXT[id] || ""; };
+  /* Add a curse to the deck (and to the live fight's discard pile). */
+  function addCurse(state, id, why) {
+    var c = addDeckCard(state, id, null, 0);
+    var fg = fy(state).fight; if (fg && !fg.done) fg.disc.push(c.u);
+    state.log.unshift({ turn: state.turn, text: "Curse: " + CARD_BY[id].name + (why ? " (" + why + ")" : "") + " joins your deck." });
+    return c;
+  }
+  LD.fyAddCurse = addCurse;
+  /* Old Liabilities live on as curses. */
+  var LIAB_CURSE = { classaction: "c_class", audit: "c_subpoena", whistle: "c_whistle", stranded: "c_stranded", mole: "c_leak", toxic: "c_leak" };
+  LD.LIAB_CURSE = LIAB_CURSE;
+  function hire(state, fid, quiet) {
+    var f = fy(state), x = FIXER_BY[fid]; if (!x) return null;
+    if (f.fixers.some(function (r) { return r.id === fid; })) return null;
+    f.fixers.push({ id: fid, heat: 0, q: state.turn });
+    x.cards.forEach(function (cid) { addDeckCard(state, cid, fid, 0); });
+    if (!quiet) state.log.unshift({ turn: state.turn, text: "Hired " + x.name + ", " + x.role + ". Their cards join your deck." });
+    return x;
+  }
+  function fire(state, fid, why) {
+    var f = fy(state), x = FIXER_BY[fid]; if (!x) return null;
+    f.fixers = f.fixers.filter(function (r) { return r.id !== fid; });
+    var gone = f.deck.filter(function (c) { return c.fx === fid; }).length;
+    f.deck = f.deck.filter(function (c) { return c.fx !== fid; });
+    if (f.hearing === fid) f.hearing = null;
+    state.log.unshift({ turn: state.turn, text: x.name + " " + (why || "is let go") + ". " + gone + " card" + (gone === 1 ? "" : "s") + " leave with them." });
+    return x;
+  }
+  LD.fyFire = function (state, fid) {
+    state = clone(state);
+    var f = fy(state);
+    if (!f || !f.fixers.some(function (r) { return r.id === fid; })) return { ok: false, error: "Not on your payroll.", state: state };
+    if (f.fight && !f.fight.done) return { ok: false, error: "Not in the middle of a fight.", state: state };
+    if (f.fixers.length <= 1) return { ok: false, error: "Keep at least one fixer.", state: state };
+    var x = fire(state, fid);
+    return { ok: true, state: state, fixer: x };
+  };
+  function hottest(state) {
+    var f = fy(state), best = null;
+    f.fixers.forEach(function (r) { if (!best || r.heat > best.heat) best = r; });
+    return best;
+  }
+  function heatUp(state, fid, n, why) {
+    var f = fy(state), r = null;
+    f.fixers.forEach(function (x) { if (x.id === fid) r = x; });
+    if (!r) r = hottest(state);
+    if (!r) return;
+    r.heat = Math.min(3, r.heat + (n || 1));
+    if (r.heat >= 3 && !f.hearing) { f.hearing = r.id; state.log.unshift({ turn: state.turn, text: FIXER_BY[r.id].name + " is at Heat 3. A Senate Hearing is coming next quarter." }); }
+    else state.log.unshift({ turn: state.turn, text: FIXER_BY[r.id].name + ": Heat " + r.heat + (why ? " (" + why + ")" : "") + "." });
+  }
+
+  /* ---------- Encounters ---------- */
+  LD.ENCOUNTERS = {
+    regulator: { name: "The Regulator", sub: "On loan from industry", icon: "🕴️", pattern: ["fine", "audit"], win: "Deal pays +10%" },
+    rival: { name: "Rival Bid", sub: "Their banker, smiling", icon: "🦈", pattern: ["undercut", "outbid"], win: "A rival's seal slips 1 quarter" },
+    protest: { name: "The Protest", sub: "They brought a drum", icon: "✊", pattern: ["chant", "swell"], win: "Unrest −3" },
+    journalist: { name: "The Journalist", sub: "Has your old emails", icon: "🎙️", pattern: ["question", "expose"], win: "Upgrade a card" },
+    hearing: { name: "Senate Hearing", sub: "Elite · you are under oath", icon: "🏛️", elite: true, pattern: ["contempt", "oath", "contempt", "contempt"], win: "An Asset for the wall, Heat reset" },
+    earnings: { name: "The Earnings Call", sub: "Act I boss · the analysts are on the line", icon: "📞", boss: true, pattern: ["guidance", "miss", "guidance", "miss"], win: "Rare reward and an Asset" },
+    shortseller: { name: "Short-Seller Report", sub: "Act I boss · 90 pages on you", icon: "🐻", boss: true, pattern: ["report", "expose2", "report", "expose2"], win: "Rare reward and an Asset" },
+    strike: { name: "General Strike", sub: "Act II boss · the street walks out", icon: "✊", boss: true, pattern: ["chant", "chant2", "chant2", "chant2"], win: "Rare reward and an Asset" },
+    bid: { name: "Hostile Takeover Bid", sub: "Act II boss · greenmail or else", icon: "🦈", boss: true, pattern: ["undercut", "strip", "undercut", "strip"], win: "Rare reward and an Asset" },
+    crash: { name: "Market Crash", sub: "Act II boss · the floor gives way", icon: "💥", boss: true, pattern: ["crash", "margin", "drain", "margin"], win: "Rare reward and an Asset" }
+  };
+  LD.INTENTS = {
+    fine: { label: "Fine", meter: "cash" },
+    audit: { label: "Audit", meter: "cash", rider: "subpoena", at: 4, rtext: "4+ through: a Subpoena curse" },
+    undercut: { label: "Undercut", meter: "cash" },
+    outbid: { label: "Outbid", meter: "cash", rider: "claim", at: 6, rtext: "6+ through: you lose the claim" },
+    chant: { label: "Chant", meter: "unrest", protest: true },
+    swell: { label: "Swell", meter: "unrest", protest: true, grow: 2, rtext: "grows +2" },
+    question: { label: "Question", meter: "heat", rtext: "Heat +1 per 4, unrest half" },
+    expose: { label: "Expose", meter: "unrest", rider: "leak", at: 4, rtext: "4+ through: a Leak curse" },
+    contempt: { label: "Contempt", meter: "cash" },
+    oath: { label: "Under Oath", meter: "unrest", oath: true, rtext: "your cards cost +1◆ this round" },
+    guidance: { label: "Guidance?", meter: "unrest" },
+    miss: { label: "Miss the number", meter: "collapse" },
+    report: { label: "The Report", meter: "unrest" },
+    expose2: { label: "Expose", meter: "unrest", rider: "asset", at: 5, rtext: "5+ through: you lose your newest Asset" },
+    chant2: { label: "Chant ×2", meter: "unrest", protest: true, mult: 1.5 },
+    strip: { label: "Strip", meter: "cash", rider: "strip", at: 6, rtext: "6+ through: a bunker room loses a level" },
+    crash: { label: "Crash", meter: "cash" },
+    margin: { label: "Margin call", meter: "cash" },
+    drain: { label: "Drain", meter: "cash", rider: "drain", at: 1, rtext: "any through: lose 15% of your cash" }
+  };
+  LD.METER_NAMES = { cash: "cash", unrest: "unrest", collapse: "collapse", heat: "Heat" };
+  function tierMult(state) { return 1 + LD.DOOR.TIER * (state.rating | 0); }
+  function encFor(state, deal) {
+    var f = fy(state);
+    if (bossAt(state, state.turn) && !LD.BOSSES[bossAt(state, state.turn)].final) return bossAt(state, state.turn);
+    if (f.hearing) return "hearing";
+    var kind = LD.dealKind ? LD.dealKind(deal) : "neutral";
+    if (LD.doorLevel(state) >= 3) return "protest";
+    if (kind === "claim") return "rival";
+    if (kind === "crisis") return "protest";
+    if (kind === "calm") return state.converting ? "protest" : "journalist";
+    return "regulator";
+  }
+  LD.encounterFor = function (state, dealId) { return encFor(state, LD.dealById(dealId)); };
+  function fightRounds(state, encId) {
+    var E = LD.ENCOUNTERS[encId];
+    if (E.boss) return LD.DOOR.BOSS_ROUNDS + ((state.rating | 0) >= 10 ? 1 : 0);
+    if (E.elite) return LD.DOOR.BOSS_ROUNDS;
+    if (state.turn === 1 || LD.DOOR.ONE_ROUND) return 1;
+    return LD.DOOR.ROUNDS;
+  }
+  function scrutinyFor(state, encId) {
+    var E = LD.ENCOUNTERS[encId], t = state.turn;
+    var s = LD.DOOR.SCRUT[Math.min(12, t)] || 30;
+    if (!E.boss && (t === 4 || t === 8)) s = LD.DOOR.SCRUT[t - 1] + 2;
+    if (E.boss) s = t <= 4 ? LD.DOOR.SCRUT[4] : LD.DOOR.SCRUT[8];
+    if (E.elite) s += 8;
+    s *= tierMult(state);
+    if (E.boss) s *= fy(state).rules.bossMult;
+    if (encId === "regulator" && state.cash >= 80 && t > 1) s += 3;
+    if (t === 1) s = LD.DOOR.SCRUT[1];
+    return Math.max(4, Math.round(s));
+  }
+  function intentFor(state, fg, round) {
+    var key = fg.pattern[(round - 1) % fg.pattern.length], I = LD.INTENTS[key], E = LD.ENCOUNTERS[fg.enc];
+    var act = actOf(state.turn);
+    var n = LD.DOOR.INTENT[act] + (round - 1);
+    if (state.turn === 1) n = 3;
+    if (E.boss) n += 2;
+    if (E.elite) n += 1;
+    n *= tierMult(state);
+    if (E.boss) n *= fy(state).rules.bossMult;
+    var st = LD.cityStage(state); if (st >= 2) n *= 1 + 0.1 * (st - 1);
+    if (I.mult) n *= I.mult;
+    if (I.protest || fg.enc === "protest") {
+      n += [0, 2, 4, 6][LD.doorLevel(state)];
+      if ((state.rating | 0) >= 5) n += 2;
+      if (state.converting) n += 1;
+      if (!fg.flags.noswell) n += fg.swell;
+    }
+    return { k: key, n: Math.max(1, Math.round(n)), label: I.label, meter: I.meter };
+  }
+  /* The intent as it will land right now (whisper, Class Action in hand, halved collapse). */
+  function intentNow(state, fg) {
+    var it = fg.intent; if (!it) return null;
+    var n = it.n, I = LD.INTENTS[it.k], notes = [];
+    if ((I.protest || fg.enc === "protest") && !fg.flags.noswell) {
+      var ca = fg.hand.filter(function (u) { var c = deckCard(state, u); return c && c.id === "c_class"; }).length;
+      if (ca) { n += 2 * ca; notes.push("Class Action +" + 2 * ca); }
+    }
+    if (fg.flags.whisper) { n = Math.round(n * 0.7); notes.push("whispered −30%"); }
+    if (it.meter === "collapse" && fg.flags.halfcol) { n = Math.round(n / 2); notes.push("halved"); }
+    if (fg.flags.cancel) { n = 0; notes.push("cancelled"); }
+    var through = Math.max(0, n - fg.block);
+    return { k: it.k, label: it.label, meter: it.meter, n: n, block: fg.block, through: through, notes: notes, rider: I.rider, at: I.at, rtext: I.rtext, oath: !!I.oath };
+  }
+  LD.fightIntent = function (state) { var fg = fy(state) && fy(state).fight; return fg && !fg.done ? intentNow(state, fg) : null; };
+  function frng(fg) { var r = LD.createRng(fg.rs); return r; }
+  function drawN(state, fg, n) {
+    var r = frng(fg), drawn = [];
+    for (var i = 0; i < n; i++) {
+      if (!fg.draw.length) { if (!fg.disc.length) break; fg.draw = r.shuffle(fg.disc); fg.disc = []; }
+      var u = fg.draw.shift(); fg.hand.push(u); drawn.push(u);
+      var c = deckCard(state, u);
+      if (c && c.id === "c_whistle") heatUp(state, null, 1, "a Whistleblower in your hand");
+    }
+    fg.rs = r.state();
+    return drawn;
+  }
+  function handSize(state) { return LD.DOOR.HAND + (has(state, "rolodex") ? 1 : 0); }
+  function startRound(state, fg) {
+    fg.block = 0;
+    fg.inf = LD.DOOR.INF + (fg.flags.nextInf || 0) + (fg.round === 1 && has(state, "chief") ? 1 : 0);
+    fg.flags.nextInf = 0; fg.flags.cancel = false; fg.flags.whisper = false; fg.flags.defer = false; fg.flags.payCash = 0;
+    fg.intent = intentFor(state, fg, fg.round);
+    fg.flags.oath = !!LD.INTENTS[fg.intent.k].oath;
+    drawN(state, fg, handSize(state));
+  }
+  function makeFight(state, deal, choiceId, ctx) {
+    var f = fy(state), enc = encFor(state, deal), E = LD.ENCOUNTERS[enc];
+    var r = fyRng(state, "fight:" + state.turn + ":" + enc);
+    var fg = {
+      enc: enc, name: E.name, sub: E.sub, icon: E.icon, boss: E.boss ? enc : null, elite: !!E.elite, hearing: E.elite ? f.hearing : null,
+      dealId: deal.id, kind: LD.dealKind ? LD.dealKind(deal) : "neutral", region: state.world && state.world.pins ? state.world.pins[deal.id] || null : null,
+      claimed: !!(ctx && ctx.claimed), dealCash: (ctx && ctx.cash) || 0, dealTitle: deal.title,
+      q: state.turn, round: 1, rounds: fightRounds(state, enc), pattern: E.pattern.slice(), swell: 0,
+      scrut: 0, max: 0, inf: 0, block: 0, hand: [], draw: [], disc: [], exh: [], flags: {}, wins: [], played: 0,
+      leaks: { cash: 0, unrest: 0, collapse: 0, heat: 0 }, log: [], rs: 1, done: null, intent: null
+    };
+    if (enc !== "protest" && LD.doorLevel(state) >= 3 && !E.boss && !E.elite) fg.pattern = LD.ENCOUNTERS.protest.pattern.slice();
+    if (enc === "protest" && (state.rating | 0) >= 5) fg.swell = 0;
+    fg.scrut = fg.max = scrutinyFor(state, enc);
+    fg.rs = Math.floor(r() * 4294967295) >>> 0 || 7;
+    var rr = frng(fg); fg.draw = rr.shuffle(f.deck.map(function (c) { return c.u; })); fg.rs = rr.state();
+    if (state.turn === 1) {
+      /* Q1 is the tutorial knock: the opening hand always holds two Talking Points and a No Comment, so the first fight can be won. */
+      var want = ["talking", "talking", "nocomment"], top = [];
+      want.forEach(function (id) { for (var i = 0; i < fg.draw.length; i++) { var c = deckCard(state, fg.draw[i]); if (c && c.id === id) { top.push(fg.draw.splice(i, 1)[0]); break; } } });
+      fg.draw = top.concat(fg.draw);
+    }
+    f.fightN = (f.fightN || 0) + 1;
+    f.fight = fg;
+    startRound(state, fg);
+    state.log.unshift({ turn: state.turn, text: "A knock at the door: " + fg.name + " (Scrutiny " + fg.max + ", " + fg.rounds + " round" + (fg.rounds === 1 ? "" : "s") + ")." });
+    return fg;
+  }
+  function costNow(state, fg, o) {
+    if (o.unplay) return null;
+    var c = o.cost || 0;
+    if (fg.flags.oath && c >= 1 && !o.cash) c += 1;
+    return c;
+  }
+  /* What a card would do if played now (for the UI). */
+  LD.fightCardInfo = function (state, u) {
+    var f = fy(state), fg = f && f.fight; if (!fg || fg.done) return null;
+    var c = deckCard(state, u); if (!c) return null;
+    var o = cv(c.id, c.up), cost = costNow(state, fg, o), why = null;
+    if (o.unplay) why = "Unplayable.";
+    else if (o.cash && state.cash < o.cash) why = "Needs $" + o.cash + "M.";
+    else if (cost > fg.inf) why = "Needs " + cost + "◆.";
+    else if (o.sp === "purge" && !f.deck.some(function (d) { return isCurse(d.id); })) why = "No curse to remove.";
+    var vsP = fg.enc === "protest" || LD.INTENTS[fg.intent.k].protest;
+    return { u: u, id: c.id, up: c.up, o: o, cost: cost, why: why, p: (o.p || 0) * (o.sp === "vsprotest" && vsP ? 2 : 1), d: (o.d || 0) * (o.sp === "vsprotestd" && vsP ? 2 : 1) };
+  };
+  function fightCheck(state) {
+    var f = fy(state); if (!f) return "No fight.";
+    var fg = f.fight; if (!fg) return "Nobody at the door.";
+    if (fg.done) return "The fight is over.";
+    if (state.ended) return "Run already ended.";
+    return null;
+  }
+  LD.fightPlay = function (state, u) {
+    state = clone(state);
+    var why = fightCheck(state); if (why) return { ok: false, error: why, state: state };
+    var f = fy(state), fg = f.fight, ix = fg.hand.indexOf(u);
+    if (ix === -1) return { ok: false, error: "That card is not in your hand.", state: state };
+    var c = deckCard(state, u), o = cv(c.id, c.up), info = LD.fightCardInfo(state, u), fx = [];
+    if (o.sp === "discardpay") {
+      if (fg.inf < 1) return { ok: false, error: "Needs 1◆ to discard.", state: state };
+      fg.inf -= 1; fg.hand.splice(ix, 1); fg.disc.push(u);
+      return { ok: true, state: state, fx: [{ k: "discard", text: "Subpoena filed away (−1◆)." }], card: o };
+    }
+    if (info.why) return { ok: false, error: info.why, state: state };
+    fg.inf -= info.cost;
+    if (o.cash) { state.cash -= o.cash; fx.push({ k: "cash", n: -o.cash }); }
+    fg.hand.splice(ix, 1);
+    fg.played += 1;
+    var before = fg.scrut;
+    if (info.p) { fg.scrut = Math.max(0, fg.scrut - info.p); }
+    if (o.sp === "cut40") fg.scrut = Math.max(0, fg.scrut - Math.round(fg.scrut * 0.4));
+    if (o.sp === "cut30") fg.scrut = Math.max(0, fg.scrut - Math.round(fg.scrut * 0.3));
+    if (fg.scrut < before) fx.push({ k: "pressure", n: before - fg.scrut });
+    if (info.d) { fg.block += info.d; fx.push({ k: "deny", n: info.d }); }
+    if (o.col) { state.collapse = clamp(state.collapse + o.col, 0, LD.MAX_COLLAPSE); cityAdd(state, 2); fx.push({ k: "collapse", n: o.col }); }
+    if (o.un) { state.unrest = clamp(state.unrest + o.un, 0, LD.MAX_UNREST); fx.push({ k: "unrest", n: o.un }); }
+    if (o.bill) { f.bill = (f.bill || 0) + o.bill; fx.push({ k: "bill", n: o.bill }); }
+    switch (o.sp) {
+      case "codb": fg.flags.payCash = o.mult || 1.5; break;
+      case "cancel": fg.flags.cancel = true; break;
+      case "whisper": fg.flags.whisper = true; break;
+      case "defer": fg.flags.defer = true; break;
+      case "noswell": fg.flags.noswell = true; break;
+      case "nextinf": fg.flags.nextInf = (fg.flags.nextInf || 0) + 1; break;
+      case "halfcol": fg.flags.halfcol = true; break;
+      case "purge":
+        var cu = fg.hand.map(function (x) { return deckCard(state, x); }).filter(function (d) { return d && isCurse(d.id); })[0] ||
+          f.deck.filter(function (d) { return isCurse(d.id); })[0];
+        if (cu) { f.deck = f.deck.filter(function (d) { return d.u !== cu.u; }); ["hand", "draw", "disc"].forEach(function (p) { fg[p] = fg[p].filter(function (x) { return x !== cu.u; }); });
+          fx.push({ k: "purge", text: CARD_BY[cu.id].name + " settled for good." }); state.log.unshift({ turn: state.turn, text: "Settle Quietly: " + CARD_BY[cu.id].name + " leaves your deck." }); }
+        break;
+      case "crack":
+        var cr = fyRng(state, "crack:" + state.turn + ":" + u + ":" + fg.played)();
+        if (cr < (f.rules.crackedDiscount ? 0.5 : 0.25)) { addCurse(state, "c_crack", "Cut Corners"); fx.push({ k: "curse", text: "A Crack forms." }); }
+        break;
+    }
+    if (o.expose) {
+      var er = fyRng(state, "expose:" + state.turn + ":" + u + ":" + fg.played)();
+      if (er < o.expose / 100) { addCurse(state, "c_leak", o.name + " was exposed"); heatUp(state, c.fx, 1, o.name + " exposed"); fx.push({ k: "exposed", text: o.name + " was exposed: a Leak, Heat +1." }); }
+    }
+    if (o.draw) drawN(state, fg, o.draw);
+    if (o.win) fg.wins.push(o.win);
+    if (o.ex) fg.exh.push(u); else fg.disc.push(u);
+    var res = { ok: true, state: state, fx: fx, card: o };
+    if (fg.scrut <= 0) { resolve(state, true, false); res.ended = fg.done; }
+    return res;
+  };
+  function applyThrough(state, fg, it) {
+    var out = { meter: it.meter, n: it.through, text: "", riders: [] };
+    if (!it.through) { out.text = it.label + ": blocked."; return out; }
+    var M = LD.DOOR.METER, t = it.through;
+    if (fg.flags.defer) {
+      t = Math.max(1, Math.round(t / 2));
+      var pd = { due: state.turn + 1, source: fg.name, unrest: 0, collapse: 0, cash: 0, log: fg.name + ": the delayed filing lands.", flags: null, grantSystem: null, effectsIf: null, strain: null, ease: null, install: null };
+      if (it.meter === "cash") pd.cash = -Math.round(t * M.cash); else if (it.meter === "collapse") pd.collapse = Math.round(t * M.collapse); else pd.unrest = Math.round(t * M.unrest * (it.meter === "heat" ? 0.5 : 1));
+      state.pending.push(pd);
+      out.text = it.label + ": halved to " + t + " and deferred to next quarter (Discovery Delay).";
+      out.deferred = true;
+      return out;
+    }
+    if (fg.flags.payCash) {
+      var pay = Math.ceil(t * fg.flags.payCash);
+      state.cash = Math.max(0, state.cash - pay); fg.leaks.cash += pay;
+      out.text = it.label + ": paid off, −$" + pay + "M."; out.meter = "cash"; out.n = pay;
+      return out;
+    }
+    if (it.meter === "cash") { var cn = Math.round(t * M.cash); state.cash = Math.max(0, state.cash - cn); fg.leaks.cash += cn; out.n = cn; out.text = it.label + ": −$" + cn + "M."; }
+    else if (it.meter === "unrest") { var un = Math.round(t * M.unrest); state.unrest = clamp(state.unrest + un, 0, LD.MAX_UNREST); fg.leaks.unrest += un; out.n = un; out.text = it.label + ": unrest +" + un + "."; }
+    else if (it.meter === "collapse") { var co = Math.max(1, Math.round(t * M.collapse)); state.collapse = clamp(state.collapse + co, 0, LD.MAX_COLLAPSE); fg.leaks.collapse += co; out.n = co; out.text = it.label + ": collapse +" + co + "."; }
+    else if (it.meter === "heat") {
+      var h = Math.max(1, Math.floor(t / 4)), hu = Math.round(t / 2);
+      heatUp(state, null, h, "the Journalist's questions"); fg.leaks.heat += h;
+      if (hu) { state.unrest = clamp(state.unrest + hu, 0, LD.MAX_UNREST); fg.leaks.unrest += hu; }
+      out.text = it.label + ": Heat +" + h + (hu ? ", unrest +" + hu : "") + ".";
+    }
+    var I = LD.INTENTS[it.k];
+    if (I.rider && t >= I.at) {
+      if (I.rider === "subpoena") { addCurse(state, "c_subpoena", "the audit"); out.riders.push("A Subpoena joins your deck."); }
+      if (I.rider === "leak") { addCurse(state, "c_leak", "the story ran"); out.riders.push("A Leak joins your deck."); }
+      if (I.rider === "claim" && fg.claimed && fg.region && state.world.regions[fg.region]) { state.world.regions[fg.region].owned = false; fg.claimed = false; out.riders.push("Outbid: you lose the claim on " + LD.REGION_NAMES[fg.region] + "."); }
+      if (I.rider === "asset") { var nw = null; for (var i = f0(state).hand.length - 1; i >= 0; i--) { var ac = cardById(f0(state).hand[i].id); if (ac && !ac.liability) { nw = ac; break; } } if (nw) { removeCard(state, nw.id); out.riders.push(nw.name + " is exposed and written off."); } }
+      if (I.rider === "strip") { var rooms = LD.SYSTEMS.map(function (s) { return s.id; }).sort(function (a, b) { return state.bunker[b].level - state.bunker[a].level; }); var b = state.bunker[rooms[0]]; if (b.level > 0) { b.level -= 1; out.riders.push("The raider strips your " + rooms[0] + " room to Lv " + b.level + "."); } }
+      if (I.rider === "drain") { var lost = Math.round(state.cash * 0.15); state.cash -= lost; fg.leaks.cash += lost; out.riders.push("The drain takes another $" + lost + "M."); }
+    }
+    if (I.grow && !fg.flags.noswell) fg.swell += I.grow;
+    return out;
+  }
+  function f0(state) { return fy(state); }
+  LD.fightEndRound = function (state) {
+    state = clone(state);
+    var why = fightCheck(state); if (why) return { ok: false, error: why, state: state };
+    var f = fy(state), fg = f.fight, it = intentNow(state, fg);
+    var hit = applyThrough(state, fg, it);
+    fg.log.push({ round: fg.round, intent: it.label, n: it.n, block: it.block, through: it.through, text: hit.text, riders: hit.riders });
+    state.log.unshift({ turn: state.turn, text: fg.name + " · round " + fg.round + ": " + hit.text + (hit.riders.length ? " " + hit.riders.join(" ") : "") });
+    fg.hand.forEach(function (u) { fg.disc.push(u); }); fg.hand = [];
+    var res = { ok: true, state: state, hit: hit, intent: it };
+    if (state.unrest >= LD.MAX_UNREST || state.collapse >= LD.MAX_COLLAPSE) { resolve(state, false, false); res.ended = fg.done; return res; }
+    if (fg.round >= fg.rounds) { resolve(state, false, false); res.ended = fg.done; return res; }
+    fg.round += 1;
+    startRound(state, fg);
+    return res;
+  };
+  LD.fightSettleCost = function (state) { var fg = fy(state) && fy(state).fight; return fg && !fg.done ? Math.max(1, Math.ceil(fg.scrut * LD.DOOR.SETTLE)) : 0; };
+  LD.fightSettle = function (state) {
+    state = clone(state);
+    var why = fightCheck(state); if (why) return { ok: false, error: why, state: state };
+    var fg = fy(state).fight, cost = LD.fightSettleCost(state);
+    if (state.cash < cost) return { ok: false, error: "Settling needs $" + cost + "M.", state: state };
+    state.cash -= cost;
+    fg.leaks.cash += cost;
+    resolve(state, false, true, cost);
+    return { ok: true, state: state, cost: cost };
+  };
+  /* Win, loss or settle: bonuses, penalties, region stress, bosses, the Hearing. */
+  function resolve(state, win, settled, cost) {
+    var f = fy(state), fg = f.fight, E = LD.ENCOUNTERS[fg.enc], notes = [], t = state.turn;
+    var reg = fg.region && state.world && state.world.regions ? state.world.regions[fg.region] : null;
+    if (win) {
+      if (fg.enc === "regulator") { var b = Math.max(2, Math.round(Math.max(0, fg.dealCash) * 0.1)); state.cash += b; notes.push("deal pays +$" + b + "M"); }
+      if (fg.enc === "rival") { var rv = (state.rivals || []).filter(function (x) { return !x.sealed; }).sort(function (a, b2) { return a.sealTurn - b2.sealTurn; })[0];
+        if (rv) { rv.sealTurn += 1; notes.push(rv.firm + "'s seal slips to Q" + rv.sealTurn); } else { state.cash += 3; notes.push("+$3M"); } }
+      if (fg.enc === "protest") { state.unrest = clamp(state.unrest - 3, 0, LD.MAX_UNREST); notes.push("unrest −3"); }
+      if (fg.enc === "journalist") { f.upTokens = (f.upTokens || 0) + 1; notes.push("a card upgrade"); }
+      if (fg.elite) { var hf = f.fixers.filter(function (x) { return x.id === fg.hearing; })[0]; if (hf) hf.heat = 0; f.hearing = null; f.assetNext = true; notes.push("an Asset for the wall, Heat reset"); }
+      if (fg.boss) { f.bosses += 1; f.beatNow = true; f.bossLoot = true; notes.push("rare reward, an Asset and loot"); }
+      fg.wins.forEach(function (w) {
+        if (w === "carve" && fg.kind === "squeeze") { state.cash += 3; notes.push("Carve-out +$3M"); }
+        if (w === "zoning" && reg) { reg.stress = Math.max(0, reg.stress - 1); notes.push("Zoning: stress −1"); }
+        if (w === "stall" && fg.enc === "rival") { var rv2 = (state.rivals || []).filter(function (x) { return !x.sealed; })[0]; if (rv2) { rv2.sealTurn += 1; notes.push("Stalled: " + rv2.firm + " slips again"); } }
+        if (w === "permit") { f.permitQ = t; notes.push("next bunker work −$4M"); }
+        if (w === "bury") { var cut = 0; state.pending.forEach(function (p) { if (!p.install && p.source === fg.dealTitle && p.due > t) { var u0 = p.unrest || 0, c0 = p.collapse || 0; p.unrest = Math.round(u0 * 0.75); p.collapse = Math.round(c0 * 0.75); cut += u0 - p.unrest + c0 - p.collapse; } }); notes.push("fallout −" + cut); }
+        if (w === "photo") { cityAdd(state, -8); notes.push("city −8"); }
+        if (w === "cool") { state.collapse = clamp(state.collapse - 1, 0, LD.MAX_COLLAPSE); notes.push("collapse −1"); }
+      });
+      if (reg) reg.stress = Math.max(0, reg.stress - 1);
+    } else if (!settled) {
+      if (reg) { reg.stress = Math.min(LD.STRESS_MAX || 5, reg.stress + 1); notes.push(LD.REGION_NAMES[fg.region] + " stress +1"); }
+      if (fg.elite && fg.hearing) { fire(state, fg.hearing, "testifies and leaves the firm"); f.hearing = null; notes.push("your fixer testified"); }
+    } else if (fg.elite) { var hf2 = f.fixers.filter(function (x) { return x.id === fg.hearing; })[0]; if (hf2) hf2.heat = 1; f.hearing = null; notes.push("Heat eased"); }
+    if (fg.boss) {
+      f.lastBoss = { id: fg.boss, q: t, beaten: !!win, text: fg.name + (win ? ": you won the room." : settled ? ": settled out of court." : ": they got what they came for.") };
+      f.bossLog.push({ id: fg.boss, q: t, beaten: !!win });
+    }
+    fg.done = { win: !!win, settled: !!settled, cost: cost || 0, notes: notes, leaks: clone(fg.leaks) };
+    f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite };
+    f.fights = f.fights || { won: 0, lost: 0, settled: 0 };
+    f.fights[win ? "won" : settled ? "settled" : "lost"] += 1;
+    state.log.unshift({ turn: t, text: fg.name + ": " + (win ? "you win" : settled ? "settled for $" + cost + "M" : "they got through") + (notes.length ? " (" + notes.join(", ") + ")" : "") + "." });
+    rebuildMods(state);
+  }
+  /* Leave the door: back to the desk (the deal is already signed). */
+  LD.fightClose = function (state) {
+    state = clone(state);
+    var f = fy(state); if (!f || !f.fight) return { ok: false, error: "Nobody at the door.", state: state };
+    if (!f.fight.done) return { ok: false, error: "Finish the fight first.", state: state };
+    f.fight = null;
+    makeReward(state);
+    f.beatNow = false;
+    return { ok: true, state: state, reward: f.reward };
+  };
+  LD.fyPermitCut = function (state) { var f = fy(state); return f && f.permitQ === state.turn ? 4 : 0; };
+  function busy(state) { var f = fy(state); return f && f.fight ? (f.fight.done ? "Close the door first." : "Finish the fight at the door first.") : f && f.reward ? "Take your reward first." : null; }
+  LD.fyBusy = busy;
+
+  /* ---------- Rewards: 1 of 3 cards, shred, or skip; Assets after bosses and the Hearing ---------- */
+  function rewardPool(state) {
+    var f = fy(state), types = { Shared: 1 };
+    f.fixers.forEach(function (r) { var x = FIXER_BY[r.id]; if (x) types[x.t] = 1; });
+    return LD.CARDS.filter(function (c) { return types[c.t] && (c.r === "C" || c.r === "U" || c.r === "R"); });
+  }
+  function rollCards(state, n, rare, rng) {
+    var act = actOf(state.turn), W = [null, { C: 60, U: 32, R: 8 }, { C: 50, U: 38, R: 12 }, { C: 40, U: 42, R: 18 }][act];
+    var pool = rewardPool(state), out = [];
+    if (rare) { var rs = pool.filter(function (c) { return c.r === "R"; }); if (rs.length) { var pr = rs[Math.floor(rng() * rs.length)]; out.push(pr.id); } }
+    var guard = 0;
+    while (out.length < n && guard++ < 60) {
+      var tot = 0; pool.forEach(function (c) { tot += W[c.r]; });
+      var x = rng() * tot, pick = pool[0];
+      for (var i = 0; i < pool.length; i++) { x -= W[pool[i].r]; if (x <= 0) { pick = pool[i]; break; } }
+      if (out.indexOf(pick.id) === -1) out.push(pick.id);
+    }
+    return out;
+  }
+  function makeReward(state) {
+    var f = fy(state), lf = f.lastFight;
+    if (!lf || lf.rewarded || lf.q < state.turn - 1) return null;
+    lf.rewarded = true;
+    var rng = fyRng(state, "reward:" + lf.q + ":" + (f.rerolled || 0));
+    var rare = !!(f.beatNow || f.nextRare);
+    var n = !lf.win && !lf.settled ? 2 : 3;
+    var cards = rollCards(state, n, rare, rng);
+    var asset = null;
+    var actOpen = (lf.q === 1 || lf.q === 4 || lf.q === 8);
+    if (f.beatNow || f.assetNext || actOpen) asset = drawAssets(state, 3, !!(f.beatNow || f.assetNext), rng);
+    if (asset && !asset.length) asset = null;
+    var item = null;
+    if (f.bossLoot) { f.bossLoot = false; item = pickLoot(state, "boss", rng); }
+    else if (f.lootNext) { item = f.lootNext; }
+    f.lootNext = null;
+    var rider = f.rules.riderChance > 0 && rng() < f.rules.riderChance ? ["c_class", "c_subpoena", "c_whistle", "c_leak"][Math.floor(rng() * 4)] : null;
+    f.assetNext = false; f.nextRare = false;
+    f.reward = { q: state.turn, from: lf, cards: cards, rare: rare, asset: asset, item: item, rider: rider, cardDone: false, assetDone: !asset, itemDone: !item, picked: null, why: lf.boss ? "boss" : lf.elite ? "elite" : actOpen && asset ? "act" : "fight" };
+    return f.reward;
+  }
+  function pickLoot(state, src, rng) {
+    var f = fy(state), held = {}; f.drawer.forEach(function (d) { held[d.id] = 1; });
+    var W = { C: 50, U: 38, R: src === "boss" ? 30 : 12 };
+    var pool = []; LD.ITEMS.forEach(function (it) { if (!held[it.id] && !it.office) for (var i = 0; i < W[it.r]; i++) pool.push(it.id); });
+    return pool.length ? pool[Math.floor(rng() * pool.length)] : null;
+  }
+  function rewardDone(f) { var r = f.reward; if (r && r.cardDone && r.assetDone && r.itemDone) f.reward = null; }
+  LD.shredCost = function (state) { var f = fy(state); return f && f.freeShreds ? 0 : LD.DOOR.SHRED + LD.DOOR.SHRED_STEP * ((f && f.shreds) || 0); };
+  LD.shredBlock = function (state, u) {
+    var f = fy(state), c = deckCard(state, u); if (!c) return "Not in your deck.";
+    if (c.id === "c_stranded") return "Only Settle Quietly removes a Stranded Asset.";
+    if (isCurse(c.id) && f.rules.paperTrail && f.act >= 3) return "Paper trail: curses can't be shredded in Act III.";
+    if (f.deck.length <= 6) return "Keep at least 6 cards.";
+    var cost = LD.shredCost(state); if (state.cash < cost) return "Shredding costs $" + cost + "M.";
+    return null;
+  };
+  LD.upgradeBlock = function (state, u) {
+    var f = fy(state), c = deckCard(state, u); if (!c) return "Not in your deck.";
+    if (!(f.upTokens > 0)) return "No upgrades left. Beat a Journalist to earn one.";
+    if (c.up) return "Already upgraded (once per card).";
+    if (!CARD_BY[c.id].up) return "This card can't be upgraded.";
+    return null;
+  };
+  /* action: {kind:"card",id} | {kind:"shred",u} | {kind:"skip"} | {kind:"asset",id,replace} | {kind:"assetPass"} | {kind:"item",keep,replace} | {kind:"upgrade",u} | {kind:"reroll"} */
+  LD.fyReward = function (state, a) {
+    state = clone(state);
+    var f = fy(state), r = f && f.reward, out = { ok: true, state: state };
+    if (a.kind === "upgrade") {
+      var ub = LD.upgradeBlock(state, a.u); if (ub) return { ok: false, error: ub, state: state };
+      var uc = deckCard(state, a.u); uc.up = 1; f.upTokens -= 1;
+      state.log.unshift({ turn: state.turn, text: "Upgraded " + CARD_BY[uc.id].name + "." });
+      out.card = uc; return out;
+    }
+    if (a.kind === "shred" && !r) {
+      var sb0 = LD.shredBlock(state, a.u); if (sb0) return { ok: false, error: sb0, state: state };
+      if (!f.freeShreds) return { ok: false, error: "Shred at a reward, or right after going private.", state: state };
+      var sc0 = deckCard(state, a.u); f.deck = f.deck.filter(function (d) { return d.u !== a.u; }); f.freeShreds -= 1;
+      state.log.unshift({ turn: state.turn, text: "Shredded " + CARD_BY[sc0.id].name + " (free, going private)." });
+      out.card = sc0; return out;
+    }
+    if (!r) return { ok: false, error: "No reward on the desk.", state: state };
+    if (a.kind === "reroll") {
+      if (r.cardDone || !(f.rerolls > 0)) return { ok: false, error: "No rerolls left.", state: state };
+      f.rerolls -= 1; f.rerolled = (f.rerolled || 0) + 1;
+      r.cards = rollCards(state, r.cards.length, r.rare, fyRng(state, "reward:" + state.turn + ":" + f.rerolled));
+      return out;
+    }
+    if (a.kind === "card" || a.kind === "shred" || a.kind === "skip") {
+      if (r.cardDone) return { ok: false, error: "Already chosen.", state: state };
+      if (a.kind === "card") {
+        if (r.cards.indexOf(a.id) === -1) return { ok: false, error: "That card is not on offer.", state: state };
+        var nc = addDeckCard(state, a.id, null, 0); out.card = nc;
+        state.log.unshift({ turn: state.turn, text: "Added " + CARD_BY[a.id].name + " to your deck." });
+        if (r.rider) { addCurse(state, r.rider, "the activist's rider"); out.rider = r.rider; }
+        r.picked = a.id;
+      } else if (a.kind === "shred") {
+        var sb = LD.shredBlock(state, a.u); if (sb) return { ok: false, error: sb, state: state };
+        var cost = LD.shredCost(state), sc = deckCard(state, a.u);
+        state.cash -= cost; if (f.freeShreds) f.freeShreds -= 1; else f.shreds = (f.shreds || 0) + 1;
+        f.deck = f.deck.filter(function (d) { return d.u !== a.u; });
+        state.log.unshift({ turn: state.turn, text: "Shredded " + CARD_BY[sc.id].name + (cost ? " ($" + cost + "M)" : "") + "." });
+        out.card = sc; out.cost = cost; r.picked = "shred";
+      } else { var sk = f.skipCash || LD.DOOR.SKIP; state.cash += sk; out.cash = sk; r.picked = "skip"; state.log.unshift({ turn: state.turn, text: "Skipped the card reward: +$" + sk + "M." }); }
+      r.cardDone = true;
+    } else if (a.kind === "asset" || a.kind === "assetPass") {
+      if (r.assetDone) return { ok: false, error: "Already chosen.", state: state };
+      if (a.kind === "asset") {
+        if (!r.asset || r.asset.indexOf(a.id) === -1) return { ok: false, error: "That Asset is not on offer.", state: state };
+        if (slotsUsed(state) >= f.cap) {
+          if (!a.replace || !has(state, a.replace)) return { ok: false, error: "Your wall is full. Choose a frame to take down.", state: state, needReplace: true };
+          removeCard(state, a.replace); state.cash += LD.FY.DIVEST_CASH; out.divested = cardById(a.replace);
+        }
+        addCard(state, a.id); f.picks.push(a.id); out.asset = cardById(a.id);
+        state.log.unshift({ turn: state.turn, text: "Framed on the wall: " + cardById(a.id).name + "." });
+      }
+      r.assetDone = true;
+    } else if (a.kind === "item") {
+      if (r.itemDone || !r.item) return { ok: false, error: "No item on the desk.", state: state };
+      var it = LD.itemById(r.item), sold = null;
+      if (!a.keep) { state.cash += LD.ITEM_SELL[it.r]; out.cash = LD.ITEM_SELL[it.r]; }
+      else {
+        if (f.drawer.length >= f.dcap) {
+          if (!a.replace || !hasItem(state, a.replace)) return { ok: false, error: "Your briefcase is full. Choose an item to sell.", state: state, needReplace: true };
+          sold = LD.itemById(a.replace); f.drawer = f.drawer.filter(function (d) { return d.id !== a.replace; }); state.cash += LD.ITEM_SELL[sold.r];
+        }
+        f.drawer.push({ id: it.id, used: null });
+      }
+      out.item = it; out.kept = !!a.keep; out.sold = sold;
+      state.log.unshift({ turn: state.turn, text: a.keep ? it.name + " goes in the briefcase" + (sold ? ", " + sold.name + " sold" : "") + "." : "Sold " + it.name + " for $" + LD.ITEM_SELL[it.r] + "M." });
+      r.itemDone = true;
+    } else return { ok: false, error: "Unknown choice.", state: state };
+    rebuildMods(state);
+    rewardDone(f);
+    out.done = !f.reward;
+    return out;
+  };
+
+  /* ---------- Bunker room cards, going private ---------- */
+  function syncRoomCards(state) {
+    var f = fy(state); if (!f || !f.deck) return [];
+    f.roomCards = f.roomCards || {};
+    var added = [];
+    LD.SYSTEMS.forEach(function (s) {
+      var b = state.bunker[s.id];
+      if (b.level >= 2 && !f.roomCards[s.id]) {
+        var id = b.quality === "cheap" ? "cutcorners" : "backup";
+        f.roomCards[s.id] = id; addDeckCard(state, id, null, 0); added.push(id);
+        state.log.unshift({ turn: state.turn, text: "Your " + s.id + " room adds " + CARD_BY[id].name + " to your deck." });
+      }
+    });
+    return added;
+  }
+  LD.fySyncRoomCards = syncRoomCards;
+  LD.fyOnConvert = function (state) {
+    var f = fy(state); if (!f || !f.deck) return;
+    addDeckCard(state, "privsec", null, 0); addDeckCard(state, "privsec", null, 0);
+    f.freeShreds = (f.freeShreds || 0) + 3;
+    state.log.unshift({ turn: state.turn, text: "Going private: 2 Private Security join your deck, and you may shred up to 3 cards for free. Journalists stop calling; Protests get louder." });
+  };
+
+  /* Starter deck: 4 Talking Points, 4 No Comment, and the signature fixer's two cards. */
+  function initDeck(state) {
+    var f = fy(state);
+    f.v = 2; f.deck = []; f.uid = 0; f.fixers = []; f.shreds = 0; f.freeShreds = 0; f.upTokens = 0; f.fight = null; f.reward = null; f.lastFight = null;
+    f.fights = { won: 0, lost: 0, settled: 0 }; f.roomCards = {}; f.hearing = null; f.bill = 0; f.lootNext = null;
+    for (var i = 0; i < 4; i++) addDeckCard(state, "talking", null, 0);
+    for (var j = 0; j < 4; j++) addDeckCard(state, "nocomment", null, 0);
+    var sig = sigFixer(state.executiveId);
+    hire(state, sig.id, true);
+    if (f.level >= 3) addDeckCard(state, sig.cards[0], sig.id, 0);
+    if (f.level >= 9) { var tp = f.deck.filter(function (c) { return c.id === "talking"; })[0]; if (tp) tp.up = 1; }
+  }
+  LD.fyInitDeck = initDeck;
+  /* Saves from before the card layer: build the starter deck, Liabilities become curses, fixtures go on the wall. */
+  function upgradeV2(state) {
+    var f = fy(state); if (!f || f.v >= 2) return false;
+    var liabs = f.hand.filter(function (h) { var c = cardById(h.id); return c && c.liability; }).map(function (h) { return h.id; });
+    f.hand = f.hand.filter(function (h) { var c = cardById(h.id); return c && !c.liability; });
+    initDeck(state);
+    liabs.forEach(function (id) { if (LIAB_CURSE[id]) addDeckCard(state, LIAB_CURSE[id], null, 0); });
+    ["soundproof", "holo"].forEach(function (id) {
+      if (f.drawer.some(function (d) { return d.id === id; })) {
+        f.drawer = f.drawer.filter(function (d) { return d.id !== id; });
+        if (slotsUsed(state) < f.cap) addCard(state, id); else state.cash += 6;
+      }
+    });
+    while (f.drawer.length > 3) { var it = LD.itemById(f.drawer.pop().id); state.cash += LD.ITEM_SELL[it.r]; }
+    f.dcap = 3;
+    if (f.draft) { state.cash += f.skipCash || 3; f.draft = null; }
+    if (f.loot) { f.lootNext = f.loot.id; f.loot = null; }
+    syncRoomCards(state);
+    state.log.unshift({ turn: state.turn, text: "New rules at the office: your fixers now fight at the door. Starter deck issued" + (liabs.length ? "; Liabilities became curse cards" : "") + "." });
+    rebuildMods(state);
+    return true;
+  }
+  LD.fyUpgradeV2 = upgradeV2;
+  LD.fyDeckSummary = function (state) {
+    var f = fy(state); if (!f || !f.deck) return null;
+    var curses = f.deck.filter(function (c) { return isCurse(c.id); }).length;
+    var fg = f.fight && !f.fight.done ? f.fight : null;
+    return { size: f.deck.length, curses: curses, up: f.deck.filter(function (c) { return c.up; }).length, draw: fg ? fg.draw.length : f.deck.length, disc: fg ? fg.disc.length : 0, hand: fg ? fg.hand.length : 0 };
   };
 
   /* ---------- Rewards ---------- */
@@ -7958,7 +8983,7 @@ body:has(#screen-tutorial.on) .shell,
     h += "</div></div></div>";
     var bunkerReady = !dealPhase && !state.bunkerActedThisTurn;
     h += '<button class="panel bunker-card' + (bunkerReady ? " ready" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card">' +
-      '<div class="panel-k">Private bunker · ' + esc(bunkerTally(state)) + (state.converting ? " · private" : "") + "</div>" +
+      '<div class="panel-k">Floor hatch · bunker ' + esc(bunkerTally(state)) + (state.converting ? " · private" : "") + "</div>" +
       '<div class="bc-scene">' + LD.renderBunkerScene(state, { mini: true, idPrefix: "bm" }) + "</div>" +
       (ui.coach === "bunker" && ui.coachText ? '<div class="coach-inline">' + esc(ui.coachText) + "</div>" : "") +
       '<div class="bc-cta">' + (dealPhase ? "Sign a deal to unlock" : state.bunkerActedThisTurn ? "Works ordered this quarter" : "Tap to build ▸") + "</div></button>";
@@ -8050,6 +9075,10 @@ body:has(#screen-tutorial.on) .shell,
     h += "<h3>" + esc(d.title) + "</h3>";
     h += "</div></div>";
     h += '<p class="dz-body">' + esc(d.body) + "</p>";
+    if (state.fy && state.fy.deck && LD.encounterFor) {
+      var en = LD.encounterFor(state, dealId), EN = LD.ENCOUNTERS[en];
+      if (EN) h += '<div class="dz-enc"><span class="ic" aria-hidden="true">' + EN.icon + "</span><span>Signing brings <b>" + esc(EN.name) + "</b> to your door · win: " + esc(EN.win) + "</span></div>";
+    }
     if (d.choices) {
       h += '<div class="dz-choices">';
       d.choices.forEach(function (c) {
@@ -8743,15 +9772,15 @@ body:has(#screen-tutorial.on) .shell,
     var assets = f.hand.filter(function (hd) { var c = LD.assetById(hd.id); return c && !c.liability; });
     var liab = f.hand.filter(function (hd) { var c = LD.assetById(hd.id); return c && c.liability; });
     var sel = ui.sel || (assets[0] && assets[0].id) || ((f.drawer || [])[0] && f.drawer[0].id) || null;
-    var h = '<div class="fy-pfsheet bcase"><div class="fy-head"><div class="dz-k">Briefcase · ' + LD.fySlotsUsed(state) + "/" + f.cap + " · Drawer " + (f.drawer || []).length + "/" + (f.dcap || 3) + "</div><h2>Assets &amp; desk drawer</h2></div>";
+    var h = '<div class="fy-pfsheet bcase"><div class="fy-head"><div class="dz-k">Wall · ' + LD.fySlotsUsed(state) + "/" + f.cap + " · Briefcase " + (f.drawer || []).length + "/" + (f.dcap || 3) + "</div><h2>Trophy wall &amp; briefcase</h2></div>";
     var fc = LD.fyForecast(state);
     h += '<p class="fy-fc"><b>At quarter close:</b> ' + (fc.items.length ? fc.items.map(function (it) { return it.icon + " " + esc(it.text); }).join(" · ") : "nothing automatic.") + "</p>";
     h += '<div class="bc-grid" style="--n:' + f.cap + '">';
     for (var i = 0; i < f.cap; i++) {
       var hd = assets[i];
       if (!hd) { h += '<div class="bc-tile empty" aria-label="Empty slot"><span class="bc-ico">＋</span><span class="bc-nm">Empty</span></div>'; continue; }
-      var c = LD.assetById(hd.id), on = LD.ARCHETYPES[c.arch].set && LD.fyArchCount(state, c.arch) >= LD.ARCHETYPES[c.arch].set;
-      h += itemTile(c, RCLS[c.r] + (on ? " set-on" : "") + (sel === c.id ? " sel" : ""), 'data-bsel="' + c.id + '" aria-pressed="' + (sel === c.id) + '"');
+      var c = LD.assetById(hd.id);
+      h += itemTile(c, RCLS[c.r] + (sel === c.id ? " sel" : ""), 'data-bsel="' + c.id + '" aria-pressed="' + (sel === c.id) + '"');
     }
     h += "</div>";
     if (liab.length) h += '<div class="bc-liabs">' + liab.map(function (hd) { var c = LD.assetById(hd.id); return '<button class="bc-liab' + (sel === c.id ? " sel" : "") + '" data-bsel="' + c.id + '">' + c.icon + " " + esc(c.name) + "</button>"; }).join("") + "</div>";
@@ -8761,11 +9790,11 @@ body:has(#screen-tutorial.on) .shell,
       var on = n >= A.set;
       sets.push('<span class="bc-set' + (on ? " on" : "") + '" title="' + esc(A.setText) + '">' + (on ? "★ " : "") + esc(A.setName) + " " + Math.min(n, A.set) + "/" + A.set + (on ? " · " + esc(A.setText) : "") + "</span>");
     });
-    if (sets.length) h += '<div class="bc-sets">' + sets.join("") + "</div>";
-    h += '<div class="dz-k bc-dk">Desk drawer · office items</div><div class="bc-drawer" style="--n:' + (f.dcap || 3) + '">';
+
+    h += '<div class="dz-k bc-dk">Briefcase · items</div><div class="bc-drawer" style="--n:' + (f.dcap || 3) + '">';
     for (var j = 0; j < (f.dcap || 3); j++) {
       var d = (f.drawer || [])[j];
-      if (!d) { h += '<div class="bc-tile empty drawer"><span class="bc-ico">＋</span><span class="bc-nm">Empty drawer</span></div>'; continue; }
+      if (!d) { h += '<div class="bc-tile empty drawer"><span class="bc-ico">＋</span><span class="bc-nm">Empty</span></div>'; continue; }
       var it = LD.itemById(d.id), why = LD.itemBlock(state, d.id);
       var status = it.office ? '<span class="bc-st on">Always on</span>' : !LD.itemReady(state, d) ? '<span class="bc-st used">' + (it.per === "act" ? "Used this act" : "Used") + "</span>" : '<span class="bc-st ready">' + (it.per === "act" ? "Once per act" : "Once per run") + "</span>";
       h += '<div class="bc-dslot ' + RCLS[it.r] + (sel === it.id ? " sel" : "") + '">' + itemTile(it, "drawer", 'data-bsel="' + it.id + '"', status) +
@@ -8779,7 +9808,7 @@ body:has(#screen-tutorial.on) .shell,
       var w2 = isItem ? LD.itemBlock(state, sel) : null;
       var kind = isItem ? (dc.office ? "Office fixture" : dc.per === "act" ? "Active · once per act" : "Active · once per run") : dc.liability ? "Liability" : LD.RARITY[dc.r].name + " · " + LD.ARCHETYPES[dc.arch].name;
       h += '<p class="bc-detail"><b>' + dc.icon + " " + esc(dc.name) + "</b> <em>" + esc(kind) + "</em> " + esc(dc.text) + (isItem && w2 && !dc.office ? ' <span class="bc-why">' + esc(w2) + "</span>" : "") + "</p>";
-    } else h += '<p class="bc-detail">Tap an Asset or item for details. Loot from bosses, memos and some deals fills the drawer.</p>';
+    } else h += '<p class="bc-detail">Tap an Asset or item for details. Assets come from bosses, the Hearing, act openings and calls. Loot rides on fight rewards.</p>';
     return h + "</div>";
   }
 
@@ -8804,7 +9833,7 @@ body:has(#screen-tutorial.on) .shell,
     var stage = LD.cityStage(state), door = LD.doorLevel(state), m = LD.mods(state), mood = LD.execMood(state);
     var h = '<div class="fy-pfsheet ex-sheet"><div class="fy-head"><div class="dz-k">Your office</div><h2>Reading the room</h2></div><ul class="fy-list ex-list">';
     h += '<li><span class="fy-ico">$</span><div><b>Cash ' + money(state.cash) + "</b><span>The desk ticker. Pays for bunker works, crisis pay-offs, bosses and some items.</span></div></li>";
-    h += '<li><span class="fy-ico">✊</span><div><b>Unrest ' + state.unrest + " · " + esc(LD.doorQuiet(state) ? (LD.hasItem(state, "soundproof") ? "Soundproofed" : "Quiet this quarter") : LD.DOOR_NAMES[door]) + "</b><span>The door. Knocks at 20, pounding at 40, the mob at 60. Crises likely from 48, unpayable from " + m.crisisNoPayAt + ", removed at " + LD.MAX_UNREST + ".</span></div></li>";
+    h += '<li><span class="fy-ico">✊</span><div><b>Unrest ' + state.unrest + " · " + esc(LD.doorQuiet(state) ? (LD.has(state, "soundproof") ? "Soundproofed" : "Quiet this quarter") : LD.DOOR_NAMES[door]) + "</b><span>The door. Knocks at 20, pounding at 40, the mob at 60. Crises likely from 48, unpayable from " + m.crisisNoPayAt + ", removed at " + LD.MAX_UNREST + ".</span></div></li>";
     h += '<li><span class="fy-ico">☢</span><div><b>Collapse ' + state.collapse + " · " + esc(LD.CITY_NAMES[stage]) + "</b><span>The window. Rises about +" + LD.collapseTickAmountPreview(state) + " a quarter; breach in ~" + LD.forecastQuarters(state) + "Q. Squeeze deals darken the mainland, Soothe deals relight it. From Smog alerts on, the mainland adds unrest each quarter (now +" + Math.max(0, stage - 1) + ").</span></div></li>";
     h += '<li><span class="fy-ico">🙂</span><div><b>Your executive: ' + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + "</b><span>Nervous from unrest 35 or collapse 55; panicking from unrest 60 or collapse 78.</span></div></li>";
     return h + "</ul></div>";
@@ -8815,10 +9844,12 @@ body:has(#screen-tutorial.on) .shell,
     ui = ui || {};
     var cx = (meta && meta.codex) || { seen: {}, found: {} };
     var tab = ui.tab || "assets";
-    var list = tab === "items" ? LD.ITEMS : tab === "liabs" ? LD.LIABILITIES : LD.FY_ASSETS;
+    var curses = LD.CARDS.filter(function (c) { return c.t === "Curse"; }).map(function (c) { return { id: c.id, icon: c.icon, name: c.name, text: LD.curseText(c.id) }; });
+    var list = tab === "items" ? LD.ITEMS : tab === "liabs" ? curses : LD.FY_ASSETS;
+    if (tab === "liabs") { cx = { seen: {}, found: {} }; curses.forEach(function (c) { cx.seen[c.id] = 1; }); }
     var found = list.filter(function (x) { return cx.found[x.id]; }).length, seen = list.filter(function (x) { return cx.seen[x.id] || cx.found[x.id]; }).length;
     var h = '<div class="fy-pfsheet prosp"><div class="fy-head"><div class="dz-k">Asset Prospectus · kept across runs</div><h2>The collection</h2></div>';
-    h += '<div class="pr-tabs" role="tablist">' + [["assets", "Assets " + LD.FY_ASSETS.length], ["items", "Office items " + LD.ITEMS.length], ["liabs", "Liabilities " + LD.LIABILITIES.length]].map(function (t) { return '<button class="lens-btn' + (tab === t[0] ? " on" : "") + '" role="tab" aria-selected="' + (tab === t[0]) + '" data-ptab="' + t[0] + '">' + t[1] + "</button>"; }).join("") + "</div>";
+    h += '<div class="pr-tabs" role="tablist">' + [["assets", "Assets " + LD.FY_ASSETS.length], ["items", "Office items " + LD.ITEMS.length], ["liabs", "Curses 6"]].map(function (t) { return '<button class="lens-btn' + (tab === t[0] ? " on" : "") + '" role="tab" aria-selected="' + (tab === t[0]) + '" data-ptab="' + t[0] + '">' + t[1] + "</button>"; }).join("") + "</div>";
     h += '<p class="pr-count">Found <b>' + found + "</b> · seen <b>" + seen + "</b> of " + list.length + "</p>";
     h += '<div class="pr-grid">';
     list.forEach(function (x) {
@@ -8826,9 +9857,9 @@ body:has(#screen-tutorial.on) .shell,
       h += '<button class="pr-cell ' + st + " " + (x.r ? RCLS[x.r] : "liab") + (ui.sel === x.id ? " sel" : "") + '" data-psel="' + x.id + '" aria-label="' + esc(st === "unseen" ? "Unknown" : x.name) + '">' + (st === "unseen" ? "?" : x.icon) + "</button>";
     });
     h += "</div>";
-    var dx = ui.sel && (LD.assetById(ui.sel) || LD.itemById(ui.sel));
+    var dx = ui.sel && (LD.assetById(ui.sel) || LD.itemById(ui.sel) || curses.filter(function (c) { return c.id === ui.sel; })[0]);
     var dst = dx ? (cx.found[dx.id] ? "found" : cx.seen[dx.id] ? "seen" : "unseen") : null;
-    h += '<p class="bc-detail">' + (dx ? (dst === "unseen" ? "<b>? Unknown</b> Not seen yet. Keep drafting, beating bosses and answering memos." : "<b>" + dx.icon + " " + esc(dx.name) + "</b> <em>" + (dst === "found" ? "Found" : "Seen") + (dx.r ? " · " + esc(LD.RARITY[dx.r].name) : "") + "</em> " + esc(dx.text)) : "Tap a cell for details. Glowing cells are ones you have held.") + "</p>";
+    h += '<p class="bc-detail">' + (dx ? (dst === "unseen" ? "<b>? Unknown</b> Not seen yet. Keep winning fights, beating bosses and answering calls." : "<b>" + dx.icon + " " + esc(dx.name) + "</b> <em>" + (dst === "found" ? "Found" : "Seen") + (dx.r ? " · " + esc(LD.RARITY[dx.r].name) : "") + "</em> " + esc(dx.text)) : "Tap a cell for details. Glowing cells are ones you have held.") + "</p>";
     return h + "</div>";
   };
 
@@ -8939,13 +9970,18 @@ body:has(#screen-tutorial.on) .shell,
     var mood = LD.execMood ? LD.execMood(state) : "confident";
     var door = LD.doorLevel ? LD.doorLevel(state) : 0;
     var stage = LD.cityStage ? LD.cityStage(state) : 0, decay = LD.cityDecay ? LD.cityDecay(state) : state.collapse;
-    var holo = LD.hasItem && LD.hasItem(state, "holo"), padded = LD.hasItem && LD.hasItem(state, "soundproof");
+    var holo = LD.hasItem && LD.has(state, "holo"), padded = LD.hasItem && LD.has(state, "soundproof");
     var quiet = LD.doorQuiet && LD.doorQuiet(state);
     var exec = LD.execById(state.executiveId);
     var m = LD.mods(state);
-    var h = '<div class="panel-k of-head"><span>Q' + state.turn + '<span class="of-ht"> · Office</span></span>' + (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</div>";
+    var ring = !!(f.memo);
+    var h = '<div class="panel-k of-head"><span>Q' + state.turn + '<span class="of-ht"> · Office</span></span><span class="of-tools">' +
+      (f.deck ? '<button class="of-deckbtn" id="btn-deck" aria-label="Deck, ' + f.deck.length + ' cards">🃏 ' + f.deck.length + "</button>" : "") +
+      (ring ? '<button class="of-phone ringing" id="btn-phone" aria-label="The phone is ringing">☎</button>' : "") +
+      (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</span></div>";
     h += '<div class="of-room mood-' + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
     h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';
+    if (f.hand) { h += '<div class="of-wallart" aria-hidden="true">'; for (var wi = 0; wi < (f.cap || 5); wi++) { var wa = f.hand[wi] && LD.assetById(f.hand[wi].id); h += wa ? "<i>" + wa.icon + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
     /* Window */
     h += '<div class="of-window" data-art="office-window"><div class="of-glass">' + citySvg(stage, decay, holo) + '</div>' +
       (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "") +
@@ -8975,8 +10011,18 @@ body:has(#screen-tutorial.on) .shell,
     var f = state.fy, m = f && f.memo && LD.memoById(f.memo.id);
     if (!m) return "";
     var h = '<div class="fy-boss fy-memo"><div class="fy-boss-ico" aria-hidden="true">' + m.icon + "</div>";
-    h += '<div class="dz-k">Board Memo · Q' + state.turn + "</div><h2>" + esc(m.title) + "</h2>";
+    h += '<div class="dz-k">' + (m.call ? "Incoming call" : "Board call") + " · Q" + state.turn + "</div><h2>" + esc(m.title) + "</h2>";
     h += '<p class="fy-demand">' + esc(m.body) + "</p>";
+    var mm = f.memo;
+    if (m.id === "headhunter" && mm.offer) {
+      h += '<div class="fy-outs">';
+      mm.offer.forEach(function (fid, i) { var x = LD.fixerById(fid); if (!x) return;
+        h += '<div class="fy-out good"><b>' + (i ? "Second" : "First") + ": " + x.icon + " " + esc(x.name) + "</b><span>" + esc(x.t + ", " + x.role + " · $" + x.pay + "M a quarter") + "</span><span>Cards: " + esc(x.cards.map(function (c) { return LD.cardDef(c).name; }).join(", ")) + "</span></div>"; });
+      h += "</div>";
+      if (f.fixers.length >= LD.DOOR.FIXER_CAP) h += '<p class="fy-note">Your roster is full (' + LD.DOOR.FIXER_CAP + "). Let someone go from the deck view first.</p>";
+    }
+    if (m.id === "distressed" && mm.asset) { var da = LD.assetById(mm.asset); if (da) h += '<p class="fy-note">On offer: <b>' + da.icon + " " + esc(da.name) + "</b> · " + esc(da.text) + "</p>"; }
+    if (m.id === "oldfriend" && mm.card) { var dc0 = LD.cardDef(mm.card); if (dc0) h += '<p class="fy-note">The favour: <b>' + dc0.icon + " " + esc(dc0.name) + "</b> · " + esc(LD.cardText(mm.card, 0)) + "</p>"; }
     return h + "</div>";
   }
   function memoButtons(state) {
@@ -8985,7 +10031,12 @@ body:has(#screen-tutorial.on) .shell,
       var o = m[k], ok = LD.memoAffordable(state, k);
       return '<button class="btn ' + cls + ' fy-mchoice" id="fy-m-' + k + '"' + (ok ? "" : " disabled") + "><b>" + esc(o.label) + "</b><small>" + esc(ok ? o.text : "Not enough cash · " + o.text) + "</small></button>";
     }
-    return b("a", "btn-coral") + b("b", "");
+    if (m.id === "headhunter" && state.fy.memo.offer) {
+      var off = state.fy.memo.offer, full = state.fy.fixers.length >= LD.DOOR.FIXER_CAP;
+      return off.map(function (fid, i) { var x = LD.fixerById(fid); return '<button class="btn ' + (i ? "" : "btn-coral") + ' fy-mchoice" id="fy-m-' + (i ? "b" : "a") + '"' + (full ? " disabled" : "") + "><b>Hire " + esc(x.name.replace(/^Dr\. /, "").split(" ")[0]) + "</b><small>" + esc(x.cards.length + " cards · $" + x.pay + "M/Q") + "</small></button>"; }).join("") +
+        '<button class="btn fy-mchoice" id="fy-m-c"><b>Not now</b><small>Let it go to voicemail</small></button>';
+    }
+    return b("a", "btn-coral") + b("b", "") + (m.c ? b("c", "") : "");
   }
   LD.renderMemo = memoCard;
   LD.renderMemoButtons = memoButtons;
@@ -8994,9 +10045,9 @@ body:has(#screen-tutorial.on) .shell,
   LD.explainHtml = function (kind, state) {
     var h = "";
     if (kind === "liabilities") {
-      h += '<div class="fy-head"><div class="dz-k">Liabilities</div><h2>What a rider can attach</h2></div><ul class="fy-list ex-list">';
-      LD.LIABILITIES.forEach(function (l) { h += '<li class="liab"><span class="fy-ico" aria-hidden="true">' + l.icon + "</span><div><b>" + esc(l.name) + "</b><span>" + esc(l.text) + "</span></div></li>"; });
-      h += "</ul><p class=\"fy-note\">Liabilities cannot be divested. Only Stranded Asset takes a Portfolio slot.</p>";
+      h += '<div class="fy-head"><div class="dz-k">Curses</div><h2>What clogs your deck</h2></div><ul class="fy-list ex-list">';
+      LD.CARDS.filter(function (c) { return c.t === "Curse"; }).forEach(function (l) { h += '<li class="liab"><span class="fy-ico" aria-hidden="true">' + l.icon + "</span><div><b>" + esc(l.name) + "</b><span>" + esc(LD.curseText(l.id)) + "</span></div></li>"; });
+      h += "</ul><p class=\"fy-note\">Curses come from audits, leaks, riders and calls. Shred them at a reward, or use Hush Money or Settle Quietly.</p>";
     } else if (kind === "ratings") {
       var cur = state && state.rating != null ? state.rating : null;
       h += '<div class="fy-head"><div class="dz-k">Credit ratings</div><h2>Every tier adds one rule</h2></div><ol class="ex-rules">';
@@ -9038,7 +10089,7 @@ body:has(#screen-tutorial.on) .shell,
     h += '<div class="dz-k">' + (mode === "confirm" ? "Boss quarter · Q" + q : "Act " + act.roman + " · " + esc(act.name) + " · boss at Q" + q) + ' · <button class="link-btn fy-whoboss fy-explain" data-explain="bosses">ⓘ All bosses</button></div>';
     h += "<h2>" + esc(info.name) + "</h2>";
     h += '<p class="fy-demand">' + esc(info.demand) + "</p>";
-    h += '<div class="fy-outs"><div class="fy-out good"><b>Beat it</b><span>' + esc(info.beat) + (info.final ? " · + 10 ◈" : " · rare draft + 10 ◈") + '</span></div><div class="fy-out bad"><b>Miss it</b><span>' + esc(info.miss) + "</span></div></div>";
+    h += '<div class="fy-outs"><div class="fy-out good"><b>Beat it</b><span>' + esc(info.beat) + (info.final ? " · + 10 ◈" : " · a rare card, an Asset and loot · + 10 ◈") + '</span></div><div class="fy-out bad"><b>Miss it</b><span>' + esc(info.miss) + "</span></div></div>";
     if (mode === "confirm" && info.id === "strike") h += '<p class="fy-note">Unrest now ' + state.unrest + (state.unrest >= 40 ? " · the big hit applies" : " · under 40, the small hit applies") + ".</p>";
     if (mode === "confirm" && info.choice) h += '<p class="fy-note">Cash now ' + money(state.cash) + ". It resolves when you end the quarter.</p>";
     if (mode === "confirm" && info.id === "crash") h += '<p class="fy-note">Cash now ' + money(state.cash) + " · after the drop about " + money(state.cash - Math.round(state.cash * 0.3)) + (state.cash - Math.round(state.cash * 0.3) >= info.line ? " · you ride it out" : " · not enough to ride it out") + ".</p>";
@@ -9055,6 +10106,173 @@ body:has(#screen-tutorial.on) .shell,
     if (info) h += '<button class="fy-bosslink" data-boss-q="' + q + '">' + info.icon + " " + esc(info.name) + " · Q" + q + " ▸</button>";
     return h + "</div>";
   }
+
+  /* ---------- Drop 1: the door fight, the reward, the deck (pure string builders) ---------- */
+  var TYPE_CLS = { Shared: "t-shared", Lobbyist: "t-lob", Lawyer: "t-law", PR: "t-pr", Fellow: "t-fel", Curse: "t-curse", Room: "t-room", Private: "t-priv" };
+  var METER_ICO = { cash: "$", unrest: "✊", collapse: "☢", heat: "🔥" };
+  var METER_NAME = { cash: "Cash", unrest: "Unrest", collapse: "Collapse", heat: "Heat" };
+  function cardFace(id, up, opts) {
+    opts = opts || {};
+    var o = LD.cardValues(id, up), d = LD.cardDef(id); if (!o || !d) return "";
+    var tag = opts.tag || "button";
+    var cls = "dc " + (TYPE_CLS[d.t] || "t-shared") + " r-" + String(d.r || "C").toLowerCase() + (up ? " up" : "") + (opts.cls ? " " + opts.cls : "") + (opts.why ? " no" : "");
+    var attrs = (opts.attrs || "") + (tag === "button" ? ' type="button"' : "") + (opts.why && tag === "button" ? ' aria-disabled="true"' : "");
+    var cost = o.unplay ? "—" : (o.cash ? "$" + o.cash + "M" + (opts.cost ? "+" + opts.cost + "◆" : "") : (opts.cost != null ? opts.cost : o.cost || 0) + "◆");
+    var stats = "";
+    if (opts.p || o.p) stats += '<i class="dc-p" title="Pressure">' + (opts.p != null ? opts.p : o.p) + "</i>";
+    if (opts.d || o.d) stats += '<i class="dc-d" title="Deniability">' + (opts.d != null ? opts.d : o.d) + "</i>";
+    var label = (d.name + (up ? "+" : "")) + ". " + cost + ". " + LD.cardText(id, up) + (opts.why ? " " + opts.why : "");
+    return "<" + tag + ' class="' + cls + '"' + attrs + ' aria-label="' + esc(label) + '">' +
+      '<span class="dc-cost">' + esc(cost) + "</span>" + (stats ? '<span class="dc-stats">' + stats + "</span>" : "") +
+      '<span class="dc-ico" aria-hidden="true">' + d.icon + "</span>" +
+      '<b class="dc-name">' + esc(d.name) + (up ? "<sup>+</sup>" : "") + "</b>" +
+      '<span class="dc-txt">' + esc(LD.cardText(id, up)) + "</span>" +
+      '<span class="dc-type">' + esc(d.t === "Curse" ? "Curse" : d.t) + (d.r && d.r !== "S" && d.r !== "X" ? " · " + ({ C: "Common", U: "Uncommon", R: "Rare" })[d.r] : "") + "</span>" +
+      (opts.why ? '<span class="dc-why">' + esc(opts.why) + "</span>" : "") +
+      "</" + tag + ">";
+  }
+  LD.cardFace = cardFace;
+  function doorFigure(fg) {
+    return '<div class="df-door" aria-hidden="true"><svg viewBox="0 0 100 140" preserveAspectRatio="none"><rect class="df-frame" x="6" y="4" width="88" height="136" rx="4"/>' +
+      '<rect class="df-dark" x="14" y="12" width="72" height="128"/><path class="df-leaf" d="M14 12 L4 20 L4 140 L14 140 Z"/></svg>' +
+      '<span class="df-who">' + fg.icon + "</span></div>";
+  }
+  LD.renderFight = function (state, ui) {
+    ui = ui || {};
+    var f = state.fy, fg = f.fight; if (!fg) return "";
+    var it = fg.done ? null : LD.fightIntent(state);
+    var pct = fg.max ? Math.max(0, Math.round(100 * Math.max(0, fg.scrut) / fg.max)) : 0;
+    var h = '<div class="door-in' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + '" data-enc="' + fg.enc + '">';
+    h += '<header class="df-top"><div class="df-title"><small>' + (fg.boss ? "Boss · Q" + fg.q : fg.elite ? "Elite · Q" + fg.q : "At the door · Q" + fg.q) + " · " + esc(fg.dealTitle || "") + "</small><b>" + esc(fg.name) + "</b><em>" + esc(fg.sub || "") + "</em></div>" +
+      '<div class="df-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small>' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></div>" +
+      '<button class="icon-btn df-help" id="df-help" aria-label="How door fights work">?</button></header>';
+    h += '<div class="df-stage">' + doorFigure(fg);
+    h += '<div class="df-scrut"><div class="df-k">Scrutiny <b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div></div>";
+    if (it) {
+      var thr = it.through, ico = METER_ICO[it.meter] || "!";
+      h += '<div class="df-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><div class="df-k">Intends to</div>' +
+        '<div class="di-main"><span class="di-ico" aria-hidden="true">' + ico + '</span><b>' + esc(it.label) + " " + it.n + "</b></div>" +
+        '<div class="di-math">Block <b>' + it.block + "</b> · through <b>" + thr + "</b> → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " (×½)" : "") + "</div>" +
+        (it.rtext ? '<div class="di-rider' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</div>" : "") +
+        (it.notes.length ? '<div class="di-notes">' + esc(it.notes.join(" · ")) + "</div>" : "") + "</div>";
+    }
+    h += "</div>";
+    if (fg.done) {
+      var d = fg.done, L = d.leaks, bits = [];
+      if (L.cash) bits.push("−$" + L.cash + "M"); if (L.unrest) bits.push("unrest +" + L.unrest); if (L.collapse) bits.push("collapse +" + L.collapse); if (L.heat) bits.push("Heat +" + L.heat);
+      h += '<div class="df-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status"><b>' + (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + "</b>" +
+        "<span>" + esc(d.win ? (d.notes.join(" · ") || "The door closes.") : d.settled ? "No bonus, no more damage. " + (d.notes.join(" · ")) : "The deal still signs. " + (d.notes.join(" · ") || "")) + "</span>" +
+        (bits.length ? '<span class="df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") +
+        '<button class="btn btn-coral df-close" id="df-close">' + (d.win || d.settled ? "Close the door ▸" : "Close the door ▸") + "</button></div>";
+    } else {
+      h += '<div class="df-hud"><div class="df-inf" aria-label="Influence ' + fg.inf + '"><small>Influence</small>';
+      for (var i = 0; i < Math.max(fg.inf, LD.DOOR.INF); i++) h += '<i class="' + (i < fg.inf ? "on" : "") + '"></i>';
+      h += '<b>' + fg.inf + "◆</b></div>";
+      h += '<div class="df-meters" aria-label="Cash $' + state.cash + "M, unrest " + state.unrest + ", collapse " + state.collapse + '"><b>$' + state.cash + "M</b><span>✊ " + state.unrest + "</span><span>☢ " + state.collapse + "</span></div>";
+      h += '<div class="df-piles"><button class="df-pile" id="df-deck" aria-label="Deck view">Draw ' + fg.draw.length + "</button><span>Discard " + fg.disc.length + "</span></div></div>";
+      h += '<div class="df-hand" role="group" aria-label="Your hand">';
+      fg.hand.forEach(function (u) {
+        var ci = LD.fightCardInfo(state, u); if (!ci) return;
+        h += cardFace(ci.id, ci.up, { attrs: ' data-u="' + u + '"', why: ci.why, cost: ci.o.cash ? (ci.cost || null) : ci.cost, p: ci.p, d: ci.d, cls: ui.flashU === u ? "pop" : "" });
+      });
+      if (!fg.hand.length) h += '<p class="df-empty">No cards left. End the round.</p>';
+      h += "</div>";
+      var sc = LD.fightSettleCost(state);
+      h += '<div class="df-actions"><button class="btn df-settle" id="df-settle"' + (state.cash < sc ? " disabled" : "") + '><b>Settle $' + sc + "M</b><small>" + (state.cash < sc ? "Not enough cash" : "Pay it off now") + "</small></button>" +
+        '<button class="btn btn-coral df-end" id="df-end"><b>End round</b><small>' + (it ? (it.through ? esc(it.label) + " hits for " + it.through : "Fully blocked") : "") + (fg.round >= fg.rounds ? " · last round" : "") + "</small></button></div>";
+    }
+    h += '<div class="df-log" id="df-log" aria-live="polite">' + esc(ui.log || "") + "</div>";
+    h += '<div class="fx" id="df-fx" aria-hidden="true"></div>';
+    return h + "</div>";
+  };
+  LD.renderReward = function (state, ui) {
+    ui = ui || {};
+    var f = state.fy, r = f.reward; if (!r) return "";
+    var lf = r.from || {}, E = LD.ENCOUNTERS[lf.enc] || { name: "The door" };
+    var head = '<header class="rw-head"><small>' + (lf.win ? "Won · " : lf.settled ? "Settled · " : "Lost · ") + esc(E.name) + " · Q" + (lf.q || state.turn) + "</small>";
+    var h = '<div class="rw-in">';
+    if (!r.itemDone && r.item) {
+      var it = LD.itemById(r.item), full = f.drawer.length >= f.dcap;
+      h += head + "<h2>Loot on the desk</h2></header>";
+      h += '<div class="rw-item r-' + String(it.r).toLowerCase() + '"><span class="rw-ico" aria-hidden="true">' + it.icon + "</span><b>" + esc(it.name) + "</b><span>" + esc(it.text || "") + "</span><em>Briefcase " + f.drawer.length + "/" + f.dcap + "</em></div>";
+      if (full && ui.replaceItem) {
+        h += '<p class="rw-q">Briefcase full. Sell one to make room:</p><div class="rw-minis">';
+        f.drawer.forEach(function (d) { var x = LD.itemById(d.id); h += '<button class="fy-mini" data-isell="' + d.id + '"><span>' + x.icon + "</span><b>" + esc(x.name) + "</b><em>Sell $" + LD.ITEM_SELL[x.r] + "M</em></button>"; });
+        h += "</div>";
+        h += '<div class="rw-foot"><button class="btn" id="rw-back">Back</button></div>';
+      } else h += '<div class="rw-foot"><button class="btn" id="rw-sell">Sell for $' + LD.ITEM_SELL[it.r] + 'M</button><button class="btn btn-coral" id="rw-keep">' + (full ? "Keep (swap one)" : "Into the briefcase") + "</button></div>";
+      return h + "</div>";
+    }
+    if (!r.assetDone && r.asset) {
+      var wallFull = LD.fySlotsUsed(state) >= f.cap;
+      h += head + "<h2>" + (r.why === "boss" ? "Boss beaten: frame an Asset" : r.why === "elite" ? "The Hearing is over: frame an Asset" : lf.q === 1 ? "Your first trophy: frame an Asset" : "A new act: frame an Asset") + "</h2><p class=\"rw-sub\">Wall " + LD.fySlotsUsed(state) + "/" + f.cap + (wallFull ? " · full: pick one to take down (+$" + LD.FY.DIVEST_CASH + "M)" : "") + "</p></header>";
+      if (ui.replaceFor) {
+        h += '<div class="rw-minis">';
+        f.hand.forEach(function (c) { var a = LD.assetById(c.id); if (!a) return; h += '<button class="fy-mini" data-areplace="' + a.id + '"><span>' + a.icon + "</span><b>" + esc(a.name) + "</b><em>" + esc(a.text) + "</em></button>"; });
+        h += '</div><div class="rw-foot"><button class="btn" id="rw-back">Back</button></div>';
+        return h + "</div>";
+      }
+      h += '<div class="rw-assets">';
+      r.asset.forEach(function (id) { var a = LD.assetById(id); if (!a) return;
+        h += '<button class="fy-card rw-asset r-' + String(a.r).toLowerCase() + '" data-asset="' + id + '"><span class="fy-ico" aria-hidden="true">' + a.icon + '</span><span class="fy-txt"><b>' + esc(a.name) + "</b><em><i class=\"fy-gem\"></i>" + ({ C: "Common", U: "Uncommon", R: "Rare", L: "Legendary" })[a.r] + '</em><span class="fy-eff">' + esc(a.text) + "</span></span></button>"; });
+      h += '</div><div class="rw-foot"><button class="btn" id="rw-apass">Pass</button></div>';
+      return h + "</div>";
+    }
+    /* Cards */
+    h += head + "<h2>" + (r.rare ? "A rare pick" : "Add a card") + '</h2><p class="rw-sub">Deck ' + f.deck.length + " cards" + (r.rider ? " · ⚠ activist rider: taking a card adds a curse" : "") + (lf.win || lf.settled ? "" : " · lost fights offer 2") + "</p></header>";
+    if (ui.shredding) {
+      h += '<p class="rw-q">Shred one card for $' + LD.shredCost(state) + 'M:</p><div class="rw-deck">';
+      f.deck.forEach(function (c) { var why = LD.shredBlock(state, c.u); h += cardFace(c.id, c.up, { attrs: ' data-shred="' + c.u + '"', why: why, cls: "chip" }); });
+      h += '</div><div class="rw-foot"><button class="btn" id="rw-back">Back</button></div>';
+      return h + "</div>";
+    }
+    if (ui.upgrading) {
+      h += '<p class="rw-q">Upgrade one card (once per card):</p><div class="rw-deck">';
+      f.deck.forEach(function (c) { var why = LD.upgradeBlock(state, c.u); if (LD.isCurse(c.id)) return; h += cardFace(c.id, c.up, { attrs: ' data-upg="' + c.u + '"', why: why, cls: "chip" }); });
+      h += '</div><div class="rw-foot"><button class="btn" id="rw-back">Back</button></div>';
+      return h + "</div>";
+    }
+    h += '<div class="rw-cards">';
+    r.cards.forEach(function (id) { h += cardFace(id, 0, { attrs: ' data-card="' + id + '"', cls: "big" + (ui.sel === id ? " sel" : "") }); });
+    h += "</div>";
+    var scost = LD.shredCost(state), canShred = state.cash >= scost && f.deck.length > 6;
+    h += '<div class="rw-foot">' +
+      (f.rerolls > 0 ? '<button class="btn" id="rw-reroll">Reroll (' + f.rerolls + ")</button>" : "") +
+      (f.upTokens > 0 ? '<button class="btn" id="rw-upg">Upgrade (' + f.upTokens + ")</button>" : "") +
+      '<button class="btn" id="rw-shred"' + (canShred ? "" : " disabled") + ">Shred a card $" + scost + "M</button>" +
+      '<button class="btn" id="rw-skip">Skip +$' + (f.skipCash || LD.DOOR.SKIP) + "M</button>" +
+      '<button class="btn btn-coral" id="rw-take"' + (ui.sel ? "" : " disabled") + ">" + (ui.sel ? "Take " + esc(LD.cardDef(ui.sel).name) : "Pick a card") + "</button></div>";
+    return h + "</div>";
+  };
+  LD.renderDeck = function (state, ui) {
+    ui = ui || {};
+    var f = state.fy; if (!f || !f.deck) return "";
+    var h = '<div class="dk-in"><header class="rw-head"><small>Your deck · ' + f.deck.length + " cards" + (f.upTokens ? " · " + f.upTokens + " upgrade" + (f.upTokens > 1 ? "s" : "") : "") + (f.freeShreds ? " · " + f.freeShreds + " free shred" + (f.freeShreds > 1 ? "s" : "") : "") + "</small><h2>Deck and fixers</h2></header>";
+    h += '<div class="dk-fixers">';
+    f.fixers.forEach(function (r) { var x = LD.fixerById(r.id); if (!x) return;
+      h += '<div class="dk-fixer"><span class="dk-fi" aria-hidden="true">' + x.icon + "</span><div><b>" + esc(x.name) + "</b><em>" + esc(x.t + " · " + x.role + " · $" + x.pay + "M/Q") + '</em><span class="dk-heat">Heat ' + "🔥".repeat(r.heat || 0) + (r.heat ? "" : "0") + "/3" + (f.hearing === r.id ? " · Hearing due" : "") + "</span></div>" +
+        (f.fixers.length > 1 ? '<button class="btn dk-fire" data-fire="' + r.id + '">Let go</button>' : "") + "</div>"; });
+    h += "</div>";
+    var mode = ui.mode || "";
+    if (mode) h += '<p class="rw-q">' + (mode === "shred" ? "Tap a card to shred it (free)." : "Tap a card to upgrade it.") + "</p>";
+    h += '<div class="dk-cards">';
+    var order = f.deck.slice().sort(function (a, b) { var A = LD.cardDef(a.id), B = LD.cardDef(b.id); return (A.t === "Curse") - (B.t === "Curse") || A.name.localeCompare(B.name); });
+    order.forEach(function (c) {
+      var why = mode === "shred" ? LD.shredBlock(state, c.u) : mode === "upgrade" ? LD.upgradeBlock(state, c.u) : null;
+      h += cardFace(c.id, c.up, { tag: mode ? "button" : "div", attrs: mode ? ' data-dk="' + c.u + '"' : "", why: why, cls: "mini" });
+    });
+    h += "</div></div>";
+    return h;
+  };
+  LD.fightHelpHtml = function () {
+    return '<div class="fy-explain"><h2>Door fights</h2><ul class="fy-list">' +
+      '<li><span class="fy-ico">🎯</span><div><b>Win: Scrutiny to 0</b><span>Pressure cards lower Scrutiny. Hit 0 and they leave. Each encounter pays a bonus.</span></div></li>' +
+      '<li><span class="fy-ico">🛡️</span><div><b>Block the intent</b><span>The badge shows what lands when you end the round, and on which meter. Deniability blocks it point for point.</span></div></li>' +
+      '<li><span class="fy-ico">◆</span><div><b>3 Influence a round</b><span>Cards cost ◆ (some cost cash). 5 cards a round. Unplayed cards go to the discard.</span></div></li>' +
+      '<li><span class="fy-ico">🤝</span><div><b>Settle or lose</b><span>Settle pays $' + LD.DOOR.SETTLE + 'M per Scrutiny left and ends it with no more damage. Losing still signs the deal, but the region takes stress.</span></div></li>' +
+      '<li><span class="fy-ico">🃏</span><div><b>Then a reward</b><span>Pick a card, shred one, or skip for cash. Fixers bring their own cards. Curses clog your hand until shredded.</span></div></li></ul></div>';
+  };
 
   LD.renderDraft = renderDraft;
   LD.renderPortfolio = renderPortfolio;
@@ -9279,6 +10497,7 @@ body:has(#screen-tutorial.on) .shell,
       el.classList.toggle("on", id === name);
     });
     hideOverlay();
+    if (name !== "desk" && typeof hideDoor === "function") hideDoor();
     window.scrollTo(0, 0);
   }
 
@@ -9959,7 +11178,7 @@ body:has(#screen-tutorial.on) .shell,
   function applyDeal(id, choice) {
     var prev = state;
     var res = LD.selectDeal(state, id, choice);
-    if (!res.ok) { if (state.fy && state.fy.loot) { openLoot(); return; } if (state.fy && state.fy.memo) { openMemo(); return; } flash(res.error); return; }
+    if (!res.ok) { if (state.fy && state.fy.fight) { openFight(); return; } if (state.fy && state.fy.reward) { openReward(); return; } if (state.fy && state.fy.memo) { openMemo(); return; } flash(res.error); return; }
     state = res.state;
     clearSel();
     persistRun();
@@ -9968,7 +11187,7 @@ body:has(#screen-tutorial.on) .shell,
     pennyEmit("signed");
     var dcash = state.cash - prev.cash, dun = state.unrest - prev.unrest, dco = state.collapse - prev.collapse;
     if (dcash >= 15) officeReact("glee"); else if (dun >= 8 || dco >= 5) officeReact("shock");
-    if (state.fy && state.fy.loot) setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.loot && !$("overlay").classList.contains("on")) openLoot(); }, 1100);
+    if (state.fy && state.fy.fight) { DF.start = prev; setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight && !doorOpen()) { knockNow(); setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight) openFight(); }, reduced() ? 120 : 700); } }, reduced() ? 200 : 900); }
     var rid = res.region ? res.region.regionId : (prev.world && prev.world.pins[id]);
     if (rid) {
       var dc = state.cash - prev.cash;
@@ -10165,9 +11384,10 @@ body:has(#screen-tutorial.on) .shell,
   function endQuarter(opts) {
     opts = opts || {};
     if (closing) return;
-    if (state.fy && state.fy.loot && !state.ended) { openLoot(); return; }
+    if (state.fy && state.fy.fight && !state.ended) { openFight(); return; }
+    if (state.fy && state.fy.reward && !state.ended) { openReward(); return; }
     if (state.fy && state.fy.memo && !state.ended) { openMemo(); return; }
-    if (state.phase !== "deal" && !opts.confirmed && LD.bossInfo && LD.bossInfo(state, state.turn)) { showBossConfirm(); return; }
+    if (state.phase !== "deal" && !opts.confirmed && LD.bossInfo && LD.bossInfo(state, state.turn) && !LD.bossInfo(state, state.turn).fight) { showBossConfirm(); return; }
     if (state.phase !== "deal") SFX.play("endq");
     if (state.phase === "deal") {
       var desk = document.querySelector(".desk");
@@ -10280,20 +11500,20 @@ body:has(#screen-tutorial.on) .shell,
     if (!state || state.ended || !state.fy) return;
     if (LD.upgradeFY) { LD.upgradeFY(state); persistRun(); }
     codexMark(state.fy.hand.map(function (h) { return h.id; }).concat((state.fy.drawer || []).map(function (d) { return d.id; })), true);
-    if (state.fy.loot) { openLoot(); return; }
-    if (state.fy.draft) { openDraft(); return; }
+    if (state.fy.fight) { openFight(); return; }
+    if (state.fy.reward) { openReward(); return; }
     if (state.fy.memo) { openMemo(); return; }
     if (state.fy.actIntro) { showActIntro(); return; }
     if (LD.bossInfo(state, state.turn) && state.fy.bannerQ !== state.turn) { state.fy.bannerQ = state.turn; persistRun(); bossBanner(LD.bossInfo(state, state.turn)); }
   }
-  function fyNext(ms) { setTimeout(function () { if (screen === "desk" && state && !state.ended && !$("overlay").classList.contains("on")) fyAfterOpen(); }, ms || 700); }
+  function fyNext(ms) { setTimeout(function () { if (screen === "desk" && state && !state.ended && !$("overlay").classList.contains("on") && !doorOpen()) fyAfterOpen(); }, ms || 700); }
   function bossBanner(info) {
     var desk = document.querySelector(".desk");
     if (!desk) return;
     var b = document.createElement("div");
     b.className = "boss-banner b-" + info.id;
     b.setAttribute("role", "status");
-    b.innerHTML = '<div class="bb-in"><span class="bb-ico" aria-hidden="true">' + info.icon + '</span><div><small>Boss quarter · Q' + info.q + "</small><b>" + LD.escapeHtml(info.name) + "</b><em>" + LD.escapeHtml(info.demand) + "</em></div></div>";
+    b.innerHTML = '<div class="bb-in"><span class="bb-ico" aria-hidden="true">' + info.icon + '</span><div><small>Boss quarter · Q' + info.q + (info.fight ? " · knocks when you sign" : "") + "</small><b>" + LD.escapeHtml(info.name) + "</b><em>" + LD.escapeHtml(info.demand) + "</em></div></div>";
     document.body.appendChild(b);
     SFX.play("boss");
     var sl = document.querySelector(".desk .board-slab"); if (sl) { sl.classList.remove("boss-shake"); void sl.offsetWidth; sl.classList.add("boss-shake"); }
@@ -10302,7 +11522,7 @@ body:has(#screen-tutorial.on) .shell,
   }
   function openMemo() {
     showFy(LD.renderMemo(state), LD.renderMemoButtons(state), function () {
-      ["a", "b"].forEach(function (k) {
+      ["a", "b", "c"].forEach(function (k) {
         var btn = $("fy-m-" + k);
         if (btn) btn.addEventListener("click", function () {
           tick();
@@ -10433,6 +11653,207 @@ body:has(#screen-tutorial.on) .shell,
     $("overlay").classList.add("loot-mode");
     SFX.play("loot");
   }
+  /* ---------- Drop 1: the door, the reward, the deck ---------- */
+  var DF = { logT: null, busy: false, start: null, arm: 0 };
+  var RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
+  function doorEl() { return $("door"); }
+  function doorOpen() { var d = doorEl(); return !!(d && d.classList.contains("on")); }
+  function showDoor(html, mode) { var d = doorEl(); d.hidden = false; d.className = "door-screen on " + (mode || ""); d.innerHTML = html; }
+  function hideDoor() { var d = doorEl(); if (!d) return; d.className = "door-screen"; d.hidden = true; d.innerHTML = ""; }
+  function dfLog(t) {
+    var el = $("df-log"); if (!el || !t) return;
+    el.textContent = t; el.classList.add("on");
+    clearTimeout(DF.logT); DF.logT = setTimeout(function () { var e2 = $("df-log"); if (e2) e2.classList.remove("on"); }, 2400);
+  }
+  function dfFloat(text, cls, sel, delay) {
+    var fx = $("df-fx"), a = document.querySelector(sel || ".df-scrut"), root = document.querySelector(".door-in");
+    if (!fx || !a || !root) return;
+    var r = a.getBoundingClientRect(), b = root.getBoundingClientRect();
+    placeFloat(fx, r.left - b.left + r.width / 2, r.top - b.top + r.height / 2, text, cls, delay);
+  }
+  function openFight() {
+    if (!state || !state.fy || !state.fy.fight) return;
+    hideOverlay();
+    if (!DF.start) DF.start = state;
+    DF.busy = false; DF.arm = 0;
+    paintFight();
+    SFX.play("knock", Math.max(1, LD.doorLevel(state)));
+    if (!state.fy.fight.done) setTimeout(function () { if (doorOpen() && PN.mode !== "tour") pennyTip("fight"); }, 700);
+  }
+  function paintFight(flashU) {
+    showDoor(LD.renderFight(state, { flashU: flashU }), "df-mode");
+    var root = doorEl();
+    Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
+      b.addEventListener("click", function () { playCard(+b.getAttribute("data-u")); });
+    });
+    var e = $("df-end"); if (e) e.addEventListener("click", function () { tick(); endRound(); });
+    var s = $("df-settle"); if (s) s.addEventListener("click", function () { tick(); settleFight(); });
+    var c = $("df-close"); if (c) { c.addEventListener("click", function () { tick(); closeFight(); }); try { c.focus({ preventScroll: true }); } catch (x) {} }
+    var hp = $("df-help"); if (hp) hp.addEventListener("click", function () { tick(); showFy(LD.fightHelpHtml(), '<button class="btn btn-coral" id="fy-ex-back">Back to the door</button>', function () { $("fy-ex-back").addEventListener("click", function () { tick(); hideOverlay(); }); }, true); });
+    var dk = $("df-deck"); if (dk) dk.addEventListener("click", function () { tick(); openDeck(); });
+  }
+  function playCard(u) {
+    if (DF.busy || !state.fy.fight || state.fy.fight.done) return;
+    var ci = LD.fightCardInfo(state, u); if (!ci) return;
+    if (ci.why) {
+      SFX.play("bad"); dfLog(ci.o.name + ": " + ci.why);
+      var bn = document.querySelector('.df-hand [data-u="' + u + '"]'); if (bn) { bn.classList.remove("shake"); void bn.offsetWidth; bn.classList.add("shake"); }
+      return;
+    }
+    var prev = state, fg0 = state.fy.fight, s0 = fg0.scrut, b0 = fg0.block;
+    var res = LD.fightPlay(state, u);
+    if (!res.ok) { SFX.play("bad"); dfLog(res.error); return; }
+    state = res.state; persistRun();
+    SFX.play("flip");
+    var fg = state.fy.fight;
+    paintFight();
+    var dS = s0 - Math.max(0, fg.scrut), dB = fg.block - b0;
+    if (dS > 0) dfFloat("−" + dS + " Scrutiny", "good big", ".df-scrut");
+    if (dB > 0) dfFloat("Block +" + dB, "good", "#df-intent");
+    if (state.cash !== prev.cash) dfFloat((state.cash > prev.cash ? "+$" : "−$") + Math.abs(state.cash - prev.cash) + "M", state.cash > prev.cash ? "cash" : "cost", ".df-meters", 120);
+    var msgs = (res.fx || []).map(function (x) { return x.text; }).filter(Boolean);
+    dfLog(ci.o.name + (dS > 0 ? " · Scrutiny −" + dS : "") + (dB > 0 ? " · block +" + dB : "") + (msgs.length ? " · " + msgs.join(" ") : ""));
+    pennyEmit("fight-card");
+    if (fg.done) fightOver();
+  }
+  function endRound() {
+    if (DF.busy || !state.fy.fight || state.fy.fight.done) return;
+    var prev = state;
+    var res = LD.fightEndRound(state);
+    if (!res.ok) { dfLog(res.error); return; }
+    DF.busy = true;
+    var ie = $("df-intent"); if (ie) ie.classList.add("firing");
+    SFX.play(res.hit.n ? "bad" : "tick");
+    setTimeout(function () {
+      DF.busy = false;
+      state = res.state; persistRun();
+      paintFight();
+      dfLog(res.hit.text + (res.hit.riders.length ? " " + res.hit.riders.join(" ") : ""));
+      var d = [];
+      if (state.cash !== prev.cash) d.push((state.cash > prev.cash ? "+$" : "−$") + Math.abs(state.cash - prev.cash) + "M");
+      if (state.unrest !== prev.unrest) d.push("Unrest " + signed(state.unrest - prev.unrest));
+      if (state.collapse !== prev.collapse) d.push("Collapse " + signed(state.collapse - prev.collapse));
+      d.forEach(function (t, i) { dfFloat(t, "bad", state.fy.fight.done ? ".df-result" : ".df-meters", i * 160); });
+      if (!d.length && !res.hit.n) dfFloat("Blocked!", "good big", ".df-stage");
+      if (state.fy.fight.done) fightOver();
+    }, reduced() ? 60 : 420);
+  }
+  function signed(n) { return (n > 0 ? "+" : "−") + Math.abs(n); }
+  function settleFight() {
+    var cost = LD.fightSettleCost(state);
+    if (Date.now() - DF.arm > 3000) {
+      DF.arm = Date.now();
+      var b = $("df-settle"); if (b) { b.classList.add("armed"); b.innerHTML = "<b>Pay $" + cost + "M?</b><small>Tap again to settle</small>"; }
+      return;
+    }
+    DF.arm = 0;
+    var res = LD.fightSettle(state);
+    if (!res.ok) { SFX.play("bad"); dfLog(res.error); return; }
+    state = res.state; persistRun();
+    SFX.play("coin");
+    paintFight();
+    fightOver();
+  }
+  function fightOver() {
+    var d = state.fy.fight && state.fy.fight.done; if (!d) return;
+    SFX.play(d.win ? "win" : d.settled ? "coin" : "bad");
+    pennyEmit("fight-done");
+  }
+  function closeFight() {
+    var res = LD.fightClose(state);
+    if (!res.ok) { flash(res.error); return; }
+    state = res.state; persistRun();
+    if (state.fy.reward) openReward();
+    else finishDoor();
+    pennyEmit("reward-open");
+  }
+  function finishDoor() {
+    var from = DF.start; DF.start = null;
+    hideDoor(); renderDesk(from);
+    if (state && state.fy && state.fy.lastFight && state.fy.lastFight.q === state.turn) officeReact(state.fy.lastFight.win ? "glee" : "shock");
+    fyNext(700);
+  }
+  function openReward() {
+    if (!state.fy.reward) { finishDoor(); return; }
+    if (!DF.start) DF.start = state;
+    RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
+    var r = state.fy.reward;
+    if (r.item) codexMark([r.item], false);
+    if (r.asset) codexMark(r.asset, false);
+    paintReward();
+    SFX.play(r.rare ? "rare" : "loot");
+    setTimeout(function () { if (doorOpen() && PN.mode !== "tour") pennyTip("reward"); }, 600);
+  }
+  function rwAct(a, onNeed) {
+    var res = LD.fyReward(state, a);
+    if (!res.ok) { if (res.needReplace && onNeed) { onNeed(); return null; } SFX.play("bad"); flash(res.error); return null; }
+    state = res.state; persistRun();
+    RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
+    return res;
+  }
+  function paintReward() {
+    if (!state.fy.reward) { pennyEmit("reward-done"); finishDoor(); return; }
+    showDoor(LD.renderReward(state, RW), "rw-mode");
+    var root = doorEl();
+    function on(id, fn) { var n = $(id); if (n) n.addEventListener("click", function () { tick(); fn(); }); }
+    function each(sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.addEventListener("click", function () { tick(); fn(n); }); }); }
+    on("rw-keep", function () { var r = rwAct({ kind: "item", keep: true }, function () { RW.replaceItem = true; paintReward(); }); if (r) { SFX.play("item"); codexMark([r.item.id], true); paintReward(); } });
+    on("rw-sell", function () { if (rwAct({ kind: "item", keep: false })) { SFX.play("coin"); paintReward(); } });
+    each("[data-isell]", function (n) { var r = rwAct({ kind: "item", keep: true, replace: n.getAttribute("data-isell") }); if (r) { SFX.play("item"); paintReward(); } });
+    each("[data-asset]", function (n) {
+      var id = n.getAttribute("data-asset");
+      if (LD.fySlotsUsed(state) >= state.fy.cap) { RW.replaceFor = id; paintReward(); return; }
+      var r = rwAct({ kind: "asset", id: id }); if (r) { SFX.play("rare"); codexMark([id], true); paintReward(); }
+    });
+    each("[data-areplace]", function (n) { var id = RW.replaceFor; var r = rwAct({ kind: "asset", id: id, replace: n.getAttribute("data-areplace") }); if (r) { codexMark([id], true); SFX.play("rare"); paintReward(); } });
+    on("rw-apass", function () { if (rwAct({ kind: "assetPass" })) paintReward(); });
+    each("[data-card]", function (n) { RW.sel = n.getAttribute("data-card"); paintReward(); var t = $("rw-take"); if (t) try { t.focus({ preventScroll: true }); } catch (x) {} });
+    on("rw-take", function () { if (!RW.sel) return; var r = rwAct({ kind: "card", id: RW.sel }); if (r) { SFX.play("item"); paintReward(); } });
+    on("rw-skip", function () { if (rwAct({ kind: "skip" })) { SFX.play("coin"); paintReward(); } });
+    on("rw-shred", function () { RW.shredding = true; paintReward(); });
+    on("rw-upg", function () { RW.upgrading = true; paintReward(); });
+    on("rw-reroll", function () { if (rwAct({ kind: "reroll" })) paintReward(); });
+    on("rw-back", function () { RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null }; paintReward(); });
+    each("[data-shred]", function (n) { var u = +n.getAttribute("data-shred"); var why = LD.shredBlock(state, u); if (why) { SFX.play("bad"); flash(why); return; } if (rwAct({ kind: "shred", u: u })) { SFX.play("bad"); paintReward(); } });
+    each("[data-upg]", function (n) { var u = +n.getAttribute("data-upg"); var why = LD.upgradeBlock(state, u); if (why) { SFX.play("bad"); flash(why); return; } if (rwAct({ kind: "upgrade", u: u })) { SFX.play("rare"); paintReward(); } });
+  }
+  /* Deck view: a collection, so it may scroll. Fire fixers, spend free shreds and upgrade tokens. */
+  var DK = { mode: "" };
+  function openDeck(mode) {
+    DK.mode = typeof mode === "string" ? mode : "";
+    var f = state.fy, inFight = !!(f.fight && !f.fight.done), atReward = !!f.reward;
+    var acts = "";
+    if (!inFight && !atReward && f.freeShreds > 0) acts += '<button class="btn" id="dk-shred">' + (DK.mode === "shred" ? "Stop shredding" : "Free shred (" + f.freeShreds + ")") + "</button>";
+    if (!inFight && f.upTokens > 0) acts += '<button class="btn" id="dk-upg">' + (DK.mode === "upgrade" ? "Stop upgrading" : "Upgrade (" + f.upTokens + ")") + "</button>";
+    acts += '<button class="btn btn-coral" id="dk-close">Close</button>';
+    showFy(LD.renderDeck(state, { mode: DK.mode }), acts, function () {
+      $("dk-close").addEventListener("click", function () { tick(); hideOverlay(); if (!doorOpen()) renderDesk(); });
+      var s = $("dk-shred"); if (s) s.addEventListener("click", function () { tick(); openDeck(DK.mode === "shred" ? "" : "shred"); });
+      var u = $("dk-upg"); if (u) u.addEventListener("click", function () { tick(); openDeck(DK.mode === "upgrade" ? "" : "upgrade"); });
+      Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-fire]"), function (b) {
+        b.addEventListener("click", function () {
+          tick();
+          if (inFight) { flash("Not in the middle of a fight."); return; }
+          var x = LD.fixerById(b.getAttribute("data-fire"));
+          if (!b.classList.contains("armed")) { b.classList.add("armed"); b.textContent = "Sure? Cards leave"; return; }
+          var res = LD.fyFire(state, x.id); if (!res.ok) { flash(res.error); return; }
+          state = res.state; persistRun(); SFX.play("bad"); openDeck(DK.mode);
+        });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-dk]"), function (b) {
+        b.addEventListener("click", function () {
+          tick();
+          var uu = +b.getAttribute("data-dk");
+          var res = DK.mode === "shred" ? LD.fyReward(state, { kind: "shred", u: uu }) : LD.fyReward(state, { kind: "upgrade", u: uu });
+          if (!res.ok) { SFX.play("bad"); flash(res.error); return; }
+          state = res.state; persistRun(); SFX.play(DK.mode === "shred" ? "bad" : "rare");
+          var f2 = state.fy; openDeck((DK.mode === "shred" && f2.freeShreds > 0) || (DK.mode === "upgrade" && f2.upTokens > 0) ? DK.mode : "");
+        });
+      });
+    });
+    $("overlay").classList.add("deck-mode");
+  }
+
   function openOfficeExplain() {
     showFy(LD.officeExplain(state), '<button class="btn btn-coral" id="of-ex-close">Close</button>', function () {
       $("of-ex-close").addEventListener("click", function () { tick(); hideOverlay(); });
@@ -10464,7 +11885,7 @@ body:has(#screen-tutorial.on) .shell,
   }
   setInterval(function () {
     if (screen !== "desk" || !state || state.ended || !state.fy || document.hidden) return;
-    if ($("overlay").classList.contains("on") || closing) return;
+    if ($("overlay").classList.contains("on") || closing || doorOpen()) return;
     if (LD.doorQuiet(state)) return;
     var lv = LD.doorLevel(state), every = [0, 18000, 10000, 6000][lv];
     if (KN.q !== state.turn) { KN.q = state.turn; if (Date.now() - KN.last > 2500) setTimeout(knockNow, 1200); return; }
@@ -10530,6 +11951,8 @@ body:has(#screen-tutorial.on) .shell,
   function bindFyDesk() {
     var pf = $("btn-portfolio");
     if (pf) pf.addEventListener("click", function (e) { e.stopPropagation(); tick(); openPortfolio(false); });
+    var bd = $("btn-deck"); if (bd) bd.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); });
+    var ph = $("btn-phone"); if (ph) ph.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (state.fy.memo) openMemo(); });
     var room = document.querySelector(".desk .office .of-room");
     if (room) { room.setAttribute("role", "button"); room.setAttribute("tabindex", "0"); room.setAttribute("aria-label", "Your office: tap to read the room");
       room.addEventListener("click", function (e) { e.stopPropagation(); tick(); openOfficeExplain(); });
@@ -10688,6 +12111,12 @@ body:has(#screen-tutorial.on) .shell,
   }
   function isRoom(k) { return !!(k && LD.BUNKER_ROOMS && LD.BUNKER_ROOMS[k]); }
   function clickEl(n) { if (n) n.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
+  function pennyCard(kind) {
+    if (!state || !state.fy || !state.fy.fight) return null;
+    var cs = Array.prototype.slice.call(document.querySelectorAll("#door .df-hand .dc:not(.no)"));
+    if (kind === "p") cs = cs.filter(function (c) { return c.querySelector(".dc-p"); });
+    return cs[0] || null;
+  }
 
   var TOUR = [
     { id: "pin", n: 1, face: "wink", on: "pin", label: "Pick one for me ▸",
@@ -10706,53 +12135,78 @@ body:has(#screen-tutorial.on) .shell,
       lost: function () { return !sel.deal; },
       target: function () { return pq("#btn-sign:not([disabled])") || pq("#dossier .dz-choice:not([disabled])"); },
       act: function () { clickEl(pq("#btn-sign:not([disabled])") || pq("#dossier .dz-choice:not([disabled])")); } },
-    { id: "bunker", n: 4, face: "wink", on: "bunker-open", label: "Open it ▸",
-      text: "Cash in hand! Now the fun part: <b>your private bunker</b>. Open it up. You get one bunker order per quarter.",
+    { id: "door", n: 4, face: "worried", on: "fight-card", label: "Play one for me ▸",
+      text: "Knock knock! Every deal sends someone to your <b>door</b>. Tap a <b>Talking Points</b> card: its <b>Pressure</b> knocks down their <b>Scrutiny</b>. Hit 0 and they leave.",
+      skip: function () { return !(state.fy && state.fy.fight && !state.fy.fight.done); },
+      wait: function () { return !doorOpen(); },
+      target: function () { return pennyCard("p") || pq("#door .df-hand"); },
+      act: function () { var c = pennyCard("p") || pennyCard(); if (c) clickEl(c); } },
+    { id: "intent", n: 4, face: "smug", next: true, back: "door",
+      text: "That red badge is their <b>intent</b>: what lands when you end the round, and on which meter. <b>No Comment</b> blocks it point for point. You get <b>3 ◆</b> a round, so choose!",
+      skip: function () { return !(state.fy && state.fy.fight && !state.fy.fight.done); },
+      target: function () { return pq("#df-intent"); } },
+    { id: "win", n: 4, face: "excited", on: "fight-done", label: "Play for me ▸",
+      text: "Finish them off! Play another <b>Talking Points</b>. If you can't, block what you can and <b>End round</b>. Losing still signs the deal… it just costs you.",
+      skip: function () { return !(state.fy && state.fy.fight && !state.fy.fight.done); },
+      target: function () { return pennyCard("p") || pq("#df-end"); },
+      act: function () { var c = pennyCard("p") || pennyCard(); if (c) clickEl(c); else clickEl(pq("#df-end")); } },
+    { id: "close", n: 4, face: "wink", on: "reward-open", label: "Close it ▸",
+      text: "They're gone! Winning paid a bonus. Now <b>close the door</b> and collect your reward ✧",
+      skip: function () { return !(state.fy && state.fy.fight); },
+      target: function () { return pq("#df-close"); },
+      act: function () { clickEl(pq("#df-close")); } },
+    { id: "reward", n: 4, face: "excited", on: "reward-done", label: "Pick for me ▸",
+      text: "Your <b>reward</b>: frame an Asset on the wall, then add a card to your deck, shred one, or skip for cash. A lean deck draws its best cards more often!",
+      skip: function () { return !(state.fy && state.fy.reward); },
+      target: function () { return pq("#door .rw-assets") || pq("#door .rw-cards") || pq("#door .rw-in"); },
+      act: function () { var a = pq("#door [data-asset]"); if (a) { clickEl(a); return; } var k = pq("#rw-keep"); if (k) { clickEl(k); return; } var c = pq("#door [data-card]"); if (c) { clickEl(c); setTimeout(function () { clickEl(pq("#rw-take")); }, 80); } } },
+    { id: "bunker", n: 5, face: "wink", on: "bunker-open", label: "Open it ▸",
+      text: "Back at the desk! Now the fun part: <b>your private bunker</b>. Open it up. You get one bunker order per quarter.",
       skip: function () { return state.phase !== "bunker" || state.bunkerActedThisTurn; },
       wait: function () { return bunkerOpen(); },
       target: function () { return pq("#bunker-card"); },
       act: function () { clickEl(pq("#bunker-card")); } },
-    { id: "room", n: 4, face: "excited", on: "room", back: "bunker", label: "Pick for me ▸",
+    { id: "room", n: 5, face: "excited", on: "room", back: "bunker", label: "Pick for me ▸",
       text: "Four rooms: <b>Air, Water, Power, Food</b>. The doors only close for you once all four work. Tap a room to see your options ✧",
       skip: function () { return state.bunkerActedThisTurn || (bk.focus && isRoom(bk.focus) && bunkerOpen()); },
       lost: function () { return !bunkerOpen(); },
       target: function () { return pennyRoom(); },
       act: function () { clickEl(pennyRoom()); } },
-    { id: "order", n: 4, face: "worried", on: "built", back: "room", label: "Order it for me ▸",
+    { id: "order", n: 5, face: "worried", on: "built", back: "room", label: "Order it for me ▸",
       text: "<b>Sound</b> work costs more and <i>holds</i> when the doors close. <b>Discount</b> is cheaper… but at Lv 2 it cracks at evacuation unless you hire an engineer or reach Lv 3. Ehehe… choose wisely!",
       skip: function () { return state.bunkerActedThisTurn; },
       lost: function () { return !bunkerOpen() || !bk.focus || !isRoom(bk.focus); },
       target: function () { return pq("#bk-panel .bp-buy") || pq("#bk-panel"); },
       act: function () { clickEl(pq('#bk-panel [data-up][data-q="sound"]:not([disabled])') || pq("#bk-panel [data-up]:not([disabled])")); } },
-    { id: "meters", n: 5, face: "smug", next: true,
+    { id: "meters", n: 6, face: "smug", next: true,
       text: "Your office holds your three numbers. <b>Cash</b> is on the desk and buys everything. <b>Unrest</b> is the door: the angrier the street, the harder they knock, and at 100 they're inside. <b>Collapse</b> is the city out the window: at 100 it's over, bunker or not.",
       wait: function () { return bunkerOpen() || !!pq("#overlay.on"); },
       target: function () { return pq(".desk .dash-meters"); } },
-    { id: "rail", n: 6, face: "worried", next: true,
+    { id: "rail", n: 7, face: "worried", next: true,
       text: "This is the <b>timeline</b>. Deals leave little IOUs here (unrest, collapse, late shipments) that land in future quarters. Read it before you sign. Or don't! …Please do.",
       wait: function () { return !!pq("#overlay.on"); },
       target: function () { return pq("#rail-wrap"); } },
-    { id: "endq", n: 7, face: "excited", on: "endq", label: "End Quarter ▸",
+    { id: "endq", n: 8, face: "excited", on: "endq", label: "End Quarter ▸",
       text: "Ready? Press <b>End Quarter</b> and watch the world react to your genius.",
       skip: function () { return state.phase === "deal" || state.turn > PN.startTurn; },
       wait: function () { return !!pq("#overlay.on"); },
       target: function () { return pq("#btn-endq"); },
       act: function () { clickEl(pq("#btn-endq")); } },
-    { id: "react", n: 7, face: "wink", passive: true, on: "report", scrollTo: ".desk .board",
+    { id: "react", n: 8, face: "wink", passive: true, on: "report", scrollTo: ".desk .board",
       text: "Here it comes… income, protests, rivals, Collapse ticking up. Hit <b>Skip</b> any time if you're busy being visionary.",
       skip: function () { return reportOpen(); },
       target: function () { return null; } },
-    { id: "report", n: 7, face: "smug", on: "report-closed", label: "Next quarter ▸",
+    { id: "report", n: 8, face: "smug", on: "report-closed", label: "Next quarter ▸",
       text: "Your <b>quarterly report</b>. Numbers went up! Some of them were the bad ones. Open the next quarter when you're ready.",
       skip: function () { return !reportOpen() && state.phase === "deal" && state.turn > PN.startTurn; },
       target: function () { return pq("#overlay.report-mode .panel"); },
       act: function () { clickEl(pq("#ov-ok")); } },
-    { id: "goal", n: 8, face: "excited", next: true, last: true,
-      text: "The goal: get <b>all 4 rooms to Lv 2+</b>, then <b>seal the bunker from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse hits 100. Three boss quarters stand in the way, and after every quarter you pick a new Asset. Go get 'em, Executive! ✦",
+    { id: "goal", n: 9, face: "excited", next: true, last: true,
+      text: "The goal: get <b>all 4 rooms to Lv 2+</b>, then <b>seal the bunker from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse hits 100. Two bosses knock at Q4 and Q8, and the Reckoning waits at the end. Win fights, build your deck, hire fixers when the phone rings. Go get 'em, Executive! ✦",
       wait: function () { return !!pq("#overlay.on"); },
       target: function () { return pq("#bunker-card"); } }
   ];
-  var TOUR_TOTAL = 8;
+  var TOUR_TOTAL = 9;
 
   var PENNY_TIPS = {
     crisis: { face: "worried", text: function () { return "Uh-oh, a <b>crisis</b>! You pick a response instead of a plain signature. Paying it off works… until Unrest hits " + LD.mods(state).crisisNoPayAt + ". Then the street stops cashing cheques."; },
@@ -10765,9 +12219,11 @@ body:has(#screen-tutorial.on) .shell,
       target: function () { return pq("#dossier .dz") || pq("#dossier"); } },
     dividends: { face: "excited", text: function () { return "Payday! Every run pays <b>Dividends ◈</b>, itemised in your Shareholder Letter. Spend them in <b>The Boardroom</b>: new executives, perks, deal packs and very tasteful cosmetics."; },
       target: function () { return pq("#screen-end .letter") || pq("#screen-boardroom .br-balance"); } },
-    draft: { face: "excited", text: function () { return "<b>Quarterly Acquisitions</b>! Every quarter you pick one Asset for free, or skip it for cash. Five slots, so build a theme: three of a kind switch on a set bonus ✧"; },
-      target: function () { return pq("#overlay .fy-cards") || pq("#overlay .fy-draft"); } },
-    boss: { face: "worried", text: function () { return "Every act ends in a <b>boss quarter</b>. Tap the red marker on the timeline any time to see what it wants. Beat it for a rare draft. Miss it and… well, the board remembers."; },
+    fight: { face: "worried", text: function () { return "Someone's at the <b>door</b>! Every deal brings one. <b>Pressure</b> cards lower their Scrutiny (0 = you win), <b>Deniability</b> blocks the red intent. 3 ◆ a round. Losing still signs the deal, just with damage."; },
+      target: function () { return pq("#door .df-stage"); } },
+    reward: { face: "excited", text: function () { return "Your <b>reward</b>! Add a card, <b>shred</b> one (it gets pricier each time), or skip for cash. Bosses and the Hearing also frame an <b>Asset</b> on your wall."; },
+      target: function () { return pq("#door .rw-in"); } },
+    boss: { face: "worried", text: function () { return "Every act ends in a <b>boss quarter</b>. Tap the red marker on the timeline any time to see what it wants. Q4 and Q8 are card fights at the door: beat them for a rare card, an Asset and loot. Miss and… well, the board remembers."; },
       target: function () { return pq(".desk #rail-wrap .rm.boss") || pq("#rail-wrap"); } },
     ratings: { face: "smug", text: function () { return "<b>Credit ratings</b>: win at a rating to unlock the next one, from AAA all the way down to D. Every tier adds a new rule, and exits there pay a lot more. No pressure ♡"; },
       target: function () { return pq("#screen-exec .rating-row"); } }
@@ -10967,7 +12423,7 @@ body:has(#screen-tutorial.on) .shell,
     renderDesk();
     if (opts.offer) {
       PN.idx = -1;
-      pennyShowStep({ offer: true, face: "wink", n: 0, text: "Hi! I'm <b>Penny</b>, from Onboarding ✦ Want a quick guided first quarter? Two minutes, eight steps, zero liability!", target: null });
+      pennyShowStep({ offer: true, face: "wink", n: 0, text: "Hi! I'm <b>Penny</b>, from Onboarding ✦ Want a quick guided first quarter? Two minutes, nine steps, zero liability!", target: null });
       return;
     }
     PN.idx = -1;

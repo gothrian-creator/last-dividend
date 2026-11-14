@@ -3614,6 +3614,362 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
 @media (prefers-reduced-motion: reduce) { .bk-scene .bk-led, .bk-scene .bk-puff { animation: none !important; } }
 .fight2.is-done .sc-stamp { top: 64%; }
 @media (min-width: 601px) { .sc-bubble { font-size: 15px; } }
+
+/* =====================================================================
+   JOURNEY (2026-11-14): title climb, boarding passes, brochure, passport,
+   guidebook, departure stamp. Flat matte paper, ink lines, no gloss/glow.
+   ===================================================================== */
+:root {
+  --jy-cream: #f3e6c8; --jy-paper: #f8eedb; --jy-ink: #1f2e2f; --jy-ink-soft: rgba(31, 46, 47, 0.72);
+  --jy-teal: #1f5a5c; --jy-teal-deep: #163c3e; --jy-ochre: #c9942a; --jy-terra: #b8553a; --jy-terra-deep: #8f3b27;
+  --jy-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .18  0 0 0 0 .14  0 0 0 0 .1  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --jy-shadow: 3px 4px 0 rgba(20, 32, 33, 0.55);
+}
+.tok { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.28em; background-image: url("assets/journey/tokens.webp"); background-size: 800% 100%; background-repeat: no-repeat; border-radius: 50%; flex: none; font-style: normal; }
+
+/* ---- Title ---- */
+body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !important; max-width: none !important; }
+#screen-title.on { position: relative; height: 100%; }
+.jy { position: relative; width: 100%; height: 100%; overflow: hidden; container-type: size; background: #3f5f5a; color: var(--jy-ink); font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; }
+.jy-stage { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max(100cqw, 56.25cqh); height: max(100cqh, 177.78cqw); }
+.jy.land .jy-stage { width: max(100cqw, 177.78cqh); height: max(100cqh, 56.25cqw); }
+.jy-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; max-width: none; }
+.jy-vid { opacity: 0; transition: opacity 0.6s ease; }
+.jy-vid.playing { opacity: 1; }
+.jy-stage::after { content: ""; position: absolute; inset: 0; background: var(--jy-grain); opacity: 0.55; mix-blend-mode: multiply; pointer-events: none; }
+.jy-stops { position: absolute; inset: 0; z-index: 2; }
+.jy-stop { position: absolute; left: var(--px); top: var(--py); transform: translate(-50%, -50%); width: 88px; height: 88px; padding: 0; border: 0; background: none; color: var(--jy-ink); cursor: pointer; animation: jyStopIn 0.6s cubic-bezier(.2, .9, .3, 1.2) both; }
+.jy.land .jy-stop { left: var(--lx); top: var(--ly); }
+.jy-stop.e1 { animation-delay: 0.15s; } .jy-stop.e2 { animation-delay: 0.3s; } .jy-stop.e3 { animation-delay: 0.45s; } .jy-stop.e4 { animation-delay: 0.6s; }
+@keyframes jyStopIn { from { opacity: 0; transform: translate(-50%, -30%) scale(0.6); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+.jy-badge { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; background: var(--jy-cream); border: 2.5px solid var(--jy-ink); box-shadow: inset 0 0 0 4px var(--jy-cream), inset 0 0 0 5.5px var(--jy-ink), var(--jy-shadow); transform: rotate(-4deg); transition: transform 0.15s ease; }
+.jy-stop.e2 .jy-badge { transform: rotate(3deg); } .jy-stop.e3 .jy-badge { transform: rotate(-2deg); }
+.jy-badge b { font: 700 21px/1 var(--font-serif); letter-spacing: 0.02em; }
+.jy-badge i { font: 700 10px/1.1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; font-style: normal; margin-top: 4px; color: var(--jy-terra-deep); max-width: 70px; text-align: center; }
+.jy-stop.summit { width: 112px; height: 56px; }
+.jy-stop.summit .jy-badge { border-radius: 8px; background: var(--jy-teal); color: var(--jy-cream); box-shadow: inset 0 0 0 3px var(--jy-teal), inset 0 0 0 4.5px var(--jy-cream), var(--jy-shadow); }
+.jy-stop.summit .jy-badge b { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; font-family: var(--font-sans); color: var(--jy-ochre); }
+.jy-stop.summit .jy-badge i { color: var(--jy-cream); font: 700 15px/1 var(--font-serif); letter-spacing: 0.04em; text-transform: uppercase; max-width: none; margin-top: 3px; }
+.jy-stop:active .jy-badge, .jy-stop.open .jy-badge { transform: rotate(0deg) scale(1.08); }
+.jy-stop.reached .jy-badge { background: #efd9a6; }
+.jy-visa { position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%) rotate(-10deg); font: 800 10px/1 var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--jy-terra); border: 2px solid var(--jy-terra); border-radius: 3px; padding: 3px 5px 2px; background: rgba(243, 230, 200, 0.92); pointer-events: none; }
+.jy-here { position: absolute; left: 50%; top: -24px; transform: translateX(-50%); white-space: nowrap; font: 800 10px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; background: var(--jy-terra); color: var(--jy-cream); padding: 4px 7px; border: 2px solid var(--jy-ink); border-radius: 3px; }
+.jy-stop.next::before { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 2.5px dashed var(--jy-cream); animation: jySpin 14s linear infinite; pointer-events: none; }
+.jy-stop.summit.next::before { border-radius: 12px; }
+@keyframes jySpin { to { transform: rotate(360deg); } }
+.jy-pin { display: none; }
+
+.jy-head { position: absolute; z-index: 3; top: max(18px, env(safe-area-inset-top)); left: 0; right: 0; text-align: center; padding: 0 76px; pointer-events: none; }
+.jy-word { margin: 0; font: 700 clamp(44px, 11.2cqw, 104px)/0.95 var(--font-serif); letter-spacing: 0.035em; text-transform: uppercase; color: #f6e7c4; text-shadow: 3px 3px 0 var(--jy-terra-deep), 6px 6px 0 rgba(20, 32, 33, 0.65); animation: jyWord 0.7s cubic-bezier(.2, .9, .3, 1) both; }
+.jy-word span { display: inline-block; }
+@keyframes jyWord { from { opacity: 0; transform: translateY(-14px); letter-spacing: 0.12em; } to { opacity: 1; transform: none; } }
+.jy-tag { margin: 12px 0 0; animation: jyWord 0.7s 0.15s cubic-bezier(.2, .9, .3, 1) both; }
+.jy-tag span { display: inline-block; font: italic 500 clamp(16px, 2.6cqw, 22px)/1.1 var(--font-slab); color: var(--jy-ink); background: var(--jy-cream); border: 2px solid var(--jy-ink); padding: 6px 16px 7px; transform: rotate(-1.2deg); box-shadow: var(--jy-shadow); }
+
+.jy-radio { position: absolute; z-index: 4; top: max(14px, env(safe-area-inset-top)); right: 14px; width: 54px; height: 54px; border-radius: 50%; background: var(--jy-cream); border: 2.5px solid var(--jy-ink); box-shadow: var(--jy-shadow); display: grid; place-items: center; padding: 0; }
+.jy-radio svg { width: 36px; height: 36px; overflow: visible; }
+.jy-radio .rd-body { fill: var(--jy-teal); stroke: var(--jy-ink); stroke-width: 2; }
+.jy-radio .rd-spk { fill: var(--jy-cream); stroke: var(--jy-ink); stroke-width: 1.6; }
+.jy-radio .rd-dial { fill: var(--jy-ochre); }
+.jy-radio .rd-ant, .jy-radio .rd-wave, .jy-radio .rd-x { fill: none; stroke: var(--jy-ink); stroke-width: 2.4; stroke-linecap: round; }
+.jy-radio .rd-x { stroke: var(--jy-terra); }
+.jy-radio.on .rd-wave { animation: jyWave 1.6s ease-in-out infinite; }
+@keyframes jyWave { 50% { opacity: 0.25; } }
+
+.jy-rail { position: absolute; z-index: 3; left: 50%; transform: translateX(-50%); bottom: max(26px, env(safe-area-inset-bottom)); width: min(640px, calc(100cqw - 32px)); display: grid; gap: 12px; animation: jyRail 0.6s 0.25s cubic-bezier(.2, .9, .3, 1) both; }
+@keyframes jyRail { from { opacity: 0; transform: translate(-50%, 30px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.jy-tickets { display: grid; gap: 10px; filter: drop-shadow(3px 4px 0 rgba(20, 32, 33, 0.6)); }
+.jy-ticket { display: flex; align-items: stretch; width: 100%; min-height: 80px; padding: 0; text-align: left; color: var(--jy-cream); background: var(--jy-terra); border: 2.5px solid var(--jy-ink); border-radius: 6px;
+  -webkit-mask: radial-gradient(circle at 0 50%, transparent 11px, #000 11.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 11px, #000 11.5px) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle at 0 50%, transparent 11px, #000 11.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 11px, #000 11.5px) right / 51% 100% no-repeat;
+  background-image: var(--jy-grain); transition: transform 0.12s ease; }
+.jy-ticket:active { transform: translateY(2px) scale(0.99); }
+.jy-ticket.teal { background-color: var(--jy-teal); }
+.jy-ticket.ochre { background-color: var(--jy-ochre); color: var(--jy-ink); }
+.jy-ticket .tk-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8px 14px 8px 26px; min-width: 0; }
+.jy-ticket small { font: 700 10.5px/1.1 var(--font-sans); letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.9; }
+.jy-ticket b { font: 700 clamp(24px, 4.4cqw, 32px)/1.05 var(--font-serif); text-transform: uppercase; letter-spacing: 0.04em; margin: 3px 0 2px; }
+.jy-ticket em { font: italic 500 13px/1.2 var(--font-slab); opacity: 0.92; }
+.jy-ticket .tk-stub { flex: none; width: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 2.5px dashed rgba(243, 230, 200, 0.75); font: 700 24px/1 var(--font-serif); padding-right: 12px; }
+.jy-ticket.ochre .tk-stub { border-left-color: rgba(31, 46, 47, 0.55); }
+.jy-ticket .tk-stub small { font-size: 9.5px; margin-bottom: 4px; }
+.jy-tickets .jy-ticket.teal ~ .jy-ticket { min-height: 64px; }
+.jy-tickets .jy-ticket.teal ~ .jy-ticket b { font-size: clamp(20px, 3.4cqw, 26px); }
+.jy-stubs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.jy-stub { display: flex; align-items: center; gap: 8px; min-height: 60px; padding: 7px 9px; text-align: left; background: var(--jy-cream); background-image: var(--jy-grain); color: var(--jy-ink); border: 2px solid var(--jy-ink); border-radius: 5px; box-shadow: var(--jy-shadow); position: relative; transition: transform 0.12s ease; }
+.jy-stub::after { content: ""; position: absolute; top: 4px; bottom: 4px; right: 5px; border-right: 2px dotted rgba(31, 46, 47, 0.3); }
+.jy-stub:active { transform: translateY(2px); box-shadow: 1px 2px 0 rgba(20, 32, 33, 0.55); }
+.jy-stub .st-ico { flex: none; width: 30px; height: 30px; }
+.jy-stub svg { width: 30px; height: 30px; }
+.i-fill { fill: #e7c98a; } .i-line { fill: none; stroke: var(--jy-ink); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; } .i-dot { fill: var(--jy-terra); }
+.jy-stub .st-t { display: flex; flex-direction: column; min-width: 0; }
+.jy-stub b { font: 800 12.5px/1.1 var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; }
+.jy-stub em { font: italic 500 12px/1.2 var(--font-slab); color: var(--jy-ink-soft); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jy-stub.lounge { background-color: var(--jy-teal); color: var(--jy-cream); }
+.jy-stub.lounge .i-line { stroke: var(--jy-cream); } .jy-stub.lounge .i-fill { fill: var(--jy-teal-deep); } .jy-stub.lounge .i-dot { fill: var(--jy-ochre); }
+.jy-stub.lounge::after { border-right-color: rgba(243, 230, 200, 0.35); }
+.div-stamp { display: inline-flex !important; align-items: center; gap: 4px; font: 800 13px/1 var(--font-sans) !important; font-style: normal !important; color: var(--jy-ink) !important; background: #efd9a6; border: 1.5px dashed var(--jy-terra); border-radius: 3px; padding: 2px 6px 2px 3px; transform: rotate(-2.5deg); width: max-content; letter-spacing: 0.02em; }
+.div-stamp .tok { width: 17px; height: 17px; }
+.jy-foot { position: absolute; z-index: 3; bottom: max(4px, env(safe-area-inset-bottom)); left: 0; right: 0; margin: 0; text-align: center; font: 600 11px/1.2 var(--font-sans); letter-spacing: 0.06em; color: #f6e7c4; text-shadow: 1px 1px 0 rgba(20, 32, 33, 0.9); pointer-events: none; }
+.jy-postcard { position: absolute; z-index: 5; left: 50%; top: 28%; transform: translateX(-50%) rotate(-1.5deg); width: min(360px, calc(100cqw - 40px)); padding: 16px 18px 14px; background: var(--jy-paper); background-image: var(--jy-grain); border: 2.5px solid var(--jy-ink); border-radius: 4px; box-shadow: 5px 6px 0 rgba(20, 32, 33, 0.55); animation: jyCard 0.25s cubic-bezier(.2, .9, .3, 1.3) both; }
+.jy-postcard[hidden] { display: none; }
+.jy-postcard::before { content: ""; position: absolute; top: 12px; right: 56px; width: 40px; height: 48px; border: 2px dashed var(--jy-terra); background: repeating-linear-gradient(45deg, rgba(184, 85, 58, 0.15) 0 4px, transparent 4px 8px); transform: rotate(4deg); }
+@keyframes jyCard { from { opacity: 0; transform: translateX(-50%) translateY(14px) rotate(-6deg); } to { opacity: 1; transform: translateX(-50%) rotate(-1.5deg); } }
+.jy-postcard .pc-k { font: 700 10px/1 var(--font-sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--jy-terra-deep); }
+.jy-postcard h3 { font: 700 24px/1.1 var(--font-serif); color: var(--jy-ink); margin: 6px 0 8px; padding-right: 96px; }
+.jy-postcard p { font-size: 15px; line-height: 1.4; margin: 0 0 6px; color: var(--jy-ink); }
+.jy-postcard .pc-st { font: italic 500 14px/1.3 var(--font-slab); color: var(--jy-teal); margin: 0; }
+.jy-postcard .pc-x { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; font: 700 26px/1 var(--font-sans); color: var(--jy-ink); background: none; border: 0; }
+/* landscape title: title + rail on the left over the street, the climb on the right */
+.jy.land .jy-head { text-align: left; left: 3.2cqw; right: auto; width: 48cqw; padding: 0; top: max(4cqh, env(safe-area-inset-top)); }
+.jy.land .jy-word { font-size: clamp(40px, 5.6cqw, 96px); }
+.jy.land .jy-rail { left: 3.2cqw; transform: none; bottom: max(5cqh, env(safe-area-inset-bottom)); width: min(420px, 34cqw); animation-name: jyRailL; }
+@keyframes jyRailL { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: none; } }
+.jy.land .jy-stubs { grid-template-columns: 1fr 1fr; }
+.jy.land .jy-ticket b { font-size: clamp(22px, 2.3cqw, 32px); }
+.jy.land .jy-postcard { left: auto; right: 4cqw; transform: rotate(-1.5deg); top: 22cqh; animation-name: jyCardL; }
+@keyframes jyCardL { from { opacity: 0; transform: translateY(14px) rotate(-6deg); } to { opacity: 1; transform: rotate(-1.5deg); } }
+.jy.land .jy-foot { text-align: right; right: 14px; left: auto; }
+@container (max-width: 520px) {
+  .jy-stubs { grid-template-columns: 1fr 1fr; }
+  .jy-stop { width: 70px; height: 70px; } .jy-badge b { font-size: 17px; } .jy-badge i { font-size: 8.5px; }
+  .jy-stop.summit { width: 96px; height: 48px; }
+  .jy-head { padding: 0 64px 0 16px; text-align: left; }
+  .jy-ticket .tk-stub { width: 76px; font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .jy *, .jy-fx * { animation: none !important; transition: none !important; } }
+
+/* ---- Departure transition ---- */
+.jy-fx { position: fixed; inset: 0; z-index: 9000; display: grid; place-items: center; overflow: hidden; cursor: pointer; }
+.jf-bg { position: absolute; inset: -2%; background: #3f5f5a url("assets/journey/journey-portrait.webp") center / cover no-repeat; transform-origin: 60% 78%; animation: jfPush 0.9s cubic-bezier(.5, 0, .7, .4) forwards; }
+.jy-fx.land .jf-bg { background-image: url("assets/journey/journey-landscape.webp"); transform-origin: 66% 80%; }
+.jf-bg::after { content: ""; position: absolute; inset: 0; background: var(--jy-grain); opacity: 0.6; mix-blend-mode: multiply; }
+@keyframes jfPush { from { transform: scale(1); } to { transform: scale(1.5) translateY(-3%); } }
+.jf-ticket { position: relative; display: flex; width: min(460px, 86vw); min-height: 120px; color: var(--jy-cream); background: var(--jy-terra); background-image: var(--jy-grain); border: 3px solid var(--jy-ink); border-radius: 8px; box-shadow: 6px 7px 0 rgba(20, 32, 33, 0.6); animation: jfIn 0.26s cubic-bezier(.2, .9, .3, 1.25) both; }
+.jf-main { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; justify-content: center; }
+.jf-main small { font: 700 11px/1 var(--font-sans); letter-spacing: 0.18em; text-transform: uppercase; }
+.jf-main b { font: 700 32px/1.05 var(--font-serif); text-transform: uppercase; letter-spacing: 0.03em; margin: 6px 0 4px; }
+.jf-main em { font: italic 500 15px/1.2 var(--font-slab); }
+.jf-stub { width: 96px; border-left: 3px dashed rgba(243, 230, 200, 0.75); display: grid; place-items: center; }
+.jf-hole { width: 30px; height: 30px; border-radius: 50%; background: var(--jy-ink); box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.4); animation: jfHole 0.14s 0.1s cubic-bezier(.2, .9, .3, 1.6) both; }
+.jf-stamp { position: absolute; right: 70px; top: 50%; display: flex; flex-direction: column; align-items: center; font: 800 22px/1 var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--jy-ink); background: rgba(243, 230, 200, 0.9); border: 3.5px double var(--jy-ink); border-radius: 6px; padding: 7px 12px 6px; transform: translateY(-50%) rotate(-12deg); animation: jfStamp 0.2s 0.16s cubic-bezier(.3, 1.6, .5, 1) both; }
+.jf-stamp small { font-size: 12px; letter-spacing: 0.2em; margin-top: 3px; }
+@keyframes jfIn { from { opacity: 0; transform: translateY(40px) scale(0.9) rotate(3deg); } to { opacity: 1; transform: none; } }
+@keyframes jfHole { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes jfStamp { from { opacity: 0; transform: translateY(-50%) rotate(-12deg) scale(2.4); } to { opacity: 1; transform: translateY(-50%) rotate(-12deg) scale(1); } }
+.jy-fx.out { pointer-events: none; animation: jfOut 0.46s ease forwards; }
+.jy-fx.out .jf-ticket { animation: jfTicketOut 0.4s ease-in forwards; }
+@keyframes jfOut { to { opacity: 0; } }
+@keyframes jfTicketOut { to { transform: translateY(-40vh) rotate(-8deg) scale(0.8); opacity: 0; } }
+
+/* ---- Shared menu wall (boarding gate, passport, brochure page) ---- */
+#screen-exec .page.jy-board, #screen-history .page.jy-passport, #screen-tutorial .page.jy-brochure-page { background: var(--jy-teal-deep); background-image: var(--jy-grain), repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.06) 0 2px, transparent 2px 90px); border: 0; border-radius: 0; color: var(--jy-cream); }
+.page.jy-board::before, .page.jy-board::after, .page.jy-passport::before, .page.jy-passport::after, .page.jy-brochure-page::before, .page.jy-brochure-page::after { display: none; }
+.jy-board .inner-head .kicker, .jy-passport .kicker, .jy-brochure-page .kicker { color: var(--jy-ochre) !important; letter-spacing: 0.18em; font-weight: 800; }
+.jy-board .inner-head h2, .jy-passport h2, .jy-brochure-page h2 { font-family: var(--font-serif); color: #f6e7c4 !important; text-transform: uppercase; letter-spacing: 0.04em; text-shadow: 2px 2px 0 var(--jy-terra-deep); }
+.jy-board .div-badge.div-stamp, .boardroom .div-badge.div-stamp { margin-left: 8px; vertical-align: middle; }
+
+/* ---- Boarding passes (executive picker) ---- */
+.jy-board .exec-card { position: relative; background: var(--jy-paper) !important; background-image: var(--jy-grain) !important; color: var(--jy-ink) !important; border: 2px solid var(--jy-ink) !important; border-radius: 7px !important; box-shadow: var(--jy-shadow) !important; padding-right: 62px !important; overflow: hidden; animation: bpIn 0.35s cubic-bezier(.2, .9, .3, 1.2) both; }
+.jy-board .exec-card:nth-child(2) { animation-delay: 0.04s; } .jy-board .exec-card:nth-child(3) { animation-delay: 0.08s; } .jy-board .exec-card:nth-child(4) { animation-delay: 0.12s; } .jy-board .exec-card:nth-child(5) { animation-delay: 0.16s; } .jy-board .exec-card:nth-child(6) { animation-delay: 0.2s; }
+@keyframes bpIn { from { opacity: 0; transform: translateY(12px) rotate(-1deg); } to { opacity: 1; transform: none; } }
+.jy-board .exec-card.on { border-color: var(--jy-terra) !important; box-shadow: inset 0 0 0 2px var(--jy-terra), var(--jy-shadow) !important; }
+.jy-board .exec-card .name { color: var(--jy-ink) !important; font-family: var(--font-serif); }
+.jy-board .exec-card .firm { color: var(--jy-terra-deep) !important; }
+.jy-board .exec-card .ex-trait { color: var(--jy-teal) !important; }
+.jy-board .exec-card p { color: var(--jy-ink-soft) !important; }
+.jy-board .exec-card .lv, .jy-board .exec-card .best { color: var(--jy-teal) !important; border-color: var(--jy-teal) !important; background: none !important; }
+.jy-board .exec-card .ex-ava { border-radius: 5px; box-shadow: 0 0 0 2px var(--jy-ink) !important; }
+.jy-board .exec-card .ex-ava i { background: var(--jy-cream); color: var(--jy-ink); border-color: var(--jy-ink); }
+.bp-stub { position: absolute; top: 0; right: 0; bottom: 0; width: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: #e9d3a3; border-left: 2px dashed rgba(31, 46, 47, 0.45); color: var(--jy-ink); }
+.bp-stub small { font: 800 8.5px/1 var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; }
+.bp-stub b { font: 700 18px/1 var(--font-serif); }
+.bp-bars { width: 30px; height: 14px; margin-top: 3px; background: repeating-linear-gradient(90deg, var(--jy-ink) 0 2px, transparent 2px 3px, var(--jy-ink) 3px 4px, transparent 4px 6px); opacity: 0.75; }
+.jy-board .exec-card.on .bp-stub { background: var(--jy-terra); color: var(--jy-cream); border-left-color: rgba(243, 230, 200, 0.7); }
+.jy-board .exec-card.on .bp-bars { background: repeating-linear-gradient(90deg, var(--jy-cream) 0 2px, transparent 2px 3px, var(--jy-cream) 3px 4px, transparent 4px 6px); }
+.jy-board .exec-card.on .bp-stub::after { content: ""; position: absolute; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--jy-teal-deep); }
+.jy-board .exec-card.locked { opacity: 1 !important; background-color: #d9cfb6 !important; }
+.jy-board .exec-card.locked .ex-ava img { filter: grayscale(1) contrast(0.8); opacity: 0.6; }
+.jy-board .exec-card.locked .bp-stub { background: #c9bd9f; }
+.bp-lock { width: 22px; height: 24px; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 24'><path d='M6 11V7a5 5 0 0 1 10 0v4' fill='none' stroke='%231f2e2f' stroke-width='2.6'/><rect x='2' y='10' width='18' height='13' rx='2' fill='%23b8553a' stroke='%231f2e2f' stroke-width='2'/><circle cx='11' cy='16' r='2' fill='%231f2e2f'/></svg>") center / contain no-repeat; }
+.bp-ticketno { display: flex; align-items: center; gap: 8px; margin: 6px 0 8px; flex: none; }
+.bp-ticketno label { font: 800 11px/1 var(--font-sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--jy-ochre); white-space: nowrap; }
+.bp-ticketno input { flex: 1; min-width: 0; height: 44px; font: 700 16px/1 ui-monospace, "Courier New", monospace; letter-spacing: 0.12em; color: var(--jy-ink) !important; background: var(--jy-paper) !important; border: 2px solid var(--jy-ink) !important; border-radius: 5px; padding: 0 12px; }
+.bp-ticketno input::placeholder { color: rgba(31, 46, 47, 0.45); }
+.bp-ticketno .btn { min-height: 44px; width: auto; padding: 0 16px; }
+.jy-board .btn-row #btn-start.jy-depart { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 58px; background: var(--jy-terra) !important; background-image: var(--jy-grain) !important; color: var(--jy-cream) !important; border: 2.5px solid var(--jy-ink) !important; border-radius: 6px; box-shadow: var(--jy-shadow) !important;
+  -webkit-mask: radial-gradient(circle at 0 50%, transparent 9px, #000 9.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 9px, #000 9.5px) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle at 0 50%, transparent 9px, #000 9.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 9px, #000 9.5px) right / 51% 100% no-repeat; }
+.jy-depart b { font: 700 22px/1 var(--font-serif); text-transform: uppercase; letter-spacing: 0.05em; }
+.jy-depart small { font: 700 11px/1 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.9; }
+
+/* ---- Passport (history) ---- */
+#screen-history .jy-passport .page-inner { height: 100%; display: flex; flex-direction: column; box-sizing: border-box; padding: 16px 18px 14px; gap: 10px; }
+.pp-cover { display: flex; align-items: center; gap: 14px; flex: none; }
+.pp-crest { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: var(--jy-ochre); border: 2.5px solid var(--jy-cream); flex: none; }
+.pp-crest svg { width: 36px; height: 36px; } .pp-crest .i-fill { fill: var(--jy-ochre); } .pp-crest .i-line { stroke: var(--jy-ink); }
+.pp-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; flex: none; }
+.pp-stats span { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; background: rgba(243, 230, 200, 0.1); border: 1.5px solid rgba(243, 230, 200, 0.35); border-radius: 5px; font: 700 10px/1 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; color: rgba(243, 230, 200, 0.8); }
+.pp-stats b { font: 700 24px/1 var(--font-serif); color: #f6e7c4; letter-spacing: 0; text-transform: none; }
+.pp-stats .tok { width: 20px; height: 20px; }
+.pp-best { flex: none; margin: 0; color: rgba(243, 230, 200, 0.8) !important; font-size: 13px; }
+.pp-page { flex: 1; min-height: 0; overflow: auto; padding: 16px; background: var(--jy-paper); background-image: var(--jy-grain), repeating-radial-gradient(circle at 50% 120%, rgba(31, 90, 92, 0.07) 0 1px, transparent 1px 9px); border: 2px solid var(--jy-ink); border-radius: 6px; box-shadow: inset 0 0 0 6px var(--jy-paper), inset 0 0 0 7px rgba(31, 90, 92, 0.3); color: var(--jy-ink); }
+.pp-stamps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.pp-stamp { display: flex; align-items: center; gap: 12px; animation: ppIn 0.3s cubic-bezier(.3, 1.5, .5, 1) both; }
+.pp-stamp:nth-child(2) { animation-delay: 0.06s; } .pp-stamp:nth-child(3) { animation-delay: 0.12s; } .pp-stamp:nth-child(4) { animation-delay: 0.18s; }
+@keyframes ppIn { from { opacity: 0; transform: scale(1.5); } to { opacity: 1; transform: none; } }
+.ps-ring { flex: none; width: 96px; height: 96px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 3px solid currentColor; box-shadow: inset 0 0 0 3px var(--jy-paper), inset 0 0 0 4.5px currentColor; transform: rotate(var(--rot)); mix-blend-mode: multiply; }
+.pp-stamp.win .ps-ring { color: var(--jy-teal); } .pp-stamp.lose .ps-ring { color: var(--jy-terra); }
+.pp-stamp.e2 .ps-ring { border-radius: 12px; } .pp-stamp.e3 .ps-ring { border-radius: 30% 30% 50% 50%; } .pp-stamp.e4 .ps-ring { border-style: double; border-width: 5px; }
+.ps-ring b { font: 800 12px/1 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; }
+.ps-ring i { font: 700 9.5px/1.15 var(--font-sans); font-style: normal; letter-spacing: 0.06em; text-transform: uppercase; margin: 4px 6px; }
+.ps-ring em { font: italic 600 11px/1 var(--font-slab); }
+.ps-note { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ps-note strong { font: 700 15px/1.2 var(--font-serif); color: var(--jy-ink); }
+.ps-note small { font-size: 12.5px; color: var(--jy-ink-soft); }
+.ps-note .tok { width: 15px; height: 15px; vertical-align: -3px; }
+.pp-empty { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; padding: 30px 10px; text-align: center; }
+.pp-empty p { flex-basis: 100%; font: italic 500 16px/1.4 var(--font-slab); color: var(--jy-ink-soft); margin: 6px 0 0; }
+.pp-ghost { width: 84px; height: 84px; border-radius: 50%; border: 3px dashed rgba(31, 46, 47, 0.25); }
+.jy-passport .btn-row { flex: none; margin: 0; }
+.jy-board .btn-row .btn-ghost, .jy-passport .btn-row .btn-ghost, .jy-brochure-page .btn-ghost { color: #f6e7c4 !important; border-color: rgba(243, 230, 200, 0.6) !important; }
+
+/* ---- Brochure (how to play) ---- */
+.overlay.brochure-mode .panel { width: min(960px, 94vw); max-width: none; max-height: 92dvh; overflow: auto; padding: 22px 22px 18px; background: var(--jy-paper) !important; background-image: var(--jy-grain) !important; color: var(--jy-ink) !important; border: 2.5px solid var(--jy-ink) !important; border-radius: 4px !important; box-shadow: 7px 8px 0 rgba(20, 32, 33, 0.55) !important; animation: broOpen 0.35s cubic-bezier(.2, .9, .3, 1.1) both; transform-origin: 50% 0; }
+@keyframes broOpen { from { opacity: 0; transform: perspective(900px) rotateX(-24deg) translateY(-10px); } to { opacity: 1; transform: none; } }
+.bro-head { text-align: center; margin-bottom: 14px; }
+.bro-head .kicker { color: var(--jy-terra-deep) !important; letter-spacing: 0.2em; font-weight: 800; font-size: 11px; }
+.bro-head h2 { font: 700 34px/1.05 var(--font-serif) !important; text-transform: uppercase; letter-spacing: 0.04em; color: var(--jy-ink) !important; margin: 4px 0 4px; }
+.bro-head p { margin: 0; font: italic 500 16px/1.3 var(--font-slab); color: var(--jy-teal); }
+.bro-folds { display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--jy-ink); }
+.bro-p { padding: 14px 16px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; background: #f3e3c0; min-width: 0; }
+.bro-p:nth-child(2) { background: #ead7ad; border-left: 2px dashed rgba(31, 46, 47, 0.35); border-right: 2px dashed rgba(31, 46, 47, 0.35); }
+.bro-p img { width: 76px; height: 76px; object-fit: cover; border-radius: 50%; border: 2.5px solid var(--jy-ink); background: var(--jy-cream); }
+.bro-ico { width: 76px; height: 76px; border-radius: 50%; border: 2.5px solid var(--jy-ink); display: grid; place-items: center; background: var(--jy-teal); }
+.bro-ico svg { width: 46px; height: 46px; } .bro-ico .i-line { stroke: var(--jy-cream); } .bro-ico .i-fill { fill: var(--jy-teal-deep); }
+.bro-p h3 { font: 700 20px/1.1 var(--font-serif) !important; color: var(--jy-ink) !important; text-transform: uppercase; letter-spacing: 0.03em; margin: 4px 0 0; }
+.bro-p p { margin: 0; font-size: 15px; line-height: 1.4; color: var(--jy-ink) !important; }
+.bro-pack ul { margin: 0; padding-left: 18px; font-size: 14.5px; line-height: 1.45; color: var(--jy-ink); }
+.bro-pack b { color: var(--jy-terra-deep); }
+.bro-warn { color: var(--jy-terra-deep) !important; text-align: center; margin: 10px 0 0 !important; font-size: 13px; }
+.overlay.brochure-mode .btn-row { display: grid; grid-template-columns: 1.3fr 1fr 0.8fr; gap: 10px; margin-top: 16px; }
+.overlay.brochure-mode .btn-ghost { color: var(--jy-ink) !important; border-color: var(--jy-ink) !important; }
+@media (max-width: 680px) { .bro-folds { grid-template-columns: 1fr; } .bro-p:nth-child(2) { border: 0; border-top: 2px dashed rgba(31, 46, 47, 0.35); border-bottom: 2px dashed rgba(31, 46, 47, 0.35); } .overlay.brochure-mode .btn-row { grid-template-columns: 1fr; } .bro-p img, .bro-ico { width: 56px; height: 56px; } }
+
+/* ---- Guidebook (prospectus from the title) ---- */
+.overlay.guide-mode .panel { position: relative; padding-left: 48px !important; border-left: 0 !important; }
+.gb-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 34px; background: var(--jy-terra); background-image: var(--jy-grain); border-right: 2.5px solid var(--jy-ink); display: flex; align-items: center; justify-content: center; border-radius: inherit; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.gb-spine span { writing-mode: vertical-rl; transform: rotate(180deg); font: 800 12px/1 var(--font-sans); letter-spacing: 0.3em; text-transform: uppercase; color: var(--jy-cream); }
+.overlay.guide-mode .fy-head .dz-k::before { content: "Guidebook · "; }
+
+/* ---- Brochure rulebook pages ---- */
+.jy-brochure-page .tutorial-copy { background: var(--jy-paper); background-image: var(--jy-grain); color: var(--jy-ink); border: 2.5px solid var(--jy-ink); border-radius: 4px; padding: 20px 22px; box-shadow: var(--jy-shadow); }
+.jy-brochure-page .tutorial-copy h2 { color: var(--jy-ink) !important; text-shadow: none; }
+.jy-brochure-page .tutorial-copy .kicker { color: var(--jy-terra-deep) !important; }
+.jy-brochure-page .tutorial-copy p { color: var(--jy-ink) !important; }
+.jy-brochure-page .dots i { background: rgba(31, 46, 47, 0.25); } .jy-brochure-page .dots i.on { background: var(--jy-terra); }
+/* journey polish pass 1 */
+.jy.land .jy-stage { left: 0; transform: translateY(-50%); }
+.jy.land .jy-rail { width: min(372px, 29cqw); }
+.jy.land .jy-ticket .tk-stub { width: 78px; font-size: 21px; }
+.jy.land .jy-ticket b { font-size: clamp(20px, 1.95cqw, 30px); }
+.jy-word { font-size: clamp(44px, 10.2cqw, 98px); }
+.jf-stamp { right: 18px; }
+.overlay.brochure-mode .bro-head p { color: var(--jy-teal) !important; }
+.overlay.brochure-mode .btn:not(.btn-coral):not(.btn-ghost) { background: var(--jy-teal) !important; color: var(--jy-cream) !important; border: 2px solid var(--jy-ink) !important; }
+.overlay.brochure-mode .btn { box-shadow: var(--jy-shadow) !important; border-radius: 6px !important; }
+.jy-board .exec-list { flex: 1 1 auto !important; grid-auto-rows: 1fr; min-height: 0; }
+.jy-board .loadout { flex: 0 1 auto !important; }
+.jy-board .exec-card p { -webkit-line-clamp: 4 !important; }
+@media (min-aspect-ratio: 1/1) and (min-width: 1000px) {
+  body:has(#screen-exec.on) .shell, body:has(#screen-history.on) .shell, body:has(#screen-tutorial.on) .shell { width: min(1180px, 100%) !important; max-width: none !important; }
+}
+@media (max-height: 780px) { .jy-board .exec-card p { -webkit-line-clamp: 3 !important; } }
+
+/* =====================================================================
+   RESOURCES (2026-11-14): painted tokens, one look for cash / unrest /
+   collapse / scrutiny / bunker / ◈. Colour = threshold: ok teal-cream,
+   warn ochre, danger terracotta. Matte: flat fills, ink edges, no glow.
+   ===================================================================== */
+.rs { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 3px 10px 3px 3px; border-radius: 999px; background: var(--jy-paper); color: var(--jy-ink); border: 2px solid var(--jy-ink); box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.5); font: 800 15px/1 var(--font-sans); white-space: nowrap; cursor: pointer; }
+.rs .tok { width: 26px; height: 26px; }
+.rs b { font: 700 17px/1 var(--font-serif); color: inherit !important; }
+.rs small { font: 700 9px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+.rs.lvl-warn { background: #f0cf86; }
+.rs.lvl-danger { background: var(--jy-terra); color: var(--jy-cream); animation: rsDanger 1.6s ease-in-out infinite; }
+@keyframes rsDanger { 50% { transform: translateY(-1px) rotate(-1.5deg); } }
+.df-meters { gap: 6px !important; }
+.df-meters .rs { min-height: 32px; }
+@media (max-width: 600px) { .df-meters .rs { padding-right: 7px; gap: 3px; } .df-meters .rs .tok { width: 22px; height: 22px; } .df-meters .rs b { font-size: 14px; } }
+
+/* Office gauges: same token chips, threshold colours, tap to explain */
+.office .of-g { cursor: pointer; background: var(--jy-paper) !important; border: 2px solid var(--jy-ink) !important; border-radius: 999px !important; box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.55) !important; padding: 2px 9px 2px 2px !important; column-gap: 5px !important; align-items: center; flex-wrap: nowrap !important; }
+.office .of-g .m-lab { color: var(--jy-ink) !important; gap: 4px !important; font-size: 9px !important; }
+.office .of-g .m-lab .tok { width: 24px; height: 24px; }
+.office .of-g .m-val { color: var(--jy-ink) !important; text-shadow: none !important; font-size: 17px !important; }
+.office .of-g .m-bar { display: none !important; }
+.office .of-g.lvl-warn { background: #f0cf86 !important; }
+.office .of-g.lvl-danger { background: var(--jy-terra) !important; animation: rsDanger 1.6s ease-in-out infinite; }
+.office .of-g.lvl-danger .m-lab, .office .of-g.lvl-danger .m-val { color: var(--jy-cream) !important; }
+.of-room.door-2 .m-unrest, .of-room.door-3 .m-unrest, .of-room.city-3 .m-collapse, .of-room.city-4 .m-collapse { box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.55) !important; }
+.office .m-collapse.of-g { left: 5px !important; bottom: 5px !important; }
+.office .m-unrest.of-g { right: 5px !important; bottom: 5px !important; }
+/* cash lives in the office header row now: never overlaps the Q label */
+.office .of-head { flex-wrap: nowrap; min-width: 0; }
+.office .of-head .of-q { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.office .of-head .of-q .tok { width: 20px; height: 20px; }
+.office .of-head .m-cash.of-g { position: static !important; transform: none !important; left: auto !important; top: auto !important; display: inline-flex !important; flex: none; margin: 0 2px; }
+.office .of-head .m-cash .m-sub { display: none !important; }
+.office .of-head .m-cash .m-val { color: var(--jy-ink) !important; }
+.office .of-head .m-cash.lvl-danger .m-val { color: var(--jy-cream) !important; }
+@media (max-width: 599px) { .office .of-ht { display: none; } .office .of-g .m-name { display: none; } .office .of-head .of-tools { gap: 3px; } .office .of-head .of-tools > * { min-width: 0; } }
+/* count-up deltas: flat stamped tags instead of glowing pills */
+.m-pop { border: 2px solid var(--jy-ink) !important; box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.5) !important; border-radius: 4px !important; text-shadow: none !important; }
+.m-pop.up { background: var(--jy-teal) !important; color: var(--jy-cream) !important; }
+.m-pop.down { background: var(--jy-terra) !important; color: var(--jy-cream) !important; }
+.meter.rise .m-val, .meter.fall .m-val { animation: rsBump 0.9s ease; }
+@keyframes rsBump { 20% { transform: scale(1.25); } }
+/* bunker progress pips */
+.bunker-card .bc-k { display: flex; align-items: center; gap: 6px; }
+.bunker-card .bc-k .tok { width: 24px; height: 24px; }
+.bc-pips { display: flex; gap: 5px; margin: 2px 0 6px; }
+.bc-pips i { flex: 1; height: 8px; border-radius: 2px; border: 1.5px solid rgba(243, 230, 200, 0.7); background: transparent; }
+.bc-pips i.on { background: var(--jy-ochre); border-color: var(--jy-ink); }
+/* fight scrutiny: token, threshold colour, number ticks, deltas below the bar */
+.fight2 .df-scrut .df-k { display: flex; align-items: center; gap: 5px; }
+.fight2 .df-scrut .df-k .tok { width: 22px; height: 22px; }
+.fight2 .df-scrut.lvl-danger .df-bar i { background: var(--jy-terra) !important; }
+.fight2 .df-scrut.lvl-warn .df-bar i { background: var(--jy-ochre) !important; }
+.fight2 .df-scrut.lvl-ok .df-bar i { background: var(--jy-teal) !important; }
+#df-scrut-n { display: inline-block; }
+#df-scrut-n.tick { animation: rsTick 0.5s ease; }
+@keyframes rsTick { 30% { transform: scale(1.4); color: var(--jy-terra); } }
+.float.below { animation: floatdown 1.8s ease-out both !important; border: 2px solid var(--jy-ink); box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.5) !important; border-radius: 4px !important; background: var(--jy-teal) !important; color: var(--jy-cream) !important; font-size: 17px !important; }
+@keyframes floatdown { 0% { opacity: 0; transform: translate(-50%, -40%) scale(0.6); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.06); } 75% { opacity: 1; transform: translate(-50%, 10px) scale(1); } 100% { opacity: 0; transform: translate(-50%, 24px); } }
+/* tooltip */
+.rs-tip { position: fixed; z-index: 9500; max-width: min(300px, calc(100vw - 16px)); padding: 9px 12px; background: var(--jy-paper); background-image: var(--jy-grain); color: var(--jy-ink); border: 2px solid var(--jy-ink); border-radius: 5px; box-shadow: 3px 4px 0 rgba(20, 32, 33, 0.55); font: 600 14px/1.35 var(--font-sans); animation: rsTipIn 0.16s ease-out both; pointer-events: none; }
+.rs-tip.lvl-danger { border-left: 8px solid var(--jy-terra); } .rs-tip.lvl-warn { border-left: 8px solid var(--jy-ochre); } .rs-tip.lvl-ok { border-left: 8px solid var(--jy-teal); }
+.rs-tip::after { content: ""; position: absolute; left: var(--ax, 50%); width: 12px; height: 12px; background: var(--jy-paper); border: 2px solid var(--jy-ink); transform: translateX(-50%) rotate(45deg); }
+.rs-tip.above::after { bottom: -8px; border-top: 0; border-left: 0; }
+.rs-tip.below::after { top: -8px; border-bottom: 0; border-right: 0; }
+@keyframes rsTipIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+/* ◈ dividends: gold share-certificate coin + stamped ticket wherever the balance shows */
+.boardroom .br-balance .div-stamp { font-size: 16px !important; padding: 4px 10px 4px 4px; }
+.boardroom .br-balance .div-stamp .tok { width: 24px; height: 24px; }
+.bunker-card .bc-k { display: block !important; }
+.bunker-card .bc-k .tok { width: 20px; height: 20px; margin-right: 4px; vertical-align: -5px; }
+@media (max-width: 599px) { .office .of-head .of-q .tok { display: none; } .of-head .pf-chip .pf-fc { display: none; } .office .of-head { gap: 4px; } }
+@container (max-width: 520px) {
+  .jy-stop.e1 { top: calc(var(--py) - 5%); }
+  .jy-stub { min-height: 50px; padding: 5px 8px; }
+  .jy-ticket { min-height: 70px; }
+}
+@media (max-width: 520px) {
+  .jy-board .exec-card { padding-right: 42px !important; }
+  .jy-board .bp-stub { width: 36px; }
+  .jy-board .bp-stub small, .jy-board .bp-bars { display: none; }
+  .jy-board .bp-stub b { font-size: 14px; }
+}
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -8803,42 +9159,103 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     return '<div class="board-tilt"><div class="board-slab">' + LD.renderMap(titleDemo, { idPrefix: "t" }) + "</div></div>";
   }
 
+  /* ---------- Journey: resource tokens (painted sprite) ---------- */
+  var TOKENS = ["cash", "div", "unrest", "collapse", "bunker", "quarter", "scrutiny", "case"];
+  function tok(name, extra) {
+    var i = TOKENS.indexOf(name); if (i < 0) i = 0;
+    return '<i class="tok tok-' + name + (extra ? " " + extra : "") + '" aria-hidden="true" style="background-position:' + (i * 100 / 7).toFixed(3) + '% 0"></i>';
+  }
+  LD.tok = tok;
+  /* Resource levels: ok / warn / danger. Same thresholds everywhere (hub, fights, bunker). */
+  function resLevel(kind, v) {
+    if (kind === "cash") return v < 5 ? "danger" : v < 12 ? "warn" : "ok";
+    if (kind === "unrest") return v >= 40 ? "danger" : v >= 20 ? "warn" : "ok";
+    if (kind === "collapse") return v >= 55 ? "danger" : v >= 35 ? "warn" : "ok";
+    if (kind === "scrutiny") return v >= 0.66 ? "danger" : v >= 0.33 ? "warn" : "ok";
+    return "ok";
+  }
+  LD.resLevel = resLevel;
+  var RES_TOK = { cash: "cash", unrest: "unrest", collapse: "collapse", div: "div", bunker: "bunker", quarter: "quarter", scrutiny: "scrutiny", case: "case", heat: "scrutiny" };
+  function resPill(kind, val, tip, opts) {
+    opts = opts || {};
+    var lvl = opts.lvl || resLevel(kind, typeof val === "number" ? val : 0);
+    var shown = opts.text != null ? opts.text : (kind === "cash" ? "$" + val + "M" : String(val));
+    return '<span class="rs rs-' + kind + " lvl-" + lvl + (opts.cls ? " " + opts.cls : "") + '" data-tip="' + escapeHtml(tip || "") + '" data-num="' + (typeof val === "number" ? val : "") + '" data-kind="' + kind + '" role="button" tabindex="0" aria-label="' + escapeHtml(tip || shown) + '">' + tok(RES_TOK[kind] || "cash") + "<b>" + escapeHtml(shown) + "</b>" + (opts.label ? "<small>" + escapeHtml(opts.label) + "</small>" : "") + "</span>";
+  }
+  LD.resPill = resPill;
+
+  /* ---------- Journey title: the climb from 1978 to the bunker ---------- */
+  var JOURNEY_STOPS = [
+    { era: 1, year: "1978", name: "The Street", p: [64, 67], l: [64, 81], blurb: "Mills closing, rents rising, the union hall half empty. Everything is for sale, cheap. Every climb starts here." },
+    { era: 2, year: "2008", name: "The Middle", p: [47, 54], l: [79, 56], blurb: "The banks fell over and somebody has to pay. Lobby, spin, foreclose, and keep climbing." },
+    { era: 3, year: "Today", name: "The Top", p: [70, 41], l: [64, 35], blurb: "The sea is at the door and the sky garden is lovely. Finish the bunker before the doors close." },
+    { era: 4, year: "Summit", name: "The Bunker", p: [86, 25], l: [86, 13], blurb: "One hatch, four systems, a private tomorrow. Seal it and evacuate." }
+  ];
+  LD.JOURNEY_STOPS = JOURNEY_STOPS;
+  function journeyProgress(meta) {
+    var best = 0, act = LD.actOf || function (t) { return t <= 4 ? 1 : t <= 8 ? 2 : 3; };
+    (meta.history || []).forEach(function (h) { var a = h.result === "win" ? 4 : act(Math.min(12, h.turn || 1)); if (a > best) best = a; });
+    if ((meta.wins | 0) > 0) best = 4;
+    var cur = meta.midRun && !meta.midRun.ended ? act(Math.min(12, meta.midRun.turn || 1)) : 0;
+    return { best: best, cur: cur };
+  }
+  LD.journeyProgress = journeyProgress;
+  function radioSvg(on) {
+    return '<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="13" width="30" height="21" rx="4" class="rd-body"/><circle cx="14" cy="23.5" r="5.5" class="rd-spk"/><rect x="23" y="19" width="8" height="2.4" class="rd-dial"/><rect x="23" y="24" width="8" height="2.4" class="rd-dial"/><path d="M12 13 L26 5" class="rd-ant"/>' +
+      (on ? '<path d="M33 8 q3 3 0 6 M36 5 q5 6 0 12" class="rd-wave"/>' : '<path d="M31 6 L39 14 M39 6 L31 14" class="rd-x"/>') + "</svg>";
+  }
+  LD.radioSvg = radioSvg;
+
   function renderTitle(opts) {
     opts = opts || {};
     var meta = opts.meta || { midRun: null, finished: 0, wins: 0 };
-    var seedDraft = opts.seedDraft || "";
-    var html = '<div class="title-sunny">';
-    html += '<div class="desk-light" aria-hidden="true"></div>';
-    html += '<div class="title-copy"><div class="kicker">Climate adaptation holdings</div>';
-    html += '<h1 class="wordmark"><span class="it">Last</span> Dividend<span class="sun" aria-hidden="true"></span></h1>';
-    html += '<p class="tag">A Brighter Tomorrow, Privately Owned</p>';
-    html += '<p class="tagline">Cash out before the doors close.</p>';
-    html += '<div class="title-panel">';
-    if (meta.midRun && !meta.midRun.ended) {
-      html += '<button class="btn btn-coral" id="btn-continue">Continue Q' + (meta.midRun.turn || "") + "</button>";
-    }
-    html += '<button class="btn ' + (meta.midRun && !meta.midRun.ended ? "btn-teal" : "btn-coral") + '" id="btn-new">New run</button>';
-    html += '<button class="btn btn-ochre" id="btn-boardroom">The Boardroom · ◈ ' + (meta.dividends || 0) + "</button>";
-    html += '<button class="btn btn-ghost" id="btn-how">How to play</button>';
-    html += '<div class="seed-row"><label class="field-label" for="seed-input">Seed</label><input id="seed-input" type="text" inputmode="text" autocomplete="off" placeholder="random" value="' + escapeHtml(seedDraft) + '">';
-    html += '<button class="btn" id="btn-roll" type="button">Roll</button></div>';
-    html += '<p class="demo-note">Browser demo';
-    if (meta.finished) {
-      html += " · " + meta.finished + " run" + (meta.finished === 1 ? "" : "s") + " · " + meta.wins + " evacuated";
-    }
-    html += ' · <button class="link-btn" id="btn-history">History</button> · <button class="link-btn" id="btn-prosp">Prospectus</button> · <button class="link-btn" id="btn-sound">' + (LD.SFX ? LD.SFX.label() : "🔊 Sound on") + "</button></p>";
+    var prog = journeyProgress(meta);
+    var soundOn = LD.SFX ? !/off/i.test(LD.SFX.label()) : true;
+    var mid = meta.midRun && !meta.midRun.ended ? meta.midRun : null;
+    var html = '<div class="jy" id="jy">';
+    html += '<div class="jy-stage" id="jy-stage"><img class="jy-art" id="jy-poster" alt="" src="assets/journey/journey-portrait.webp">' +
+      '<video class="jy-art jy-vid" id="jy-video" muted loop playsinline autoplay preload="auto" aria-hidden="true" tabindex="-1"></video>';
+    html += '<div class="jy-stops" role="list" aria-label="The climb">';
+    JOURNEY_STOPS.forEach(function (st) {
+      var reached = prog.best >= st.era, here = prog.cur === st.era, next = !reached && st.era === Math.min(4, prog.best + 1);
+      html += '<button type="button" role="listitem" class="jy-stop e' + st.era + (reached ? " reached" : "") + (here ? " here" : "") + (next ? " next" : "") + (st.era === 4 ? " summit" : "") + '" data-era="' + st.era + '" style="--px:' + st.p[0] + "%;--py:" + st.p[1] + "%;--lx:" + st.l[0] + "%;--ly:" + st.l[1] + '%" aria-label="' + escapeHtml(st.year + ", " + st.name + (reached ? ", reached" : "")) + '">' +
+        '<span class="jy-pin" aria-hidden="true"></span><span class="jy-badge"><b>' + escapeHtml(st.year) + "</b><i>" + escapeHtml(st.name) + "</i></span>" +
+        (reached ? '<span class="jy-visa" aria-hidden="true">' + (st.era === 4 ? "Sealed" : "Visited") + "</span>" : "") +
+        (here ? '<span class="jy-here" aria-hidden="true">You are here</span>' : "") + "</button>";
+    });
     html += "</div></div>";
-    html += '<div class="title-art" aria-label="Your future holdings">' + titleMap() + "</div>";
+    html += '<div class="jy-postcard" id="jy-postcard" hidden></div>';
+    html += '<header class="jy-head"><h1 class="jy-word"><span>Last</span> <span>Dividend</span></h1><p class="jy-tag"><span>A brighter tomorrow, privately owned</span></p></header>';
+    html += '<button type="button" class="jy-radio' + (soundOn ? " on" : "") + '" id="btn-sound" aria-pressed="' + soundOn + '" aria-label="' + (soundOn ? "Sound on" : "Sound off") + '">' + radioSvg(soundOn) + "</button>";
+    html += '<nav class="jy-rail" aria-label="Main menu">';
+    html += '<div class="jy-tickets">';
+    if (mid) {
+      var ma = (LD.actOf ? LD.actOf(Math.min(12, mid.turn || 1)) : 1), me = LD.ERAS && LD.ERAS[ma];
+      html += '<button type="button" class="jy-ticket teal" id="btn-continue"><span class="tk-main"><small>Return ticket</small><b>Continue</b><em>Q' + (mid.turn || 1) + " · " + escapeHtml(me ? (ma === 3 ? "Today" : me.year) + " · " + me.name : "") + '</em></span><span class="tk-stub" aria-hidden="true"><small>Seat</small>Q' + (mid.turn || 1) + "</span></button>";
+    }
+    html += '<button type="button" class="jy-ticket' + (mid ? " ochre" : "") + '" id="btn-new"><span class="tk-main"><small>Admit one · departs 1978</small><b>Begin the Climb</b><em>' + (mid ? "A new run replaces your saved one" : "The Street, Port Calder") + '</em></span><span class="tk-stub" aria-hidden="true"><small>Platform</small>1978</span></button>';
+    html += "</div>";
+    html += '<div class="jy-stubs">';
+    html += '<button type="button" class="jy-stub lounge" id="btn-boardroom"><span class="st-ico" aria-hidden="true">' + doorIco() + '</span><span class="st-t"><b>Summit Lounge</b><em class="div-stamp">' + tok("div") + (meta.dividends || 0) + "</em></span></button>";
+    html += '<button type="button" class="jy-stub" id="btn-how"><span class="st-ico" aria-hidden="true">' + brochureIco() + '</span><span class="st-t"><b>Brochure</b><em>How to play</em></span></button>';
+    html += '<button type="button" class="jy-stub" id="btn-history"><span class="st-ico" aria-hidden="true">' + passportIco() + '</span><span class="st-t"><b>Passport</b><em>' + (meta.finished ? meta.finished + " stamp" + (meta.finished === 1 ? "" : "s") : "Past climbs") + "</em></span></button>";
+    html += '<button type="button" class="jy-stub" id="btn-prosp"><span class="st-ico" aria-hidden="true">' + guideIco() + '</span><span class="st-t"><b>Guidebook</b><em>The collection</em></span></button>';
+    html += "</div></nav>";
+    html += '<p class="jy-foot">Browser demo' + (meta.finished ? " · " + meta.finished + " climb" + (meta.finished === 1 ? "" : "s") + " · " + (meta.wins | 0) + " evacuated" : "") + "</p>";
     html += "</div>";
     return html;
   }
+  function doorIco() { return '<svg viewBox="0 0 32 32"><rect x="8" y="4" width="16" height="25" rx="1.5" class="i-fill"/><path d="M8 29V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v23M5 29h22M12 9h8M12 14h8" class="i-line"/><circle cx="20" cy="18" r="1.4" class="i-dot"/></svg>'; }
+  function brochureIco() { return '<svg viewBox="0 0 32 32"><path d="M4 7l8-2 8 2 8-2v20l-8 2-8-2-8 2z" class="i-fill"/><path d="M4 7l8-2 8 2 8-2v20l-8 2-8-2-8 2zM12 5v20M20 7v20" class="i-line"/></svg>'; }
+  function passportIco() { return '<svg viewBox="0 0 32 32"><rect x="7" y="3" width="18" height="26" rx="2" class="i-fill"/><rect x="7" y="3" width="18" height="26" rx="2" class="i-line"/><circle cx="16" cy="14" r="4.5" class="i-line"/><path d="M11.5 14h9M16 9.5c-2 3-2 6 0 9M16 9.5c2 3 2 6 0 9M11 23h10" class="i-line"/></svg>'; }
+  function guideIco() { return '<svg viewBox="0 0 32 32"><path d="M6 5h15a3 3 0 0 1 3 3v20H9a3 3 0 0 1-3-3z" class="i-fill"/><path d="M6 25V5h15a3 3 0 0 1 3 3v20H9a3 3 0 0 1-3-3 3 3 0 0 1 3-3h15M11 10h8M11 14h6" class="i-line"/><path d="M19 3v8l2-1.5 2 1.5V3" class="i-dot"/></svg>'; }
 
   function renderTutorial(pageIndex) {
     var pages = LD.TUTORIAL;
     var p = pages[pageIndex] || pages[0];
-    var html = '<div class="page inner tutorial-page"><div class="page-inner">';
+    var html = '<div class="page inner tutorial-page jy-brochure-page"><div class="page-inner">';
     html += '<div class="tutorial-copy">';
-    html += '<div class="inner-head"><div class="kicker">How to play</div><h2>' + escapeHtml(p.title) + "</h2></div>";
+    html += '<div class="inner-head"><div class="kicker">Travel brochure · page ' + (pageIndex + 1) + " of " + pages.length + '</div><h2>' + escapeHtml(p.title) + "</h2></div>";
     html += "<p>" + escapeHtml(p.body) + "</p>";
     html += '<div class="dots" aria-hidden="true">';
     for (var i = 0; i < pages.length; i++) html += "<i class='" + (i === pageIndex ? "on" : "") + "'></i>";
@@ -8863,7 +9280,7 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
   }
 
   function divBadge(meta) {
-    return '<span class="div-badge" aria-label="' + (meta.dividends || 0) + ' Dividends">◈ ' + (meta.dividends || 0) + "</span>";
+    return '<span class="div-badge div-stamp" aria-label="' + (meta.dividends || 0) + ' Dividends">' + tok("div") + (meta.dividends || 0) + "</span>";
   }
 
   function renderExec(opts) {
@@ -8872,8 +9289,8 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     var selected = opts.selectedExec || "mara";
     var rating = opts.rating | 0;
     var maxR = LD.ratingUnlocked(meta, selected);
-    var html = '<div class="page inner exec-page"><div class="page-inner">';
-    html += '<div class="inner-head"><div class="kicker">Appoint an executive ' + divBadge(meta) + '</div><h2>Who signs the quarter?</h2></div>';
+    var html = '<div class="page inner exec-page jy-board"><div class="page-inner">';
+    html += '<div class="inner-head"><div class="kicker">Boarding · departures to 1978 ' + divBadge(meta) + '</div><h2>Who’s making the climb?</h2></div>';
     html += '<div class="exec-list">';
     LD.EXECUTIVES.forEach(function (ex) {
       var open = LD.isExecutiveUnlocked(ex.id, meta);
@@ -8887,7 +9304,8 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
       html += '<span class="name">' + escapeHtml(ex.name) + (open && lvx ? ' <span class="lv">Lv ' + lvx.level + "</span>" : "") + (best ? ' <span class="best">best ' + best + "</span>" : "") + "</span>";
       html += '<span class="firm"><span class="ex-title">' + escapeHtml(ex.title) + '</span><span class="ex-co">' + escapeHtml(ex.firm) + "</span></span>";
       if (ex.trait) html += '<span class="ex-trait">' + escapeHtml(ex.trait) + "</span>";
-      html += "<p>" + escapeHtml(open ? ex.blurb : unlockHint(ex)) + "</p></span></button>";
+      html += "<p>" + escapeHtml(open ? ex.blurb : unlockHint(ex)) + "</p></span>";
+      html += '<span class="bp-stub" aria-hidden="true">' + (open ? "<small>Seat</small><b>" + escapeHtml(initials) + "</b><i class=\"bp-bars\"></i>" : '<span class="bp-lock"></span><small>Locked</small>') + "</span></button>";
     });
     html += "</div>";
 
@@ -8944,9 +9362,10 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
       html += "</div>";
     }
     html += "</div></section>";
-    html += '<div class="btn-row"><button class="btn btn-coral" id="btn-start">Open the quarter · ' + LD.ratingName(rating) + "</button>";
-    html += '<button class="btn" id="btn-boardroom2">The Boardroom</button>';
-    html += '<button class="btn btn-ghost" id="btn-back">Back</button></div></div></div>';
+    html += '<div class="bp-ticketno"><label for="seed-input">Ticket No.</label><input id="seed-input" type="text" inputmode="text" autocomplete="off" placeholder="random" value="' + escapeHtml(opts.seedDraft || "") + '"><button class="btn btn-sm" id="btn-roll" type="button">Roll</button></div>';
+    html += '<div class="btn-row"><button class="btn btn-coral jy-depart" id="btn-start"><b>Depart for 1978</b><small>' + escapeHtml(LD.execById(selected).name) + " · " + LD.ratingName(rating) + "</small></button>";
+    html += '<button class="btn" id="btn-boardroom2">Summit Lounge</button>';
+    html += '<button class="btn btn-ghost" id="btn-back">◂ Back to the street</button></div></div></div>';
     return html;
   }
 
@@ -9002,7 +9421,7 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     if (page > pages - 1) page = pages - 1;
     var slice = tab === "annual" ? list : list.slice(page * pageSize, page * pageSize + pageSize);
     var html = '<div class="page inner boardroom"><div class="page-inner">';
-    html += '<div class="inner-head"><div class="kicker">Members only</div><h2>The Boardroom</h2>';
+    html += '<div class="inner-head"><div class="kicker">Summit Lounge · members only</div><h2>The Boardroom</h2>';
     html += '<p class="br-balance">' + divBadge(meta) + ' <span class="muted">Dividends to spend · lifetime ◈ ' + meta.lifetime.dividends + " · " + meta.lifetime.runs + " runs</span></p></div>";
     html += '<div class="br-tabs" role="tablist">';
     TAB_LABELS.forEach(function (tb) {
@@ -9042,7 +9461,7 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
       html += '<button class="btn btn-ghost btn-sm" data-br-page="' + (page + 1) + '"' + (page >= pages - 1 ? " disabled" : "") + ">Next</button></div>";
     }
     html += "</section>";
-    html += '<div class="btn-row"><button class="btn btn-coral" id="btn-br-play">Appoint an executive</button><button class="btn btn-ghost" id="btn-br-back">Back</button></div></div></div>';
+    html += '<div class="btn-row"><button class="btn btn-coral" id="btn-br-play">To the boarding gate</button><button class="btn btn-ghost" id="btn-br-back">◂ Leave the lounge</button></div></div></div>';
     return html;
   }
   var END_ART = { win: "end-win" };
@@ -9101,25 +9520,33 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     return html;
   }
 
+  var STAMP_ERA = ["", "1978 · The Street", "2008 · The Middle", "Today · The Top", "The Bunker"];
   function renderHistory(opts) {
-    var meta = (opts && opts.meta) || { history: [] };
-    var html = '<div class="page inner"><div class="page-inner">';
-    html += '<div class="inner-head"><div class="kicker">Archive</div><h2>Previous quarters</h2></div>';
+    var meta = LD.migrateMeta ? LD.migrateMeta((opts && opts.meta) || { history: [] }) : ((opts && opts.meta) || { history: [] });
+    var hist = meta.history || [], prog = journeyProgress(meta);
+    var act = LD.actOf || function (t) { return t <= 4 ? 1 : t <= 8 ? 2 : 3; };
+    var html = '<div class="page inner jy-passport"><div class="page-inner">';
+    html += '<div class="pp-cover"><div class="pp-crest" aria-hidden="true">' + passportIco() + '</div><div><div class="kicker">Passport · logbook of past climbs</div><h2>Previous quarters</h2></div></div>';
+    html += '<div class="pp-stats"><span><b>' + hist.length + "</b>climbs</span><span><b>" + (meta.wins | 0) + "</b>evacuated</span><span><b>" + escapeHtml(prog.best ? STAMP_ERA[prog.best].split(" · ")[0] : "—") + "</b>furthest</span><span>" + tok("div") + "<b>" + (meta.lifetime ? meta.lifetime.dividends : 0) + "</b>lifetime</span></div>";
     if (meta.bestRating && Object.keys(meta.bestRating).length && meta.owned && meta.owned.indexOf("annual:history") !== -1) {
-      html += '<p class="muted">Best ratings: ' + Object.keys(meta.bestRating).map(function (id) { return escapeHtml(LD.execById(id).name) + " " + LD.ratingName(meta.bestRating[id]); }).join(" · ") + "</p>";
+      html += '<p class="muted pp-best">Best ratings: ' + Object.keys(meta.bestRating).map(function (id) { return escapeHtml(LD.execById(id).name) + " " + LD.ratingName(meta.bestRating[id]); }).join(" · ") + "</p>";
     }
-    if (!meta.history || !meta.history.length) {
-      html += "<p class='muted'>No finished runs yet.</p>";
+    html += '<div class="pp-page">';
+    if (!hist.length) {
+      html += '<div class="pp-empty"><i class="pp-ghost"></i><i class="pp-ghost"></i><i class="pp-ghost"></i><p>No stamps yet. Your passport is fresh. Finish a climb and the border office stamps it here.</p></div>';
     } else {
-      html += '<div class="history"><ul>';
-      meta.history.forEach(function (h) {
+      html += '<ul class="pp-stamps">';
+      hist.forEach(function (h, i) {
         var name = (LD.execById(h.executiveId) || {}).name || h.executiveId;
-        html += "<li><strong>" + (h.result === "win" ? "Evacuated" : "Failed") + "</strong> — " + escapeHtml(h.title);
-        html += "<br>Q" + h.turn + " · " + escapeHtml(name) + (h.rating != null ? " · " + LD.ratingName(h.rating) : "") + (h.dividends != null ? " · ◈ " + h.dividends : "") + " · seed " + escapeHtml(String(h.seed)) + "</li>";
+        var win = h.result === "win", era = win ? 4 : act(Math.min(12, h.turn || 1));
+        var rot = ((i * 37) % 9) - 4;
+        html += '<li class="pp-stamp ' + (win ? "win" : "lose") + " e" + era + '" style="--rot:' + rot + 'deg"><span class="ps-ring"><b>' + (win ? "Evacuated" : "Denied") + "</b><i>" + escapeHtml(STAMP_ERA[era]) + "</i><em>Q" + (h.turn || "?") + (h.rating != null ? " · " + LD.ratingName(h.rating) : "") + "</em></span>" +
+          '<span class="ps-note"><strong>' + escapeHtml(h.title || "") + "</strong><small>" + escapeHtml(name) + (h.dividends != null ? " · " : "") + (h.dividends != null ? tok("div") + h.dividends : "") + " · ticket " + escapeHtml(String(h.seed)) + "</small></span></li>";
       });
-      html += "</ul></div>";
+      html += "</ul>";
     }
-    html += '<div class="btn-row"><button class="btn btn-ghost" id="btn-h-back">Back</button></div></div></div>';
+    html += "</div>";
+    html += '<div class="btn-row"><button class="btn btn-ghost" id="btn-h-back">◂ Back to the street</button></div></div></div>';
     return html;
   }
 
@@ -9874,7 +10301,8 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     h += "</div></div></div>";
     var bunkerReady = !dealPhase && !state.bunkerActedThisTurn;
     h += '<button class="panel bunker-card' + (bunkerReady ? " ready" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card">' +
-      '<div class="panel-k">Floor hatch · bunker ' + esc(bunkerTally(state)) + (state.converting ? " · private" : "") + "</div>" +
+      '<div class="panel-k bc-k">' + (LD.tok ? LD.tok("bunker") : "") + '<span>Floor hatch · bunker ' + esc(bunkerTally(state)) + (state.converting ? " · private" : "") + "</span></div>" +
+      (function () { var r = LD.readinessSummary(state), pp = '<div class="bc-pips" role="img" aria-label="' + r.ready + ' of 4 systems ready">'; for (var pi = 0; pi < 4; pi++) pp += '<i class="' + (pi < r.ready ? "on" : "") + '"></i>'; return pp + "</div>"; })() +
       '<div class="bc-scene">' + LD.renderBunkerScene(state, { mini: true, idPrefix: "bm" }) + "</div>" +
       (ui.coach === "bunker" && ui.coachText ? '<div class="coach-inline">' + esc(ui.coachText) + "</div>" : "") +
       '<div class="bc-cta' + (dealPhase ? " locked" : "") + '">' + (dealPhase ? "Opens after you sign" : state.bunkerActedThisTurn ? "Works ordered this quarter" : "Tap to build ▸") + "</div></button>";
@@ -10894,8 +11322,9 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
   }
   function ogauge(cls, icon, label, num, isMoney, sub, title) {
     var pct = isMoney ? Math.max(0, Math.min(100, num)) : Math.max(0, Math.min(100, num));
-    return '<div class="meter of-g m-' + cls + '" data-num="' + num + '"' + (isMoney ? ' data-money="1"' : "") + ' title="' + esc(title || "") + '" role="meter" aria-label="' + esc(label) + " " + (isMoney ? money(num) : num) + (isMoney ? "" : " of 100") + '" aria-valuenow="' + num + '" aria-valuemin="0" aria-valuemax="100">' +
-      '<span class="m-lab"><i aria-hidden="true">' + icon + "</i>" + esc(label) + "</span>" +
+    var lvl = LD.resLevel ? LD.resLevel(cls, num) : "ok";
+    return '<div class="meter of-g m-' + cls + " lvl-" + lvl + '" data-num="' + num + '"' + (isMoney ? ' data-money="1"' : "") + ' data-tip="' + esc(title || "") + '" tabindex="0" role="meter" aria-label="' + esc(label) + " " + (isMoney ? money(num) : num) + (isMoney ? "" : " of 100") + '" aria-valuenow="' + num + '" aria-valuemin="0" aria-valuemax="100">' +
+      '<span class="m-lab">' + (LD.tok ? LD.tok(cls) : '<i aria-hidden="true">' + icon + "</i>") + '<span class="m-name">' + esc(label) + "</span></span>" +
       '<b class="m-val">' + (isMoney ? money(num) : num) + "</b>" +
       '<div class="m-bar"><span style="width:' + pct + '%"></span></div>' + (sub ? '<small class="m-sub">' + esc(sub) + "</small>" : "") + "</div>";
   }
@@ -10910,7 +11339,8 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     var exec = LD.execById(state.executiveId);
     var m = LD.mods(state);
     var ring = !!(f.memo), ERA = LD.ERAS && LD.eraOf ? LD.ERAS[LD.eraOf(state)] : null;
-    var h = '<div class="panel-k of-head"><span>Q' + state.turn + '<span class="of-ht"> · Office</span></span><span class="of-tools">' +
+    var cashG = ogauge("cash", "$", "Cash", state.cash, true, o.cashSub || "", "Cash " + money(state.cash) + ". Buys bunker works, crisis pay-offs and boss demands." + (state.cash < 5 ? " Running dry: you cannot cover most pay-offs." : ""));
+    var h = '<div class="panel-k of-head"><span class="of-q">' + (LD.tok ? LD.tok("quarter") : "") + "Q" + state.turn + '<span class="of-ht"> · Office</span></span>' + cashG + '<span class="of-tools">' +
       (f.deck ? '<button class="of-deckbtn" id="btn-deck" aria-label="Deck, ' + f.deck.length + ' cards">🃏 ' + f.deck.length + "</button>" : "") +
       (ring ? '<button class="of-phone ringing" id="btn-phone" aria-label="' + esc(ERA ? ERA.phone : "The phone is ringing") + '">' + (ERA ? ERA.phoneIcon : "☎") + "</button>" : "") +
       (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</span></div>";
@@ -10929,14 +11359,13 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     var bills = Math.max(0, Math.min(8, Math.round(state.cash / 8)));
     var stack = ""; for (var i = 0; i < bills; i++) stack += '<rect x="' + (6 + (i % 2) * 3) + '" y="' + (26 - i * 3.2) + '" width="26" height="3" rx="0.8"/>';
     h += '<div class="of-desk" data-art="office-desk"><svg class="of-desksvg" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><rect class="dtop" x="0" y="4" width="120" height="30" rx="2"/><g class="stack">' + stack + '</g><rect class="lamp" x="96" y="0" width="3" height="10"/><path class="lampshade" d="M90 2 h15 l-3 -6 h-9z"/></svg></div>';
-    var cashG = ogauge("cash", "$", "Cash", state.cash, true, o.cashSub || "", "Cash " + money(state.cash) + ". Buys bunker works, crisis pay-offs and boss demands.");
     /* Door + unrest */
     var dn = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
     h += '<div class="of-door" data-art="office-door">' + doorSvg(door, quiet, padded) + '<span class="of-knock" aria-hidden="true">' + (door >= 3 ? "BANG!" : door >= 2 ? "THUD" : "knock") + "</span>" +
       (door >= 3 && !quiet ? '<span class="of-voices" aria-hidden="true">“Open up!”</span>' : "") +
       ogauge("unrest", "✊", "Unrest", state.unrest, false, dn,
         "Unrest " + state.unrest + "/100 · " + dn + ". Crisis deals likely from 48; crises cannot be paid off from " + m.crisisNoPayAt + "; the board removes you at " + LD.MAX_UNREST + ".") + "</div>";
-    h += "</div>" + cashG;
+    h += "</div>";
     return h;
   };
 
@@ -11155,7 +11584,7 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
       '<div class="df-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small>' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></div>" +
       '<button class="icon-btn df-help" id="df-help" aria-label="How fights work">?</button></header>';
     h += sceneHtml(state, fg, ui);
-    h += '<div class="df-scrut"><div class="df-k">Scrutiny <b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
+    h += '<div class="df-scrut lvl-' + (LD.resLevel ? LD.resLevel("scrutiny", fg.max ? Math.max(0, fg.scrut) / fg.max : 0) : "ok") + '"><div class="df-k">' + (LD.tok ? LD.tok("scrutiny") : "") + 'Scrutiny <b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
       '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div></div>";
     if (it) {
       var thr = it.through, ico = METER_ICO[it.meter] || "!";
@@ -11181,7 +11610,9 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
       h += '<div class="df-hud"><div class="df-inf" aria-label="Influence ' + fg.inf + '"><small>Influence</small>';
       for (var i = 0; i < Math.max(fg.inf, LD.DOOR.INF); i++) h += '<i class="' + (i < fg.inf ? "on" : "") + '"></i>';
       h += '<b>' + fg.inf + "◆</b></div>";
-      h += '<div class="df-meters" aria-label="Cash $' + state.cash + "M, unrest " + state.unrest + ", collapse " + state.collapse + '"><b>$' + state.cash + "M</b><span>✊ " + state.unrest + "</span><span>☢ " + state.collapse + "</span></div>";
+      h += '<div class="df-meters" aria-label="Cash $' + state.cash + "M, unrest " + state.unrest + ", collapse " + state.collapse + '">' +
+        (LD.resPill ? LD.resPill("cash", state.cash, "Cash $" + state.cash + "M. Settling costs $" + LD.DOOR.SETTLE + "M per Scrutiny left; some cards cost cash.") + LD.resPill("unrest", state.unrest, "Unrest " + state.unrest + "/100. Grievance hits that get through raise it. Knocks at 20, pounding at 40.") + LD.resPill("collapse", state.collapse, "Collapse " + state.collapse + "/100. Hits aimed at collapse land at half strength. Crises likely from 55.")
+          : "<b>$" + state.cash + "M</b><span>✊ " + state.unrest + "</span><span>☢ " + state.collapse + "</span>") + "</div>";
       h += '<div class="df-piles"><button class="df-pile" id="df-deck" aria-label="Deck view">Draw ' + fg.draw.length + "</button><span>Discard " + fg.disc.length + "</span></div></div>";
       h += '<div class="df-hand" role="group" aria-label="Your hand">';
       fg.hand.forEach(function (u) {
@@ -11432,6 +11863,7 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
       flip: function (i) { noise(0.09, 0.09, (i || 0) * 0.12, 2600, 0.8, "highpass"); tone(880 + 120 * (i || 0), 0.08, "triangle", 0.03, (i || 0) * 0.12 + 0.03); },
       rare: function () { [1046, 1318, 1568].forEach(function (f, i) { tone(f, 0.25, "sine", 0.05, 0.45 + i * 0.07); }); },
       pick: function () { tone(523, 0.09, "triangle", 0.06); tone(784, 0.14, "triangle", 0.06, 0.07); noise(0.05, 0.05, 0, 4000, 1, "highpass"); },
+      stamp: function () { tone(150, 0.08, "square", 0.05); tone(95, 0.14, "triangle", 0.06, 0.03); },
       coin: function () { tone(1318, 0.07, "square", 0.025); tone(1760, 0.12, "square", 0.025, 0.06); },
       endq: function () { tone(196, 0.5, "sawtooth", 0.035, 0, 98); noise(0.35, 0.05, 0, 400, 0.7, "lowpass"); tone(392, 0.3, "triangle", 0.04, 0.05); },
       seal: function () { noise(0.5, 0.25, 0, 180, 0.8, "lowpass"); tone(70, 0.6, "sine", 0.2, 0, 40); noise(0.08, 0.12, 0.42, 900, 2); tone(110, 0.3, "square", 0.04, 0.45, 55); },
@@ -11513,6 +11945,7 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
   }
   function show(name) {
     hideLevelUpToast();
+    if (typeof hideTip === "function") hideTip();
     syncEra(name);
     if (typeof PN !== "undefined" && PN.on && (name !== "desk" || PN.mode === "tip")) pennyStop();
     screen = name;
@@ -11527,11 +11960,50 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     window.scrollTo(0, 0);
   }
 
+  /* ---------- Journey title ---------- */
+  var JY = { mq: null, land: null };
+  function jyLand() { return window.innerWidth / Math.max(1, window.innerHeight) >= 1.05; }
+  function jyApplyStage() {
+    var jy = $("jy"); if (!jy) return;
+    var land = jyLand();
+    if (JY.land === land && jy.getAttribute("data-ready")) return;
+    JY.land = land;
+    jy.classList.toggle("land", land); jy.classList.toggle("port", !land);
+    jy.setAttribute("data-ready", "1");
+    var key = land ? "landscape" : "portrait";
+    var img = $("jy-poster"), vid = $("jy-video");
+    if (img) img.src = "assets/journey/journey-" + key + ".webp";
+    var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (vid) {
+      if (still) { vid.removeAttribute("src"); vid.hidden = true; return; }
+      vid.hidden = false;
+      vid.classList.remove("playing");
+      vid.poster = "assets/journey/journey-" + key + ".webp";
+      vid.src = "assets/journey/journey-" + key + ".mp4";
+      vid.muted = true;
+      vid.onplaying = function () { vid.classList.add("playing"); };
+      var pr = vid.play && vid.play(); if (pr && pr.catch) pr.catch(function () {});
+    }
+  }
+  window.addEventListener("resize", function () { if (screen === "title") jyApplyStage(); });
+  function jyPostcard(era) {
+    var pc = $("jy-postcard"); if (!pc) return;
+    var st = (LD.JOURNEY_STOPS || []).filter(function (x) { return x.era === era; })[0];
+    Array.prototype.forEach.call(document.querySelectorAll(".jy-stop"), function (b) { b.classList.toggle("open", +b.getAttribute("data-era") === era && pc.hidden !== false || false); });
+    if (!st || (!pc.hidden && +pc.getAttribute("data-era") === era)) { pc.hidden = true; pc.removeAttribute("data-era"); Array.prototype.forEach.call(document.querySelectorAll(".jy-stop"), function (b) { b.classList.remove("open"); }); return; }
+    var prog = LD.journeyProgress(loadMeta());
+    var status = prog.best >= era ? (era === 4 ? "You have sealed the hatch before." : "Stamped: you have climbed this far.") : era === 1 ? "Every climb departs from here." : "Not reached yet. Climb further to stamp it.";
+    pc.innerHTML = '<div class="pc-k">Postcard from</div><h3>' + LD.escapeHtml(st.year + " · " + st.name) + "</h3><p>" + LD.escapeHtml(st.blurb) + '</p><p class="pc-st">' + LD.escapeHtml(status) + '</p><button type="button" class="pc-x" id="jy-pc-x" aria-label="Close postcard">×</button>';
+    pc.setAttribute("data-era", era);
+    pc.hidden = false;
+    $("jy-pc-x").addEventListener("click", function (e) { e.stopPropagation(); tick(); jyPostcard(era); });
+  }
   function renderTitle() {
     $("screen-title").innerHTML = LD.renderTitle({ meta: loadMeta(), seedDraft: seedDraft });
+    JY.land = null;
+    jyApplyStage();
     $("btn-new").addEventListener("click", function () {
       tick();
-      seedDraft = $("seed-input").value.trim();
       selectedExec = "mara";
       goExec();
     });
@@ -11539,28 +12011,54 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     if (cont) {
       cont.addEventListener("click", function () {
         tick();
-        state = loadMeta().midRun;
-        if (state && LD.ensureSupply) LD.ensureSupply(state);
-        if (state && LD.ensureWorld) LD.ensureWorld(state);
-        if (state && LD.ensureFY) LD.ensureFY(state);
-        crisisOpen = null;
-        enterPlay();
-        if (state && !state.ended) fyAfterOpen();
+        var mr = loadMeta().midRun;
+        jyDepart({ label: "Return ticket", stamp: "Resumed", era: mr && LD.actOf ? LD.actOf(Math.min(12, mr.turn || 1)) : 1, sub: mr ? "Q" + mr.turn : "" }, function () {
+          state = loadMeta().midRun;
+          if (state && LD.ensureSupply) LD.ensureSupply(state);
+          if (state && LD.ensureWorld) LD.ensureWorld(state);
+          if (state && LD.ensureFY) LD.ensureFY(state);
+          crisisOpen = null;
+          enterPlay();
+          if (state && !state.ended) fyAfterOpen();
+        });
       });
     }
-    $("btn-roll").addEventListener("click", function () {
-      tick();
-      seedDraft = String((Math.floor(Math.random() * 900000) + 100000));
-      $("seed-input").value = seedDraft;
+    Array.prototype.forEach.call(document.querySelectorAll(".jy-stop"), function (b) {
+      b.addEventListener("click", function (e) { e.stopPropagation(); tick(); jyPostcard(+b.getAttribute("data-era")); });
     });
-    $("seed-input").addEventListener("input", function () { seedDraft = this.value; });
     $("btn-how").addEventListener("click", function () { tick(); openHowTo(false); });
     var pro = $("btn-prosp");
     if (pro) pro.addEventListener("click", function () { tick(); openProspectus("assets"); });
     var snd = $("btn-sound");
-    if (snd) snd.addEventListener("click", function () { SFX.toggle(); tick(); snd.textContent = SFX.label(); });
+    if (snd) snd.addEventListener("click", function () {
+      SFX.toggle(); tick();
+      var on = !/off/i.test(SFX.label());
+      snd.classList.toggle("on", on); snd.setAttribute("aria-pressed", on); snd.setAttribute("aria-label", on ? "Sound on" : "Sound off");
+      snd.innerHTML = LD.radioSvg(on);
+    });
     $("btn-history").addEventListener("click", function () { tick(); show("history"); renderHistory(); });
     $("btn-boardroom").addEventListener("click", function () { tick(); openBoardroom("title"); });
+  }
+
+  /* Departure: ticket punch + stamp, then a push up the path into the era. Tap to skip. */
+  var JD = { busy: false };
+  function jyDepart(o, run) {
+    o = o || {};
+    var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (still || JD.busy) { run(); return; }
+    JD.busy = true;
+    var ER = LD.ERAS && LD.ERAS[o.era || 1], year = o.era === 3 ? "Today" : ER ? ER.year : "1978";
+    var fx = document.createElement("div");
+    fx.className = "jy-fx" + (jyLand() ? " land" : "");
+    fx.setAttribute("role", "presentation");
+    fx.innerHTML = '<div class="jf-bg"></div><div class="jf-ticket"><span class="jf-main"><small>' + LD.escapeHtml(o.label || "Admit one") + "</small><b>" + LD.escapeHtml(year + " · " + (ER ? ER.name : "The Street")) + "</b><em>" + LD.escapeHtml(o.sub || "Port Calder") + '</em></span><span class="jf-stub"><i class="jf-hole"></i></span><span class="jf-stamp">' + LD.escapeHtml(o.stamp || "Departed") + "<small>" + LD.escapeHtml(year) + "</small></span></div>";
+    document.body.appendChild(fx);
+    var done = false, t1, t2;
+    function go() { if (done) return; done = true; try { run(); } catch (e) { setTimeout(function () { throw e; }); } fx.classList.add("out"); t2 = setTimeout(end, 480); }
+    function end() { JD.busy = false; if (fx.parentNode) fx.parentNode.removeChild(fx); }
+    fx.addEventListener("click", function () { clearTimeout(t1); if (!done) go(); else { clearTimeout(t2); end(); } });
+    SFX.play && SFX.play("stamp");
+    t1 = setTimeout(go, 400);
   }
 
   /* ---------- The Boardroom ---------- */
@@ -11671,7 +12169,11 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
   function renderExec() {
     var meta = loadMeta();
     if (!LD.isExecutiveUnlocked(selectedExec, meta)) selectedExec = "mara";
-    $("screen-exec").innerHTML = LD.renderExec({ meta: meta, selectedExec: selectedExec, rating: currentRating(meta) });
+    $("screen-exec").innerHTML = LD.renderExec({ meta: meta, selectedExec: selectedExec, rating: currentRating(meta), seedDraft: seedDraft });
+    var si = $("seed-input");
+    if (si) si.addEventListener("input", function () { seedDraft = this.value.trim(); });
+    var roll = $("btn-roll");
+    if (roll) roll.addEventListener("click", function () { tick(); seedDraft = String((Math.floor(Math.random() * 900000) + 100000)); $("seed-input").value = seedDraft; });
     Array.prototype.forEach.call(document.querySelectorAll(".exec-card"), function (btn) {
       btn.addEventListener("click", function () {
         tick();
@@ -11688,7 +12190,7 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     var lo = $("btn-loadout");
     if (lo) lo.addEventListener("click", function () { tick(); openLoadoutSheet(); });
     $("btn-boardroom2").addEventListener("click", function () { tick(); openBoardroom("exec"); });
-    $("btn-start").addEventListener("click", function () { tick(); startRun(); });
+    $("btn-start").addEventListener("click", function () { tick(); var si2 = $("seed-input"); if (si2) seedDraft = si2.value.trim(); jyDepart({ label: "Admit one · " + LD.execById(selectedExec).name, stamp: "Departed", era: 1, sub: "Port Calder · " + LD.ratingName(currentRating(loadMeta())) }, startRun); });
     if ((meta.finished | 0) >= 1) setTimeout(function () { if (screen === "exec") pennyTip("ratings"); }, 400);
     $("btn-back").addEventListener("click", function () { tick(); show("title"); renderTitle(); });
   }
@@ -12721,8 +13223,44 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     var fx = $("df-fx"), a = document.querySelector(sel || ".df-scrut"), root = document.querySelector(".door-in");
     if (!fx || !a || !root) return;
     var r = a.getBoundingClientRect(), b = root.getBoundingClientRect();
+    /* Scrutiny deltas float out below the panel's bar, never over its label or number. */
+    if (!sel || sel === ".df-scrut") { placeFloat(fx, r.left - b.left + Math.min(r.width - 70, r.width * 0.72), r.bottom - b.top + 16, text, (cls || "") + " below", delay); scrutTick(); return; }
     placeFloat(fx, r.left - b.left + r.width / 2, r.top - b.top + r.height / 2, text, cls, delay);
   }
+  function scrutTick() {
+    var n = $("df-scrut-n"); if (!n) return;
+    n.classList.remove("tick"); void n.offsetWidth; n.classList.add("tick");
+  }
+  /* ---------- Resource tooltips: tap any [data-tip] (meters, pills) to read it. Touch-first, no hover. ---------- */
+  var TIP = { el: null, t: null, src: null };
+  function hideTip() { clearTimeout(TIP.t); if (TIP.el && TIP.el.parentNode) TIP.el.parentNode.removeChild(TIP.el); TIP.el = null; TIP.src = null; }
+  function showTip(src) {
+    var text = src.getAttribute("data-tip"); if (!text) return;
+    if (TIP.src === src) { hideTip(); return; }
+    hideTip();
+    var el = document.createElement("div");
+    el.className = "rs-tip lvl-" + ((src.className.match(/lvl-(\w+)/) || [])[1] || "ok");
+    el.setAttribute("role", "tooltip");
+    el.textContent = text;
+    document.body.appendChild(el);
+    var r = src.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
+    var x = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+    var below = r.top < h + 24;
+    var y = below ? r.bottom + 10 : r.top - h - 10;
+    el.style.left = x + "px"; el.style.top = y + "px";
+    el.style.setProperty("--ax", Math.max(14, Math.min(w - 14, r.left + r.width / 2 - x)) + "px");
+    el.classList.add(below ? "below" : "above");
+    TIP.el = el; TIP.src = src;
+    TIP.t = setTimeout(hideTip, 4200);
+  }
+  document.addEventListener("click", function (e) {
+    var src = e.target && e.target.closest && e.target.closest("[data-tip]");
+    if (src && !(src.closest && src.closest("button:not([data-tip]), a"))) { e.preventDefault(); e.stopPropagation(); tick(); showTip(src); return; }
+    if (TIP.el) hideTip();
+  }, true);
+  document.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && e.target && e.target.getAttribute && e.target.getAttribute("data-tip")) { e.preventDefault(); showTip(e.target); } });
+  window.addEventListener("resize", hideTip);
+
   /* ---------- Fight scene animation: card flies, opponent reacts; their intent lunges back ---------- */
   var SC = { t: null };
   function scPose(pose, ms, extra) {
@@ -12986,7 +13524,9 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
     }, true);
   }
   function openProspectus(tab, sel) {
-    showFy(LD.renderProspectus(loadMeta(), { tab: tab, sel: sel }), '<button class="btn btn-coral" id="pr-close">Close</button>', function () {
+    var guide = screen !== "desk";
+    showFy((guide ? '<div class="gb-spine" aria-hidden="true"><span>Guidebook</span></div>' : "") + LD.renderProspectus(loadMeta(), { tab: tab, sel: sel }), '<button class="btn btn-coral" id="pr-close">' + (guide ? "Close the guidebook" : "Close") + "</button>", function () {
+      if (guide) $("overlay").classList.add("guide-mode");
       $("pr-close").addEventListener("click", function () { tick(); hideOverlay(); });
       Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-ptab]"), function (b) { b.addEventListener("click", function () { tick(); openProspectus(b.getAttribute("data-ptab")); }); });
       Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-psel]"), function (b) { b.addEventListener("click", function () { tick(); openProspectus(tab, b.getAttribute("data-psel")); }); });
@@ -13707,10 +14247,19 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
 
   function openHowTo(inRun) {
     var m = loadMeta();
-    var warn = !inRun && m.midRun ? "<p class='muted'>Starts a fresh AAA practice run with Mara Voss. Your saved run will be replaced.</p>" : "";
-    showOverlay("How to play", "<div class='howto-pick'><img src='" + assetUrlP("penny-wink") + "' alt=''><p><b>Penny · Onboarding</b> walks you through a real first quarter, step by step." + (inRun ? " She'll pick up from wherever you are." : "") + "</p></div>" + warn,
-      '<button class="btn btn-coral" id="ht-penny">' + (inRun ? "Replay Penny's tour" : "Guided tour with Penny") + '</button><button class="btn" id="ht-rules">Read the rulebook</button><button class="btn btn-ghost" id="ht-close">Back</button>',
+    var warn = !inRun && m.midRun ? "<p class='muted bro-warn'>The guided tour starts a fresh AAA practice climb with Mara Voss and replaces your saved run.</p>" : "";
+    var body = inRun
+      ? "<div class='howto-pick'><img src='" + assetUrlP("penny-wink") + "' alt=''><p><b>Penny · Onboarding</b> walks you through a real first quarter, step by step. She'll pick up from wherever you are.</p></div>"
+      : "<div class='bro'><div class='bro-head'><div class='kicker'>Port Calder Tourist Board</div><h2>See the climb</h2><p>A pocket guide to profiting from the end of the world.</p></div>" +
+        "<div class='bro-folds'>" +
+        "<section class='bro-p'><img src='" + assetUrlP("penny-wink") + "' alt=''><h3>Guided tour</h3><p>Penny walks you through a real first quarter in 1978, one tap at a time.</p></section>" +
+        "<section class='bro-p'><div class='bro-ico'>" + "<svg viewBox='0 0 32 32' aria-hidden='true'><path d='M4 7l8-2 8 2 8-2v20l-8 2-8-2-8 2z' class='i-fill'/><path d='M4 7l8-2 8 2 8-2v20l-8 2-8-2-8 2zM12 5v20M20 7v20' class='i-line'/></svg>" + "</div><h3>The rulebook</h3><p>Deals, door fights, the bunker and the board, page by page.</p></section>" +
+        "<section class='bro-p bro-pack'><h3>What to pack</h3><ul><li><b>One deal a quarter</b> on the map.</li><li><b>Fights at the door:</b> Pressure to 0.</li><li><b>Climb the eras:</b> 1978, 2008, Today.</li><li><b>Seal the bunker</b> before the doors close.</li></ul></section>" +
+        "</div>" + warn + "</div>";
+    showOverlay(inRun ? "How to play" : "", body,
+      '<button class="btn btn-coral" id="ht-penny">' + (inRun ? "Replay Penny's tour" : "Take the guided tour") + '</button><button class="btn" id="ht-rules">Read the rulebook</button><button class="btn btn-ghost" id="ht-close">' + (inRun ? "Back" : "Fold it up") + "</button>",
       function () {
+        if (!inRun) $("overlay").classList.add("brochure-mode");
         $("ht-penny").addEventListener("click", function () {
           tick();
           hideOverlay();
@@ -13721,6 +14270,7 @@ body.era-1 .bk-view .bk-top h3, body.era-1 .bk-view .dz-k { font-family: var(--e
         });
         $("ht-rules").addEventListener("click", function () { tick(); screenIntent = inRun ? "play" : "title"; tutorialPage = 0; show("tutorial"); renderTutorial(); });
         $("ht-close").addEventListener("click", function () { tick(); hideOverlay(); });
+        if (!inRun) $("overlay").onclick = function (e) { if (e.target === $("overlay")) { tick(); hideOverlay(); } };
       });
   }
 

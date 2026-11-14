@@ -314,9 +314,17 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 700; letter-spacing: -
 .exec-card:active { transform: translateY(1px); }
 .exec-card.on { box-shadow: inset 0 0 0 2px var(--coral); border-color: var(--coral); }
 .exec-card.locked { opacity: 0.55; }
+.exec-card { display: flex; align-items: flex-start; gap: 8px; text-align: left; }
+.exec-card .ex-ava { position: relative; flex: none; width: 56px; height: 56px; border-radius: 10px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--gold-line), 0 4px 10px rgba(0,0,0,0.35); background: #0c1c14; }
+.exec-card .ex-ava img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%; display: block; }
+.exec-card .ex-ava i { position: absolute; right: 3px; bottom: 3px; font: 800 10px/1 var(--font-sans, sans-serif); letter-spacing: 0.04em; color: var(--gold-hi); background: rgba(8, 20, 14, 0.88); border: 1px solid var(--gold-line); border-radius: 4px; padding: 2px 4px; }
+.exec-card .ex-body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 1px; }
 .exec-card .name { font-family: var(--font-serif); font-size: 24px; color: var(--teal); }
-.exec-card .firm { color: var(--ochre); font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; margin: 4px 0 8px; font-weight: 600; }
-.exec-card p { margin: 0; color: var(--ink-muted); font-size: 16px; }
+.exec-card .firm { color: var(--ochre); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; margin: 2px 0 2px; font-weight: 600; display: flex; flex-wrap: wrap; gap: 0 6px; white-space: normal; overflow: visible; }
+.exec-card .ex-title, .exec-card .ex-co { white-space: nowrap; }
+.exec-card .ex-title::after { content: " ·"; }
+.exec-card .ex-trait { display: block; font-size: 12px; font-weight: 700; color: var(--gold-hi); line-height: 1.25; margin: 0 0 2px; }
+.exec-card p { margin: 0; color: var(--ink-muted); font-size: 15px; }
 .dots { display: flex; gap: 8px; margin: 16px 0; }
 .dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(10, 70, 78, 0.25); display: block; }
 .dots i.on { background: var(--coral); }
@@ -2294,19 +2302,21 @@ body:has(#screen-tutorial.on) .shell {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
-  flex: 0 1 auto;
+  flex: none;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
   align-content: start;
 }
-.exec-card { padding: 8px 10px; text-align: left; }
+.exec-card { padding: 7px 8px; text-align: left; }
+.exec-card .ex-ava { width: 48px; height: 48px; }
 .exec-card .name { font-size: 16px; }
-.exec-card .firm { font-size: 10px; margin: 0 0 2px; letter-spacing: 0.04em; }
+.exec-card .firm { font-size: 10px; margin: 0 0 1px; letter-spacing: 0.04em; }
+.exec-card .ex-trait { font-size: 11px; }
 .exec-card p {
   font-size: 12px; line-height: 1.25; margin: 0;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.exec-card.on p { -webkit-line-clamp: 4; }
+.exec-card.on p { -webkit-line-clamp: 3; }
 .exec-page .loadout { flex: 1; min-height: 0; overflow: hidden; margin-top: 8px; }
 .exec-page .loadout h3 { font-size: 16px; margin: 6px 0 4px; }
 .exec-page .loadout p.muted {
@@ -2321,8 +2331,11 @@ body:has(#screen-tutorial.on) .shell {
 .exec-page .btn-row #btn-start { grid-column: 1 / -1; }
 .exec-page .btn-row .btn { min-height: 44px; }
 @media (max-height: 780px) {
-  .exec-card p { display: none; }
-  .exec-card.on p { display: -webkit-box; -webkit-line-clamp: 4; }
+  .exec-card { padding: 5px 7px; gap: 6px; }
+  .exec-card .ex-ava { width: 42px; height: 42px; }
+  .exec-card .ex-trait { font-size: 10px; }
+  .exec-card p { font-size: 11px; -webkit-line-clamp: 2; }
+  .exec-card.on p { display: -webkit-box; -webkit-line-clamp: 2; }
   .exec-page .loadout p.muted { display: none; }
   #screen-title .title-sunny { padding: 12px 14px !important; gap: 8px !important; }
   .title-sunny h1.wordmark { font-size: clamp(32px, 10vw, 52px) !important; }
@@ -2568,7 +2581,6 @@ body:has(#screen-tutorial.on) .shell,
 }
 @media (min-width: 900px) and (max-height: 940px) {
   .exec-page .exec-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .exec-card .firm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 .xp-bar span { display: block; height: 100%; background: linear-gradient(90deg, #3fe0b8, var(--gold)); }
 /* End screen: XP + level up */
@@ -2649,7 +2661,7 @@ body:has(#screen-tutorial.on) .shell,
 @media (max-width: 699px) {
   .exec-page .exec-list { gap: 5px; }
   .exec-page .exec-card { padding: 6px 8px; min-height: 0; }
-  .exec-page .exec-card:not(.on) .firm { display: none; }
+  .exec-page .exec-card .ex-ava { width: 40px; height: 40px; }
   .exec-page .exec-card .name { font-size: 15px; }
   .exec-page .rating-mods li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
   .exec-page .loadout h3 { margin: 4px 0 3px; font-size: 15px; }
@@ -2660,6 +2672,11 @@ body:has(#screen-tutorial.on) .shell,
 @media (max-height: 1000px), (max-width: 699px) {
   .exec-page .lo-extra { display: none; }
   .exec-page .lo-open { display: block; width: 100%; min-height: 44px; margin-top: 6px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (orientation: portrait) and (min-height: 1000px) {
+  .exec-card .ex-ava { width: 64px; height: 64px; }
+  .exec-card.on p { -webkit-line-clamp: 4; }
+
 }
 .overlay.fy-mode .lo-sheet h3 { font-family: var(--font-serif); font-size: 17px; margin: 8px 0 4px; }
 .overlay.fy-mode .lo-sheet .perk-row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
@@ -3415,6 +3432,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Chief Rights Officer",
       firm: "AquaTerra Holdings",
       blurb: "She already owns a cistern. Water work comes cheaper. The towns she bought it from do not.",
+      trait: "Sound Water already in · cheaper water works",
       start: { cash: 30, unrest: 14, collapse: 20, water: 1, waterQuality: "sound" },
       perks: { waterUpgradeDiscount: 4, tags: ["water"] },
       compound: "The Wellspring",
@@ -3426,6 +3444,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Grid Principal",
       firm: "Northline Energy",
       blurb: "A generator is already on the pad. Power installs cost less. The blackouts he priced are still coming.",
+      trait: "Sound Power already in · cheaper power works",
       start: { cash: 30, unrest: 14, collapse: 20, power: 1, powerQuality: "sound" },
       perks: { powerUpgradeDiscount: 4, tags: ["power"] },
       compound: "Lumen Spire",
@@ -3437,6 +3456,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "AgriFutures Chair",
       firm: "Yield & Residue PLC",
       blurb: "A stockpile is already counted. The street is quieter, and the clock runs a little slower through Act I.",
+      trait: "Sound Food already in · quieter street, slower Act I",
       start: { cash: 26, unrest: 12, collapse: 20, food: 1, foodQuality: "sound" },
       perks: { foodCollapseRelief: 1, tags: ["food"] },
       compound: "Harvest Ziggurat",
@@ -3449,6 +3469,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Crisis Logistics",
       firm: "Crowe Terminals",
       blurb: "More cash, more heat, and bad news takes an extra quarter to arrive. Use the time.",
+      trait: "Richer start, more heat · bad news delayed 1Q",
       start: { cash: 70, unrest: 19, collapse: 20 },
       perks: { delayBonus: 1, tags: ["logistics"] },
       compound: "Port Sovereign",
@@ -3461,6 +3482,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Chief Optimism Officer",
       firm: "Halcyon Systems",
       blurb: "The air plant is already humming. Air installs cost less. The servers run hot, and so does the clock.",
+      trait: "Sound Air already in · cheaper air, a hotter clock",
       start: { cash: 34, unrest: 14, collapse: 24, air: 1, airQuality: "sound" },
       perks: { airUpgradeDiscount: 4, dealAffinity: "divert-filters", tags: ["air"] },
       compound: "Cloud Atrium",
@@ -3473,6 +3495,7 @@ body:has(#screen-tutorial.on) .shell,
       title: "Managing Partner",
       firm: "Meridian Capital",
       blurb: "No rooms, a fat float. Going private keeps 80% of every deal, and his private contractors build 8% cheaper. Engineers are outsourced, and priced like it.",
+      trait: "Fat float · go private keeps 80% · cheaper contractors",
       start: { cash: 56, unrest: 14, collapse: 20 },
       perks: { conversionRate: 0.8, engineerExtra: 2, privateWorks: 0.92, tags: ["finance"] },
       compound: "Vault Exchange",
@@ -8056,9 +8079,14 @@ body:has(#screen-tutorial.on) .shell,
       var best = meta.bestRating && meta.bestRating[ex.id] != null ? LD.ratingName(meta.bestRating[ex.id]) : null;
       html += '<button class="exec-card' + (selected === ex.id ? " on" : "") + (open ? "" : " locked") + '" data-id="' + ex.id + '" ' + (open ? "" : "disabled") + ">";
       var lvx = LD.levelFromXp ? LD.levelFromXp((meta.xp || {})[ex.id] | 0) : null;
-      html += '<div class="name">' + escapeHtml(ex.name) + (open && lvx ? ' <span class="lv">Lv ' + lvx.level + "</span>" : "") + (best ? ' <span class="best">best ' + best + "</span>" : "") + "</div>";
-      html += '<div class="firm">' + escapeHtml(ex.title) + " · " + escapeHtml(ex.firm) + "</div>";
-      html += "<p>" + escapeHtml(open ? ex.blurb : unlockHint(ex)) + "</p></button>";
+      var initials = ex.name.replace(/^Dr\.\s+/, "").split(" ").map(function (w) { return w.charAt(0); }).join("");
+      var art = (LD.ISLAND_ART && LD.ISLAND_ART[ex.id]) || ("assets/island-" + ex.id + ".webp");
+      html += '<span class="ex-ava" aria-hidden="true"><img src="' + escapeHtml(art) + '" alt=""><i>' + escapeHtml(initials) + "</i></span>";
+      html += '<span class="ex-body">';
+      html += '<span class="name">' + escapeHtml(ex.name) + (open && lvx ? ' <span class="lv">Lv ' + lvx.level + "</span>" : "") + (best ? ' <span class="best">best ' + best + "</span>" : "") + "</span>";
+      html += '<span class="firm"><span class="ex-title">' + escapeHtml(ex.title) + '</span><span class="ex-co">' + escapeHtml(ex.firm) + "</span></span>";
+      if (ex.trait) html += '<span class="ex-trait">' + escapeHtml(ex.trait) + "</span>";
+      html += "<p>" + escapeHtml(open ? ex.blurb : unlockHint(ex)) + "</p></span></button>";
     });
     html += "</div>";
 

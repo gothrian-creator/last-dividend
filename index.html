@@ -4227,6 +4227,153 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
   .ld-act.ld-on-ochre:not(svg *) { animation: none !important; outline-color: var(--ld-ink) !important; }
   .cx-poster { transition: none; }
 }
+
+/* ===================== Summit Lounge: concierge key rack (2026-11-15) =====================
+   Flat matte gouache: ink lines, paper grain, no gloss or glow. Tags on hooks; tap opens the ledger. */
+#screen-boardroom .page.lounge { height: 100%; min-height: 0 !important; max-height: 100%; overflow: hidden; border: 0; border-radius: 0; padding: 0; color: var(--jy-ink);
+  background: var(--jy-teal-deep); background-image: var(--jy-grain), radial-gradient(120% 80% at 50% 0%, #2a5f5c 0%, #163c3e 60%, #10292b 100%) !important; }
+#screen-boardroom .page.lounge::before, #screen-boardroom .page.lounge::after { display: none; }
+body:has(#screen-boardroom.on) .shell { width: min(1180px, 100%) !important; max-width: none !important; }
+.lounge { --plate-h: clamp(118px, 21vh, 290px); --cw: clamp(80px, min(14vw, 9.4vh), 124px); --ch: calc(var(--cw) * 1.3); --ic: calc(var(--cw) * 0.44); }
+.lg-inner { height: 100%; box-sizing: border-box; padding: 10px 12px 12px; display: grid; gap: 8px; min-height: 0;
+  grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto auto; grid-template-areas: "plate" "rack" "notice" "ledger" "foot"; }
+.lg-plate { grid-area: plate; position: relative; height: var(--plate-h); border: 2.5px solid var(--jy-ink); border-radius: 6px; overflow: hidden; background: #e9d9b4; box-shadow: var(--jy-shadow); }
+.lg-plate-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 34%; display: block; }
+.lg-title { position: absolute; left: 0; top: 0; padding: 7px 16px 8px 12px; background: var(--jy-teal-deep); background-image: var(--jy-grain); color: var(--jy-cream); border-right: 2.5px solid var(--jy-ink); border-bottom: 2.5px solid var(--jy-ink); border-bottom-right-radius: 6px; }
+.lg-title small { display: block; font: 800 10px/1 var(--font-sans); letter-spacing: 0.24em; text-transform: uppercase; color: var(--jy-ochre); }
+.lg-title h2 { margin: 3px 0 0; font: 800 clamp(20px, 3.1vh, 30px)/1 var(--font-serif); color: #f6e7c4 !important; letter-spacing: 0.02em; text-transform: uppercase; }
+.lg-bal { position: absolute; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 6px; padding: 5px 12px 5px 8px; background: var(--jy-paper); background-image: var(--jy-grain); border: 2px solid var(--jy-ink); border-radius: 4px; box-shadow: 2px 3px 0 rgba(20, 32, 33, 0.5); color: var(--jy-ink); margin: 0 !important; }
+.lg-bal .tok { width: 26px; height: 26px; vertical-align: 0; }
+.lg-bal b { font: 800 22px/1 var(--font-serif); }
+.lg-bal small { font: 700 10px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--jy-ink-soft); }
+/* the rack */
+.lg-rack { grid-area: rack; min-height: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 6px 8px 4px; border: 2.5px solid var(--jy-ink); border-radius: 6px;
+  background: #23595a; background-image: var(--jy-grain), repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.07) 0 2px, transparent 2px 46px); box-shadow: inset 0 4px 0 rgba(0, 0, 0, 0.18), var(--jy-shadow); }
+.lg-row + .lg-row { border-top: 3px solid rgba(16, 41, 43, 0.75); margin-top: 2px; padding-top: 4px; }
+.lg-plaque { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 0 4px; font: inherit; }
+.lg-plaque span { display: inline-block; padding: 3px 12px 2px; background: var(--jy-teal-deep); border: 1.5px solid rgba(243, 230, 200, 0.6); border-radius: 3px; color: #f6e7c4; font: 800 12px/1.1 var(--font-sans); letter-spacing: 0.22em; text-transform: uppercase; }
+.lg-plaque small { font: 700 11px/1 var(--font-sans); color: rgba(243, 230, 200, 0.78); letter-spacing: 0.02em; }
+.lg-hooks { display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden; padding: 6px 4px 8px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: rgba(243, 230, 200, 0.45) transparent; }
+.lg-hooks::-webkit-scrollbar { height: 5px; } .lg-hooks::-webkit-scrollbar-thumb { background: rgba(243, 230, 200, 0.4); border-radius: 3px; }
+/* one cubby = one key + tag */
+.lt { position: relative; flex: none; width: var(--cw); height: var(--ch); padding: 0; margin: 0; scroll-snap-align: start; cursor: pointer; border: 1.5px solid rgba(10, 24, 25, 0.6); border-radius: 4px; color: var(--jy-ink); font: inherit;
+  background: #174244; box-shadow: inset 0 5px 0 rgba(0, 0, 0, 0.22), inset 0 -2px 0 rgba(243, 230, 200, 0.08); -webkit-tap-highlight-color: transparent; touch-action: pan-x pan-y; }
+.lt-hook { position: absolute; top: 5px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #10292b; border: 2px solid var(--jy-ochre); z-index: 1; }
+.lt-key { position: absolute; top: 8px; left: 50%; width: calc(var(--cw) * 0.15); height: calc(var(--cw) * 0.36); transform: translateX(-62%) rotate(-12deg); transform-origin: 50% 8%; z-index: 1; }
+.lt-key .k-f { fill: var(--jy-ochre); stroke: var(--jy-ink); stroke-width: 1.6; } .lt-key .k-h { fill: #174244; stroke: var(--jy-ink); stroke-width: 1.4; }
+.lt-tag { position: absolute; left: 7px; right: 7px; top: calc(var(--cw) * 0.27); bottom: 7px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 2px; padding: calc(var(--cw) * 0.12) 3px 4px;
+  background: #f1e2bf; background-image: var(--jy-grain); border: 2px solid var(--jy-ink); border-radius: 3px 3px 5px 5px; overflow: hidden; z-index: 2;
+  clip-path: polygon(24% 0, 76% 0, 100% 14%, 100% 100%, 0 100%, 0 14%); transform: rotate(var(--r, 0deg)); transition: transform 0.15s; }
+.lt:nth-child(3n+1) { --r: -2.2deg; } .lt:nth-child(3n+2) { --r: 1.6deg; } .lt:nth-child(4n) { --r: -0.8deg; }
+.lt-eye { position: absolute; top: 4px; left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: #174244; box-shadow: 0 0 0 1.5px var(--jy-ink); }
+.lt-tag .ico { width: var(--ic); height: var(--ic); flex: none; margin-top: 2px; }
+.lg-ico { background-image: url("assets/journey/lounge-icons.webp") !important; }
+.lt-port { display: block; flex: none; width: var(--ic); height: var(--ic); margin-top: 2px; border-radius: 50%; overflow: hidden; border: 2px solid var(--jy-teal-deep); background: #c9b88f; }
+.lt-port img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 14%; display: block; }
+.lt-port.big { width: 100%; height: 100%; }
+.lt-rolo { display: block; flex: none; width: calc(var(--ic) * 1.2); height: var(--ic); margin-top: 2px; }
+.lt-rolo img { width: 100%; height: 100%; object-fit: contain; display: block; mix-blend-mode: multiply; }
+.lt-tag b { flex: none; max-width: 100%; font: 800 clamp(11px, calc(var(--cw) * 0.12), 14px)/1.1 var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lt-tag em { flex: none; font-style: normal; font: 800 clamp(11px, calc(var(--cw) * 0.115), 14px)/1 var(--font-sans); color: var(--jy-terra-deep); display: inline-flex; align-items: center; gap: 2px; position: relative; z-index: 3; }
+.lt-tag em .tok { width: 1.05em; height: 1.05em; vertical-align: 0; }
+.lt-tag em.lt-soon, .lt-tag em.lt-earn { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--jy-teal); }
+.lt-stamp { position: absolute; left: 50%; top: calc(var(--cw) * 0.12 + var(--ic) * 0.5 + 2px); transform: translate(-50%, -50%) rotate(-14deg); padding: 2px 7px 1px; border: 2.5px solid #a8352a; border-radius: 3px; color: #a8352a; background: rgba(241, 226, 191, 0.55);
+  font: 800 clamp(11px, calc(var(--cw) * 0.13), 15px)/1.1 var(--font-serif); letter-spacing: 0.1em; text-transform: uppercase; z-index: 4; pointer-events: none; }
+.lt-stamp::before { content: ""; position: absolute; inset: 1.5px; border: 1px solid rgba(168, 53, 42, 0.55); border-radius: 2px; }
+.lt-owned .lt-tag { background-color: #f6e9c9; }
+.lt-short .lt-tag, .lt-earn .lt-tag { background-color: #d9ceb3; }
+.lt-short .lt-tag .ico, .lt-earn .lt-tag .ico { filter: grayscale(1) contrast(0.85); opacity: 0.6; }
+.lt-short .lt-tag b, .lt-earn .lt-tag b { color: rgba(31, 46, 47, 0.62); }
+.lt-short .lt-tag em { color: rgba(90, 40, 28, 0.85); }
+.lt-grille { position: absolute; left: 0; right: 0; top: calc(var(--cw) * 0.12 - 3px); height: calc(var(--ic) + 6px); z-index: 2; pointer-events: none;
+  background: repeating-linear-gradient(90deg, rgba(31, 46, 47, 0.72) 0 3px, transparent 3px 10px); border-top: 3px solid rgba(31, 46, 47, 0.8); border-bottom: 3px solid rgba(31, 46, 47, 0.8); }
+.lt-soon .lt-tag { background-color: #efe3c6; border-style: dashed; }
+.lt.sel { border-color: var(--jy-terra); box-shadow: inset 0 0 0 3px var(--jy-terra), inset 0 5px 0 rgba(0, 0, 0, 0.22); }
+.lt.sel .lt-tag { transform: translateY(-3px) rotate(0deg); }
+.lt:active .lt-tag { transform: translateY(1px) rotate(0deg); }
+#screen-boardroom .lt.ld-act { animation-name: ld-breathe-in !important; outline-offset: -3px; }
+.lt-thunk .lt-stamp { animation: lt-thunk 0.45s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+.lt-thunk .lt-tag { animation: lt-jolt 0.32s 0.2s ease-out; }
+@keyframes lt-thunk { 0% { transform: translate(-50%, -50%) rotate(-28deg) scale(2.6); opacity: 0; } 60% { opacity: 1; } 100% { transform: translate(-50%, -50%) rotate(-14deg) scale(1); opacity: 1; } }
+@keyframes lt-jolt { 0% { transform: translateY(0) rotate(0); } 35% { transform: translateY(4px) rotate(-1deg); } 100% { transform: translateY(-3px) rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .lt-thunk .lt-stamp, .lt-thunk .lt-tag { animation: none; } }
+/* notice + ledger */
+.lg-notice { grid-area: notice; margin: 0 !important; padding: 7px 12px !important; background: var(--jy-ink) !important; border: 0 !important; border-radius: 4px !important; color: var(--jy-cream) !important; font: 700 13px/1.25 var(--font-sans); }
+.lg-ledger { grid-area: ledger; display: grid; grid-template-columns: calc(var(--ic) * 1.45) minmax(0, 1fr) auto; grid-template-areas: "art body act"; gap: 6px 12px; align-items: center; padding: 10px 12px;
+  background: var(--jy-paper); background-image: var(--jy-grain), repeating-linear-gradient(180deg, transparent 0 21px, rgba(31, 90, 92, 0.13) 21px 22px); border: 2.5px solid var(--jy-ink); border-radius: 6px; box-shadow: var(--jy-shadow); color: var(--jy-ink); position: relative; }
+.lg-ledger::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 0; border-left: 1.5px solid rgba(31, 46, 47, 0.12); display: none; }
+.lg-ledger.empty p { color: var(--jy-ink) !important; }
+.lg-ledger.empty { display: block; text-align: center; font: 600 14px var(--font-sans); }
+.lg-l-art { grid-area: art; width: calc(var(--ic) * 1.45); height: calc(var(--ic) * 1.45); display: grid; place-items: center; }
+.lg-l-art .ico { width: 100%; height: 100%; }
+.lg-l-art .lt-rolo { width: 100%; height: 100%; margin: 0; }
+.lg-l-body { grid-area: body; min-width: 0; display: grid; gap: 2px; }
+.lg-l-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.lg-l-name { font: 800 clamp(17px, 2.2vh, 22px)/1.1 var(--font-serif); color: var(--jy-teal-deep); }
+.lg-ledger .si-firm { display: inline; font: 800 11px/1 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--jy-terra-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.lg-up { font: 700 13.5px/1.25 var(--font-sans); color: var(--jy-teal); }
+.lg-down { font: 700 13.5px/1.25 var(--font-sans); color: var(--jy-terra-deep); }
+.lg-text { margin: 0; font: 500 13px/1.3 var(--font-sans); color: #3c4a4a !important; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.lg-alt { margin: 0; font: italic 600 12.5px/1.25 var(--font-serif); color: var(--jy-teal) !important; }
+.lg-l-act { grid-area: act; display: flex; justify-content: flex-end; }
+.lg-sign { position: relative; min-height: 58px; min-width: 168px; padding: 6px 18px 6px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer;
+  background: var(--jy-terra); background-image: var(--jy-grain); color: var(--jy-cream); border: 2.5px solid var(--jy-ink); border-radius: 6px; box-shadow: var(--jy-shadow); font: inherit; }
+.lg-sign::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; border-left: 2px dashed rgba(243, 230, 200, 0.6); }
+.lg-sign b { font: 800 18px/1 var(--font-serif); letter-spacing: 0.08em; text-transform: uppercase; }
+.lg-sign small { font: 700 12px/1 var(--font-sans); letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 3px; opacity: 0.95; }
+.lg-sign small .tok { width: 1.1em; height: 1.1em; vertical-align: 0; }
+.lg-sign:active { transform: translateY(2px); box-shadow: 1px 2px 0 rgba(20, 32, 33, 0.55); }
+.lg-sign[disabled] { cursor: not-allowed; background-color: #8c8270; color: #efe4c9; }
+.lg-sign[disabled] b { font-size: 14px; letter-spacing: 0.02em; text-transform: none; font-family: var(--font-sans); }
+.lg-sign.ld-act { animation-name: ld-breathe !important; }
+.lg-note { max-width: 190px; padding: 8px 10px; border: 2px dashed rgba(31, 46, 47, 0.5); border-radius: 4px; font: 700 12.5px/1.25 var(--font-sans); color: var(--jy-teal); text-align: center; }
+.lg-equip, .lg-toggle { min-height: 50px; min-width: 140px; padding: 0 16px; border: 2.5px solid var(--jy-ink); border-radius: 6px; background: var(--jy-teal); background-image: var(--jy-grain); color: var(--jy-cream); font: 800 15px/1 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; box-shadow: var(--jy-shadow); cursor: pointer; }
+.lg-equip.on, .lg-equip[disabled] { background-color: var(--jy-paper); color: var(--jy-teal); box-shadow: none; cursor: default; }
+.lg-toggle { display: inline-flex; align-items: center; gap: 10px; background-color: var(--jy-paper); color: var(--jy-ink); }
+.lg-toggle i { position: relative; width: 40px; height: 22px; border-radius: 11px; border: 2px solid var(--jy-ink); background: #cbbf9f; flex: none; }
+.lg-toggle i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--jy-ink); transition: left 0.15s; }
+.lg-toggle.on i { background: var(--jy-teal); } .lg-toggle.on i::after { left: 20px; background: var(--jy-cream); }
+/* foot tickets */
+.lg-foot { grid-area: foot; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.lg-ticket { position: relative; min-height: 54px; padding: 4px 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; border: 2.5px solid var(--jy-ink); border-radius: 6px; box-shadow: var(--jy-shadow); font: inherit; background-image: var(--jy-grain); }
+.lg-ticket::before, .lg-ticket::after { content: ""; position: absolute; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; background: #163c3e; border: 2.5px solid var(--jy-ink); }
+.lg-ticket::before { left: -9px; } .lg-ticket::after { right: -9px; }
+.lg-ticket b { text-align: center; font: 800 clamp(13px, 1.8vh, 18px)/1.05 var(--font-serif); letter-spacing: 0.08em; text-transform: uppercase; }
+.lg-ticket small { font: 700 11px/1 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; }
+.lg-ticket.go { background-color: var(--jy-terra); color: var(--jy-cream); }
+.lg-ticket.back { background-color: var(--jy-paper); color: var(--jy-ink); }
+.lg-ticket:active { transform: translateY(2px); box-shadow: 1px 2px 0 rgba(20, 32, 33, 0.55); }
+/* phones */
+@media (max-width: 560px) {
+  .lounge { --plate-h: clamp(104px, 15vh, 150px); --cw: 80px; --ch: 112px; --ic: 34px; }
+  .lg-inner { padding: 8px 8px 10px; gap: 6px; }
+  .lg-title { padding: 5px 12px 6px 10px; } .lg-title h2 { font-size: 20px; }
+  .lg-bal b { font-size: 18px; } .lg-bal small { display: none; }
+  .lg-ledger { grid-template-columns: 52px minmax(0, 1fr); grid-template-areas: "art body" "act act"; padding: 8px 10px; }
+  .lg-l-art { width: 52px; height: 52px; }
+  .lg-l-act { justify-content: stretch; } .lg-l-act > * { flex: 1; max-width: none; }
+  .lg-sign { min-height: 50px; flex-direction: row; gap: 10px; } .lg-sign b { font-size: 16px; }
+  .lg-text { -webkit-line-clamp: 2; }
+  .lg-ticket { min-height: 48px; padding: 4px 8px; } .lg-ticket small { display: none; } .lg-ticket b { font-size: 12.5px; letter-spacing: 0.02em; }
+  .lg-sign small { white-space: nowrap; }
+}
+/* tablets / desktop landscape: plate + ledger on the left, the rack on the right */
+@media (orientation: landscape) and (min-width: 860px) {
+  .lounge { --cw: clamp(80px, 13vh, 128px); }
+  .lg-inner { grid-template-columns: minmax(350px, 36%) minmax(0, 1fr); grid-template-rows: minmax(150px, 1fr) auto auto auto; grid-template-areas: "plate rack" "notice rack" "ledger rack" "foot rack"; gap: 10px 14px; padding: 12px 16px 14px; }
+  .lg-plate { height: auto; min-height: 0; }
+  .lg-ledger { align-content: start; grid-template-columns: calc(var(--ic) * 1.5) minmax(0, 1fr); grid-template-areas: "art body" "act act"; }
+  .lg-l-act { justify-content: stretch; margin-top: 4px; } .lg-l-act > * { flex: 1; max-width: none; }
+  .lg-text { -webkit-line-clamp: 4; }
+  .lg-rack { padding: 8px 12px 6px; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .lounge { --cw: 76px; }
+  .lg-plate { aspect-ratio: auto; height: 96px; }
+}
+.lg-row { position: relative; }
+.lg-row.more::after { content: ""; position: absolute; right: 0; top: 30px; bottom: 6px; width: 34px; pointer-events: none; background: linear-gradient(90deg, rgba(35, 89, 90, 0), rgba(35, 89, 90, 0.92)); z-index: 3; }
+.lg-row.more .lg-plaque::after { content: "swipe for more ▸"; margin-left: auto; margin-right: 6px; font: 800 10px/1 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--jy-ochre); }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -9530,9 +9677,9 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
 
   function unlockHint(exec) {
     if (exec.unlock === "finish-run") return "Finish any run to unlock.";
-    if (exec.unlock === "win-run") return "Evacuate once, or buy the seat for " + exec.price + " ◈ in the Boardroom.";
-    if (exec.unlock === "three-runs") return "Finish three runs, or buy the seat for " + exec.price + " ◈ in the Boardroom.";
-    if (exec.unlock === "buy") return "Buy the seat for " + exec.price + " ◈ in the Boardroom.";
+    if (exec.unlock === "win-run") return "Evacuate once, or buy the seat for " + exec.price + " ◈ in the Summit Lounge.";
+    if (exec.unlock === "three-runs") return "Finish three runs, or buy the seat for " + exec.price + " ◈ in the Summit Lounge.";
+    if (exec.unlock === "buy") return "Buy the seat for " + exec.price + " ◈ in the Summit Lounge.";
     return "Locked.";
   }
 
@@ -9696,99 +9843,141 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     return html;
   }
 
-  var WINGS = [
-    ["seats", "Board Seats", "New executives and their compounds. Sidegrades, not upgrades."],
-    ["perks", "Perquisites", "Equip one (two with the extra slot). Every perk has a catch."],
-    ["prospectus", "Prospectus", "Deal packs. Add variety to the quarterly offers; toggle them per run."],
-    ["portfolio", "Property Portfolio", "Pure flavour for your island and bunker."],
-    ["annual", "Annual Report", "Small conveniences."]
-  ];
-  var TAB_LABELS = [
-    ["seats", "Seats"],
-    ["perks", "Perks"],
-    ["prospectus", "Packs"],
-    ["portfolio", "Cosmetics"],
-    ["annual", "Archive"]
-  ];
-  var SHOP_PAGE = 6;
-  function shopCard(meta, it) {
-    var owned = LD.itemOwned(meta, it.key);
-    var afford = meta.dividends >= it.price;
-    var html = '<div class="shop-item' + (owned ? " owned" : "") + '"><div class="si-head"><b>' + escapeHtml(it.name) + (it.firm ? '<span class="si-firm">' + escapeHtml(it.firm) + "</span>" : "") + "</b><em>" + (owned ? "Owned" : "◈ " + it.price) + "</em></div>";
-    if (it.up) html += '<div class="si-up">▲ ' + escapeHtml(it.up) + '</div><div class="si-down">▼ ' + escapeHtml(it.down) + "</div>";
-    if (it.text) html += '<p class="si-text">' + escapeHtml(it.text) + "</p>";
-    if (it.alt && !owned) html += '<p class="si-alt">' + escapeHtml(it.alt) + "</p>";
-    if (it.wing === "portfolio" && owned) {
-      var eq = LD.equippedCosmetics(meta)[it.slot] === it.id;
-      html += '<button class="btn btn-sm' + (eq ? " btn-teal" : "") + '" data-equip="' + it.slot + ":" + it.id + '">' + (eq ? "Equipped" : "Equip") + "</button>";
-    } else if (!owned) {
-      html += '<button class="btn btn-sm btn-ochre" data-buy="' + it.key + '"' + (afford ? "" : " disabled") + ">" + (afford ? "Buy · ◈ " + it.price : "Need ◈ " + it.price) + "</button>";
+  /* ---------- Summit Lounge: concierge key rack (2026-11-15) ----------
+     Every unlock is a key on a hook with a luggage tag. Tap a tag to open the ledger; sign to buy. */
+  var LG_ICONS = ["esg", "disaster", "hostile", "sunrise", "golden", "neon", "storm", "gilded", "brutalist", "standard", "yacht", "server", "gold", "redink", "neonsign", "archive", "slot2", "rolodex"];
+  function lgIco(name) {
+    var i = LG_ICONS.indexOf(name); if (i < 0) i = LG_ICONS.length - 1;
+    return '<i class="ico lg-ico" aria-hidden="true" style="background-position:' + (i * 100 / (LG_ICONS.length - 1)).toFixed(3) + '% 0"></i>';
+  }
+  var LG_ROWS = [["seats", "Seats"], ["perks", "Perks"], ["packs", "Packs"], ["decor", "Decor"]];
+  var LG_SLOT_NAME = { light: "Island lighting", rooms: "Room finish", stamp: "Seal stamp" };
+  /* Everything in the Lounge, grouped into the four rack rows. Pure. */
+  function loungeItems(meta) {
+    var shop = LD.shopItems(), by = {};
+    shop.forEach(function (it) { by[it.key] = it; });
+    var rows = { seats: [], perks: [], packs: [], decor: [] };
+    LD.EXECUTIVES.forEach(function (ex) {
+      if (ex.unlocked) return;
+      var it = by["exec:" + ex.id] || { key: "exec:" + ex.id, name: ex.name, firm: ex.firm, price: 0, text: ex.blurb, alt: "" };
+      var o = { key: it.key, row: "seats", name: ex.name, short: ex.name.replace(/^Dr\.\s*/, "").split(" ")[0], firm: ex.firm, price: it.price || 0, text: ex.blurb, up: ex.trait, img: "assets/exec/exec-" + ex.id, exec: ex.id };
+      if (ex.unlock === "win-run") o.alt = "or evacuate once";
+      else if (ex.unlock === "three-runs") o.alt = "or finish three runs";
+      else if (ex.unlock === "finish-run") { o.alt = "Finish one run to earn this seat"; o.earnOnly = true; }
+      rows.seats.push(o);
+    });
+    var PI = { golden: "handshake", media: "media", regulator: "stamp", permits: "permit", offshore: "offshore", retainer: "engineer", legacy: "deed" };
+    var PS = { golden: "Handshake", media: "Media", regulator: "Regulator", permits: "Permits", offshore: "Offshore", retainer: "Retainer", legacy: "Legacy" };
+    shop.forEach(function (it) {
+      if (it.wing === "perks") {
+        var id = it.key.indexOf("perk:") === 0 ? it.key.slice(5) : "";
+        rows.perks.push({ key: it.key, row: "perks", name: it.name, short: id ? PS[id] : "2nd slot", price: it.price, up: it.up, down: it.down, icon: id ? PI[id] : null, lg: id ? null : "slot2" });
+      } else if (it.wing === "prospectus") {
+        var pid = it.key.slice(5);
+        rows.packs.push({ key: it.key, row: "packs", name: it.name, short: it.name.split(" ")[0], price: it.price, text: it.text, lg: pid, pack: pid });
+      }
+    });
+    rows.packs.push({ key: "rolodex", row: "packs", name: "The Card File", short: "Cards", price: 0, soon: true,
+      text: "Card unlocks are coming to the Lounge: cards you earn by winning, beating bosses and meeting mandates will be filed here." });
+    LD.COSMETIC_SLOTS.forEach(function (sl) {
+      LD.COSMETICS.forEach(function (c) {
+        if (c.slot !== sl[0]) return;
+        var lg = c.slot === "stamp" && c.id === "gold" ? "gold" : c.id === "neonsign" ? "neonsign" : c.id;
+        rows.decor.push({ key: "cos:" + c.slot + ":" + c.id, row: "decor", name: c.name, short: c.name.split(" ")[0], firm: LG_SLOT_NAME[c.slot], price: c.price || 0, free: !!c.free, text: c.text, slot: c.slot, id: c.id, lg: lg });
+      });
+    });
+    var ar = by["annual:history"];
+    if (ar) rows.decor.push({ key: ar.key, row: "decor", name: ar.name, short: "Archive", firm: "Passport", price: ar.price, text: ar.text, lg: "archive" });
+    LG_ROWS.forEach(function (r) {
+      rows[r[0]].forEach(function (o) {
+        o.owned = o.soon ? false : o.free ? true : LD.itemOwned(meta, o.key);
+        o.afford = !o.owned && !o.soon && !o.earnOnly && o.price > 0 && meta.dividends >= o.price;
+        o.state = o.owned ? "owned" : o.soon ? "soon" : o.earnOnly ? "earn" : o.afford ? "afford" : "short";
+      });
+    });
+    return rows;
+  }
+  LD.loungeItems = loungeItems;
+  function lgKeySvg() {
+    return '<svg class="lt-key" viewBox="0 0 24 56" aria-hidden="true"><circle cx="12" cy="10" r="7.5" class="k-f"/><circle cx="12" cy="10" r="3" class="k-h"/><path d="M10 17h4v30h-4z" class="k-f"/><path d="M14 36h5v4h-5zM14 43h4v4h-4z" class="k-f"/></svg>';
+  }
+  function lgArt(o, big) {
+    if (o.exec) return '<span class="lt-port' + (big ? " big" : "") + '"><img src="' + o.img + (o.state === "short" || o.state === "earn" ? "-locked" : "") + '.webp" alt="" draggable="false" loading="lazy"></span>';
+    if (o.soon) return '<span class="lt-rolo"><img src="assets/journey/lounge-rolodex.webp" alt="" draggable="false"></span>';
+    return o.icon ? ico(o.icon) : lgIco(o.lg);
+  }
+  function lgTag(o, sel, bought) {
+    var cls = "lt lt-" + o.state + (o.key === sel ? " sel" : "") + (o.key === bought ? " lt-thunk" : "");
+    var price = o.owned ? "" : o.soon ? '<em class="lt-soon">soon</em>' : o.earnOnly ? '<em class="lt-earn">earn it</em>' : '<em class="lt-price">' + tok("div") + o.price + "</em>";
+    var label = o.name + (o.owned ? ", yours" : o.soon ? ", coming soon" : o.earnOnly ? ", earn by finishing a run" : ", " + o.price + " Dividends" + (o.afford ? ", affordable" : ", not enough Dividends"));
+    return '<button type="button" class="' + cls + '" data-lt="' + o.key + '" aria-pressed="' + (o.key === sel) + '" aria-label="' + escapeHtml(label) + '">' +
+      '<span class="lt-hook" aria-hidden="true"></span>' + lgKeySvg() +
+      '<span class="lt-tag"><i class="lt-eye" aria-hidden="true"></i>' + lgArt(o) + "<b>" + escapeHtml(o.short) + "</b>" + price +
+      (o.owned ? '<span class="lt-stamp" aria-hidden="true">' + (o.free ? "House" : "Yours") + "</span>" : "") +
+      (o.state === "short" || o.state === "earn" ? '<span class="lt-grille" aria-hidden="true"></span>' : "") + "</span></button>";
+  }
+  function lgLedger(meta, o) {
+    if (!o) return '<div class="lg-ledger empty"><p>Tap a tag to read its ledger entry.</p></div>';
+    var h = '<div class="lg-ledger lg-' + o.state + '" id="lg-ledger" aria-live="polite"><div class="lg-l-art">' + lgArt(o, true) + "</div><div class=\"lg-l-body\">";
+    h += '<div class="lg-l-head"><b class="lg-l-name">' + escapeHtml(o.name) + "</b>" + (o.firm ? '<span class="si-firm">' + escapeHtml(o.firm) + "</span>" : "") + "</div>";
+    if (o.row === "seats") {
+      if (o.up) h += '<div class="lg-up">▲ ' + escapeHtml(o.up) + "</div>";
+      h += '<p class="lg-text">' + escapeHtml(o.text) + "</p>";
+    } else {
+      if (o.up) h += '<div class="lg-up">▲ ' + escapeHtml(o.up) + "</div>";
+      if (o.down) h += '<div class="lg-down">▼ ' + escapeHtml(o.down) + "</div>";
+      if (o.text) h += '<p class="lg-text">' + escapeHtml(o.text) + "</p>";
     }
-    return html + "</div>";
+    if (o.alt && !o.owned && !o.earnOnly) h += '<p class="lg-alt">' + escapeHtml(o.alt.charAt(0).toUpperCase() + o.alt.slice(1)) + ", and the seat is yours for free.</p>";
+    h += '</div><div class="lg-l-act">';
+    if (o.soon) h += '<span class="lg-note">Coming soon</span>';
+    else if (o.earnOnly && !o.owned) h += '<span class="lg-note">' + escapeHtml(o.alt) + "</span>";
+    else if (!o.owned) {
+      h += '<button type="button" class="lg-sign" id="lg-sign" data-buy="' + o.key + '"' + (o.afford ? "" : " disabled") + "><b>" + (o.afford ? "Sign for it" : "The board wants " + o.price + " ◈") + "</b><small>" + (o.afford ? tok("div") + o.price + " · leaves " + (meta.dividends - o.price) : "You have " + meta.dividends + " ◈") + "</small></button>";
+    } else if (o.row === "packs") {
+      var on = (meta.packsOff || []).indexOf(o.pack) === -1;
+      h += '<button type="button" class="lg-toggle' + (on ? " on" : "") + '" data-pack-toggle="' + o.pack + '" aria-pressed="' + on + '"><i></i><b>' + (on ? "In every run" : "Left out") + "</b></button>";
+    } else if (o.row === "decor" && o.slot) {
+      var eq = LD.equippedCosmetics(meta)[o.slot] === o.id;
+      h += '<button type="button" class="lg-equip' + (eq ? " on" : "") + '" data-equip="' + o.slot + ":" + o.id + '"' + (eq ? " disabled" : "") + ">" + (eq ? "Equipped" : "Equip") + "</button>";
+    } else if (o.row === "perks" && o.key.indexOf("perk:") === 0) {
+      var isEq = (meta.equipped || []).indexOf(o.key.slice(5)) !== -1;
+      h += '<span class="lg-note">' + (isEq ? "Equipped · swap at the gate" : "Yours · equip at the gate") + "</span>";
+    } else if (o.row === "seats") h += '<span class="lg-note">Seated · pick at the gate</span>';
+    else h += '<span class="lg-note">Yours</span>';
+    return h + "</div></div>";
   }
   function renderBoardroom(opts) {
     opts = opts || {};
     var meta = LD.migrateMeta(opts.meta || {});
-    var items = LD.shopItems();
-    var tab = opts.tab || "seats";
-    var page = Math.max(0, opts.page | 0);
-    var wing = null;
-    WINGS.forEach(function (w) { if (w[0] === tab) wing = w; });
-    if (!wing) { tab = "seats"; wing = WINGS[0]; }
-    var list = items.filter(function (it) { return it.wing === tab; });
-    if (tab === "portfolio") {
-      LD.COSMETIC_SLOTS.forEach(function (sl) {
-        var def = LD.COSMETICS.filter(function (c) { return c.slot === sl[0] && c.free; })[0];
-        list = list.concat([{ key: "cos:" + sl[0] + ":" + def.id, wing: "portfolio", name: def.name, price: 0, text: def.text, slot: sl[0], id: def.id, _free: true }]);
-      });
-    }
-    var histAll = tab === "annual" ? (meta.history || []).slice().reverse() : [];
-    var pageSize = Math.max(2, (opts.pageSize | 0) || SHOP_PAGE);
-    var pages = Math.max(1, Math.ceil((tab === "annual" ? Math.max(histAll.length, 1) : list.length) / pageSize));
-    if (page > pages - 1) page = pages - 1;
-    var slice = tab === "annual" ? list : list.slice(page * pageSize, page * pageSize + pageSize);
-    var html = '<div class="page inner boardroom"><div class="page-inner">';
-    html += '<div class="inner-head"><div class="kicker">Summit Lounge · members only</div><h2>The Boardroom</h2>';
-    html += '<p class="br-balance">' + divBadge(meta) + ' <span class="muted">Dividends to spend · lifetime ◈ ' + meta.lifetime.dividends + " · " + meta.lifetime.runs + " runs</span></p></div>";
-    html += '<div class="br-tabs" role="tablist">';
-    TAB_LABELS.forEach(function (tb) {
-      html += '<button class="br-tab' + (tb[0] === tab ? " on" : "") + '" data-br-tab="' + tb[0] + '" role="tab" aria-selected="' + (tb[0] === tab ? "true" : "false") + '">' + tb[1] + "</button>";
+    var rows = loungeItems(meta);
+    var all = [];
+    LG_ROWS.forEach(function (r) { all = all.concat(rows[r[0]]); });
+    var sel = null;
+    all.forEach(function (o) { if (o.key === opts.sel) sel = o; });
+    if (!sel) all.forEach(function (o) { if (!sel && o.afford) sel = o; });
+    if (!sel) all.forEach(function (o) { if (!sel && o.state === "short") sel = o; });
+    if (!sel) sel = all[0];
+    var html = '<div class="page lounge"><div class="lg-inner">';
+    html += '<header class="lg-plate"><img class="lg-plate-art" src="assets/journey/lounge-concierge.webp" alt="" draggable="false">' +
+      '<div class="lg-title"><small>Members only</small><h2>Summit Lounge</h2></div>' +
+      '<span class="lg-bal br-balance" role="status" aria-label="' + meta.dividends + ' Dividends to spend">' + tok("div") + "<b>" + meta.dividends + "</b><small>to spend</small></span></header>";
+    html += '<div class="lg-rack" id="lg-rack">';
+    LG_ROWS.forEach(function (r) {
+      var list = rows[r[0]];
+      if (!list.length) return;
+      var can = list.filter(function (o) { return o.afford; }).length, own = list.filter(function (o) { return o.owned && !o.free; }).length;
+      html += '<section class="lg-row" data-row="' + r[0] + '"><h3 class="lg-plaque"><span>' + r[1] + "</span><small>" + own + "/" + list.filter(function (o) { return !o.free && !o.soon; }).length + (can ? " · " + can + " within reach" : "") + "</small></h3>";
+      html += '<div class="lg-hooks" data-hooks="' + r[0] + '">';
+      list.forEach(function (o) { html += lgTag(o, sel && sel.key, opts.bought); });
+      html += "</div></section>";
     });
     html += "</div>";
-    if (opts.notice) html += '<p class="br-notice" role="status">' + escapeHtml(opts.notice) + "</p>";
-    html += '<section class="wing br-pane"><p class="muted br-desc">' + wing[2] + '</p><div class="shop-grid">';
-    slice.forEach(function (it) {
-      if (it._free) {
-        var eq = LD.equippedCosmetics(meta)[it.slot] === it.id;
-        html += '<div class="shop-item owned"><div class="si-head"><b>' + escapeHtml(it.name) + '</b><em>Default</em></div><p class="si-text">' + escapeHtml(it.text) + "</p>" +
-          '<button class="btn btn-sm' + (eq ? " btn-teal" : "") + '" data-equip="' + it.slot + ":" + it.id + '">' + (eq ? "Equipped" : "Equip") + "</button></div>";
-      } else {
-        html += shopCard(meta, it);
-      }
-    });
-    html += "</div>";
-    if (tab === "annual") {
-      var hist = histAll;
-      var hSlice = hist.slice(page * pageSize, page * pageSize + pageSize);
-      if (hist.length) {
-        html += '<ul class="history-mini">';
-        hSlice.forEach(function (h) {
-          var name = (LD.execById(h.executiveId) || {}).name || h.executiveId;
-          html += "<li><strong>" + (h.result === "win" ? "Evacuated" : "Failed") + "</strong> — " + escapeHtml(h.title) +
-            " · Q" + h.turn + " · " + escapeHtml(name) + (h.dividends != null ? " · ◈ " + h.dividends : "") + "</li>";
-        });
-        html += "</ul>";
-      } else if (!list.length) {
-        html += "<p class='muted'>No finished runs yet.</p>";
-      }
-    }
-    if (pages > 1) {
-      html += '<div class="br-pager"><button class="btn btn-ghost btn-sm" data-br-page="' + (page - 1) + '"' + (page <= 0 ? " disabled" : "") + ">Prev</button>";
-      html += '<span class="muted"> ' + (page + 1) + " / " + pages + " </span>";
-      html += '<button class="btn btn-ghost btn-sm" data-br-page="' + (page + 1) + '"' + (page >= pages - 1 ? " disabled" : "") + ">Next</button></div>";
-    }
-    html += "</section>";
-    html += '<div class="btn-row"><button class="btn btn-coral" id="btn-br-play">To the boarding gate</button><button class="btn btn-ghost" id="btn-br-back">◂ Leave the lounge</button></div></div></div>';
+    if (opts.notice) html += '<p class="lg-notice br-notice" role="status">' + escapeHtml(opts.notice) + "</p>";
+    html += lgLedger(meta, sel);
+    html += '<div class="lg-foot"><button type="button" class="lg-ticket go" id="btn-br-play"><b>To the Gate</b><small>Pick your executive</small></button>' +
+      '<button type="button" class="lg-ticket back" id="btn-br-back"><b>Back to the Street</b></button></div>';
+    html += "</div></div>";
     return html;
   }
   var END_ART = { win: "end-win" };
@@ -9817,7 +10006,7 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
       html += '<div class="pending">Q' + state.turn + " · " + escapeHtml(exec.name) + " \u00b7 seed " + escapeHtml(String(state.seedLabel)) + " \u00b7 Cash " + state.cash + " \u00b7 Unrest " + state.unrest + " \u00b7 Collapse " + state.collapse + "</div>";
       if (LD.renderCarried) html += LD.renderCarried(state);
       html += '<div class="btn-row"><button class="btn btn-coral" id="btn-letter">Shareholder Letter</button>';
-      html += '<button class="btn btn-ochre" id="btn-end-board">The Boardroom ' + (opts.meta ? "\u00b7 \u25c8 " + opts.meta.dividends : "") + "</button>";
+      html += '<button class="btn btn-ochre" id="btn-end-board">Summit Lounge ' + (opts.meta ? "\u00b7 \u25c8 " + opts.meta.dividends : "") + "</button>";
       html += '<button class="btn" id="btn-again">Same executive, new seed</button>';
       html += '<button class="btn btn-ghost" id="btn-title">Return to title</button></div>';
     } else {
@@ -9839,7 +10028,7 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
       if (opts.meta) html += '<p class="letter-foot">Balance \u25c8 ' + opts.meta.dividends + " \u00b7 lifetime \u25c8 " + opts.meta.lifetime.dividends + "</p>";
       html += "</section>";
       html += '<div class="btn-row"><button class="btn btn-ghost" id="btn-end-result">Back to result</button>';
-      html += '<button class="btn btn-ochre" id="btn-end-board">The Boardroom ' + (opts.meta ? "\u00b7 \u25c8 " + opts.meta.dividends : "") + "</button>";
+      html += '<button class="btn btn-ochre" id="btn-end-board">Summit Lounge ' + (opts.meta ? "\u00b7 \u25c8 " + opts.meta.dividends : "") + "</button>";
       html += '<button class="btn btn-coral" id="btn-again">Same executive, new seed</button>';
       html += '<button class="btn btn-ghost" id="btn-title">Return to title</button></div>';
     }
@@ -12145,16 +12334,9 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
   var lastEnd = null;
   var boardBack = "title";
   var boardNotice = "";
-  var boardTab = "seats";
-  var boardPage = 0;
+  var boardSel = null;
+  var boardBought = null;
   var endLetter = false;
-  function boardShopPageSize() {
-    var h = Math.round((window.visualViewport && visualViewport.height) || window.innerHeight || 800);
-    var w = window.innerWidth || 400;
-    var cols = w >= 700 ? 2 : 1;
-    if (cols === 1) return h < 900 ? 3 : 4;
-    return h < 720 ? 4 : 6;
-  }
 
   function $(id) { return document.getElementById(id); }
 
@@ -12337,7 +12519,7 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     var t = document.querySelector(".lvup-burst");
     if (t && t.parentNode) t.parentNode.removeChild(t);
   }
-  /* Era skin: run screens wear the act's era (1978 / 2008 / now); title, rulebook, Boardroom and history stay timeless Art Deco. */
+  /* Era skin: run screens wear the act's era (1978 / 2008 / now); title, rulebook, Summit Lounge and history stay timeless Art Deco. */
   function syncEra(name) {
     var nm = name || screen, run = !!(state && !state.ended && (nm === "desk" || nm === "bunker" || nm === "deal"));
     var act = run && LD.actOf ? LD.actOf(Math.min(12, state.turn || 1)) : 0;
@@ -12463,46 +12645,64 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     t1 = setTimeout(go, 400);
   }
 
-  /* ---------- The Boardroom ---------- */
+  /* ---------- The Summit Lounge (concierge key rack) ---------- */
   function openBoardroom(back) {
     boardBack = back || "title";
     boardNotice = "";
-    boardTab = "seats";
-    boardPage = 0;
+    boardSel = null;
+    boardBought = null;
     show("boardroom");
     renderBoardroom();
   }
-  function renderBoardroom() {
-    $("screen-boardroom").innerHTML = LD.renderBoardroom({ meta: loadMeta(), notice: boardNotice, tab: boardTab, page: boardPage, pageSize: boardShopPageSize() });
-    Array.prototype.forEach.call(document.querySelectorAll("#screen-boardroom [data-br-tab]"), function (b) {
-      b.addEventListener("click", function () {
-        boardTab = b.getAttribute("data-br-tab");
-        boardPage = 0;
-        boardNotice = "";
-        renderBoardroom();
-      });
+  function renderBoardroom(keepScroll) {
+    var root = $("screen-boardroom");
+    var scroll = null;
+    if (keepScroll) {
+      scroll = { rack: (root.querySelector("#lg-rack") || {}).scrollTop || 0, rows: {} };
+      Array.prototype.forEach.call(root.querySelectorAll("[data-hooks]"), function (h) { scroll.rows[h.getAttribute("data-hooks")] = h.scrollLeft; });
+    }
+    root.innerHTML = LD.renderBoardroom({ meta: loadMeta(), notice: boardNotice, sel: boardSel, bought: boardBought });
+    if (scroll) {
+      var rk = root.querySelector("#lg-rack"); if (rk) rk.scrollTop = scroll.rack;
+      Array.prototype.forEach.call(root.querySelectorAll("[data-hooks]"), function (h) { var v = scroll.rows[h.getAttribute("data-hooks")]; if (v) h.scrollLeft = v; });
+    } else {
+      /* First open: make sure the selected tag is in view in its row. */
+      var s0 = root.querySelector(".lt.sel");
+      if (s0) { var hk = s0.parentNode, hr = hk.getBoundingClientRect(), sr = s0.getBoundingClientRect(); if (sr.right > hr.right) hk.scrollLeft += sr.left - hr.left - 12; }
+    }
+    /* Rows that hold more tags than fit get a soft right-edge fade and a "swipe" cue until scrolled to the end. */
+    Array.prototype.forEach.call(root.querySelectorAll("[data-hooks]"), function (h) {
+      var row = h.parentNode;
+      function upd() { row.classList.toggle("more", h.scrollWidth - h.clientWidth - h.scrollLeft > 6); }
+      upd();
+      h.addEventListener("scroll", upd, { passive: true });
     });
-    Array.prototype.forEach.call(document.querySelectorAll("#screen-boardroom [data-br-page]"), function (b) {
-      b.addEventListener("click", function () {
-        boardPage = +b.getAttribute("data-br-page") || 0;
-        renderBoardroom();
-      });
-    });
-    Array.prototype.forEach.call(document.querySelectorAll("#screen-boardroom [data-buy]"), function (b) {
+    if (boardBought) { setTimeout(function () { boardBought = null; var t = root.querySelector(".lt-thunk"); if (t) t.classList.remove("lt-thunk"); }, 900); }
+    Array.prototype.forEach.call(root.querySelectorAll("[data-lt]"), function (b) {
       b.addEventListener("click", function () {
         tick();
-        var res = LD.buyItem(loadMeta(), b.getAttribute("data-buy"));
-        if (!res.ok) { boardNotice = res.error; renderBoardroom(); return; }
-        var m = res.meta;
-        if (res.item.wing === "perks" && res.item.key.indexOf("perk:") === 0 && m.equipped.length < LD.perkSlots(m)) m.equipped.push(res.item.key.slice(5));
-        if (res.item.wing === "portfolio") { m.cosmetics[res.item.slot] = res.item.id; }
-        saveMeta(m);
-        applyCosmetics();
-        boardNotice = "Acquired: " + res.item.name + ". The board approves.";
-        renderBoardroom();
+        boardSel = b.getAttribute("data-lt");
+        boardNotice = "";
+        renderBoardroom(true);
       });
     });
-    Array.prototype.forEach.call(document.querySelectorAll("#screen-boardroom [data-equip]"), function (b) {
+    var sign = root.querySelector("#lg-sign");
+    if (sign) sign.addEventListener("click", function () {
+      var key = sign.getAttribute("data-buy");
+      var res = LD.buyItem(loadMeta(), key);
+      if (!res.ok) { tick(); boardNotice = res.error; renderBoardroom(true); return; }
+      var m = res.meta;
+      if (res.item.wing === "perks" && res.item.key.indexOf("perk:") === 0 && m.equipped.length < LD.perkSlots(m)) m.equipped.push(res.item.key.slice(5));
+      if (res.item.wing === "portfolio") { m.cosmetics[res.item.slot] = res.item.id; }
+      saveMeta(m);
+      applyCosmetics();
+      SFX.play && SFX.play("stamp");
+      boardSel = key;
+      boardBought = key;
+      boardNotice = "Signed: " + res.item.name + ". The concierge hands you the key.";
+      renderBoardroom(true);
+    });
+    Array.prototype.forEach.call(root.querySelectorAll("[data-equip]"), function (b) {
       b.addEventListener("click", function () {
         tick();
         var parts = b.getAttribute("data-equip").split(":");
@@ -12511,7 +12711,20 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
         saveMeta(m);
         applyCosmetics();
         boardNotice = "";
-        renderBoardroom();
+        renderBoardroom(true);
+      });
+    });
+    Array.prototype.forEach.call(root.querySelectorAll("[data-pack-toggle]"), function (b) {
+      b.addEventListener("click", function () {
+        tick();
+        var id = b.getAttribute("data-pack-toggle");
+        var m = loadMeta();
+        if (!Array.isArray(m.packsOff)) m.packsOff = [];
+        var i = m.packsOff.indexOf(id);
+        if (i === -1) m.packsOff.push(id); else m.packsOff.splice(i, 1);
+        saveMeta(m);
+        boardNotice = "";
+        renderBoardroom(true);
       });
     });
     $("btn-br-play").addEventListener("click", function () { tick(); seedDraft = ""; goExec(); });
@@ -14385,8 +14598,8 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
       target: function () { return pq("#bk-panel") || pq('#overlay [data-spot="private"]'); } },
     region: { face: "wink", text: function () { return "A <b>region dossier</b>! Regions you own take one regional order per quarter: plants, soothing, outbids. The <b>Mood / Networks / Holdings</b> lenses up top read the whole map at a glance."; },
       target: function () { return pq("#dossier .dz") || pq("#dossier"); } },
-    dividends: { face: "excited", text: function () { return "Payday! Every run pays <b>Dividends ◈</b>, itemised in your Shareholder Letter. Spend them in <b>The Boardroom</b>: new executives, perks, deal packs and very tasteful cosmetics."; },
-      target: function () { return pq("#screen-end .letter") || pq("#screen-boardroom .br-balance"); } },
+    dividends: { face: "excited", text: function () { return "Payday! Every run pays <b>Dividends ◈</b>, itemised in your Shareholder Letter. Spend them in the <b>Summit Lounge</b>: new executives, perks, deal packs and very tasteful cosmetics."; },
+      target: function () { return pq("#screen-end .letter") || pq("#screen-boardroom .lg-bal"); } },
     fight: { face: "worried", text: function () { return "Someone's at the <b>door</b>! Every deal brings one. <b>Pressure</b> cards lower their Scrutiny (0 = you win), <b>Deniability</b> blocks the red intent. 3 ◆ a round. Losing still signs the deal, just with damage."; },
       target: function () { return pq("#door .df-stage"); } },
     reward: { face: "excited", text: function () { return "Your <b>reward</b>! Add a card, <b>shred</b> one (it gets pricier each time), or skip for cash. Bosses and the Hearing also frame an <b>Asset</b> on your wall."; },
@@ -14784,6 +14997,8 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     endround: function () { return "#df-end"; },
     depart: function () { return "#screen-exec #btn-start:not([disabled])"; },
     buyseat: function () { return "#screen-exec #btn-boardroom2[data-can-buy]"; },
+    lounge: function () { return "#screen-boardroom .lt.lt-afford"; },
+    loungesign: function () { return "#screen-boardroom #lg-sign:not([disabled])"; },
     fightclose: function () { return "#df-close"; },
     door: function () { return doorOpen() ? null : ".desk .office .of-door"; },
     reward: function () { return '#door.rw-mode [data-card]:not(.no), #door.rw-mode [data-asset], #rw-keep, #rw-take:not([disabled]), #door.rw-mode [data-isell], #door.rw-mode [data-areplace], #door.rw-mode [data-shred]:not(.no), #door.rw-mode [data-upg]:not(.no)'; },
@@ -14886,6 +15101,7 @@ body:has(#screen-title.on) .shell { padding: 0 !important; width: 100% !importan
     var res = on ? LD.actionable(state, { lensSeen: hlLensSeen() }) : { ids: [], prio: [], dim: [], badges: [] };
     if (screen === "exec" && document.querySelector("#screen-exec #btn-start:not([disabled])")) { res.ids = ["depart"]; res.prio = ["depart"]; }
     else if (screen === "exec" && document.querySelector("#screen-exec #btn-boardroom2[data-can-buy]")) { res.ids = ["buyseat"]; res.prio = ["buyseat"]; }
+    else if (screen === "boardroom") { res.ids = ["lounge", "loungesign"]; res.prio = ["loungesign"]; }
     var want = new Set();
     res.ids.forEach(function (id) { var s = hlSel(id); if (!s) return; Array.prototype.forEach.call(document.querySelectorAll(s), function (n) { want.add(n); }); });
     Array.prototype.forEach.call(document.querySelectorAll(".ld-act"), function (n) { if (!want.has(n)) n.classList.remove("ld-act", "ld-primary", "ld-on-ochre"); });

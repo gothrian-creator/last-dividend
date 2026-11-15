@@ -4730,6 +4730,64 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 @keyframes rcTape { 0% { clip-path: inset(0 0 100% 0); transform: translateY(-30px) rotate(-0.6deg); } 100% { clip-path: inset(0 0 -20px 0); transform: rotate(-0.6deg); } }
 @media (max-width: 520px) { .rc-machine { width: 62%; margin-bottom: -10px; } .rc-fax .rc-machine { width: 48%; margin-bottom: -18px; } }
 @media (orientation: landscape) and (min-width: 1000px) { .rc-machine { width: 230px; } .rc-fax .rc-machine { width: 180px; } }
+
+/* ===== Recap backdrop: painted noir techno-optimism per era x outcome (2026-11-15) =====
+   Flat matte: transforms + stepped opacity only. Documents sit on paper with hard offset shadows. */
+#screen-end .page.rc { background: #1d3a40 !important; }
+.rc-prop { display: none !important; }
+.rc-bd { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; container-type: size; background: #1d3a40; }
+.rc-bdf { position: absolute; left: 50%; transform: translateX(-50%); background: #1d3a40 center / 100% 100% no-repeat; container-type: size; }
+.rc-bdf-p { width: max(100cqw, 56.25cqh); height: max(100cqh, 177.78cqw); top: calc((100cqh - max(100cqh, 177.78cqw)) * var(--bdy, 0)); }
+.rc-bdf-l { width: max(100cqw, 177.78cqh); height: max(100cqh, 56.25cqw); top: calc((100cqh - max(100cqh, 56.25cqw)) * var(--bdy, 0)); display: none; }
+@media (orientation: landscape) { .rc-bdf-p { display: none; } .rc-bdf-l { display: block; } }
+.rc-bd-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14, 28, 36, 0) 0%, rgba(14, 28, 36, 0) 55%, rgba(14, 28, 36, 0.28) 100%); }
+.rc-bdf > span { position: absolute; display: block; }
+/* radio lamps: flat terracotta dots that switch on and off (no glow) */
+.bd-lamp { width: 1.15cqw; height: 1.15cqw; min-width: 5px; min-height: 5px; margin: -0.575cqw 0 0 -0.575cqw; border-radius: 50%; background: #f07a43; box-shadow: 0 0 0 0.22cqw #1d2430; opacity: 0; animation: bdBlink 2.4s steps(1, end) var(--ld, 0s) infinite; }
+.rc-bdf-l .bd-lamp { width: 0.7cqw; height: 0.7cqw; margin: -0.35cqw 0 0 -0.35cqw; box-shadow: 0 0 0 0.15cqw #1d2430; }
+.rc-bdf-l .bd-smoke i { width: 4cqh; height: 4cqh; left: -2cqh; top: -2cqh; }
+.rc-bdf-l .bd-ship { width: 6cqw; }
+@keyframes bdBlink { 0% { opacity: 1; } 45% { opacity: 0; } 100% { opacity: 0; } }
+/* smoke: flat navy-grey puffs rising slowly */
+.bd-smoke { width: 0; height: 0; }
+.bd-smoke i { position: absolute; left: -2.2cqw; top: -2.2cqw; width: 4.4cqw; height: 4.4cqw; border-radius: 50%; background: #4a4e54; opacity: 0; animation: bdPuff 9s linear calc(var(--sd, 0s) + var(--k) * -1.5s) infinite; }
+.bd-smoke.thin i { width: 3cqw; height: 3cqw; left: -1.5cqw; top: -1.5cqw; background: #6d6f6e; }
+@keyframes bdPuff { 0% { opacity: 0; transform: translate(0, 0) scale(0.45); } 15% { opacity: 0.8; } 65% { opacity: 0.6; } 100% { opacity: 0; transform: translate(2.5cqw, -9cqh) scale(1.9); } }
+/* airship: drifts across the sky; on a win, a second ship departs up and away */
+.bd-ship { left: 0; width: 8cqw; min-width: 40px; animation: bdDrift 95s linear -30s infinite; }
+.bd-ship svg { display: block; width: 100%; height: auto; overflow: visible; }
+.bd-ship .hull { fill: #e3cfa0; stroke: #2a2a2c; stroke-width: 2.2; }
+.bd-ship .belly { fill: #b89c68; }
+.bd-ship .fin { fill: #d9c18e; stroke: #2a2a2c; stroke-width: 2.4; stroke-linejoin: round; }
+.bd-ship .seam { fill: none; stroke: #6b5a3c; stroke-width: 1.3; opacity: 0.7; }
+.bd-ship .gon { fill: #3b4046; stroke: #2a2a2c; stroke-width: 1.6; }
+@keyframes bdDrift { from { transform: translateX(-14cqw); } to { transform: translateX(110cqw); } }
+.bd-ship.depart { left: 22%; top: 30%; width: 13cqw; animation: bdDepart 28s cubic-bezier(.35, 0, .6, 1) 0.6s both; }
+.bd-ship.depart svg { transform: scaleX(-1); }
+@keyframes bdDepart { from { transform: translate(0, 0) scale(1); } to { transform: translate(-24cqw, -22cqh) scale(0.3); } }
+/* Today: flat cream cloud banks drifting */
+.bd-cloud { left: -10%; width: 46cqw; animation: bdCloud 38s ease-in-out infinite alternate; }
+.bd-cloud.c1 { left: 58%; width: 38cqw; animation-duration: 47s; animation-direction: alternate-reverse; }
+.bd-cloud svg { display: block; width: 100%; height: auto; }
+.bd-cloud .cl { fill: #efe2c4; } .bd-cloud .cl-ink { stroke: #b9a77f; stroke-width: 2; }
+@keyframes bdCloud { from { transform: translateX(-4cqw); } to { transform: translateX(9cqw); } }
+@media (prefers-reduced-motion: reduce) {
+  .rc-bd *, .rc-bd *::before { animation: none !important; }
+  .bd-lamp { opacity: 1; }
+  .bd-smoke i { opacity: 0.6; transform: translate(calc(var(--k) * 1.2cqw), calc(var(--k) * -5cqh)) scale(calc(0.8 + var(--k) * 0.45)); }
+  .bd-ship:not(.depart) { transform: translateX(62cqw); }
+}
+/* Stage: open window onto the painting, paper documents with hard shadows on top */
+.rc-scroll { padding-top: max(clamp(70px, 20vh, 280px), env(safe-area-inset-top)); }
+.rc-doc { max-width: 620px; gap: 16px; }
+.rc-doc > .rc-beat { filter: drop-shadow(5px 6px 0 rgba(14, 24, 32, 0.55)); }
+.rc-doc::after { content: ""; display: block; height: 24px; flex: none; }
+.rc-foot { background: rgba(16, 30, 38, 0.92) !important; }
+.rc-machine::after { background: none !important; box-shadow: inset 0 0 0 2.5px #1d2430; border-radius: inherit; }
+.rc-machine { box-shadow: 5px 6px 0 rgba(14, 24, 32, 0.55); }
+#screen-end .rc .rc-extra { color: #f2e5c6; background: rgba(16, 30, 38, 0.82); padding: 6px 10px; border-radius: 4px; display: inline-block; }
+@media (max-width: 520px) { .rc-scroll { padding-top: clamp(56px, 16vh, 150px); } .rc-doc { gap: 13px; } }
+@media (orientation: landscape) and (min-width: 1000px) { .rc-scroll { padding-top: 14px; } .rc-doc { max-width: 1120px; } }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -10359,7 +10417,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     html += "</div></div>";
     return html;
   }
-  var END_ART = { win: "end-win" };
+  var END_ART = { win: "endrun/bd-win-today-l", lose: "endrun/bd-lose-1978-l" };
   function renderEnd(state, opts) {
     opts = opts || {};
     var e = state.ending;
@@ -10370,7 +10428,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (!letter) {
       html += '<div class="end-mark ' + e.kind + '">' + (e.kind === "win" ? "Evacuation successful" : "The run is over") + " · " + escapeHtml(LD.ratingName(state.rating)) + "</div>";
       html += "<h2>" + escapeHtml(e.title) + "</h2>";
-      html += '<div class="end-hero ' + e.kind + '"><img src="' + escapeHtml(assetUrl(END_ART[e.kind] || "end-lose")) + '" alt="">';
+      html += '<div class="end-hero ' + e.kind + '"><img src="' + escapeHtml(assetUrl(END_ART[e.kind] || END_ART.lose)) + '" alt="">';
       if (opts.newRating != null) html += '<div class="end-stamp challenge">New challenge unlocked: ' + escapeHtml(LD.ratingName(opts.newRating)) + "<small>Harder rules for " + escapeHtml(exec.name) + "</small></div>";
       html += "</div>";
       html += '<p class="end-body">' + escapeHtml(e.body) + "</p>";
@@ -13044,12 +13102,46 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     return B;
   }
 
+  /* ---------- Painted backdrop (noir techno-optimism), era x outcome, with matte ambient layers ----------
+     Positions are % of the painting; frames are sized like background-size:cover so overlays stay pinned. */
+  var BD = {
+    "lose-1978": { p: { lamps: [[90.8, 3], [88.5, 12.1], [95, 17.3], [87.6, 17.6], [95.9, 23.6], [86.9, 23.8], [96.9, 32.6], [86.7, 32.8]], smoke: [[59, 40], [74, 38.5]], ship: 17 },
+                   l: { lamps: [[85.4, 2.3], [84.3, 13.3], [88, 38.3], [83.4, 38.5]], smoke: [[61, 41.5], [68.3, 37]], ship: 20 } },
+    "lose-2008": { p: { lamps: [], smoke: [[52, 62], [18, 52], [77, 58]], ship: 22 },
+                   l: { lamps: [], smoke: [], ship: 27 } },
+    "lose-today": { p: { lamps: [[87.7, 2.9], [91.5, 17.9], [84.2, 18.1], [92.2, 24.2], [83.5, 24.4], [93.4, 33.3], [82.8, 33.3]], smoke: [[37, 48], [41, 66], [47, 74]], ship: 9 },
+                    l: { lamps: [[75.1, 1.9], [73.5, 22.2], [76.7, 22.1], [73.2, 30.8], [77.1, 30.7]], smoke: [[43, 62], [43, 86]], ship: 12 } },
+    "win-today": { p: { lamps: [[89.9, 14.6], [84.9, 14.8], [90.8, 19.8], [84, 19.9], [91.6, 25.8], [83.3, 26], [92.7, 34.6], [82.4, 34.7]], bdy: 0.75, depart: true },
+                   l: { lamps: [[77.1, 1.7], [78.8, 21], [75.3, 21.2], [79.3, 30.3], [75, 30.5], [79.8, 42.4], [74.5, 42.4]], bdy: 0.6, depart: true } }
+  };
+  var SHIP_SVG = '<svg viewBox="0 0 120 40" aria-hidden="true"><path class="fin" d="M98 20 L116 8 L114 20 L116 32 Z"/><ellipse class="hull" cx="54" cy="20" rx="50" ry="14"/><path class="belly" d="M8 24 Q54 40 100 24 Q90 33 54 34 Q18 33 8 24 Z"/><path class="seam" d="M34 9 Q30 20 34 31 M54 6 V34 M74 9 Q78 20 74 31"/><rect class="gon" x="42" y="32" width="22" height="6" rx="2"/></svg>';
+  var CLOUD_SVG = '<svg viewBox="0 0 160 50" aria-hidden="true"><path class="cl" d="M6 44 Q4 30 20 30 Q22 14 42 18 Q52 4 72 12 Q88 2 102 16 Q122 10 128 26 Q152 24 154 44 Z"/><path class="cl-ink" d="M6 44 H154"/></svg>';
+  function bdKey(d) { return d.kind === "win" ? "win-today" : "lose-" + (d.era === 1 ? "1978" : d.era === 2 ? "2008" : "today"); }
+  function bdFrame(key, o) {
+    var c = BD[key][o], h = '<div class="rc-bdf rc-bdf-' + o + '" style="background-image:url(assets/endrun/bd-' + key + "-" + o + '.webp);--bdy:' + (c.bdy || 0) + '">';
+    (c.smoke || []).forEach(function (s, i) {
+      h += '<span class="bd-smoke' + (c.thin ? " thin" : "") + '" style="left:' + s[0] + "%;top:" + s[1] + "%;--sd:" + (i * -2.3) + 's">';
+      for (var k = 0; k < 6; k++) h += '<i style="--k:' + k + '"></i>';
+      h += "</span>";
+    });
+    if (c.clouds) c.clouds.forEach(function (y, i) { h += '<span class="bd-cloud c' + i + '" style="top:' + y + '%">' + CLOUD_SVG + "</span>"; });
+    (c.lamps || []).forEach(function (l, i) { h += '<span class="bd-lamp" style="left:' + l[0] + "%;top:" + l[1] + "%;--ld:" + ((i % 3) * 0.8 + (i > 2 ? 0.4 : 0)).toFixed(1) + 's"></span>'; });
+    if (c.ship) h += '<span class="bd-ship" style="top:' + c.ship + '%">' + SHIP_SVG + "</span>";
+    if (c.depart) h += '<span class="bd-ship depart">' + SHIP_SVG + "</span>";
+    return h + "</div>";
+  }
+  function backdrop(d) {
+    var key = bdKey(d);
+    return '<div class="rc-bd rc-bd-' + key + '" aria-hidden="true">' + bdFrame(key, "p") + bdFrame(key, "l") + '<div class="rc-bd-scrim"></div></div>';
+  }
+  LD.recapBackdropKey = bdKey;
+
   /* ---------- Render ---------- */
   function renderRecap(d, tpl, opts) {
     opts = opts || {};
     var B = tpl.skin === "wire" ? wireBeats(d, tpl) : passportBeats(d, tpl);
     var h = '<div class="page rc ' + tpl.cls + " rc-sk-" + tpl.skin + " rc-era" + tpl.era + " rc-" + d.kind + (opts.final ? " final tix" : "") + '" id="rc" data-tpl="' + tpl.id + '" data-exec="' + esc(d.execId) + '">';
-    if (tpl.prop) h += '<div class="rc-prop" aria-hidden="true"><img src="' + esc(tpl.prop) + '" alt="" draggable="false"></div>';
+    h += backdrop(d);
     h += '<div class="rc-scroll" id="rc-scroll"><div class="rc-doc">';
     BEATS.forEach(function (b, i) {
       if (b === "next") return;

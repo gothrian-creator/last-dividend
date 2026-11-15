@@ -1,4 +1,6 @@
 Playfair Display, Zilla Slab, and Source Sans Pro are licensed under the SIL Open Font License 1.1.
+End-of-run recap fonts in assets/fonts (Big Shoulders Display, Courier Prime, Archivo Narrow,
+Share Tech Mono, DM Sans, DM Mono) are from Google Fonts and licensed under the SIL Open Font License 1.1.
 These files are subsets for the Last Dividend prototype and may be redistributed under that license.
 
 The full license text is in OFL-1.1.txt.

@@ -7,6 +7,9 @@
     "hedge chaser short offsets geo consult buyback loyalty toobig overtime penthouse surge influencer brine privgrid disfut futures rolodex chief soundproof holo " +
     "doorman prblitz gala hotline contract rush cloud security liquidity hush pod c_class c_subpoena c_whistle c_leak c_crack c_stranded " +
     "hollis chip pike ines tamsin bryce dex priya gus lorne margo").split(" ");
+  ICON_ART = ICON_ART.concat("boss-earnings boss-shortseller boss-strike boss-bid boss-crash boss-reckoning boss-heatdome boss-seawall".split(" "),
+    "memo-leak memo-celebrity memo-troll memo-wedding memo-summit memo-union memo-activist memo-space memo-collab memo-taxholiday memo-pension memo-drought memo-headhunter memo-distressed memo-oldfriend".split(" "),
+    "enc-regulator enc-rival enc-protest enc-journalist enc-hearing".split(" "));
   var ICON_SET = {}; ICON_ART.forEach(function (k) { ICON_SET[k] = 1; });
   LD.ICON_ART = ICON_ART; LD.ICON_SET = ICON_SET;
   function IA(o, kind, id) {
@@ -16,6 +19,8 @@
     return '<span class="ia"><img src="assets/icons/' + k + '.webp" alt="" draggable="false" onerror="this.parentNode.className+=\' ia-x\'"><i>' + em + "</i></span>";
   }
   LD.iconArt = IA;
+  /* Encounters that are also bosses share the boss painting */
+  LD.encArt = function (E, id) { if (!E) return ""; return ICON_SET["boss-" + id] ? IA(E, "boss", id) : IA(E, "enc", id); };
   function esc(s) { return LD.escapeHtml(s); }
   function money(n) { return (n < 0 ? "−$" : "$") + Math.abs(n) + "M"; }
   var RCLS = { C: "r-c", U: "r-u", R: "r-r", L: "r-l" };

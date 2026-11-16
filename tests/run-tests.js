@@ -236,6 +236,8 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   const miss = LD.ICON_ART.filter((k) => !fs.existsSync(path.join(ROOT, "assets/icons/" + k + ".webp")));
   const noArt = [].concat(LD.FY_ASSETS, LD.ITEMS, LD.FIXERS, LD.CARDS.filter((c) => c.t === "Curse")).filter((x) => !LD.ICON_SET[x.id]).map((x) => x.id);
   ok(!miss.length && !noArt.length, "painted icons for every Asset, item, fixer and curse (" + LD.ICON_ART.length + "): " + miss.concat(noArt).slice(0, 6).join(", "));
+  const b2 = Object.keys(LD.BOSSES).filter((k) => !LD.ICON_SET["boss-" + k]).concat((LD.MEMOS || []).filter((m) => !LD.ICON_SET["memo-" + m.id]).map((m) => m.id), Object.keys(LD.ENCOUNTERS).filter((k) => !/class="ia"/.test(LD.encArt(LD.ENCOUNTERS[k], k))));
+  ok(!b2.length, "painted icons for every boss, memo and encounter: " + b2.join(", "));
   ok(/class="ia"/.test(LD.iconArt(LD.FY_ASSETS[0])) && LD.iconArt({ id: "nope", icon: "X" }) === "X", "icon helper paints known ids and falls back to the emoji");
   ok(!ob.length, "opponents complete: " + (ob.slice(0, 6).join("; ") || "all 30"));
   ok(Object.keys(LD.OPPONENTS).length >= 30, "30 faces at the door (got " + Object.keys(LD.OPPONENTS).length + ")");

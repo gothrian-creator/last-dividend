@@ -1487,7 +1487,7 @@
     var b = document.createElement("div");
     b.className = "boss-banner b-" + info.id;
     b.setAttribute("role", "status");
-    b.innerHTML = '<div class="bb-in"><span class="bb-ico" aria-hidden="true">' + info.icon + '</span><div><small>Boss quarter · Q' + info.q + (info.fight ? " · knocks when you sign" : "") + "</small><b>" + LD.escapeHtml(info.name) + "</b><em>" + LD.escapeHtml(info.demand) + "</em></div></div>";
+    b.innerHTML = '<div class="bb-in"><span class="bb-ico" aria-hidden="true">' + LD.iconArt(info, "boss") + '</span><div><small>Boss quarter · Q' + info.q + (info.fight ? " · knocks when you sign" : "") + "</small><b>" + LD.escapeHtml(info.name) + "</b><em>" + LD.escapeHtml(info.demand) + "</em></div></div>";
     document.body.appendChild(b);
     SFX.play("boss");
     var sl = document.querySelector(".desk .board-slab"); if (sl) { sl.classList.remove("boss-shake"); void sl.offsetWidth; sl.classList.add("boss-shake"); }

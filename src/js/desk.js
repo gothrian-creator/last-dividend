@@ -482,7 +482,7 @@
       if (q === breach) marks.push('<em class="rm breach">Breach ~</em>');
       var bq = LD.bossInfo && (i < cols - 1 || q === state.turn + cols - 1) ? LD.bossInfo(state, q) : null;
       if (!bq && i === cols - 1 && LD.nextBossQ) { var nb = LD.nextBossQ(state); if (nb && nb > q) bq = LD.bossInfo(state, nb); }
-      if (bq) marks.push('<button class="rm boss" data-boss-q="' + bq.q + '">' + bq.icon + " " + esc(bq.name.replace(/^The /, "")) + (bq.q !== q ? " Q" + bq.q : "") + "</button>");
+      if (bq) marks.push('<button class="rm boss" data-boss-q="' + bq.q + '">' + LD.iconArt(bq, "boss") + " " + esc(bq.name.replace(/^The /, "")) + (bq.q !== q ? " Q" + bq.q : "") + "</button>");
       var rv = (state.rivals || []).filter(function (r) { return !r.sealed && r.sealTurn === q; });
       rv.forEach(function (r) { marks.push('<em class="rm rival">' + esc(r.firm.split(" ")[0]) + " seals?</em>"); });
       h += '<div class="rq' + (i === 0 ? " now" : "") + (bq && bq.q === q ? " boss-q" : "") + '"><div class="rq-h">Q' + q + (i === 0 ? " <small>at close</small>" : i === cols - 1 ? "+" : "") + "</div>" + marks.join("");
@@ -540,7 +540,7 @@
     h += '<main class="board">' + lensBar(ui) + networkStrip(state, ui);
     h += '<div class="board-tilt"><div class="board-slab"><div class="map-zoom" id="map-zoom">' + renderMap(state, ui) + "</div></div>" + (ui.globe ? '<div class="pedestal" aria-hidden="true"><i></i><i></i><i></i></div>' : "") + "</div>";
     var bossNow = LD.bossInfo ? LD.bossInfo(state, state.turn) : null;
-    h += '<div class="phase-pill' + (bossNow && !ui.hidePins ? " boss" : "") + '">' + (bossNow && !ui.hidePins ? bossNow.icon + " Boss quarter · " + bossNow.name + " · " : "") + (ui.hidePins ? "The world reacts…" : dealPhase ? "Pick 1 of " + state.offered.length + " deals on the map" : (state.bunkerActedThisTurn ? "Ready to end the quarter" : "Deal signed · upgrade the bunker or end the quarter")) + "</div>";
+    h += '<div class="phase-pill' + (bossNow && !ui.hidePins ? " boss" : "") + '">' + (bossNow && !ui.hidePins ? LD.iconArt(bossNow, "boss") + " Boss quarter · " + bossNow.name + " · " : "") + (ui.hidePins ? "The world reacts…" : dealPhase ? "Pick 1 of " + state.offered.length + " deals on the map" : (state.bunkerActedThisTurn ? "Ready to end the quarter" : "Deal signed · upgrade the bunker or end the quarter")) + "</div>";
     h += '<div id="rail-wrap">' + renderRail(state, ui.selDeal, null) + "</div>";
     if (ui.coach === "pin" && ui.coachText) h += '<div class="coach-bubble c-pin">' + esc(ui.coachText) + "</div>";
     if (dealPhase && !ui.hidePins) {
@@ -667,7 +667,7 @@
     h += '<p class="dz-body">' + esc(d.body) + "</p>";
     if (state.fy && state.fy.deck && LD.encounterFor) {
       var en = LD.encounterFor(state, dealId), EN = LD.ENCOUNTERS[en];
-      if (EN) h += '<div class="dz-enc"><span class="ic" aria-hidden="true">' + EN.icon + "</span><span>Signing brings <b>" + esc(EN.name) + "</b> to your door · win: " + esc(EN.win) + "</span></div>";
+      if (EN) h += '<div class="dz-enc"><span class="ic" aria-hidden="true">' + LD.encArt(EN, en) + "</span><span>Signing brings <b>" + esc(EN.name) + "</b> to your door · win: " + esc(EN.win) + "</span></div>";
     }
     if (d.choices) {
       h += '<div class="dz-choices">';

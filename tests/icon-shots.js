@@ -17,6 +17,9 @@ const SCENES = [
   ["b1-desk", { seed: "eras-11", exec: "mara", style: "bribe", stop: "deal:9", build: true, takeCards: true }, "desk"],
   ["b1-briefcase", { seed: "eras-11", exec: "mara", style: "bribe", stop: "deal:9", build: true, takeCards: true }, "portfolio"],
   ["b1-fight-curse", { seed: "eras-11", exec: "mara", style: "bribe", stop: "fight:ashby_b", build: true, takeCards: true, curse: true }, "fight"],
+  ["b2-boss", { seed: "eras-11", exec: "mara", style: "bribe", stop: "deal:4", build: true, takeCards: true }, "boss"],
+  ["b2-memo", { seed: "eras-11", exec: "mara", style: "bribe", stop: "deal:9", build: true, takeCards: true, memo: "union" }, "memo"],
+  ["b2-deal-encounter", { seed: "eras-11", exec: "mara", style: "bribe", stop: "deal:9", build: true, takeCards: true }, "deal"],
   ["b1-deck-fixers", { seed: "eras-11", exec: "mara", style: "bribe", stop: "fight:ashby_b", build: true, takeCards: true, curse: true }, "fight-deck"]
 ];
 (async () => {
@@ -56,6 +59,7 @@ const SCENES = [
         const eraDrive = new Function("module", DRIVER + "; return eraDrive;")(undefined);
         const st = eraDrive(window.LD, opts);
         if (!st) return false;
+        if (opts.memo) st.fy.memo = { id: opts.memo, q: st.turn };
         if (opts.curse && st.fy.fight) { st.fy.deck.push({ u: 900, id: "c_leak", up: 0, fx: null }); st.fy.fight.hand.push(900); }
         localStorage.setItem("lastDividend.v1", JSON.stringify({ penny: { offered: true, done: true, tipsOff: true, tips: {} }, audioOff: true, seenTutorial: true, coachDone: true, midRun: st }));
         return st.turn + " " + (st.fy.fight ? st.fy.fight.opp : "desk");
@@ -63,7 +67,7 @@ const SCENES = [
       if (!ok) { errors.push("no state for " + name); continue; }
       await page.goto(origin, { waitUntil: "networkidle0" });
       await click("#btn-continue"); await sleep(700);
-      if (await page.$("#fy-boss-ok")) { await click("#fy-boss-ok"); await sleep(400); }
+      if (mode !== "boss" && mode !== "memo" && await page.$("#fy-boss-ok")) { await click("#fy-boss-ok"); await sleep(400); }
       await page.evaluate(() => { const p = document.getElementById("penny"); if (p) p.hidden = true; });
       if (mode.startsWith("fight")) {
         await page.waitForFunction(() => { const d = document.getElementById("door"); return d && !d.hidden && d.classList.contains("on"); }, { timeout: 15000 });
@@ -73,6 +77,10 @@ const SCENES = [
         if (mode === "fight-deck") { await click("#df-deck"); await sleep(600); await imagesReady(); }
       } else if (mode === "bunker") {
         await page.waitForSelector("#screen-desk.on"); await click("#bunker-card"); await sleep(900); await imagesReady();
+      } else if (mode === "boss" || mode === "memo") {
+        await sleep(800); await imagesReady();
+      } else if (mode === "deal") {
+        await page.waitForSelector("#screen-desk.on"); await sleep(500); await click("[data-deal]"); await sleep(700); await imagesReady();
       } else if (mode === "portfolio") {
         await page.waitForSelector("#screen-desk.on"); await sleep(500); await click("#btn-portfolio"); await sleep(700); await imagesReady();
       } else { await page.waitForSelector("#screen-desk.on"); await sleep(600); await imagesReady(); }

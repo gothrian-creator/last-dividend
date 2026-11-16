@@ -4946,7 +4946,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .of-room.ofx-visit .of-doorsvg .dleaf { transform-box: fill-box; transform-origin: 0 50%; }
 .of-room.ofx-visit.ofx-go .of-doorsvg .dleaf { animation: ofxDoor 2.2s cubic-bezier(0.3, 0.1, 0.2, 1) both; }
 .of-room.ofx-visit.ofx-go .of-doorsvg .dframe { animation: ofxHall 2.2s linear both; }
-.of-room.ofx-visit.ofx-go .of-door .of-knock { animation: ofxKnock 0.9s steps(4) both; }
+.of-room.ofx-visit.ofx-go .of-door .of-knock { animation: ofxKnock 1.05s steps(5) both; }
 @keyframes ofxDoor { 0%, 20% { transform: scaleX(1); } 40%, 100% { transform: scaleX(0.14); } }
 @keyframes ofxHall { 0%, 22% { fill: #2a1a0c; } 30%, 100% { fill: #f3e6c8; } }
 @keyframes ofxKnock { 0% { opacity: 1; transform: translateX(-50%) rotate(-4deg); } 50% { opacity: 1; transform: translateX(-54%) rotate(3deg) scale(1.08); } 85% { opacity: 1; } 100% { opacity: 0; } }
@@ -4999,6 +4999,23 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .of-room.ofx-away .of-exec .of-mood { opacity: 0; }
 .of-room.ofx .meter { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
 @media (max-width: 520px) { .ofx-dest { font-size: 9.5px; padding: 1px 4px; } .ofx-tag { font-size: 9.5px; padding: 1px 4px; } .ofx-back b { font-size: 6.5px; } }
+/* Recap: inner-scroll cue (landscape dossiers run ~200-350px taller than the screen) */
+.rc-more { position: absolute; z-index: 3; left: 50%; transform: translate(-50%, 8px); padding: 5px 12px 6px; border: 2px solid var(--jy-ink); border-radius: 999px; background: var(--jy-paper); background-image: var(--jy-grain); color: var(--jy-ink); box-shadow: 2px 3px 0 rgba(20, 32, 33, 0.55); font: 800 12px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
+.rc-more i { font-style: normal; display: inline-block; animation: rcMoreBob 1.4s ease-in-out infinite; }
+.rc.tix.rc-has-more .rc-more { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+@keyframes rcMoreBob { 50% { transform: translateY(2px); } }
+@media (prefers-reduced-motion: reduce) { .rc-more i { animation: none; } }
+/* Lounge ship fixes: long tag names fit, the hand keeps off the Sign text, no dead band under the rack in portrait */
+.lt-tag b { letter-spacing: -0.01em; }
+.lt-tag b.l { font-size: clamp(9.5px, calc(var(--cw) * 0.112), 13px); letter-spacing: -0.02em; }
+.lt-tag b.xl { font-size: clamp(9px, calc(var(--cw) * 0.1), 12px); letter-spacing: -0.03em; }
+#screen-boardroom .lg-sign.ld-act { padding-right: 58px; }
+@media (orientation: portrait), (max-width: 859px) {
+  .lg-inner { grid-template-rows: minmax(var(--plate-h), 1fr) minmax(0, auto) auto auto auto; }
+  .lg-plate { height: auto; min-height: var(--plate-h); }
+}
+@media (max-width: 560px) { #screen-boardroom .lg-sign.ld-act { padding-right: 46px; } #screen-boardroom .lg-sign b { white-space: nowrap; } }
+@media (max-width: 380px) { #screen-boardroom .lg-sign { gap: 6px; padding-left: 8px; } #screen-boardroom .lg-sign.ld-act { padding-right: 54px; } #screen-boardroom .lg-sign b { font-size: 14.5px; letter-spacing: 0.04em; } #screen-boardroom .lg-sign small { font-size: 11.5px; } }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -10560,7 +10577,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var label = o.name + (o.owned ? ", yours" : o.soon ? ", coming soon" : o.earnOnly ? ", earn by finishing a run" : ", " + o.price + " Dividends" + (o.afford ? ", affordable" : ", not enough Dividends"));
     return '<button type="button" class="' + cls + '" data-lt="' + o.key + '" aria-pressed="' + (o.key === sel) + '" aria-label="' + escapeHtml(label) + '">' +
       '<span class="lt-hook" aria-hidden="true"></span>' + lgKeySvg() +
-      '<span class="lt-tag"><i class="lt-eye" aria-hidden="true"></i>' + lgArt(o) + "<b>" + escapeHtml(o.short) + "</b>" + price +
+      '<span class="lt-tag"><i class="lt-eye" aria-hidden="true"></i>' + lgArt(o) + "<b" + (String(o.short || "").length >= 10 ? ' class="xl"' : String(o.short || "").length >= 8 ? ' class="l"' : "") + ">" + escapeHtml(o.short) + "</b>" + price +
       (o.owned ? '<span class="lt-stamp" aria-hidden="true">' + (o.free ? "House" : "Yours") + "</span>" : "") +
       (o.state === "short" || o.state === "earn" ? '<span class="lt-grille" aria-hidden="true"></span>' : "") + "</span></button>";
   }
@@ -13468,10 +13485,24 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     return c;
   };
 
+    /* Scroll cue: when the dossier is taller than the screen (landscape mostly), a small "More" tab nudges the inner scroll. */
+  LD.recapScrollCue = function (root) {
+    var rc = root.querySelector("#rc"), scroller = root.querySelector("#rc-scroll");
+    if (!rc || !scroller || rc.querySelector(".rc-more")) return;
+    (function () {
+      var more = document.createElement("button"); more.type = "button"; more.className = "rc-more"; more.setAttribute("aria-label", "Scroll down"); more.innerHTML = "More <i aria-hidden=\"true\">▾</i>";
+      rc.appendChild(more);
+      function upd() { var foot = rc.querySelector(".rc-foot"); more.style.bottom = ((foot ? foot.offsetHeight : 0) + 10) + "px"; rc.classList.toggle("rc-has-more", scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop > 28); }
+      scroller.addEventListener("scroll", upd, { passive: true }); window.addEventListener("resize", upd);
+      more.addEventListener("click", function (e) { e.stopPropagation(); scroller.scrollBy({ top: Math.round(scroller.clientHeight * 0.7), behavior: "smooth" }); });
+      var n = 0; (function tickUpd() { upd(); if (++n < 40 && document.body.contains(more)) setTimeout(tickUpd, 500); })();
+    })();
+  };
   /* ---------- Player (browser) ---------- */
   LD.playRecap = function (root, d, opts) {
     opts = opts || {};
     var rc = root.querySelector("#rc"), scroller = root.querySelector("#rc-scroll");
+    LD.recapScrollCue(root);
     var beats = Array.prototype.slice.call(root.querySelectorAll(".rc-beat")).sort(function (a, b) { return a.getAttribute("data-beat") - b.getAttribute("data-beat"); });
     var dur = LD.recapDurations(d), cues = LD.recapCues(d), sfx = opts.sfx || function () {};
     var cur = -1, timer = null, gap = null, cueT = [], rafs = [], finished = false;
@@ -14147,7 +14178,17 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       btn.addEventListener("click", function () { tick(); selectedRating = +btn.getAttribute("data-rating"); renderExecSide(); });
     });
     Array.prototype.forEach.call(document.querySelectorAll(".cx-tag"), function (btn) {
-      btn.addEventListener("click", function () { tick(); var id = btn.getAttribute("data-perk-tag"); perkFocus = perkFocus === id ? null : id; renderExecSide(); });
+      btn.addEventListener("click", function () {
+        tick(); var id = btn.getAttribute("data-perk-tag"), m = loadMeta();
+        /* One tap: an owned perk equips (or unequips) straight away, and its tip opens so you see what it does. Locked perks just show the tip. */
+        if (m.owned.indexOf("perk:" + id) !== -1) {
+          var i = m.equipped.indexOf(id);
+          if (i !== -1) m.equipped.splice(i, 1);
+          else { m.equipped.push(id); var slots = LD.perkSlots(m, currentRating(m)); if (m.equipped.length > slots) m.equipped = m.equipped.slice(-slots); }
+          saveMeta(m); perkFocus = id;
+        } else perkFocus = perkFocus === id ? null : id;
+        renderExecSide();
+      });
     });
     var tx = $("cx-tip-x"); if (tx) tx.addEventListener("click", function () { tick(); perkFocus = null; renderExecSide(); });
     bindLoadoutChips($("cx-side"), false);
@@ -15796,6 +15837,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var host = $("screen-end");
     host.classList.add("rc-host");
     host.innerHTML = LD.renderRecap(d, tpl, { final: mode === "final" });
+    if (LD.recapScrollCue) LD.recapScrollCue(host);
     if (info && !info.soundDone && mode === "final") { info.soundDone = true; SFX.play(d.win ? "win" : "lose"); }
     var fontsReady = LD.recapLoadFonts(tpl);
     bindEndButtons();

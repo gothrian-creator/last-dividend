@@ -82,7 +82,7 @@
     { id: "audit", icon: "🔍", name: "Building Audit", text: "Bunker works +15% for the rest of this act" },
     { id: "whistle", icon: "📯", name: "Whistleblower", text: "Your next deal's delayed fallout ×1.5" },
     { id: "stranded", icon: "🪨", name: "Stranded Asset", text: "Takes a Portfolio slot. Worth nothing." },
-    { id: "mole", icon: "🐀", name: "Rival Mole", text: "Your next boss is 15% harder. Leaves after that boss." },
+    { id: "mole", icon: "🐀", name: "The Mole", text: "Your next boss is 15% harder. Leaves after that boss." },
     { id: "toxic", icon: "☣️", name: "Toxic Brand", text: "Soothe deals calm 3 less for the rest of this act" }
   ];
   var BY_ID = {};
@@ -228,7 +228,7 @@
   };
   function seedBosses(seed) {
     var h = LD.hashString("bosses:" + seed);
-    return { bossI: ["earnings", "earnings", "shortseller"][h % 3], bossII: ["strike", "bid", "crash"][Math.floor(h / 3) % 3], bossIII: ["reckoning", "heatdome", "seawall"][Math.floor(h / 9) % 3] };
+    return { bossI: ["earnings", "earnings", "shortseller"][h % 3], bossII: ["strike", "crash"][Math.floor(h / 3) % 2], bossIII: ["reckoning", "heatdome", "seawall"][Math.floor(h / 9) % 3] };
   }
 
   /* ---------- Credit rating rules (cumulative) ---------- */
@@ -285,7 +285,7 @@
       info.demand = "Hit the number: pay a $" + info.ask + "M special dividend.";
       info.beat = "Pay $" + info.ask + "M"; info.miss = "Guidance cut: unrest +" + info.missUnrest + ", collapse +4"; }
     if (id === "bid") { info.ask = Math.round(24 * k); info.choice = true;
-      info.demand = "A rival wants your best room. Pay $" + info.ask + "M greenmail to keep it.";
+      info.demand = "A corporate raider wants your best room. Pay $" + info.ask + "M greenmail to keep it.";
       info.beat = "Pay $" + info.ask + "M greenmail"; info.miss = "They strip one level off your best bunker room"; }
     if (id === "strike") { info.low = Math.round(8 * k); info.high = Math.round(18 * k); info.line = 60;
       info.demand = "The street walks out: unrest +" + info.low + " (+" + info.high + " if you are at 40+). End the quarter below " + info.line + " to break it.";
@@ -438,7 +438,7 @@
     var rules = rulesFor(state.rating);
     state.fy = {
       v: 1, act: actOf(state.turn), level: 1, hand: [], bosses: 0, bossLog: [], rules: rules, baseMods: clone(state.mods || LD.DEFAULT_MODS),
-      bossII: (LD.hashString("boss2:" + state.seed) % 2) ? "strike" : "bid",
+      bossII: (LD.hashString("boss2:" + state.seed) % 2) ? "strike" : "crash",
       draft: null, used: {}, drafts: 0, skips: 0, rerolls: 0, rerolled: 0, cap: LD.FY.CAP, skipCash: LD.FY.SKIP_CASH, lastBoss: null
     };
     rebuildMods(state);
@@ -662,7 +662,7 @@
   /* ---------- Board Memos: one two-way choice per act, between deals ---------- */
   LD.MEMOS = [
     { id: "leak", icon: "📨", title: "Leaked Memo", body: "Someone forwarded the 'acceptable losses' spreadsheet to a journalist.",
-      a: { label: "Bury it", text: "−$8M" }, b: { label: "Leak a rival's memo", text: "+$6M from the short, unrest +6" } },
+      a: { label: "Bury it", text: "−$8M" }, b: { label: "Sell it to a short-seller", text: "+$6M from the short, unrest +6" } },
     { id: "celebrity", icon: "🌟", title: "Celebrity Visit", body: "A beloved actor wants a tour of the 'resilience campus'.",
       a: { label: "Photo op", text: "−$6M, unrest −6" }, b: { label: "Decline", text: "Nothing happens" } },
     { id: "troll", icon: "🧌", title: "Patent Troll", body: "A shell company claims to own the idea of a door.",
@@ -688,7 +688,7 @@
       a: { label: "Write the plan", text: "+$9M, collapse +3" }, b: { label: "Fund the reservoirs", text: "−$9M, collapse −4" } },
     { id: "headhunter", icon: "📇", title: "The Headhunter", body: "Two fixers are between engagements. Each brings their own cards, and a retainer.", hire: true, call: true,
       a: { label: "Hire the first", text: "" }, b: { label: "Hire the second", text: "" }, c: { label: "Not now", text: "Nothing happens" } },
-    { id: "distressed", icon: "🏚️", title: "Distressed Sale", body: "A rival is liquidating. One framed Asset, priced to move.", call: true,
+    { id: "distressed", icon: "🏚️", title: "Distressed Sale", body: "A bankrupt firm is liquidating. One framed Asset, priced to move.", call: true,
       a: { label: "Buy it", text: "−$10M, it goes on your wall" }, b: { label: "Pass", text: "Nothing happens" } },
     { id: "oldfriend", icon: "🕵️", title: "An Old Friend at the Agency", body: "Someone you went to school with has a favour to offer. Favours talk.", call: true,
       a: { label: "Take the favour", text: "A free card, and a Leak curse" }, b: { label: "Hang up", text: "Nothing happens" } }
@@ -938,7 +938,7 @@
     { id: "carveout", t: "Lobbyist", r: "C", icon: "✂️", name: "Carve-out", cost: 1, p: 5, win: "carve", up: { p: 7 } },
     { id: "campaign", t: "Lobbyist", r: "C", icon: "🎟️", name: "Campaign Contribution", cost: 0, cash: 2, p: 8, up: { p: 11 } },
     { id: "zoning", t: "Lobbyist", r: "U", icon: "🗺️", name: "Zoning Variance", cost: 1, p: 6, win: "zoning", up: { p: 8 } },
-    { id: "stall", t: "Lobbyist", r: "U", icon: "⏸️", name: "Stall the Rival", cost: 2, sp: "cancel", win: "stall", up: { cost: 1 } },
+    { id: "stall", t: "Lobbyist", r: "U", icon: "⏸️", name: "Stall for Time", cost: 2, sp: "cancel", up: { cost: 1 } },
     { id: "whisper", t: "Lobbyist", r: "U", icon: "🤫", name: "Guidance Whisper", cost: 1, sp: "whisper", up: { cost: 0 } },
     { id: "fasttrack", t: "Lobbyist", r: "U", icon: "📝", name: "Fast-Track Permit", cost: 1, p: 4, win: "permit", up: { p: 6 } },
     { id: "revolving", t: "Lobbyist", r: "R", icon: "🚪", name: "Revolving Door", cost: 2, sp: "cut40", ex: true, expose: 30, up: { cost: 1 } },
@@ -1137,7 +1137,7 @@
     crackroom: function () { return "Unplayable. At the Reckoning, each Crack takes a level off a Discount room."; },
     noshred: function () { return "Unplayable. Only Settle Quietly removes it."; }
   };
-  var WIN_TEXT = { carve: "Win: a Squeeze deal pays +$3M.", zoning: "Win: the deal's region loses 1 stress.", stall: "Win against a Rival Bid: their seal slips 1 quarter.",
+  var WIN_TEXT = { carve: "Win: a Squeeze deal pays +$3M.", zoning: "Win: the deal's region loses 1 stress.",
     permit: "Win: your next bunker work this quarter −$4M.", bury: "Win: the deal's delayed fallout −25%.", photo: "Win: city −8, a block lights back up.", cool: "Win: collapse −1." };
   LD.cardText = function (id, up) {
     var o = cv(id, up); if (!o) return "";
@@ -1265,7 +1265,7 @@
   /* ---------- Encounters ---------- */
   LD.ENCOUNTERS = {
     regulator: { name: "The Regulator", sub: "On loan from industry", icon: "🕴️", pattern: ["fine", "audit"], win: "Deal pays +10%" },
-    rival: { name: "Rival Bid", sub: "Their banker, smiling", icon: "🦈", pattern: ["undercut", "outbid"], win: "A rival's seal slips 1 quarter" },
+    rival: { name: "The Holdout", sub: "The owner won't sell", icon: "🦈", pattern: ["undercut", "outbid"], win: "+$3M" },
     protest: { name: "The Protest", sub: "They brought a drum", icon: "✊", pattern: ["chant", "swell"], win: "Unrest −3" },
     journalist: { name: "The Journalist", sub: "Has your old emails", icon: "🎙️", pattern: ["question", "expose"], win: "Upgrade a card" },
     hearing: { name: "Senate Hearing", sub: "Elite · you are under oath", icon: "🏛️", elite: true, pattern: ["contempt", "oath", "contempt", "contempt"], win: "An Asset for the wall, Heat reset" },
@@ -1304,7 +1304,9 @@
     if (f.hearing) return "hearing";
     if (LD.dunnHearingDue && LD.dunnHearingDue(state)) return "hearing";
     /* Today, a fixer who has run warm all game gets you called to the Senate once, even short of Heat 3. */
-    if (actOf(state.turn) === 3 && state.turn >= 10 && !(f.met && f.met.brennan) && f.fixers.some(function (r) { return r.heat >= 2; })) return "hearing";
+    if (actOf(state.turn) === 3 && state.turn >= 10 && !(f.met && f.met.brennan) && f.fixers.some(function (r) { return r.heat >= (state.turn >= 11 ? 1 : 2); })) return "hearing";
+    /* the select committee that writes in Act III is the Senate: Brennan holds the hearing (once) */
+    if (actOf(state.turn) === 3 && deal && (deal.id === "crisis-inquiry" || deal.id === "settle-action") && !(f.met && f.met.brennan)) return "hearing";
     var kind = LD.dealKind ? LD.dealKind(deal) : "neutral";
     if (LD.doorLevel(state) >= 3) return "protest";
     if (kind === "claim") return "rival";
@@ -1464,7 +1466,7 @@
     };
     if (enc !== "protest" && LD.doorLevel(state) >= 3 && !E.boss && !E.elite) fg.pattern = LD.ENCOUNTERS.protest.pattern.slice();
     /* Who is at the door: the act's cast (eras.js). The base encounter keeps the balance; the face brings the moves and the lines. */
-    var opp = LD.pickOpponent ? LD.pickOpponent(state, enc, fg.kind, r) : null, O = opp && LD.oppById(opp);
+    var opp = LD.pickOpponent ? LD.pickOpponent(state, enc, fg.kind, r, deal) : null, O = opp && LD.oppById(opp);
     if (O) {
       fg.opp = opp; fg.encName = E.name; fg.name = O.who; fg.sub = O.role + " \u00b7 " + E.name; fg.pattern = O.pattern.slice();
       if (O.venue) fg.venue = O.venue;
@@ -1714,8 +1716,7 @@
     var reg = fg.region && state.world && state.world.regions ? state.world.regions[fg.region] : null;
     if (win) {
       if (fg.enc === "regulator") { var b = Math.max(2, Math.round(Math.max(0, fg.dealCash) * 0.1)); state.cash += b; notes.push("deal pays +$" + b + "M"); }
-      if (fg.enc === "rival") { var rv = (state.rivals || []).filter(function (x) { return !x.sealed; }).sort(function (a, b2) { return a.sealTurn - b2.sealTurn; })[0];
-        if (rv) { rv.sealTurn += 1; notes.push(rv.firm + "'s seal slips to Q" + rv.sealTurn); } else { state.cash += 3; notes.push("+$3M"); } }
+      if (fg.enc === "rival") { state.cash += 3; notes.push("+$3M"); }
       if (fg.enc === "protest") { state.unrest = clamp(state.unrest - 3, 0, LD.MAX_UNREST); notes.push("unrest −3"); }
       if (fg.enc === "journalist") { f.upTokens = (f.upTokens || 0) + 1; notes.push("a card upgrade"); }
       if (fg.elite) { var hf = f.fixers.filter(function (x) { return x.id === fg.hearing; })[0]; if (hf) hf.heat = 0; f.hearing = null; f.assetNext = true; notes.push("an Asset for the wall, Heat reset"); }
@@ -1723,7 +1724,6 @@
       fg.wins.forEach(function (w) {
         if (w === "carve" && fg.kind === "squeeze") { state.cash += 3; notes.push("Carve-out +$3M"); }
         if (w === "zoning" && reg) { reg.stress = Math.max(0, reg.stress - 1); notes.push("Zoning: stress −1"); }
-        if (w === "stall" && fg.enc === "rival") { var rv2 = (state.rivals || []).filter(function (x) { return !x.sealed; })[0]; if (rv2) { rv2.sealTurn += 1; notes.push("Stalled: " + rv2.firm + " slips again"); } }
         if (w === "permit") { f.permitQ = t; notes.push("next bunker work −$4M"); }
         if (w === "bury") { var cut = 0; state.pending.forEach(function (p) { if (!p.install && p.source === fg.dealTitle && p.due > t) { var u0 = p.unrest || 0, c0 = p.collapse || 0; p.unrest = Math.round(u0 * 0.75); p.collapse = Math.round(c0 * 0.75); cut += u0 - p.unrest + c0 - p.collapse; } }); notes.push("fallout −" + cut); }
         if (w === "photo") { cityAdd(state, -8); notes.push("city −8"); }
@@ -1747,7 +1747,7 @@
     f.outcomes = f.outcomes || {}; f.outcomes[out.out] = (f.outcomes[out.out] || 0) + 1;
     if (fg.opp && how) {
       fg.done.how = how;
-      f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, out: out.out, q: t, act: actOf(t), who: fg.name };
+      f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, out: out.out, q: t, act: actOf(t), who: fg.name, dealId: fg.dealId || null };
       if ((fg.opp === "june" || fg.opp === "pops") && how === "crushed" && f.bossII !== "strike" && t < 8) { f.bossII = "strike"; f.strikeSwap = t; notes.push(LD.oppFate && LD.oppFate(state, "june") && LD.oppFate(state, "june").how === "crushed" ? "June Park will lead a general strike at Q8" : "The picket line remembers Pops: a general strike at Q8"); }
     }
     f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite, opp: fg.opp || null, how: how, out: out.out };

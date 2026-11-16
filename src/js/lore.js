@@ -13,7 +13,7 @@
     mara: { good: { id: "boundaries", name: "Boundaries", text: "Your first Legal card each fight gives +2 Deniability." }, bad: { id: "withholding", name: "Withholding", text: "The Gallery never warms past +2 for you." } },
     reid: { good: { id: "duty", name: "Duty", text: "Cards played in round 1 give +1 Deniability." }, bad: { id: "stonewalling", name: "Stonewalling", text: "Crowds start a notch against you (lobby and protest fights)." } },
     imani: { good: { id: "patience", name: "Patience", text: "1 unspent ◆ carries into the next round." }, bad: { id: "smothering", name: "Smothering", text: "Debt cards tilt the Gallery one further against you." } },
-    julian: { good: { id: "humour", name: "Humour", text: "The first hit that gets through each fight is 2 smaller." }, bad: { id: "envy", name: "Envy", text: "Rivals hit you 1 harder." } },
+    julian: { good: { id: "humour", name: "Humour", text: "The first hit that gets through each fight is 2 smaller." }, bad: { id: "envy", name: "Envy", text: "Holdouts who won't sell hit you 1 harder." } },
     soren: { good: { id: "passion", name: "Passion", text: "Shame and Rumour cards give +1 Pressure." }, bad: { id: "vanity", name: "Vanity", text: "When a card is exposed, the Gallery tilts one further against you." } },
     cassius: { good: { id: "equanimity", name: "Equanimity", text: "Hits that get through never tilt the Gallery." }, bad: { id: "coldcontrol", name: "Cold Control", text: "The Gallery never warms past +1 for you." } }
   };
@@ -262,7 +262,7 @@
       open: "Your numbers don't add up. They multiply.",
       hit: ["That's not guidance.", "Mm. I'll revise.", "Interesting colour."], block: ["The consensus disagrees.", "Model says no."],
       react: { money: "Is this a research fee? I'll need to disclose that.", public: "Narrative's not a number.", law: "Sue an analyst? Bold. Stupid, but bold." },
-      end: { bought: "Upgraded to 'hold'. Don't make me regret it.", broken: "They pulled my coverage. Of everything.", exposed: "Fine, my fund holds your rival. Disclosed. In font size four.",
+      end: { bought: "Upgraded to 'hold'. Don't make me regret it.", broken: "They pulled my coverage. Of everything.", exposed: "Fine, my fund is short your stock. Disclosed. In font size four.",
         ignored: "Nobody asked a question on the call. Not one.", martyred: "Get me fired. The tape keeps rolling.", pyrrhic: "Beat the number. Missed the point.",
         deal: "Neutral. With an asterisk.", walked: "Downgrade. Effective now." } },
     brennan: { why: "senate committee hearing, room 214. senator brennan has the cameras, the gavel and your old fixer on the witness list.",

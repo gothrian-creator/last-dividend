@@ -30,7 +30,7 @@
       var pose = out === "martyred" ? "attack" : out === "bought" || out === "converted" || out === "deal" || (!out && how === "paid") ? (o.paid ? "paid" : "idle") : out ? (out === "walked" ? "idle" : "defeated") : how === "crushed" ? "defeated" : "idle";
       var label = out ? LD.OUT_LABEL[out] : LD.HOW_LABEL ? LD.HOW_LABEL[how] : how;
       return { id: id, who: o.who || f.who || id, short: o.short || id.split("_")[0].charAt(0).toUpperCase() + id.split("_")[0].slice(1), role: o.role || "",
-        how: how, out: out, label: label, tone: OUT_TONE[out || how] || "", q: f.q || 0, art: o.art ? "assets/fight/opp-" + o.art + "-" + pose + ".webp" : "", quote: (o.end || {})[out || how] || (o.end || {})[how] || "" };
+        how: how, out: out, label: label, tone: OUT_TONE[out || how] || "", q: f.q || 0, art: o.art ? "assets/fight/opp-" + o.art + "-" + pose + ".webp" : "", quote: (LD.missionText || function (s) { return s; })((o.end || {})[out || how] || (o.end || {})[how] || "", f.dealId || null) };
     }).sort(function (a, b) { return a.q - b.q; });
     var tally = {};
     fights.forEach(function (f) { var k = f.label; tally[k] = (tally[k] || 0) + 1; });

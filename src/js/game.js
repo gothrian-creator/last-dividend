@@ -102,7 +102,6 @@
     /* World map layer uses its own seeded stream, so deal draws are unchanged. */
     if (LD.initWorld) LD.initWorld(state);
     if (LD.applyStartWorldMods) LD.applyStartWorldMods(state);
-    if (LD.initRivals) LD.initRivals(state);
     if (LD.fyInit) LD.fyInit(state, opts);
     pushLog(state, "Q" + state.turn + " opens. " + exec.name + ", " + exec.firm + (LD.ratingName ? " · rated " + LD.ratingName(rating) : "") + ".");
     return state;
@@ -612,7 +611,7 @@
   }
 
   function engineerCost(state) {
-    var c = mods(state).engineerCost + (LD.rivalEngineerTax ? LD.rivalEngineerTax(state) : 0);
+    var c = mods(state).engineerCost;
     var exec = execById(state.executiveId);
     if (exec.perks && exec.perks.engineerExtra) c += exec.perks.engineerExtra;
     if (hasFlag(state, "poachedTalent")) c -= 10;
@@ -980,7 +979,6 @@
     var fired = (LD.fyPreClose ? LD.fyPreClose(state, opts) : []).concat(applyPendingDue(state));
     var worldEvents = LD.spreadCrises ? LD.spreadCrises(state) : [];
     worldEvents = worldEvents.concat(LD.resolveWorldQuarter ? LD.resolveWorldQuarter(state) : []);
-    if (LD.resolveRivals) worldEvents = worldEvents.concat(LD.resolveRivals(state));
     worldEvents.forEach(function (ev) { fired.push({ text: ev.text, source: "map", world: ev }); });
     maybeEnd(state);
     if (state.ended) { trackQuarter(state); return { ok: true, state: state, fired: fired, ended: true, world: worldEvents }; }
@@ -1005,13 +1003,12 @@
     var rng = rngFrom(state);
     offerDeals(state, rng);
     state.rngState = rng.state();
-    var sniped = LD.rivalsSnipe ? LD.rivalsSnipe(state) : null;
     if (LD.worldAfterClose) LD.worldAfterClose(state);
     var arrivals = applyIncomingInstalls(state);
     if (arrivals.length) fired = fired.concat(arrivals);
     pushLog(state, "Q" + state.turn + " opens.");
     var draft = LD.fyAfterClose ? LD.fyAfterClose(state) : null;
-    return { ok: true, state: state, fired: fired, ended: false, tick: tick, world: worldEvents, sniped: sniped, draft: draft };
+    return { ok: true, state: state, fired: fired, ended: false, tick: tick, world: worldEvents, draft: draft };
   }
 
   function attemptEvacuation(state) {

@@ -383,7 +383,6 @@
       h += '<button class="bp-btn q-sound" id="btn-engineer"' + (locked || acted || !LD.canHireEngineer(state) ? " disabled" : "") + "><b>Hire · " + money(ec) + "</b><span>uses this quarter's bunker order</span></button>";
       if (locked) h += '<p class="bp-note">Sign a deal on the map first.</p>';
       else if (LD.engineerBlocked(state)) h += '<p class="bp-note">' + esc(LD.engineerBlocked(state)) + "</p>";
-      if (LD.rivalEngineerTax(state)) h += '<p class="bp-note">Rivals poached the market: +' + money(LD.rivalEngineerTax(state)) + ".</p>";
       return h;
     }
     if (spot === "private") {

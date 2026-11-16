@@ -7,7 +7,7 @@ const vm = require("vm");
 const ROOT = path.resolve(__dirname, "..");
 const JS_NAMES = [
   "viewport.js", "rng.js", "data.js", "game.js", "world.js", "meta.js",
-  "rivals.js", "fy.js", "eras.js", "lore.js", "worldmap-data.js", "assets.js", "render.js",
+  "rivals.js", "fy.js", "eras.js", "lore.js", "missions.js", "worldmap-data.js", "assets.js", "render.js",
   "desk.js", "bunker.js", "fy-render.js", "recap.js"
 ];
 
@@ -239,6 +239,20 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   const b2 = Object.keys(LD.BOSSES).filter((k) => !LD.ICON_SET["boss-" + k]).concat((LD.MEMOS || []).filter((m) => !LD.ICON_SET["memo-" + m.id]).map((m) => m.id), Object.keys(LD.ENCOUNTERS).filter((k) => !/class="ia"/.test(LD.encArt(LD.ENCOUNTERS[k], k))));
   ok(!b2.length, "painted icons for every boss, memo and encounter: " + b2.join(", "));
   {
+    /* Coherence: every deal has a plausible face in every act; every face's text fills cleanly against every mission it can get */
+    const acts = [1, 2, 3], gaps = [], holes = [];
+    LD.DEALS.forEach((d) => { if (!LD.MISSIONS[d.id]) holes.push("no mission " + d.id); acts.forEach((a) => { const fit = Object.keys(LD.OPPONENTS).filter((id) => { const o = LD.OPPONENTS[id]; return o.act === a && !o.boss && o.base !== "hearing" && LD.oppFits(id, d.id); }); if (!fit.length) gaps.push(d.id + "@" + a); }); });
+    Object.keys(LD.OPPONENTS).forEach((id) => { const o = LD.OPPONENTS[id]; if (!o.boss && o.base !== "hearing" && !o.fits) holes.push("no fits " + id);
+      LD.DEALS.filter((d) => o.boss || o.base === "hearing" || LD.oppFits(id, d.id)).forEach((d) => { const fg = { opp: id, dealId: d.id };
+        const texts = [LD.missionText(o.why, fg), LD.oppLine(fg, "open")].concat(Object.values(o.end || {}).map((t) => LD.missionText(t, fg)), Object.values(o.react || {}).map((t) => LD.missionText(t, fg)), (o.pattern || []).map((k) => LD.moveSay(fg, k)));
+        texts.forEach((t) => { if (/[{}]/.test(t)) holes.push(id + "/" + d.id + ": " + t.slice(0, 40)); }); });
+      if (!o.why || !o.open) holes.push("no why/open " + id); });
+    ok(!gaps.length && !holes.length, "every mission has a fitting face per act and every face's lines fill cleanly: " + gaps.concat(holes).slice(0, 5).join(" | "));
+    const dn = LD.OPPONENTS.dana, fgD = { opp: "dana", dealId: "rezoning-clinic" };
+    ok(/clinic lot/.test(LD.missionText(dn.why, fgD)) && /trauma bay/.test(LD.oppLine(fgD, "open")) && LD.INTENTS.dan_line.label === "Two Hundred Neighbours" && !LD.oppFits("dana", "blackout-insurance"),
+      "Dana vs the clinic-lot rezoning reads as one story: " + LD.oppLine(fgD, "open"));
+  }
+  {
     const DRV = fs.readFileSync(path.join(ROOT, "tests/era-driver.js"), "utf8");
     const drive = new Function("module", DRV + "; return eraDrive;")(undefined);
     const fs0 = drive(LD, { seed: "eras-0", exec: "mara", style: "any", stop: "fight:dunn" });
@@ -253,6 +267,22 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   ok(Object.keys(LD.OPPONENTS).length >= 30, "30 faces at the door (got " + Object.keys(LD.OPPONENTS).length + ")");
   ok([1, 2, 3].every((a) => Object.values(LD.OPPONENTS).filter((o) => o.act === a && !o.boss).length >= 8), "8+ regular faces per era");
   ok(Object.keys(LD.EXEC_TRAITS).length === 6 && Object.values(LD.EXEC_TRAITS).every((t) => t.good && t.bad && t.good.text && t.bad.text), "every executive has a wholesome/toxic trait pair");
+  /* No rival faction: no rivals on the run, no rival panel, map claims or timeline seal marks, no rival events at quarter close. */
+  {
+    let st = LD.createRun({ seed: "no-rivals", executiveId: "mara", rating: 9, perks: [], packs: ["hostile"], level: 1 });
+    const evs = [];
+    for (let q = 0; q < 6 && !st.ended; q++) {
+      if (st.fy && (st.fy.fight || st.fy.reward || st.fy.memo || st.fy.draft)) break;
+      if (st.phase === "deal") { const id = st.offered[0], d = LD.dealById(id); const r = LD.selectDeal(st, id, d.choices ? d.choices[0].id : null); if (!r.ok) break; st = r.state; if (st.fy && st.fy.fight) break; }
+      const b = LD.bossInfo(st, st.turn); const r = LD.closeQuarter(st, { bossChoice: b && b.choice ? "pay" : undefined }); if (!r.ok) break; st = r.state; (r.world || []).forEach((e) => evs.push(e.kind)); if (r.sniped) evs.push("sniped");
+    }
+    const dh = LD.renderDesk ? LD.renderDesk(st, {}) : "";
+    ok(!st.rivals && LD.REGION_IDS.every((id) => st.world.regions[id].rival == null) && !evs.some((k) => /rival|sniped/.test(k)) && !LD.initRivals && !LD.resolveRivals && !LD.leakRival,
+      "no rival faction in the engine (events: " + [...new Set(evs)].join(",") + ")");
+    ok(dh && !/class="panel rivals"|rv-row|seals\?|Rival/.test(dh), "hub has no Rivals panel, rival flags or seal-race marks");
+    const pools = new Set(); for (let i = 0; i < 60; i++) pools.add(LD.seedBosses ? LD.seedBosses("s" + i).bossII : (LD.createRun({ seed: "b" + i, executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 }).fy || {}).bossII);
+    ok(!pools.has("bid") && LD.ENCOUNTERS.rival.name === "The Holdout" && !/rival/i.test(JSON.stringify(LD.MEMOS) + JSON.stringify(LD.PACKS) + LD.EXEC_TRAITS.julian.bad.text), "no Hostile Takeover Bid boss, no rival memos, packs or traits (Act II bosses: " + [...pools].join(",") + ")");
+  }
   /* The outcome follows how you won. */
   const mk = (pr, gal, extra) => Object.assign({ pr: pr, gal: gal, leaks: {}, bribes: 0 }, extra || {});
   ok(LD.fightOutcomeFor({}, mk({ obligation: 10 }, 0), true).out === "bought", "Debt wins buy them");

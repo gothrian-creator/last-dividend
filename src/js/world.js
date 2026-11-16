@@ -99,7 +99,6 @@
     if (!state.world) return state;
     var rng = worldRng(state, "pins:" + state.turn);
     var used = {};
-    var anyRival = LD.REGION_IDS.some(function (id) { var g = state.world.regions[id]; return g.rival != null && !g.owned; });
     var pins = {};
     (state.offered || []).forEach(function (dealId) {
       var deal = LD.dealById(dealId);
@@ -107,7 +106,7 @@
       var free = LD.REGION_IDS.filter(function (id) { return !used[id]; });
       var pref = free.filter(function (id) {
         var r = state.world.regions[id];
-        if (kind === "claim") return deal.hostile && anyRival ? r.rival != null && !r.owned : !r.owned;
+        if (kind === "claim") return !r.owned;
         if (kind === "calm" || kind === "crisis") return r.stress >= LD.STRESS_TENSE;
         if (kind === "squeeze") return r.owned || r.trait === "boom" || r.trait === "crisis";
         return true;
@@ -170,7 +169,6 @@
     var r = state.world.regions[eff.regionId];
     if (eff.claim) {
       r.owned = true;
-      if (r.rival != null) { if (notes) notes.push("taken from a rival"); r.rival = null; }
       state.world.lastClaim = { regionId: eff.regionId, turn: state.turn };
       if (notes) notes.push("claimed " + eff.regionName);
     }

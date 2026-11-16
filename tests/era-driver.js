@@ -39,6 +39,12 @@ function eraDrive(LD, o) {
     if (f && f.draft) { var dp = f.draft.offer && f.draft.offer[0] ? LD.fyPick(state, f.draft.offer[0]) : null; state = dp && dp.ok ? dp.state : LD.fyPick(state, null).state; continue; }
     if (state.phase === "deal") {
       var done = false;
+      if (o.smart) { /* balance bot: take the option that leaves the best cash / unrest / collapse mix */
+        var best = null, bs = -1e9;
+        state.offered.forEach(function (id) { var dd = LD.dealById(id); (dd.choices || [{ id: null }]).forEach(function (c) { var t = LD.selectDeal(state, id, c.id); if (!t.ok) return;
+          var ts = t.state, sc = ts.cash - (state.unrest > 45 ? 2.5 : 1) * ts.unrest - (state.collapse > 50 ? 1.5 : 0.8) * ts.collapse; if (sc > bs) { bs = sc; best = ts; } }); });
+        if (best) { state = best; continue; }
+      }
       for (var i = 0; i < state.offered.length && !done; i++) { var d = LD.dealById(state.offered[i]), chs = d.choices || [{ id: null }];
         for (var j = 0; j < chs.length; j++) { var r2 = LD.selectDeal(state, state.offered[i], chs[j].id); if (r2.ok) { state = r2.state; done = true; break; } } }
       if (!done) break; continue;
@@ -52,6 +58,6 @@ function eraDrive(LD, o) {
     if (!rq.ok) break;
     state = rq.state;
   }
-  return hit(state) ? state : null;
+  return hit(state) || (o.full && state.ended) ? state : null;
 }
 if (typeof module !== "undefined") module.exports = { eraDrive: eraDrive };

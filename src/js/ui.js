@@ -688,7 +688,7 @@
   }
 
   /* ---------- Desk (world map) ---------- */
-  var sel = { deal: null, region: null, net: null, rival: null, choice: null };
+  var sel = { deal: null, region: null, net: null, choice: null };
   var bunkerMode = "install";
   var hidePins = false;
   var lens = "none";
@@ -713,7 +713,7 @@
   function uiOpts() {
     var c = coachInfo();
     var phone = isPhone();
-    return { selDeal: sel.deal, selRegion: sel.region, selNet: sel.net, selRival: sel.rival, coach: c.coach, coachDeal: c.coachDeal, coachText: c.coachText,
+    return { selDeal: sel.deal, selRegion: sel.region, selNet: sel.net, coach: c.coach, coachDeal: c.coachDeal, coachText: c.coachText,
       hidePins: hidePins, lens: lens, interactive: true, phone: phone, globe: !phone };
   }
 
@@ -784,7 +784,7 @@
     if (!desk) return;
     var dz = $("dossier");
     dz.innerHTML = LD.renderDossier(state, uiOpts());
-    desk.classList.toggle("has-sel", !!(sel.deal || sel.region || sel.net || sel.rival != null));
+    desk.classList.toggle("has-sel", !!(sel.deal || sel.region || sel.net));
     Array.prototype.forEach.call(desk.querySelectorAll(".pin"), function (n) {
       n.classList.toggle("sel", n.getAttribute("data-deal") === sel.deal);
       if (sel.deal) n.classList.remove("coach");
@@ -793,7 +793,6 @@
       n.classList.toggle("sel", n.getAttribute("data-region") === sel.region);
     });
     Array.prototype.forEach.call(desk.querySelectorAll(".net-chip"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
-    Array.prototype.forEach.call(desk.querySelectorAll(".rv-row"), function (n) { n.classList.toggle("sel", +n.getAttribute("data-rival") === sel.rival); });
     updatePreview(sel.deal, null);
     var cb = desk.querySelector(".coach-bubble.c-pin");
     if (cb && sel.deal) cb.remove();
@@ -815,7 +814,7 @@
     if (rail) { rail.innerHTML = LD.renderRail(state, dealId, choiceId); bindBossLinks(rail); }
   }
 
-  function clearSel() { sel.deal = null; sel.region = null; sel.net = null; sel.rival = null; }
+  function clearSel() { sel.deal = null; sel.region = null; sel.net = null; }
   function selectDealPin(id) {
     if (state.phase !== "deal") return;
     clearSel();
@@ -826,7 +825,6 @@
   }
   function selectRegion(id) { clearSel(); sel.region = id; refreshSelection(); pennyTip("region"); }
   function selectNet(id) { clearSel(); sel.net = id; refreshSelection(); }
-  function selectRival(i) { clearSel(); sel.rival = i; refreshSelection(); }
 
   function activateOnKey(n, fn) {
     n.addEventListener("keydown", function (e) {
@@ -892,9 +890,6 @@
     });
     Array.prototype.forEach.call(document.querySelectorAll(".desk .net-chip"), function (n) {
       n.addEventListener("click", function () { tick(); selectNet(n.getAttribute("data-net")); });
-    });
-    Array.prototype.forEach.call(document.querySelectorAll(".desk .rv-row"), function (n) {
-      n.addEventListener("click", function () { tick(); selectRival(+n.getAttribute("data-rival")); });
     });
     Array.prototype.forEach.call(document.querySelectorAll(".desk .lens-btn"), function (n) {
       n.addEventListener("click", function () {
@@ -1064,30 +1059,6 @@
       clearSel();
       renderDesk();
       selectDealPin(id);
-    });
-    var outbid = $("btn-outbid");
-    if (outbid) outbid.addEventListener("click", function () {
-      tick();
-      var rid = outbid.getAttribute("data-region");
-      var prev = state;
-      var res = LD.outbidRegion(state, rid);
-      if (!res.ok) { flash(res.error); return; }
-      state = res.state;
-      persistRun();
-      renderDesk(prev);
-      popRegion(rid, "claimed");
-      floatAt(rid, "Outbid!", "own");
-    });
-    var leak = $("btn-leak");
-    if (leak) leak.addEventListener("click", function () {
-      tick();
-      var prev = state;
-      var res = LD.leakRival(state, +leak.getAttribute("data-rival"));
-      if (!res.ok) { flash(res.error); return; }
-      state = res.state;
-      persistRun();
-      renderDesk(prev);
-      floatCenter("Leaked! Their seal slips", "good");
     });
   }
 
@@ -1378,7 +1349,6 @@
     closing = true;
     state = res.state;
     pennyEmit("endq");
-    if ((res.world || []).some(function (ev) { return /^rival/.test(ev.kind || ""); }) || res.sniped) PN.pendingRival = true;
     if (state.ended) recordEnding();
     else persistRun();
     var meta = loadMeta();
@@ -1426,25 +1396,23 @@
         var m = /\(([^)]*)\)/.exec(f.text || "");
         beats.push(function (dy) { floatCenter(short + (m ? " · " + m[1] : ""), f.item ? "good" : "bad", 0, dy); });
       });
-      /* 2. Regions and rivals react, one at a time, never overlapping. */
+      /* 2. Regions react, one at a time, never overlapping. */
       (res.world || []).forEach(function (ev) {
         var label = ev.kind === "income" ? "+" + LD.formatMoney(ev.cash) : ev.kind === "strike" ? "Strike!" : ev.kind === "riot" ? "Riots +" + ev.unrest :
-          ev.kind === "protest" ? "Protest +" + ev.unrest : ev.kind === "revolt" ? "Nationalised! Unrest +" + ev.unrest : ev.kind === "spread" ? "Crisis spreads" :
-          ev.kind === "rival-buy" ? state.rivals[ev.rival].firm + " buys in" : ev.text;
-        var cls = ev.kind === "income" ? "cash" : ev.kind === "rival-buy" ? "rival" : "bad";
+          ev.kind === "protest" ? "Protest +" + ev.unrest : ev.kind === "revolt" ? "Nationalised! Unrest +" + ev.unrest : ev.kind === "spread" ? "Crisis spreads" : ev.text;
+        var cls = ev.kind === "income" ? "cash" : "bad";
         if (ev.regionId) beats.push(function () { floatAt(ev.regionId, label, cls); popRegion(ev.regionId, "ev-" + ev.kind, 0); });
-        else beats.push(function (dy) { floatCenter(label, ev.kind === "rival-seal" ? "bad big" : "bad", 0, dy); });
+        else beats.push(function (dy) { floatCenter(label, "bad", 0, dy); });
       });
       /* 3. Collapse drifts: the world visibly worsens. */
       if (res.tick) beats.push(function (dy) { floatCenter("Collapse +" + res.tick, "bad", 0, dy); var sl = document.querySelector(".desk .board-slab"); if (sl) sl.classList.add("worsen"); });
-      if (res.sniped) beats.push(function (dy) { floatCenter(res.sniped.text, "rival", 0, dy); });
       beats.forEach(function (b, i) { later(function () { b((i % 3) * 38); }, 150 + i * step); });
       later(finish, Math.max(1100, 150 + beats.length * step + 700));
     }, reduced() ? 300 : 850);
   }
 
   function showReport(prev, res) {
-    var body = LD.renderReport(prev, state, res.fired, res.tick, res.sniped);
+    var body = LD.renderReport(prev, state, res.fired, res.tick);
     showOverlay("", body,
       '<button class="btn btn-coral" id="ov-ok">' + (state.ended ? "See how it ends" : "Open Q" + state.turn) + "</button>",
       function () {
@@ -1891,7 +1859,7 @@
     DF.busy = true; DF.cbHide = true;
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
     var bub = $("sc-bubble"), I0 = res.intent && LD.INTENTS[res.intent.k];
-    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(I0.say || ""); }
+    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); }
     DF.say = null; DF.cap = null;
     var cp = $("sc-cap"); if (cp && cp.parentNode) cp.parentNode.removeChild(cp);
     scAttackAnim(res.hit && res.hit.n);
@@ -2339,7 +2307,7 @@
   }
 
   /* ---------- Penny · Onboarding: guided first quarter + one-time contextual tips ---------- */
-  var PN = { on: false, mode: null, idx: -1, cur: null, loop: null, typer: null, typed: true, el: null, shownFor: null, pendingRival: false, scrolled: false, waitSince: 0 };
+  var PN = { on: false, mode: null, idx: -1, cur: null, loop: null, typer: null, typed: true, el: null, shownFor: null, scrolled: false, waitSince: 0 };
   var PENNY_FACES = { wink: "penny-wink", excited: "penny-excited", worried: "penny-worried", smug: "penny-smug" };
   function pq(s) { return document.querySelector(s); }
   function pvis(n) { if (!n) return false; var r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0; }
@@ -2450,7 +2418,7 @@
       target: function () { return pq("#btn-endq"); },
       act: function () { clickEl(pq("#btn-endq")); } },
     { id: "react", n: 8, face: "wink", passive: true, on: "report", scrollTo: ".desk .board",
-      text: "Here it comes… income, protests, rivals, Collapse ticking up. Hit <b>Skip</b> any time if you're busy being visionary.",
+      text: "Here it comes… income, protests, Collapse ticking up. Hit <b>Skip</b> any time if you're busy being visionary.",
       skip: function () { return reportOpen(); },
       target: function () { return null; } },
     { id: "report", n: 8, face: "smug", on: "report-closed", label: "Next quarter ▸",
@@ -2468,11 +2436,9 @@
   var PENNY_TIPS = {
     crisis: { face: "worried", text: function () { return "Uh-oh, a <b>crisis</b>! You pick a response instead of a plain signature. Paying it off works… until Unrest hits " + LD.mods(state).crisisNoPayAt + ". Then the street stops cashing cheques."; },
       target: function () { return pq("#dossier .deal-dz") || pq("#dossier"); } },
-    rival: { face: "worried", text: function () { return "A <b>rival executive</b> just moved! Rivals snipe pins, buy regions and race you to seal. Tap one here to <b>leak</b> their contracts, or <b>outbid</b> them from a region dossier."; },
-      target: function () { return pq(".desk .rivals"); } },
     "private": { face: "smug", text: function () { return "<b>Go private</b>: run your own supply! Installs ignore public network damage and never arrive late… but every deal pays only " + Math.round(LD.conversionRate(state) * 100) + "% from then on. Once per run!"; },
       target: function () { return pq("#bk-panel") || pq('#overlay [data-spot="private"]'); } },
-    region: { face: "wink", text: function () { return "A <b>region dossier</b>! Regions you own take one regional order per quarter: plants, soothing, outbids. The <b>Mood / Networks / Holdings</b> lenses up top read the whole map at a glance."; },
+    region: { face: "wink", text: function () { return "A <b>region dossier</b>! Regions you own take one regional order per quarter: plants and soothing. The <b>Mood / Networks / Holdings</b> lenses up top read the whole map at a glance."; },
       target: function () { return pq("#dossier .dz") || pq("#dossier"); } },
     dividends: { face: "excited", text: function () { return "Payday! Every run pays <b>Dividends ◈</b>, itemised in your Shareholder Letter. Spend them in the <b>Summit Lounge</b>: new executives, perks, deal packs and very tasteful cosmetics."; },
       target: function () { return pq("#screen-end .letter") || pq("#screen-boardroom .lg-bal"); } },
@@ -2753,7 +2719,6 @@
       var at = PN.cur;
       setTimeout(function () { if (PN.cur === at && PN.on) pennyAdvance(); }, 60);
     }
-    if (ev === "report-closed" && PN.pendingRival) { PN.pendingRival = false; setTimeout(function () { pennyTip("rival"); }, 400); }
   }
   function pennyStop() {
     PN.on = false;
@@ -2782,7 +2747,6 @@
     if (!tip) return;
     var t = tip.target();
     if (!t || !pvis(t)) return;
-    if (key === "rival" && !state) return;
     pennySave(function (p) { p.tips[key] = true; });
     PN.on = true;
     PN.mode = "tip";

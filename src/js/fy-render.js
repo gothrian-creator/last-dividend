@@ -381,7 +381,7 @@
       h += '</ol><p class="fy-note">Rules stack: a tier keeps every rule above it. Exits pay ×(1 + 0.3 × tier) Dividends.</p>';
     } else if (kind === "bosses") {
       h += '<div class="fy-head"><div class="dz-k">Boss quarters</div><h2>Who can show up</h2></div><ul class="fy-list ex-list">';
-      [["earnings", "shortseller"], ["strike", "bid", "crash"], ["reckoning", "heatdome", "seawall"]].forEach(function (grp, ai) {
+      [["earnings", "shortseller"], ["strike", "crash"], ["reckoning", "heatdome", "seawall"]].forEach(function (grp, ai) {
         grp.forEach(function (id) { var b = LD.BOSSES[id], bo = LD.bossOpp && state && state.fy ? LD.oppById(LD.bossOpp(state, id)) : null, bo0 = !bo && LD.oppById ? LD.oppById({ earnings: "ashby_b", shortseller: "sorel_b", strike: "varga_b", bid: "crowe_b", crash: "ticker_b" }[id]) : null; bo = bo || bo0;
           h += '<li><span class="fy-ico" aria-hidden="true">' + IA(b, "boss", id) + "</span><div><b>" + esc(b.name) + "</b> <em>Act " + LD.ACTS[ai].roman + " · " + esc(LD.ACTS[ai].year) + "</em>" + (bo ? "<span>" + esc(bo.who + " · " + bo.role) + "</span>" : "") + "</div></li>"; });
       });
@@ -510,7 +510,7 @@
     if (fg.done) return { t: LD.oppLine(fg, "end"), k: "end" };
     if (fg.round === 1 && !fg.played) return { t: LD.oppLine(fg, "open"), k: "open" };
     var I = fg.intent && LD.INTENTS[fg.intent.k];
-    return { t: I && I.say ? I.say : "", k: "move" };
+    return { t: LD.moveSay ? LD.moveSay(fg, fg.intent.k) : I && I.say ? I.say : "", k: "move" };
   }
   function sceneHtml(state, fg, ui) {
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
@@ -550,7 +550,7 @@
   LD.fightOpener = function (state, fg) {
     fg = fg || (state && state.fy && state.fy.fight); if (!fg) return "";
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
-    return (F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
+    return (F.opp && F.opp.why && LD.missionText ? LD.missionText(F.opp.why, fg) : F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
   };
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
      and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */

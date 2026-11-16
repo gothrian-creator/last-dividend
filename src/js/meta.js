@@ -125,10 +125,6 @@
       add("Successful exit", 25, "The doors closed with you inside", "win");
       add("Headroom", Math.max(0, Math.floor((90 - state.collapse) / 2)), "Sealed at collapse " + state.collapse, "win");
     }
-    if (win && state.rivals && state.rivals.length) {
-      var beat = state.rivals.every(function (rv) { return !rv.sealed; });
-      add("First to the door", beat ? 10 : 0, beat ? "No rival sealed before you" : "A rival sealed first", "win");
-    }
     var md = mandateById(state.mandate);
     var met = mandateMet(state);
     if (md) add("Board mandate", met ? LD.MANDATE_BONUS : 0, md.text + (met ? " · met" : win ? " · missed" : " · needs a win"), "win");

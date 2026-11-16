@@ -31,6 +31,7 @@ JS_NAMES = [
     "fy.js",
     "eras.js",
     "lore.js",
+    "missions.js",
     "worldmap-data.js",
     "assets.js",
     "render.js",

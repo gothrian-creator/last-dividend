@@ -86,7 +86,7 @@ function runOne(seed, exec, style) {
   LD.applyEra(0);
   return state;
 }
-const tally = {}, cbs = {}, hows = {}, outs = {}, gals = {}, styleWin = {};
+const tally = {}, cbs = {}, hows = {}, outs = {}, gals = {}, styleWin = {}, runs = {};
 const EXECS = ["mara", "reid", "imani", "julian", "soren", "cassius"];
 const STYLES = ["bribe", "crush", "any", "debt", "favour"];
 for (let i = 0; i < 40; i++) {
@@ -96,6 +96,7 @@ for (let i = 0; i < 40; i++) {
   Object.keys(f.met || {}).forEach((k) => (tally[k] = (tally[k] || 0) + 1));
   (f.cbSeen || []).forEach((k) => (cbs[k] = (cbs[k] || 0) + 1));
   Object.values(f.fates || {}).forEach((x) => { hows[x.how] = (hows[x.how] || 0) + 1; if (x.out) outs[x.out] = (outs[x.out] || 0) + 1; const w = styleWin[style] = styleWin[style] || { n: 0, lost: 0 }; w.n++; if (x.how === "walked") w.lost++; });
+  { const e = s.ending || {}, k = (e.kind || (s.ended ? "?" : "unfinished")) + (e.reason ? ":" + e.reason : ""), w = runs[style] = runs[style] || {}; w[k] = (w[k] || 0) + 1; w.q = (w.q || 0) + s.turn; w.collapse = (w.collapse || 0) + (s.collapse | 0); }
   ok(s.fy && s.fy.temper && typeof s.fy.temper.s === "number" && Math.abs(s.fy.temper.s) <= 12 && Math.abs(s.fy.temper.w) <= 12, "temper marker stays in range");
 }
 console.log("MET", JSON.stringify(tally));
@@ -104,7 +105,10 @@ console.log("ENDINGS", JSON.stringify(hows));
 if (process.env.INTENTS) Object.keys(INT).sort().forEach((k) => console.log("INT", k, [...new Set(INT[k])].slice(0, 12).join(" ")));
 console.log("OUTCOMES", JSON.stringify(outs));
 console.log("WALKED BY STYLE", JSON.stringify(styleWin));
-Object.keys(LD.OPPONENTS).forEach((k) => ok(tally[k] > 0, "every face shows up in 40 runs: " + k));
+console.log("RUNS BY STYLE", JSON.stringify(runs));
+/* The Hostile Takeover Bid boss left the pool with the rivals; its face (crowe_b) only loads from old saves. */
+Object.keys(LD.OPPONENTS).filter((k) => LD.OPPONENTS[k].boss !== "bid").forEach((k) => ok(tally[k] > 0, "every face shows up in 40 runs: " + k));
+ok(!tally.crowe_b, "no Hostile Takeover Bid boss in new runs");
 LD.OUTCOMES.forEach((o) => ok(outs[o] >= 3, "ending reachable in sims (3+): " + o));
 ["pops", "varga_b", "brennan"].forEach((k) => ok(tally[k] >= 3, "rare face shows up 3+ times: " + k));
 Object.keys(styleWin).forEach((k) => { const w = styleWin[k], r = w.lost / w.n; ok(r < (k === "any" ? 0.65 : 0.45), "balance: " + k + " loses " + Math.round(100 * r) + "% of door fights"); });

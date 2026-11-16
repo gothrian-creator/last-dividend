@@ -74,7 +74,10 @@ const RM = !!process.env.RM;
         const mo = new MutationObserver(() => { if (document.getElementById("fi") || document.querySelector(".fi")) window.__fiSeen = true;
           const strip = document.querySelector(".of-room.ofx-go"); if (strip) window.__stripOn = 1; else if (window.__stripOn && !window.__stripEnd) window.__stripEnd = performance.now();
           const d = document.getElementById("door"); if (d && d.classList.contains("on") && !window.__doorOn) window.__doorOn = performance.now(); });
-        mo.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] }); });
+        mo.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] });
+        /* frame poll too: the observer alone can miss the strip when it mounts and unmounts inside one batch */
+        (function poll() { const strip = document.querySelector(".of-room.ofx-go"); if (strip) window.__stripOn = 1; else if (window.__stripOn && !window.__stripEnd) window.__stripEnd = performance.now();
+          const d = document.getElementById("door"); if (d && d.classList.contains("on") && !window.__doorOn) window.__doorOn = performance.now(); if (!window.__doorOn) requestAnimationFrame(poll); })(); });
       const seen = RM ? true : await page.waitForSelector(".of-room.ofx-go", { timeout: opts.hub ? 8000 : 4000 }).then(() => true).catch(() => false);
       if (!seen) errors.push("no strip entrance " + vp + " " + name);
       t0 = Date.now();

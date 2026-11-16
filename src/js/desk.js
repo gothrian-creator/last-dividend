@@ -90,7 +90,7 @@
   function regionAria(state, id) {
     var r = state.world.regions[id];
     var bits = [LD.REGION_NAMES[id]];
-    bits.push(r.owned ? (r.trait === "hq" ? "your headquarters" : "yours") : r.rival != null && state.rivals && state.rivals[r.rival] ? "held by " + state.rivals[r.rival].firm : "unclaimed");
+    bits.push(r.owned ? (r.trait === "hq" ? "your headquarters" : "yours") : "unclaimed");
     bits.push("stress " + r.stress + " of " + LD.STRESS_MAX + ", " + ({ calm: "calm", tense: "protests", strike: "riots", revolt: "revolt" })[LD.stressLabel(r.stress)]);
     if (r.plant && r.owned) bits.push("plant " + (r.stress >= LD.STRESS_STRIKE ? "on strike" : "+$" + LD.plantIncome(state, id) + "M a quarter"));
     if (LD.willRevolt(state, id)) bits.push("will revolt next quarter");
@@ -141,7 +141,7 @@
     var lines = [];
     var listed = LD.payloadCash(state, payload.immediate);
     if (listed) lines.push((listed > 0 ? "+" : "") + money(listed > 0 ? LD.dealCashAmount(state, listed, d) : listed));
-    if (eff.claim) lines.push("claims " + eff.regionName + (r.rival != null ? " from rival" : ""));
+    if (eff.claim) lines.push("claims " + eff.regionName);
     if (eff.stress) lines.push("stress " + signed(eff.stress) + (next >= LD.STRESS_REVOLT && r.owned ? " · REVOLT" : ""));
     if (d.choices && !choiceId) lines.push(d.choices.length + " responses");
     var sup = LD.defaultSupply(d, payload);
@@ -173,11 +173,6 @@
     return "M" + A[0].toFixed(1) + " " + A[1].toFixed(1) + " Q" + C[0].toFixed(1) + " " + C[1].toFixed(1) + " " + B[0].toFixed(1) + " " + B[1].toFixed(1);
   }
 
-  function rivalFlag(idx) {
-    var col = LD.RIVAL_COLORS[idx] || "#ccc";
-    return '<g class="rflag"><line x1="0" y1="10" x2="0" y2="-18" stroke="#1d1830" stroke-width="2.4"/><path d="M0 -18 L18 -13 L0 -7Z" fill="' + col + '" stroke="#1d1830" stroke-width="1"/><rect x="-4" y="7" width="8" height="6" fill="' + col + '"/></g>';
-  }
-
   function renderMap(state, ui) {
     ui = ui || {};
     var M = LD.WORLD_MAP;
@@ -201,7 +196,6 @@
       '<linearGradient id="g-land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d98f"/><stop offset="1" stop-color="#c4913a"/></linearGradient>' +
       '<linearGradient id="g-own" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ff0c4"/><stop offset="1" stop-color="#0f8f72"/></linearGradient>' +
       '<linearGradient id="g-burn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f09a6a"/><stop offset="1" stop-color="#b4482f"/></linearGradient>' +
-      '<linearGradient id="g-rival" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfc3ff"/><stop offset="1" stop-color="#6b5aa8"/></linearGradient>' +
       '<pattern id="p-dots" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#3b2a08" fill-opacity="0.2"/></pattern>' +
       '<pattern id="p-waves" width="40" height="18" patternUnits="userSpaceOnUse"><path d="M2 9 q8 -6 16 0" fill="none" stroke="#7ff2dc" stroke-opacity="0.16" stroke-width="1.4" stroke-linecap="round"/></pattern>' +
       (globe ? '<clipPath id="c-sphere"><circle cx="' + GLOBE.cx + '" cy="' + GLOBE.cy + '" r="' + GLOBE.R + '"/></clipPath>' : "") +
@@ -234,9 +228,8 @@
     LD.REGION_IDS.forEach(function (id) {
       var r = W.regions[id];
       var lvl = LD.stressLabel(r.stress);
-      var rv = !r.owned && r.rival != null;
       var warn = LD.willRevolt(state, id);
-      var cls = "region r-" + id + (r.owned ? " owned" : "") + (rv ? " rival rv-" + r.rival : "") + " s-" + lvl + (warn ? " warn" : "") + (selRegion === id ? " sel" : "") + (r.trait ? " t-" + r.trait : "");
+      var cls = "region r-" + id + (r.owned ? " owned" : "") + " s-" + lvl + (warn ? " warn" : "") + (selRegion === id ? " sel" : "") + (r.trait ? " t-" + r.trait : "");
       h += '<g class="' + cls + '" data-region="' + id + '"' + (interactive ? ' tabindex="0" role="button" aria-label="' + esc(regionAria(state, id)) + '"' : "") + ">";
       h += '<use class="side" href="#rg-' + id + '" transform="translate(0 7)"/>';
       h += '<use class="top" href="#rg-' + id + '"/>';
@@ -284,9 +277,6 @@
       if (r.owned) {
         var fl = atP(id, "flag", P);
         h += '<g transform="translate(' + fl[0] + " " + fl[1] + ')">' + flagIcon(r.trait === "hq") + "</g>";
-      } else if (r.rival != null) {
-        var rf = atP(id, "flag", P);
-        h += '<g transform="translate(' + rf[0] + " " + rf[1] + ')">' + rivalFlag(r.rival) + "</g>";
       }
       h += '<circle class="anc" data-anc="' + id + '" cx="' + a[0] + '" cy="' + a[1] + '" r="1"/>';
       var lab = LD.REGION_NAMES[id].toUpperCase();
@@ -483,8 +473,6 @@
       var bq = LD.bossInfo && (i < cols - 1 || q === state.turn + cols - 1) ? LD.bossInfo(state, q) : null;
       if (!bq && i === cols - 1 && LD.nextBossQ) { var nb = LD.nextBossQ(state); if (nb && nb > q) bq = LD.bossInfo(state, nb); }
       if (bq) marks.push('<button class="rm boss" data-boss-q="' + bq.q + '">' + LD.iconArt(bq, "boss") + " " + esc(bq.name.replace(/^The /, "")) + (bq.q !== q ? " Q" + bq.q : "") + "</button>");
-      var rv = (state.rivals || []).filter(function (r) { return !r.sealed && r.sealTurn === q; });
-      rv.forEach(function (r) { marks.push('<em class="rm rival">' + esc(r.firm.split(" ")[0]) + " seals?</em>"); });
       h += '<div class="rq' + (i === 0 ? " now" : "") + (bq && bq.q === q ? " boss-q" : "") + '"><div class="rq-h">Q' + q + (i === 0 ? " <small>at close</small>" : i === cols - 1 ? "+" : "") + "</div>" + marks.join("");
       here.forEach(function (it) {
         railChips(state, it).forEach(function (c) {
@@ -514,21 +502,11 @@
     return h + "</div>";
   }
 
-  function rivalPanel(state, ui) {
-    if (!state.rivals || !state.rivals.length) return "";
-    var h = '<div class="panel rivals"><div class="panel-k">Rivals</div>';
-    state.rivals.forEach(function (rv) {
-      var n = LD.rivalRegions(state, rv.idx).length;
-      h += '<button class="rv-row' + (ui.selRival === rv.idx ? " sel" : "") + '" data-rival="' + rv.idx + '"><i style="background:' + LD.RIVAL_COLORS[rv.idx] + '"></i><b>' + esc(rv.firm) + "</b><span>" +
-        (rv.sealed ? "Sealed in" : n + " region" + (n === 1 ? "" : "s") + (rv.engineer ? " · engineer" : "") + " · seal ~Q" + rv.sealTurn) + "</span></button>";
-    });
-    return h + "</div>";
-  }
 
   function renderDesk(state, ui) {
     ui = ui || {};
     var dealPhase = state.phase === "deal";
-    var h = '<div class="desk ' + (dealPhase ? "phase-deal" : "phase-bunker") + (ui.selDeal || ui.selRegion || ui.selNet || ui.selRival != null ? " has-sel" : "") + (ui.globe ? " is-globe" : "") + '">';
+    var h = '<div class="desk ' + (dealPhase ? "phase-deal" : "phase-bunker") + (ui.selDeal || ui.selRegion || ui.selNet ? " has-sel" : "") + (ui.globe ? " is-globe" : "") + '">';
     h += '<div class="desk-light" aria-hidden="true"></div>';
     h += '<header class="desk-head"><div class="brand"><div class="wordmark">LAST DIVIDEND<span class="sun" aria-hidden="true"></span></div>' +
       '<div class="tag">' + (LD.ERAS && LD.eraOf && LD.ERAS[LD.eraOf(state)] ? esc("Port Calder, " + LD.ERAS[LD.eraOf(state)].year.replace("Now", "now") + " · " + LD.ERAS[LD.eraOf(state)].name) : "A Brighter Tomorrow, Privately Owned") + '</div></div>' +
@@ -557,7 +535,6 @@
     var delta = state.cash - (prev == null ? last : (state.turn === hist[hist.length - 1].turn ? prev : last));
     h += '<aside class="dash">';
     h += '<div class="panel dash-meters office">' + LD.renderOffice(state, { cashSub: delta ? (delta > 0 ? "▲ " : "▼ ") + money(Math.abs(delta)) + " this Q" : "steady" }) + "</div>";
-    h += rivalPanel(state, ui);
     h += '<div class="panel ticker" aria-label="News"><div class="panel-k">News</div><div class="tick-wrap"><div class="tick-run">';
     var items = tickerItems(state);
     function tickItem(t, i) {
@@ -703,10 +680,9 @@
   function renderRegionDossier(state, rid) {
     var r = state.world.regions[rid];
     var lvl = LD.stressLabel(r.stress);
-    var rv = !r.owned && r.rival != null && state.rivals ? state.rivals[r.rival] : null;
-    var h = '<div class="dz region-dz' + (r.owned ? " owned" : "") + (rv ? " rival" : "") + '">';
+    var h = '<div class="dz region-dz' + (r.owned ? " owned" : "") + '">';
     h += '<button class="dz-x" id="dz-close" aria-label="Close">✕</button>';
-    var status = r.owned ? (r.trait === "hq" ? "Headquarters" : "Your territory") : rv ? "Held by " + rv.firm : "Not yours yet";
+    var status = r.owned ? (r.trait === "hq" ? "Headquarters" : "Your territory") : "Not yours yet";
     h += '<div class="dz-k">' + esc(status) + (r.trait === "boom" ? " · Booming" : r.trait === "crisis" ? " · In crisis" : "") + "</div>";
     h += "<h3>" + esc(LD.REGION_NAMES[rid]) + "</h3>";
     h += '<div class="dz-stat"><span>Mood</span>' + stressPips(r) + "<b>" + esc(MOOD[lvl]) + "</b></div>";
@@ -723,11 +699,7 @@
       h += '<button class="dz-act" id="btn-aim" data-deal="' + soothe + '" data-region="' + rid + '"><b>Aim “' + esc(LD.dealById(soothe).title) + "” here</b>" +
         '<span class="fx-row">' + chip("good", "Stress −2 here instead") + chip("meh", "Free · then sign it") + "</span></button>";
     }
-    if (rv) {
-      h += '<p class="dz-body">' + esc(rv.firm) + " squeezes this region. Their holdings add collapse and, when they get aggressive, unrest.</p>";
-      h += '<button class="dz-act" id="btn-outbid" data-region="' + rid + '"' + (LD.canOutbid(state, rid) ? "" : " disabled") + "><b>Outbid " + esc(rv.firm) + " · " + money(LD.OUTBID.cost) + "</b>" +
-        '<span class="fx-row">' + chip("own", "Claims it at stress 2") + chip("bad", "Unrest +" + LD.OUTBID.unrest) + chip("meh", "Uses the regional order") + "</span></button>";
-    } else if (!r.owned) {
+    if (!r.owned) {
       h += '<p class="dz-body">Win it with an <b>Acquire</b> deal (＋ pin). Owned land can host a plant.</p>';
     }
     if (r.owned) {
@@ -765,25 +737,6 @@
     return h;
   }
 
-  function renderRivalDossier(state, idx) {
-    var rv = state.rivals[idx];
-    var n = LD.rivalRegions(state, idx);
-    var h = '<div class="dz rival-dz">';
-    h += '<button class="dz-x" id="dz-close" aria-label="Close">✕</button>';
-    h += '<div class="dz-k">Rival executive · aggression ' + Math.round(rv.aggr * 100) + "%</div><h3>" + esc(rv.name) + "</h3>";
-    h += '<div class="exec-t">' + esc(rv.firm) + "</div>";
-    h += '<div class="dz-stat"><span>Holdings</span><b>' + (n.length ? n.map(function (id) { return LD.REGION_NAMES[id]; }).join(", ") : "none yet") + "</b></div>";
-    h += '<div class="dz-stat"><span>Engineer</span><b>' + (rv.engineer ? "poached (yours +$4M)" : "not yet") + "</b></div>";
-    h += '<div class="dz-stat"><span>Bunker</span><b>' + (rv.sealed ? "sealed in" : "seals around Q" + rv.sealTurn + " (panic: collapse spike)") + "</b></div>";
-    if (!rv.sealed) {
-      h += '<button class="dz-act" id="btn-leak" data-rival="' + idx + '"' + (LD.canLeak(state, idx) ? "" : " disabled") + "><b>Leak their contracts</b>" +
-        '<span class="fx-row">' + chip("good", "Their seal slips " + LD.LEAK.delay + "Q") + chip("bad", "Unrest +" + LD.LEAK.unrest) + chip("meh", "Uses the regional order") + "</span></button>";
-      if (n.length) h += '<p class="dz-note">Tap one of their regions to outbid them for it.</p>';
-    }
-    h += "</div>";
-    return h;
-  }
-
   function renderExecDossier(state) {
     var exec = LD.execById(state.executiveId);
     var initials = exec.name.replace(/^Dr\. /, "").split(" ").map(function (p) { return p[0]; }).join("");
@@ -811,15 +764,13 @@
     if (ui.selDeal && state.phase === "deal" && state.offered.indexOf(ui.selDeal) !== -1) return renderDealDossier(state, ui.selDeal);
     if (ui.selRegion) return renderRegionDossier(state, ui.selRegion);
     if (ui.selNet) return renderNetDossier(state, ui.selNet);
-    if (ui.selRival != null && state.rivals && state.rivals[ui.selRival]) return renderRivalDossier(state, ui.selRival);
     return renderExecDossier(state);
   }
 
   /* Short hover / long-press card for a region. */
   function regionTip(state, id) {
     var r = state.world.regions[id];
-    var rv = !r.owned && r.rival != null && state.rivals ? state.rivals[r.rival] : null;
-    var h = "<b>" + esc(LD.REGION_NAMES[id]) + "</b><span>" + esc(r.owned ? (r.trait === "hq" ? "Your HQ" : "Yours") : rv ? rv.firm : "Unclaimed") + (r.trait === "boom" ? " · Booming" : "") + "</span>";
+    var h = "<b>" + esc(LD.REGION_NAMES[id]) + "</b><span>" + esc(r.owned ? (r.trait === "hq" ? "Your HQ" : "Yours") : "Unclaimed") + (r.trait === "boom" ? " · Booming" : "") + "</span>";
     h += '<span class="tip-pips">' + stressPips(r) + " " + esc(MOOD[LD.stressLabel(r.stress)].split(" (")[0]) + "</span>";
     if (r.owned && r.plant) h += "<span>Plant " + (r.stress >= LD.STRESS_STRIKE ? "on strike" : "+" + money(LD.plantIncome(state, id)) + "/Q") + " · collapse +1/Q</span>";
     if (LD.willRevolt(state, id)) h += '<span class="tip-warn">Revolts next quarter</span>';
@@ -833,10 +784,10 @@
     if (f.fy) return "💼";
     var w = f.world;
     if (!w) return "✉";
-    return { income: "$", strike: "✊", riot: "🔥", protest: "✊", revolt: "⚑", brine: "≈", spread: "!", "rival-buy": "⚐", "rival-heat": "♨", "rival-engineer": "⛑", "rival-seal": "⛔" }[w.kind] || "•";
+    return { income: "$", strike: "✊", riot: "🔥", protest: "✊", revolt: "⚑", brine: "≈", spread: "!" }[w.kind] || "•";
   }
 
-  function renderReport(prev, next, fired, tick, sniped) {
+  function renderReport(prev, next, fired, tick) {
     var h = '<div class="report"><div class="dz-k">Quarterly report</div><h3>Q' + prev.turn + " closes</h3>";
     h += '<div class="rep-deltas">';
     [["Cash", prev.cash, next.cash, true], ["Unrest", prev.unrest, next.unrest, false], ["Collapse", prev.collapse, next.collapse, false]].forEach(function (x) {
@@ -849,7 +800,6 @@
       h += "<li" + (f.fy === "boss" ? ' class="rep-boss"' : "") + (f.world && f.world.regionId ? ' data-region="' + f.world.regionId + '"' : "") + "><i>" + reportIcon(f) + "</i>" + esc(f.text) + "</li>";
     });
     if (tick) h += "<li><i>↗</i>Collapse drifts +" + tick + (prev.turn >= LD.mods(next).lateAccelTurn ? " (the curve steepens)" : "") + ".</li>";
-    if (sniped) h += "<li><i>⚐</i>" + esc(sniped.text) + "</li>";
     h += "</ul></div>";
     return h;
   }

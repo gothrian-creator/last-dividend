@@ -43,7 +43,7 @@ Lore ties: **Julian Crowe** is the younger brother of **Victor Crowe**, the Act 
 
 ## Act casts
 
-Each act has its own pool. The engine keeps the balance types (regulator, rival, protest, journalist) and puts a face on them. Every face has an opening line, 2–3 named moves with a twist, hit and block reactions, and three endings: **Paid Off**, **Crushed** or **They Walked**. Endings are saved in the run and come back.
+Each act has its own pool. The engine keeps the balance types (regulator, holdout — internal id `rival`, the owner who won't sell; there is no rival faction —, protest, journalist) and puts a face on them. Every face has an opening line, 2–3 named moves with a twist, hit and block reactions, and three endings: **Paid Off**, **Crushed** or **They Walked**. Endings are saved in the run and come back.
 
 ### Act I · The Street · 1978
 

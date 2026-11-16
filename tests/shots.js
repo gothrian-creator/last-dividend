@@ -83,7 +83,7 @@ const ONLY = process.env.ONLY || "";
       ["12-boss-strike", { enc: "strike", name: "General Strike", sub: "Act II boss", venue: "away", boss: "strike", q: 8 }],
       ["13-lobby-protest", { enc: "protest", name: "The Protest", sub: "They brought a drum", venue: "lobby", q: 3 }],
       ["14-away-journalist", { enc: "journalist", name: "The Journalist", sub: "Has your old emails", venue: "away", q: 2 }],
-      ["15-away-rival", { enc: "rival", name: "Rival Bid", sub: "Their banker, smiling", venue: "away", q: 2 }],
+      ["15-away-holdout", { enc: "rival", name: "The Holdout", sub: "The owner won't sell", venue: "away", q: 2 }],
       ["16-boss-bid", { enc: "bid", name: "Hostile Takeover Bid", sub: "Act II boss", venue: "away", boss: "bid", q: 8 }]
     ];
     for (const [name, patch] of variants) {

@@ -4912,3 +4912,109 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .ia.ia-x { width: auto; height: auto; }
 /* Fight opener caption (the line the old intro card carried): low on the stage so it never covers the opponent's speech bubble */
 .sc-cap.sc-why { top: auto; bottom: 36px; }
+
+/* ==== Office strip repaint (2026-11-16) — append after the existing .of-* rules in src/css/style.css.
+   Assets live in assets/office/. Era comes from body.era-1/2/3 (already set); executive from .of-room.ex-<id> (NEW hook). ==== */
+
+/* Back wall plate per era (replaces room-hub*.webp behind the strip only) */
+.office .of-room { background: #c9a96a url("assets/office/wall-e1.webp") center 40% / cover no-repeat; }
+body.era-1 .office .of-room { background-image: url("assets/office/wall-e1.webp"); }
+body.era-2 .office .of-room { background-image: url("assets/office/wall-e2.webp"); background-color: #5f7f86; }
+body.era-3 .office .of-room { background-image: url("assets/office/wall-e3.webp"); background-color: #e6cf9a; }
+.office .of-room::before { opacity: .45; z-index: 6; mix-blend-mode: multiply; } /* paper grain over everything, under the gauges */
+
+/* Window: painted view plate behind the live SVG; SVG keeps only the collapse overlays (smog, fires, plumes, flood) */
+.of-window { border: 3px solid #5a3a1c; box-shadow: inset 0 0 0 1px #1f2e2f, 0 0 0 1.5px #1f2e2f, 2px 2px 0 rgba(20, 32, 33, .4); border-radius: 1px; background: #e9d9b6; }
+body.era-2 .of-window { border-color: #3f5557; }
+body.era-3 .of-window { border-width: 2px; border-color: #1f2e2f; }
+.of-glass { background: url("assets/office/view-e1.webp") center 62% / cover no-repeat; }
+body.era-2 .of-glass { background-image: url("assets/office/view-e2.webp"); }
+body.era-3 .of-glass { background-image: url("assets/office/view-e3.webp"); }
+.of-window::after { width: 3px; margin-left: -1.5px; background: #1f2e2f; opacity: 1; }
+body.era-1 .of-window::after { background: #5a3a1c; box-shadow: 0 0 0 1px #1f2e2f; }
+body.era-3 .of-window::after { width: 1.5px; }
+.of-city .sky, .of-city .sun, .of-city .skyline, .of-city .era-props, .of-city .sea, .of-city .glint, .of-city .isle, .of-city .palm { display: none; }
+.of-city .smog { mix-blend-mode: multiply; }
+.of-room.city-2 .of-glass { filter: sepia(.18) saturate(.9); }
+.of-room.city-3 .of-glass { filter: sepia(.32) saturate(.78) brightness(.9); }
+.of-room.city-4 .of-glass { filter: sepia(.45) saturate(.65) brightness(.74); }
+.of-room.holo .of-glass { filter: none; } /* Holo-View shows the calm plate */
+
+/* Desk: painted desk front that overlaps the seated executive's lap; the live cash stack stays on top */
+.of-desk { z-index: 3; }
+.of-desk::before { content: ""; position: absolute; left: -6%; right: -6%; bottom: -2px; height: 210%; background: url("assets/office/desk-e1.webp") center bottom / 100% 100% no-repeat; pointer-events: none; }
+body.era-2 .of-desk::before { background-image: url("assets/office/desk-e2.webp"); }
+body.era-3 .of-desk::before { background-image: url("assets/office/desk-e3.webp"); height: 175%; }
+.of-desksvg { z-index: 1; }
+.of-desksvg .dtop, .of-desksvg .lamp, .of-desksvg .lampshade { display: none; }
+.of-desksvg .stack rect { fill: #e9d9a6; stroke: #1f2e2f; stroke-width: .6; }
+.of-desksvg .stack rect:nth-child(odd) { fill: #8fb3a4; }
+@media (min-width: 900px) and (orientation: landscape), (min-width: 1000px) { .of-desk::before { height: 160%; left: 0; right: 0; background-size: 100% 100%; } }
+
+/* Executive: their own art at the desk (front-<id>.webp, unchanged) + plant + signature props (NEW elements) */
+.of-exec { z-index: 2; }
+.of-plant { position: absolute; z-index: 1; left: 2%; bottom: -14%; height: 82%; aspect-ratio: 177 / 288; background: url("assets/office/plant-e1.webp") center bottom / contain no-repeat; pointer-events: none; }
+body.era-2 .of-plant { background-image: url("assets/office/plant-e2.webp"); aspect-ratio: 153 / 264; }
+body.era-3 .of-plant { background-image: url("assets/office/plant-e3.webp"); aspect-ratio: 195 / 272; }
+.of-sig { position: absolute; pointer-events: none; background: center / contain no-repeat; filter: drop-shadow(1.5px 1.5px 0 rgba(20, 32, 33, .35)); }
+.of-sig-wall { z-index: 0; right: 3%; top: 30%; height: 34%; aspect-ratio: 1.1; }
+.of-sig-desk { z-index: 4; left: 4%; bottom: 88%; height: 70%; aspect-ratio: 1; }
+.of-sig-floor { z-index: 4; right: -2%; bottom: 0; height: 120%; aspect-ratio: 1; }
+@media (max-width: 899px) and (orientation: portrait), (max-width: 699px) { .of-sig-floor { display: none; } .of-sig-desk { height: 95%; } }
+.of-room.ex-mara    .of-sig-wall { background-image: url("assets/office/exec-mara-wall.webp"); }
+.of-room.ex-mara    .of-sig-desk { background-image: url("assets/office/exec-mara-desk.webp"); }
+.of-room.ex-mara    .of-sig-floor { background-image: url("assets/office/exec-mara-floor.webp"); }
+.of-room.ex-reid    .of-sig-wall { background-image: url("assets/office/exec-reid-wall.webp"); aspect-ratio: .76; }
+.of-room.ex-reid    .of-sig-desk { background-image: url("assets/office/exec-reid-desk.webp"); }
+.of-room.ex-reid    .of-sig-floor { background-image: url("assets/office/exec-reid-floor.webp"); }
+.of-room.ex-imani   .of-sig-wall { background-image: url("assets/office/exec-imani-wall.webp"); }
+.of-room.ex-imani   .of-sig-desk { background-image: url("assets/office/exec-imani-desk.webp"); }
+.of-room.ex-imani   .of-sig-floor { background-image: url("assets/office/exec-imani-floor.webp"); }
+.of-room.ex-julian  .of-sig-wall { background-image: url("assets/office/exec-julian-wall.webp"); aspect-ratio: 1.26; }
+.of-room.ex-julian  .of-sig-desk { background-image: url("assets/office/exec-julian-desk.webp"); }
+.of-room.ex-julian  .of-sig-floor { background-image: url("assets/office/exec-julian-floor.webp"); }
+.of-room.ex-soren   .of-sig-wall { background-image: url("assets/office/exec-soren-wall.webp"); }
+.of-room.ex-soren   .of-sig-desk { background-image: url("assets/office/exec-soren-desk.webp"); }
+.of-room.ex-soren   .of-sig-floor { background-image: url("assets/office/exec-soren-floor.webp"); }
+.of-room.ex-cassius .of-sig-wall { background-image: url("assets/office/exec-cassius-wall.webp"); aspect-ratio: 1.22; }
+.of-room.ex-cassius .of-sig-desk { background-image: url("assets/office/exec-cassius-desk.webp"); }
+.of-room.ex-cassius .of-sig-floor { background-image: url("assets/office/exec-cassius-floor.webp"); }
+
+/* Front door: painted closed leaf inside .dleaf (so knock rattle/shake still animate it) + painted open frame under it */
+.of-doorsvg .dframe, .of-doorsvg .dpanel, .of-doorsvg .glass, .of-doorsvg .knob, .of-doorsvg .plate, .of-doorsvg .stud { display: none; }
+.of-doorsvg .dimg-open { opacity: 0; }
+.of-doorsvg .heads { mix-blend-mode: multiply; }
+.of-doorsvg .gap { fill: #f3e6c8; opacity: .55; }
+.of-room.door-3 .of-doorsvg .gap { fill: #b8553a; opacity: .95; }
+.of-room.padded .of-doorsvg .dimg-closed { filter: sepia(.5) hue-rotate(-20deg) saturate(1.4); } /* soundproofed tint; swap for a padded leaf later */
+.of-room.ofx-visit.ofx-go .of-doorsvg .dleaf { animation: ofxLeafOff 2.2s steps(1) both; }
+.of-room.ofx-visit.ofx-go .of-doorsvg .dimg-open { animation: ofxOpenOn 2.2s steps(1) both; }
+@keyframes ofxLeafOff { 0%, 27% { opacity: 1; transform: none; } 28%, 100% { opacity: 0; } }
+@keyframes ofxOpenOn { 0%, 27% { opacity: 0; } 28%, 100% { opacity: 1; } }
+
+/* Back door (away fights): painted service door per era */
+.ofx-back { background: #17233a; border: 0; box-shadow: inset 0 0 0 2px #1f2e2f; }
+.ofx-bleaf { inset: 0; box-shadow: none; background: url("assets/office/backdoor-e1-leaf.webp") center / 100% 100% no-repeat; }
+.of-room.ofx-e2 .ofx-bleaf { background-image: url("assets/office/backdoor-e2-leaf.webp"); }
+.of-room.ofx-e3 .ofx-bleaf { background-image: url("assets/office/backdoor-e3-leaf.webp"); }
+
+/* Vehicles: painted sprites (img instead of inline SVG) */
+.ofx-veh img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ofx-car { aspect-ratio: 389 / 150; height: 30%; bottom: 4%; }
+.ofx-air { aspect-ratio: 406 / 149; height: 26%; bottom: auto; top: 14%; }
+
+/* Matte pass on leftovers that still glow */
+body.era-3 .of-wallart i:not(.empty) { box-shadow: 2px 2px 0 rgba(20, 32, 33, .45), inset 0 0 0 1px #1f2e2f; background: #f3e6c8; }
+.of-wallart i { background: #f3e6c8; border-color: #1f2e2f; }
+.of-wallart i.empty { background: rgba(243, 230, 200, .35); }
+
+/* Wall-art slots in the short office strip (phones and portrait tablets): the executive's head reaches the top of the
+   room, so the row hangs top-left over the wall and window frame instead of across the head. Empty slots only on tablet. */
+@media (orientation: portrait), (max-width: 899px) {
+  .office .of-wallart { top: 2%; left: 3%; right: auto; justify-content: flex-start; gap: 2px; }
+  .office .of-wallart i { width: 14px; height: 15px; font-size: 9px; border-width: 1.5px; }
+  .office .of-wallart i .ia, .office .of-wallart i img { width: 100%; height: 100%; }
+}
+@media (max-width: 620px) {
+  .office .of-wallart i.empty, .office .of-wallart i:nth-child(n+6) { display: none; }
+}

@@ -147,7 +147,7 @@
         broken: "Fine. Keys are on the counter. Kids are at my sister's.", martyred: "Drag a nurse off her own street on the six o'clock news. Go on.",
         deal: "Leave {it} alone, modify the loans, and we go home. Today.", walked: "We're staying. All of us. {It} can wait." } },
     /* Today · The Top */
-    crowe: { why: "You're {doing}, and Victor Crowe wants it, and your company with it. Crowe Terminals owns the port, the app and the tide tables. 9:41am, top floor. He sent for you.",
+    crowe: { why: "You're {doing}, and Victor Crowe wants it, and your company with it. Meridian Freight Exchange owns the port, the app and the tide tables. 9:41am, top floor. He sent for you.",
       open: "I don't build. I acquire. Today I'm acquiring {it}. And you." },
     rosa: { why: "You're {doing}, and Rosa Lind has brought 300 people, a megaphone and a livestream into your lobby to stop it. 41k watching.",
       open: "We're not leaving until you drop {it}. We brought snacks. And Gran's casserole dish." },

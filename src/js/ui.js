@@ -1767,8 +1767,14 @@
       var bw = Math.max(18, Math.round(h * 0.34)), bx = Math.round(eb.left - rb.left - bw - 10);
       var win = room.querySelector(".of-window .of-glass") || room.querySelector(".of-window");
       var wb = win.getBoundingClientRect(); win.style.setProperty("--ww", Math.round(wb.width) + "px");
-      if (bx < wb.right - rb.left + 2) bx = Math.round(wb.right - rb.left + 4);
-      add(room, '<span class="ofx-back" style="left:' + bx + "px;width:" + bw + 'px"><i class="ofx-bleaf"></i><b>EXIT</b></span>');
+      /* only dodge the window when it shares the exec's row (phone strip); on the tablet stack the window sits above */
+      var sameRow = wb.bottom > eb.top + 4;
+      if (sameRow && bx < wb.right - rb.left + 2) bx = Math.round(wb.right - rb.left + 4);
+      if (bx < 2) bx = 2;
+      var btop = sameRow ? "" : "top:" + Math.max(0, Math.round(eb.top - rb.top - 14)) + "px;";
+      add(room, '<span class="ofx-back" style="' + btop + "left:" + bx + "px;width:" + bw + 'px"><i class="ofx-bleaf"></i><b>EXIT</b></span>');
+      /* the executive turns their back (their own back-<id> art) on the way out */
+      if (ex && ex.tagName === "IMG" && E.back) { ex.dataset.front = ex.getAttribute("src"); ex.setAttribute("src", E.back); }
       var dx = Math.round(bx + bw / 2 - (eb.left + eb.width / 2 - rb.left));
       room.style.setProperty("--ofx-dx", dx + "px");
       add(win, '<span class="ofx-veh ' + (E.air ? "ofx-air" : "ofx-car") + '">' + E.veh + "</span>");
@@ -1778,6 +1784,7 @@
       if (ended) return; ended = true; timers.forEach(clearTimeout);
       shield.removeEventListener("pointerdown", onSkip); document.removeEventListener("keydown", onKey, true);
       added.forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+      if (ex && ex.dataset && ex.dataset.front) { ex.setAttribute("src", ex.dataset.front); delete ex.dataset.front; }
       room.classList.remove("ofx", "ofx-go", cls, "ofx-e" + E.era); room.style.removeProperty("--ofx-dx"); if (office) { office.classList.remove("ofx-focus"); office.style.removeProperty("--ofx-s"); office.style.transformOrigin = ""; }
       done(true, skipped);
     }

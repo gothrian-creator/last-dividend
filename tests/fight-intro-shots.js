@@ -12,7 +12,7 @@ const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png
 const DRIVER = fs.readFileSync(path.join(__dirname, "era-driver.js"), "utf8");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SCENES = JSON.parse(process.env.SCENES || "null") || [
-  ["visitor-1978-dunn", { seed: "eras-0", exec: "mara", style: "any", stop: "fight:dunn", strip: true }],
+  ["visitor-1978-moretti", { seed: "eras-0", exec: "mara", style: "any", stop: "fight:moretti", strip: true }],
   ["away-2008-gray", { seed: "eras-0", exec: "mara", style: "any", stop: "fight:gray", strip: true }]
 ];
 const VPS = (process.env.VPS || "360x800,412x915,800x1280,1280x800").split(",").map((s) => s.split("x").map(Number));
@@ -34,6 +34,7 @@ const RM = !!process.env.RM;
   const page = await browser.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push("pageerror " + e.message));
+  page.on("response", (r) => { if (r.status() >= 400 && /\/assets\//.test(r.url())) errors.push("missing asset " + r.status() + " " + r.url().replace(/^.*\/assets\//, "assets/")); });
   page.on("console", (m) => { if (m.type() === "error") errors.push("console " + m.text()); });
   page.on("response", (r) => { if (r.status() >= 400) errors.push("http " + r.status() + " " + r.url()); });
   if (RM) await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);

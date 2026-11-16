@@ -267,10 +267,12 @@
     if (holo) h += '<rect class="scan" x="0" y="0" width="200" height="110"/>';
     return h + "</svg>";
   }
-  function doorSvg(lv, quiet, padded) {
+  function doorSvg(lv, quiet, padded, era) {
+    var e = Math.max(1, Math.min(3, era || 3));
     var h = '<svg class="of-doorsvg" viewBox="0 0 60 100" aria-hidden="true">';
+    h += '<image class="dimg-open" href="assets/office/door-e' + e + '-open.webp" x="2" y="2" width="56" height="98" preserveAspectRatio="xMidYMax meet"/>';
     h += '<rect class="dframe" x="4" y="4" width="52" height="96" rx="3"/>';
-    h += '<g class="dleaf"><rect class="dpanel" x="9" y="9" width="42" height="88" rx="2"/>';
+    h += '<g class="dleaf"><image class="dimg-closed" href="assets/office/door-e' + e + '-closed.webp" x="2" y="2" width="56" height="98" preserveAspectRatio="xMidYMax meet"/><rect class="dpanel" x="9" y="9" width="42" height="88" rx="2"/>';
     if (padded) { for (var r = 0; r < 4; r++) for (var c = 0; c < 3; c++) h += '<circle class="stud" cx="' + (16 + c * 14) + '" cy="' + (20 + r * 20) + '" r="1.6"/>'; }
     h += '<rect class="glass" x="16" y="15" width="28" height="30" rx="2"/>';
     h += '<g class="sign"><rect x="21" y="18" width="18" height="11"/><rect x="29" y="29" width="2" height="16"/></g>';
@@ -305,7 +307,8 @@
       (f.deck ? '<button class="of-deckbtn" id="btn-deck" aria-label="Deck, ' + f.deck.length + ' cards">🃏 ' + f.deck.length + "</button>" : "") +
       (ring ? '<button class="of-phone ringing" id="btn-phone" aria-label="' + esc(ERA ? ERA.phone : "The phone is ringing") + '">' + (ERA ? ERA.phoneIcon : "☎") + "</button>" : "") +
       (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</span></div>";
-    h += '<div class="of-room mood-' + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
+    var exk = execArt(state.executiveId);
+    h += '<div class="of-room ex-' + exk + " mood-" + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
     h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';
     if (f.hand) { h += '<div class="of-wallart" aria-hidden="true">'; for (var wi = 0; wi < (f.cap || 5); wi++) { var wa = f.hand[wi] && LD.assetById(f.hand[wi].id); h += wa ? "<i>" + IA(wa) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
     /* Window */
@@ -315,14 +318,14 @@
         (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
         "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
     /* Executive */
-    h += '<div class="of-exec" data-art="office-exec" aria-label="' + esc(exec.name) + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + '">' + (function () { var fa = LD.execFrontArt(state.executiveId); return '<img class="of-portrait" src="' + fa.src + '" alt="" draggable="false" style="--ar:' + fa.ar + '"><span class="of-mood" aria-hidden="true"></span>'; })() + "</div>";
+    h += '<div class="of-exec" data-art="office-exec" aria-label="' + esc(exec.name) + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + '">' + '<i class="of-plant" aria-hidden="true"></i><i class="of-sig of-sig-wall" aria-hidden="true"></i>' + (function () { var fa = LD.execFrontArt(state.executiveId); return '<img class="of-portrait" src="' + fa.src + '" alt="" draggable="false" style="--ar:' + fa.ar + '"><span class="of-mood" aria-hidden="true"></span>'; })() + "</div>";
     /* Desk + cash */
     var bills = Math.max(0, Math.min(8, Math.round(state.cash / 8)));
     var stack = ""; for (var i = 0; i < bills; i++) stack += '<rect x="' + (6 + (i % 2) * 3) + '" y="' + (26 - i * 3.2) + '" width="26" height="3" rx="0.8"/>';
-    h += '<div class="of-desk" data-art="office-desk"><svg class="of-desksvg" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><rect class="dtop" x="0" y="4" width="120" height="30" rx="2"/><g class="stack">' + stack + '</g><rect class="lamp" x="96" y="0" width="3" height="10"/><path class="lampshade" d="M90 2 h15 l-3 -6 h-9z"/></svg></div>';
+    h += '<div class="of-desk" data-art="office-desk"><svg class="of-desksvg" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><rect class="dtop" x="0" y="4" width="120" height="30" rx="2"/><g class="stack">' + stack + '</g><rect class="lamp" x="96" y="0" width="3" height="10"/><path class="lampshade" d="M90 2 h15 l-3 -6 h-9z"/></svg><i class="of-sig of-sig-desk" aria-hidden="true"></i><i class="of-sig of-sig-floor" aria-hidden="true"></i></div>';
     /* Door + unrest */
     var dn = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
-    h += '<div class="of-door" data-art="office-door">' + doorSvg(door, quiet, padded) + '<span class="of-knock" aria-hidden="true">' + (door >= 3 ? "BANG!" : door >= 2 ? "THUD" : "knock") + "</span>" +
+    h += '<div class="of-door" data-art="office-door">' + doorSvg(door, quiet, padded, ERA ? ERA.act : 3) + '<span class="of-knock" aria-hidden="true">' + (door >= 3 ? "BANG!" : door >= 2 ? "THUD" : "knock") + "</span>" +
       (door >= 3 && !quiet ? '<span class="of-voices" aria-hidden="true">“Open up!”</span>' : "") +
       ogauge("unrest", "✊", "Unrest", state.unrest, false, dn,
         "Unrest " + state.unrest + "/100 · " + dn + ". Crisis deals likely from 48; crises cannot be paid off from " + m.crisisNoPayAt + "; the board removes you at " + LD.MAX_UNREST + ".") + "</div>";
@@ -478,8 +481,8 @@
   /* ---------- Fight scenes: one shared stage, a room and a face per faction ---------- */
   var FACTIONS = {
     regulator: { who: "Agnes Hale", role: "Federal Regulator", art: "hale", room: "regulator", place: "Her hearing room" },
-    rival: { who: "Victor Crowe", role: "Crowe Terminals", art: "crowe", room: "rival", place: "Crowe Terminals, top floor" },
-    bid: { who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "rival", place: "Crowe Terminals, top floor" },
+    rival: { who: "Victor Crowe", role: "Meridian Freight Exchange", art: "crowe", room: "exchange", place: "Meridian Freight Exchange, top floor" },
+    bid: { who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "exchange", place: "Meridian Freight Exchange, top floor" },
     protest: { who: "Rosa Lind", role: "The People", art: "rosa", room: "protest", place: "Your lobby glass" },
     journalist: { who: "Dev Okafor", role: "The Ledger", art: "okafor", room: "journalist", place: "The Ledger's front steps" },
     hearing: { who: "Sen. Walt Brennan", role: "Senate Committee", art: "brennan", room: "senate", place: "The Senate chamber" },
@@ -555,30 +558,14 @@
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
      and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */
   var OFX_FAR = { senate: 1, crash: 1, keys: 1 };
-  var OFX_VEH = {
-    car: [
-      /* 1978 Checker-style cab */
-      '<svg viewBox="0 0 64 26"><path d="M4 18 L6 11 L16 10 L22 3 H42 L49 10 L60 12 L61 19 Z" fill="#c9942a" stroke="#1f2e2f" stroke-width="1.6" stroke-linejoin="round"/><rect x="21" y="11" width="22" height="3" fill="#1f2e2f"/><path d="M24 5 H33 V10 H20 Z M35 5 H41 L46 10 H35 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.2"/><rect x="28" y="0.5" width="8" height="2.6" fill="#f8eedb" stroke="#1f2e2f" stroke-width="1"/><circle cx="16" cy="19" r="4.6" fill="#17233a" stroke="#1f2e2f" stroke-width="1.4"/><circle cx="49" cy="19" r="4.6" fill="#17233a" stroke="#1f2e2f" stroke-width="1.4"/><circle cx="16" cy="19" r="1.6" fill="#c9b07a"/><circle cx="49" cy="19" r="1.6" fill="#c9b07a"/></svg>',
-      /* 2008 black town car */
-      '<svg viewBox="0 0 70 24"><path d="M3 17 L5 11 L18 9 L25 3 H46 L54 9 L67 11 L68 18 Z" fill="#1f2e2f" stroke="#0e1626" stroke-width="1.6" stroke-linejoin="round"/><path d="M27 5 H36 V9 H22 Z M38 5 H45 L51 9 H38 Z" fill="#8fa3a4" stroke="#0e1626" stroke-width="1.1"/><path d="M6 13 H66" stroke="#c8cfcc" stroke-width="1"/><circle cx="17" cy="18" r="4.4" fill="#0e1626" stroke="#c8cfcc" stroke-width="1.2"/><circle cx="54" cy="18" r="4.4" fill="#0e1626" stroke="#c8cfcc" stroke-width="1.2"/></svg>',
-      /* Today: matte electric coupe */
-      '<svg viewBox="0 0 66 24"><path d="M3 18 C3 12 10 11 18 10 C24 4 40 3 48 9 C58 10 63 12 63 18 Z" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.6" stroke-linejoin="round"/><path d="M22 9.5 C27 5 39 5 45 9.5 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.1"/><path d="M58 13 h4" stroke="#f3e6c8" stroke-width="1.6"/><circle cx="17" cy="18.5" r="4.4" fill="#17233a" stroke="#1f2e2f" stroke-width="1.3"/><circle cx="50" cy="18.5" r="4.4" fill="#17233a" stroke="#1f2e2f" stroke-width="1.3"/></svg>'
-    ],
-    air: [
-      /* 1978 airship */
-      '<svg viewBox="0 0 80 30"><ellipse cx="38" cy="12" rx="32" ry="10" fill="#e3d2a6" stroke="#1f2e2f" stroke-width="1.6"/><path d="M14 12 H64 M38 2.5 V21.5" stroke="#b8553a" stroke-width="1.2" opacity=".8"/><path d="M5 12 L-1 5 L1 12 L-1 19 Z" fill="#b8553a" stroke="#1f2e2f" stroke-width="1.2"/><rect x="30" y="21" width="15" height="6" rx="1.5" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.2"/></svg>',
-      /* 2008 airliner */
-      '<svg viewBox="0 0 80 26"><path d="M4 13 C4 10 10 9 18 9 H66 C72 9 77 11 77 13 C77 15 72 16 66 16 H18 C10 16 4 15 4 13 Z" fill="#f3e6c8" stroke="#1f2e2f" stroke-width="1.5"/><path d="M8 9 L4 2 H11 L19 9 Z" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.2"/><path d="M34 15 L46 25 H52 L46 15 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.2"/><path d="M20 12.5 H62" stroke="#1f5a5c" stroke-width="1.6" stroke-dasharray="2 2"/></svg>',
-      /* Today private jet */
-      '<svg viewBox="0 0 72 24"><path d="M6 13 C6 10 14 9.5 24 9.5 H58 C66 9.5 70 11.5 70 13 C70 14.5 66 15.5 58 15.5 H24 C14 15.5 6 15 6 13 Z" fill="#f8eedb" stroke="#1f2e2f" stroke-width="1.5"/><path d="M8 10 L5 3 H10 L18 10 Z" fill="#17233a" stroke="#1f2e2f" stroke-width="1.2"/><rect x="14" y="7" width="7" height="3.4" rx="1.5" fill="#17233a"/><path d="M32 15 L42 22 H47 L42 15 Z" fill="#c9942a" stroke="#1f2e2f" stroke-width="1.1"/><path d="M28 12 H56" stroke="#1f2e2f" stroke-width="1.4" stroke-dasharray="1.6 2.4"/></svg>'
-    ]
-  };
+  var OFX_VEH = { car: [1, 2, 3].map(function (e) { return '<img src="assets/office/veh-car-e' + e + '.webp" alt="" draggable="false">'; }),
+    air: [1, 2, 3].map(function (e) { return '<img src="assets/office/veh-air-e' + e + '.webp" alt="" draggable="false">'; }) };
   LD.officeEntrance = function (state) {
     var fg = state && state.fy && state.fy.fight; if (!fg) return null;
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
     var away = venue === "away", air = away && !!OFX_FAR[F.room];
     return { away: away, air: air, era: era, who: F.who, place: F.place || "", opp: "assets/fight/opp-" + F.art + "-idle.webp", ar: F.ar || ART_AR[F.art] || 0.6,
-      veh: away ? OFX_VEH[air ? "air" : "car"][era - 1] : "" };
+      veh: away ? OFX_VEH[air ? "air" : "car"][era - 1] : "", back: "assets/fight/back-" + execArt(state.executiveId) + ".webp" };
   };
   /* The Gallery: a 7-notch crowd meter between you and them. */
   function galHtml(fg) {

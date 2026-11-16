@@ -237,7 +237,7 @@
         ignored: "Nobody came out today. Rain, they said.", martyred: "Evict a nurse on the six o'clock news. Go on.", pyrrhic: "You won. The whole street knows exactly how.",
         deal: "Modify the loan and we go home. Today.", walked: "We're staying. All of us." } },
     /* ===== Now · The Top ===== */
-    crowe: { why: "crowe terminals owns the port, the app and the tide tables. victor crowe would like your company as well. 9:41am.",
+    crowe: { why: "meridian freight exchange owns the port, the app and the tide tables. victor crowe would like your company as well. 9:41am.",
       open: "I don't build. I acquire. Today I'm acquiring you.",
       hit: ["A rounding error.", "Hm. My board will notice that.", "Interesting. Annoying."], block: ["I own the platform you said that on.", "Priced in."],
       react: { money: "You're offering me money. Adorable.", public: "Trending? I own the trend.", law: "My lawyers have lawyers. Their lawyers are bots." },

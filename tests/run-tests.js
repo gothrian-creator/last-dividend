@@ -238,6 +238,16 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   ok(!miss.length && !noArt.length, "painted icons for every Asset, item, fixer and curse (" + LD.ICON_ART.length + "): " + miss.concat(noArt).slice(0, 6).join(", "));
   const b2 = Object.keys(LD.BOSSES).filter((k) => !LD.ICON_SET["boss-" + k]).concat((LD.MEMOS || []).filter((m) => !LD.ICON_SET["memo-" + m.id]).map((m) => m.id), Object.keys(LD.ENCOUNTERS).filter((k) => !/class="ia"/.test(LD.encArt(LD.ENCOUNTERS[k], k))));
   ok(!b2.length, "painted icons for every boss, memo and encounter: " + b2.join(", "));
+  {
+    const DRV = fs.readFileSync(path.join(ROOT, "tests/era-driver.js"), "utf8");
+    const drive = new Function("module", DRV + "; return eraDrive;")(undefined);
+    const fs0 = drive(LD, { seed: "eras-0", exec: "mara", style: "any", stop: "fight:dunn" });
+    const uiSrc = fs.readFileSync(path.join(ROOT, "src/js/ui.js"), "utf8");
+    const html0 = fs0 ? LD.renderFight(fs0, {}) : "";
+    const opener = fs0 ? LD.fightOpener(fs0) : "";
+    ok(!LD.renderFightIntro && !/playFightIntro|id = "fi"/.test(uiSrc) && fs0 && opener.length > 20 && html0.indexOf('id="sc-why"') !== -1 && html0.indexOf(LD.escapeHtml(opener)) !== -1,
+      "no full-screen fight intro card; the opener line shows in the fight's caption on round 1: " + opener.slice(0, 50));
+  }
   ok(/class="ia"/.test(LD.iconArt(LD.FY_ASSETS[0])) && LD.iconArt({ id: "nope", icon: "X" }) === "X", "icon helper paints known ids and falls back to the emoji");
   ok(!ob.length, "opponents complete: " + (ob.slice(0, 6).join("; ") || "all 30"));
   ok(Object.keys(LD.OPPONENTS).length >= 30, "30 faces at the door (got " + Object.keys(LD.OPPONENTS).length + ")");

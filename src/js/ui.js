@@ -1744,26 +1744,27 @@
       scBurst(n ? "Hit " + n : "Blocked!", n ? "ouch" : "shield", you || "#sc-opp");
     }, reduced() ? 0 : 200);
   }
-  /* Fight intro: someone comes through the door (or you go out the back) before the fight screen. Tap to skip. */
-  var FI = { on: false, key: null, done: null, timers: [] };
+  /* Fight start: on the hub the office strip plays the arrival (visitor walks in / you leave by the back door),
+     then the fight opens directly. Tap skips the strip. FI.key makes it once per fight (a resume doesn't replay it). */
+  var FI = { on: false, key: null };
   function fightIntroWanted() {
     var fg = state && state.fy && state.fy.fight;
-    return !!(fg && !fg.done && !fg.played && (fg.round | 0) <= 1 && LD.renderFightIntro && FI.key !== LD.fightIntroKey(state));
+    return !!(fg && !fg.done && !fg.played && (fg.round | 0) <= 1 && FI.key !== LD.fightIntroKey(state));
   }
   function startFight() {
     if (FI.on) return;
     var want = false; try { want = fightIntroWanted(); } catch (e) { want = false; }
-    if (!want) { openFight(); return; }
+    if (!want || reduced() || screen !== "desk") { if (want) FI.key = LD.fightIntroKey(state); openFight(); return; }
     try {
-      if (reduced() || screen !== "desk") playFightIntro(openFight);
-      else { FI.on = true; playOfficeEntrance(function (ran, skipped) { FI.on = false; if (skipped) { FI.key = LD.fightIntroKey(state); openFight(); return; } playFightIntro(openFight, { short: ran }); }); }
+      FI.on = true;
+      playOfficeEntrance(function () { FI.on = false; FI.key = LD.fightIntroKey(state); openFight(); });
     } catch (e) {
       if (window.console) console.error(e);
-      FI.on = false; var x = document.getElementById("fi"); if (x && x.parentNode) x.parentNode.removeChild(x); openFight();
+      FI.on = false; openFight();
     }
   }
   /* Hub office strip: the actual opponent walks in through the strip door to your desk, or you leave by the back
-     door and a car / plane pulls away in the window. ~2 s, tap anywhere to skip; then a short full-screen card. */
+     door and a car / plane pulls away in the window. ~2 s, tap anywhere to skip; then straight into the fight. */
   function playOfficeEntrance(done) {
     var room = document.querySelector(".desk .office .of-room");
     var E = LD.officeEntrance ? LD.officeEntrance(state) : null;
@@ -1776,7 +1777,7 @@
     var eb = ex.getBoundingClientRect(), db = dr.getBoundingClientRect();
     var added = [], ended = false, timers = [];
     function add(parent, html) { var t = document.createElement("div"); t.innerHTML = html; var n = t.firstChild; parent.appendChild(n); added.push(n); return n; }
-    var shield = add(document.body, '<div id="ofx-shield" role="button" aria-label="Skip"><span class="fi-skip ofx-skip">Tap to skip</span></div>');
+    var shield = add(document.body, '<div id="ofx-shield" role="button" aria-label="Skip"><span class="ofx-skip">Tap to skip</span></div>');
     var cls = E.away ? "ofx-away" : "ofx-visit";
     if (office) { var ob = office.getBoundingClientRect(), vw0 = window.innerWidth, vh0 = window.innerHeight;
       var sc = rb.height >= 110 ? 1 : Math.max(1, Math.min(1.45, (vw0 - 12) / ob.width, (vh0 - 12) / ob.height));
@@ -1821,48 +1822,6 @@
     timers.push(setTimeout(function () { finish(false); }, E.away ? 2300 : 2150));
     timers.push(setTimeout(function () { finish(false); }, 5000));
   }
-  function playFightIntro(cb, o) {
-    if (FI.on) return;
-    o = o || {};
-    var short = !!o.short && !reduced();
-    var html = LD.renderFightIntro(state, { reduced: reduced(), short: short });
-    if (!html) { cb(); return; }
-    FI.on = true; FI.key = LD.fightIntroKey(state);
-    var host = document.createElement("div"); host.id = "fi"; host.innerHTML = html;
-    document.body.appendChild(host);
-    var root = host.firstChild, away = root.classList.contains("fi-away"), rm = reduced();
-    var total = rm ? 1000 : short ? 1050 : 3000, ended = false;
-    function clear() { FI.timers.forEach(clearTimeout); FI.timers = []; }
-    function end() {
-      if (ended) return; ended = true; clear();
-      host.removeEventListener("pointerdown", skip); document.removeEventListener("keydown", key, true);
-      FI.on = false;
-      try { if (state && state.fy && state.fy.fight && !state.ended) cb(); } catch (e) { if (window.console) console.error(e); }
-      host.classList.add("out");
-      setTimeout(function () { if (host.parentNode) host.parentNode.removeChild(host); }, rm ? 120 : 260);
-    }
-    function skip(e) { if (e) { e.preventDefault(); e.stopPropagation(); } end(); }
-    function key(e) { if (e.key === "Escape" || e.key === " " || e.key === "Enter") skip(e); }
-    host.addEventListener("pointerdown", skip);
-    document.addEventListener("keydown", key, true);
-    FI.done = end;
-    /* Start the clock once the art is in (or after 450 ms at worst), and always finish: the fail-safe can't be skipped. */
-    var go = false, art = LD.fightIntroArt ? LD.fightIntroArt(state) : [], left = art.length;
-    function begin() {
-      if (go || ended) return; go = true;
-      root.classList.add("go");
-      if (!rm && !short) {
-        if (!away) FI.timers.push(setTimeout(function () { SFX.play("knock", Math.max(1, LD.doorLevel(state))); }, 60));
-        FI.timers.push(setTimeout(function () { SFX.play(away ? "pick" : "flip"); }, away ? 120 : 380));
-      }
-      FI.timers.push(setTimeout(end, total));
-    }
-    art.forEach(function (src) { var im = new Image(); im.onload = im.onerror = function () { if (--left <= 0) begin(); }; im.src = src; });
-    if (!left) begin();
-    FI.timers.push(setTimeout(begin, 450));
-    setTimeout(function () { if (!ended) end(); }, total + 2500);
-  }
-  LD.fightIntroSkip = function () { if (FI.done) FI.done(); };
   function openFight() {
     if (!state || !state.fy || !state.fy.fight || FI.on) return;
     hideOverlay();
@@ -1876,7 +1835,10 @@
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
     showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap }), "df-mode");
     var root = doorEl();
-    var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"); if (cb && cb.parentNode) cb.parentNode.removeChild(cb); });
+    var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"), stg = cb && cb.parentNode; if (stg) stg.removeChild(cb);
+      /* the familiar-face card held the stage; now show the opener caption it was covering */
+      var fg1 = state.fy && state.fy.fight, op = fg1 && !fg1.played && !$("sc-cap") && !$("sc-why") && LD.fightOpener ? LD.fightOpener(state, fg1) : "";
+      if (stg && op) { var w = document.createElement("div"); w.className = "sc-cap sc-why e" + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)); w.id = "sc-why"; w.setAttribute("role", "note"); w.innerHTML = "<span>" + LD.escapeHtml(op) + "</span>"; stg.appendChild(w); } });
     Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
       b.addEventListener("click", function () { playCard(+b.getAttribute("data-u")); });
     });

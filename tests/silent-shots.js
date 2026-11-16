@@ -62,7 +62,7 @@ const VIDEO = (process.env.VIDEO || "412x915").split(",");
       }
       await click("#btn-continue");
       if (await page.waitForSelector("#fy-boss-ok", { timeout: 900 }).catch(() => null)) await click("#fy-boss-ok");
-      await page.waitForFunction(() => !document.getElementById("fi") && document.getElementById("door").classList.contains("on") && document.querySelector("#door .df-hand"), { timeout: 9000 }).catch(() => errors.push("fight never opened " + vp + " " + name));
+      await page.waitForFunction(() => document.getElementById("door").classList.contains("on") && document.querySelector("#door .df-hand"), { timeout: 9000 }).catch(() => errors.push("fight never opened " + vp + " " + name));
       await sleep(1300);
       await shot(vp, name, "1-open");
       const playId = async (id) => {

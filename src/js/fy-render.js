@@ -533,65 +533,24 @@
         (img ? '<img src="' + img + '" alt="" draggable="false">' : "") + '<div class="sc-cb-t"><b>' + esc(cb.who) + '</b><q>' + esc(cb.line) + "</q><em>" + esc(cb.effect) + '</em></div><button class="sc-cb-ok" id="sc-cb-ok">Face them ▸</button></div>';
     }
     h += '<div class="sc-you" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
+    if (!fg.done && !fg.played && (fg.round | 0) <= 1 && !(ui.cap && ui.cap.t) && !(fg.cb && !ui.cbHide)) { var opener = LD.fightOpener(state, fg); if (opener) h += '<div class="sc-cap sc-why e' + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)) + '" id="sc-why" role="note"><span>' + esc(opener) + "</span></div>"; }
     if (ui.cap && ui.cap.t && !fg.done) h += '<div class="sc-cap e' + ui.cap.era + (ui.cap.w4 ? " w4" : "") + '" id="sc-cap" role="note"><span>' + esc(ui.cap.t) + "</span></div>";
     h += '<div class="sc-place" aria-hidden="true">' + (venue === "home" ? "🚪 Your office · they came to you" : venue === "lobby" ? "🏢 Your lobby · through the glass" : "↩ Out the back door · " + esc(F.place)) + "</div>";
     if (fg.done) h += '<div class="sc-stamp ' + (how || "lost") + (out ? " o-" + out : "") + '" aria-hidden="true">' + (F.opp && out && LD.OUT_LABEL && LD.OUT_LABEL[out] ? LD.OUT_LABEL[out] : F.opp && LD.HOW_LABEL[how] ? LD.HOW_LABEL[how] : fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
     return h;
   }
-  /* ---------- Fight intro: a 2-3 s comic beat before the fight screen ----------
-     Visitors (home / lobby): your office door swings open, a silhouette steps in out of the hall light and its
-     shadow falls across your floor. Away: you slip out the back door, down the stairwell, into their room. */
+  /* ---------- Fight opener: the narrator line that used to sit on the intro card. Shown in the fight as the
+     yellow caption until your first play (the opponent's own opening words stay in their speech bubble). ---------- */
   var FI_LINES = {
     home: ["The door swings open. {s} doesn't knock twice.", "Nothing on the calendar. {s} walks in anyway.", "No invite, no ping. {s} is already in the room."],
     lobby: ["Down in the lobby, the crowd is pressed to the glass.", "The lobby glass is rattling. Somebody brought a camera.", "The lobby glass is shaking, and it's streaming live."],
     away: ["Out the back stairs, collar up. Next stop: {p}.", "Out the service exit before the press sees. {p}.", "Out the back, phone face-down. {p}."]
   };
-  var FI_SIGN = { home: ["PRIVATE", "EXECUTIVE SUITE", "FOCUS ROOM"], lobby: ["LOBBY", "LOBBY", "LOBBY"] };
-  var FI_EXIT = ["STAIRS", "SERVICE EXIT", "EXIT"];
   LD.fightIntroKey = function (state) { var fg = state && state.fy && state.fy.fight; return fg ? (fg.q || 0) + ":" + (fg.enc || "") + ":" + (fg.opp || "") : ""; };
-  LD.renderFightIntro = function (state, opts) {
-    opts = opts || {};
-    var fg = state && state.fy && state.fy.fight; if (!fg) return "";
-    var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
-    var era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
-    var ex = execArt(state.executiveId), exAr = ART_AR["back-" + ex] || 0.8;
-    var kind = fg.boss ? "Boss" : fg.elite ? "Elite" : venue === "home" ? "Home turf" : venue === "lobby" ? "At the glass" : "Away";
-    var place = venue === "home" ? "Your office" : venue === "lobby" ? "Your lobby" : (F.place || "Their turf");
-    var line = (F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
-    var opp = "assets/fight/opp-" + F.art + "-idle.webp", oppAr = F.ar || ART_AR[F.art] || 0.6;
-    var mode = venue === "away" ? "away" : "visit";
-    var h = '<div class="fi fi-' + mode + " fi-v-" + venue + " fi-e" + era + (opts.reduced ? " fi-rm" : "") + (opts.short ? " fi-short" : "") + '" role="dialog" aria-live="polite" aria-label="' + esc(F.who + " — " + kind) + '">';
-    function wall(cls) { return '<div class="fi-wall ' + (cls || "") + '"><span class="fi-rail"></span><span class="fi-frame" aria-hidden="true"><svg viewBox="0 0 60 40" preserveAspectRatio="none"><polyline points="4,32 14,26 22,29 32,15 42,19 56,6" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg></span></div><div class="fi-floor"></div>'; }
-    var you = '<div class="fi-you" style="--ar:' + exAr + '"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
-    function silo(src) { return '<span class="fi-silo" style="-webkit-mask-image:url(' + src + ');mask-image:url(' + src + ')"></span>'; }
-    var oppEl = '<div class="fi-opp" style="--ar:' + oppAr + '"><img src="' + opp + '" alt="" draggable="false">' + (venue === "away" ? "" : silo(opp)) + "</div>";
-    if (mode === "visit") {
-      var sign = FI_SIGN[venue === "lobby" ? "lobby" : "home"][era - 1];
-      h += '<div class="fi-scene">' + wall() +
-        '<div class="fi-light"></div><div class="fi-shade"></div>' +
-        '<div class="fi-door"><div class="fi-beyond"><span class="fi-hall"></span></div>' + oppEl +
-        '<div class="fi-leaf"><span class="fi-glass"><b>' + esc(sign) + '</b></span><span class="fi-panel"></span><span class="fi-knob"></span></div>' +
-        '<span class="fi-knock" aria-hidden="true">' + (venue === "lobby" ? "BANG BANG" : era === 3 ? "tap tap" : "knock knock") + "</span></div>" +
-        you + "</div>";
-    } else {
-      h += '<div class="fi-strip">' +
-        '<div class="fi-pane fi-p1">' + wall("fi-wall-back") + '<div class="fi-door fi-exit"><div class="fi-beyond fi-dark"></div><div class="fi-leaf"><span class="fi-bar"></span></div><span class="fi-sign">' + esc(FI_EXIT[era - 1]) + "</span></div>" +
-          '<div class="fi-walker" style="--ar:' + exAr + '"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div></div>' +
-        '<div class="fi-pane fi-p2"><span class="fi-pipe"></span><span class="fi-pipe b"></span><svg class="fi-stairs" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,100 0,84 17,84 17,68 34,68 34,52 51,52 51,36 68,36 68,20 85,20 85,4 100,4 100,100" fill="#22304a" stroke="#0e1626" stroke-width="2" vector-effect="non-scaling-stroke"/><polyline points="4,62 21,46 38,30 55,14 72,-2" fill="none" stroke="#c9942a" stroke-width="4" vector-effect="non-scaling-stroke"/><line x1="8" y1="58" x2="8" y2="84" stroke="#c9942a" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".7"/><line x1="25" y1="42" x2="25" y2="68" stroke="#c9942a" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".7"/><line x1="42" y1="26" x2="42" y2="52" stroke="#c9942a" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".7"/><line x1="59" y1="10" x2="59" y2="36" stroke="#c9942a" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".7"/></svg><span class="fi-dframe"></span><span class="fi-lamp"></span><span class="fi-lamp b"></span><span class="fi-cone"></span><span class="fi-cone b"></span>' +
-          '<span class="fi-sil" style="--ar:' + exAr + '">' + silo("assets/fight/back-" + ex + ".webp") + "</span></div>" +
-        '<div class="fi-pane fi-p3"><div class="fi-room" style="background-image:url(assets/fight/room-' + F.room + '.webp)"></div>' + oppEl + you + "</div>" +
-        "</div>";
-    }
-    h += '<div class="fi-plate"><span class="fi-kind">' + esc(kind) + " · " + esc(place) + '</span><b class="fi-who">' + esc(F.who) + '</b><span class="fi-role">' + esc(F.role || "") + "</span></div>" +
-      '<div class="fi-cap"><span>' + esc(line) + "</span></div>" +
-      '<span class="fi-skip">Tap to skip</span></div>';
-    return h;
-  };
-  LD.fightIntroArt = function (state) {
-    var fg = state && state.fy && state.fy.fight; if (!fg) return [];
-    var F = LD.fightFace(fg), ex = execArt(state.executiveId), a = ["assets/fight/opp-" + F.art + "-idle.webp", "assets/fight/back-" + ex + ".webp"];
-    if (LD.fightVenue(fg) === "away") a.push("assets/fight/room-" + F.room + ".webp");
-    return a;
+  LD.fightOpener = function (state, fg) {
+    fg = fg || (state && state.fy && state.fy.fight); if (!fg) return "";
+    var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
+    return (F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
   };
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
      and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */

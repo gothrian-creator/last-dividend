@@ -1716,7 +1716,7 @@ h1, h2, h3 { color: var(--gold-hi); }
 .history li { color: var(--ivory-muted); border-bottom-color: rgba(212, 175, 55, 0.25); }
 
 /* =====================================================================
-   v4: meta progression, map readability, rivals, hologram globe
+   v4: meta progression, map readability, hologram globe
    ===================================================================== */
 .sr-only { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .map .region:focus, .map .pin:focus { outline: none; }
@@ -1728,8 +1728,6 @@ h1, h2, h3 { color: var(--gold-hi); }
 .map .region.owned.s-strike .rim { stroke: #ff7a4a; stroke-width: 5; }
 .map .region.owned.s-revolt .rim, .map .region.warn .rim { stroke: #ff3b2f; stroke-width: 6; animation: revoltpulse 1s ease-in-out infinite; }
 @keyframes revoltpulse { 50% { stroke-opacity: 0.35; } }
-.map .region.rival .top { fill: url(#mg-rival); stroke: #ece6ff; }
-.map .region.rival.rv-1 .top { filter: hue-rotate(-40deg); }
 .map .region.flash .top { animation: rflash 0.4s ease-in-out 4 alternate; }
 @keyframes rflash { to { filter: brightness(1.8) drop-shadow(0 0 10px #fff6c8); } }
 .map .spips rect { fill: rgba(4, 30, 25, 0.75); stroke: rgba(243, 217, 143, 0.7); stroke-width: 1.2; }
@@ -1764,7 +1762,7 @@ h1, h2, h3 { color: var(--gold-hi); }
 .map.lens-mood .spips { transform-box: fill-box; }
 .map.lens-networks .lands, .map.lens-networks .props { opacity: 0.45; }
 .map.lens-networks .route { stroke-width: 6; stroke-opacity: 0.95; }
-.map.lens-holdings .region:not(.owned):not(.rival) .top { opacity: 0.4; }
+.map.lens-holdings .region:not(.owned) .top { opacity: 0.4; }
 .map.lens-holdings .spips, .map.lens-holdings .prop-hz { opacity: 0.25; }
 .map:not(.lens-networks) .route.g-clear { stroke-opacity: 0.3; }
 /* Collapse: oceans grey out, haze rises */
@@ -1785,7 +1783,7 @@ h1, h2, h3 { color: var(--gold-hi); }
 .net-chip.g-strained b { color: #ffb02e; }
 .net-chip.g-disrupted { border-color: #ff3b2f; }
 .net-chip.g-disrupted b { color: #ff6a5a; }
-.net-chip.sel, .rv-row.sel { box-shadow: inset 0 0 0 2px var(--coral); }
+.net-chip.sel { box-shadow: inset 0 0 0 2px var(--coral); }
 .map-zoom { width: 100%; height: 100%; transform-origin: 0 0; touch-action: pan-y; }
 .map-tip { position: absolute; z-index: 9; width: 220px; padding: 10px 12px; border-radius: 10px; background: rgba(5, 34, 28, 0.96); border: 1px solid var(--gold-line); color: var(--ivory); font-size: 14px; display: grid; gap: 3px; pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
 .map-tip[hidden] { display: none; }
@@ -1793,7 +1791,6 @@ h1, h2, h3 { color: var(--gold-hi); }
 .map-tip .tip-warn { color: #ff8a7a; font-weight: 700; }
 .map-tip .pips i { width: 10px; height: 8px; }
 .skip-btn { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); z-index: 12; min-height: 44px; padding: 0 28px; border-radius: 12px; background: linear-gradient(180deg, #0e4238, #062a23); border: 1px solid var(--gold-line); color: var(--gold-hi); font: 700 17px var(--font-sans); box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
-.float.rival { background: #6b5aa8; color: #fff; }
 .float.big { font-size: 22px; padding: 10px 18px; }
 .float { max-width: 340px; white-space: normal; text-align: center; }
 
@@ -1810,7 +1807,6 @@ h1, h2, h3 { color: var(--gold-hi); }
 .rm { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; border-radius: 6px; padding: 1px 6px; align-self: flex-start; }
 .rm.seal { background: rgba(63, 224, 184, 0.18); color: #7ff2c8; }
 .rm.breach { background: rgba(255, 59, 47, 0.2); color: #ff8a7a; }
-.rm.rival { background: rgba(185, 166, 255, 0.2); color: #cfc3ff; }
 
 /* Meters: crisis threshold ticks */
 .m-bar { position: relative; }
@@ -1819,12 +1815,6 @@ h1, h2, h3 { color: var(--gold-hi); }
 .rating-plate small { font: 700 10px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; }
 .head-right { display: flex; gap: 8px; align-items: center; }
 
-/* Rivals panel */
-.rivals { display: grid; gap: 6px; }
-.rv-row { display: grid; grid-template-columns: 12px 1fr; gap: 2px 8px; align-items: center; text-align: left; min-height: 44px; padding: 6px 8px; border-radius: 10px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(185, 166, 255, 0.35); color: var(--ivory); }
-.rv-row i { width: 12px; height: 12px; border-radius: 3px; grid-row: span 2; }
-.rv-row b { font-size: 14px; }
-.rv-row span { font-size: 12px; color: var(--ivory-muted); grid-column: 2; }
 .tick-item { background: none; border: 0; color: inherit; font: inherit; padding: 0; margin-right: 28px; text-decoration: underline dotted rgba(243, 217, 143, 0.6); cursor: pointer; white-space: nowrap; }
 .dz-warn { color: #ffb3a1; background: rgba(138, 28, 20, 0.45); border: 1px solid #ff6a5a; border-radius: 8px; padding: 6px 10px; font-weight: 700; }
 .target.mandate span { color: var(--gold-hi); }
@@ -1942,11 +1932,10 @@ body.cos-stamp-neonsign .bk-stamp rect { fill: #12061e; stroke: #ff6ad5; filter:
 body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
   
 @media (orientation: landscape) and (min-width: 900px) {
-  .desk .dash { grid-template-rows: auto auto minmax(0, 1fr) auto; }
+  .desk .dash { grid-template-rows: auto minmax(0, 1fr) auto; }
   .desk .dash > .dash-meters { grid-row: 1; }
-  .desk .dash > .rivals { grid-row: 2; order: 0; }
-  .desk .dash > .bunker-card { grid-row: 3; }
-  .desk .dash > .ticker { grid-row: 4; }
+  .desk .dash > .bunker-card { grid-row: 2; }
+  .desk .dash > .ticker { grid-row: 3; }
   .boardroom .page-inner { max-width: 980px; }
 }
 
@@ -2125,8 +2114,8 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
     grid-area: dash;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 108px;
-    grid-template-rows: auto auto auto;
-    grid-template-areas: "perf bunk" "news bunk" "rivals rivals";
+    grid-template-rows: auto auto;
+    grid-template-areas: "perf bunk" "news bunk";
     gap: 6px;
     min-height: 0;
     overflow: hidden;
@@ -2144,7 +2133,6 @@ body.cos-stamp-neonsign .bk-stamp text { fill: #ff6ad5; }
   .ticker { grid-area: news; padding: 4px 16px; align-self: stretch; }
   .ticker .panel-k { display: none; }
   .tick-wrap { height: 1.3em; overflow: hidden; padding: 0 8px; }
-  .rivals { grid-area: rivals; padding: 4px 8px; }
 }
 
 @media (orientation: portrait) and (max-height: 780px), (max-width: 380px) and (max-height: 780px) {
@@ -2631,14 +2619,10 @@ body:has(#screen-tutorial.on) .shell,
   .desk:not(.has-sel) .dossier { visibility: hidden; }
 }
 @media (max-width: 620px) and (orientation: portrait) {
-  .desk .dash { grid-template-columns: minmax(0, 1fr) 104px; grid-template-rows: auto auto auto; grid-template-areas: "perf bunk" "rivals bunk" "news news"; gap: 5px; }
+  .desk .dash { grid-template-columns: minmax(0, 1fr) 104px; grid-template-rows: auto auto; grid-template-areas: "perf bunk" "news news"; gap: 5px; }
   .desk .dash > .dash-meters { grid-area: perf; }
   .desk .dash > .bunker-card { grid-area: bunk; width: auto; }
-  .desk .dash > .rivals { grid-area: rivals; padding: 3px 8px; }
   .desk .dash > .ticker { grid-area: news; padding: 3px 8px; }
-  .desk .dash .rivals > .panel-k { display: none; }
-  .desk .dash .rivals * { font-size: 12px; line-height: 1.2; }
-  .desk .dash .rivals > * { margin: 0; padding-top: 1px; padding-bottom: 1px; min-height: 0; }
   .desk .dash .dash-meters .panel-k { font-size: 10px; margin-bottom: 1px; }
   .desk .dash .meters { gap: 4px; }
   .desk .dash .meter { padding: 3px 6px; }
@@ -5801,7 +5785,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     /* World map layer uses its own seeded stream, so deal draws are unchanged. */
     if (LD.initWorld) LD.initWorld(state);
     if (LD.applyStartWorldMods) LD.applyStartWorldMods(state);
-    if (LD.initRivals) LD.initRivals(state);
     if (LD.fyInit) LD.fyInit(state, opts);
     pushLog(state, "Q" + state.turn + " opens. " + exec.name + ", " + exec.firm + (LD.ratingName ? " · rated " + LD.ratingName(rating) : "") + ".");
     return state;
@@ -6311,7 +6294,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   }
 
   function engineerCost(state) {
-    var c = mods(state).engineerCost + (LD.rivalEngineerTax ? LD.rivalEngineerTax(state) : 0);
+    var c = mods(state).engineerCost;
     var exec = execById(state.executiveId);
     if (exec.perks && exec.perks.engineerExtra) c += exec.perks.engineerExtra;
     if (hasFlag(state, "poachedTalent")) c -= 10;
@@ -6679,7 +6662,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var fired = (LD.fyPreClose ? LD.fyPreClose(state, opts) : []).concat(applyPendingDue(state));
     var worldEvents = LD.spreadCrises ? LD.spreadCrises(state) : [];
     worldEvents = worldEvents.concat(LD.resolveWorldQuarter ? LD.resolveWorldQuarter(state) : []);
-    if (LD.resolveRivals) worldEvents = worldEvents.concat(LD.resolveRivals(state));
     worldEvents.forEach(function (ev) { fired.push({ text: ev.text, source: "map", world: ev }); });
     maybeEnd(state);
     if (state.ended) { trackQuarter(state); return { ok: true, state: state, fired: fired, ended: true, world: worldEvents }; }
@@ -6704,13 +6686,12 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var rng = rngFrom(state);
     offerDeals(state, rng);
     state.rngState = rng.state();
-    var sniped = LD.rivalsSnipe ? LD.rivalsSnipe(state) : null;
     if (LD.worldAfterClose) LD.worldAfterClose(state);
     var arrivals = applyIncomingInstalls(state);
     if (arrivals.length) fired = fired.concat(arrivals);
     pushLog(state, "Q" + state.turn + " opens.");
     var draft = LD.fyAfterClose ? LD.fyAfterClose(state) : null;
-    return { ok: true, state: state, fired: fired, ended: false, tick: tick, world: worldEvents, sniped: sniped, draft: draft };
+    return { ok: true, state: state, fired: fired, ended: false, tick: tick, world: worldEvents, draft: draft };
   }
 
   function attemptEvacuation(state) {
@@ -6908,7 +6889,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (!state.world) return state;
     var rng = worldRng(state, "pins:" + state.turn);
     var used = {};
-    var anyRival = LD.REGION_IDS.some(function (id) { var g = state.world.regions[id]; return g.rival != null && !g.owned; });
     var pins = {};
     (state.offered || []).forEach(function (dealId) {
       var deal = LD.dealById(dealId);
@@ -6916,7 +6896,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       var free = LD.REGION_IDS.filter(function (id) { return !used[id]; });
       var pref = free.filter(function (id) {
         var r = state.world.regions[id];
-        if (kind === "claim") return deal.hostile && anyRival ? r.rival != null && !r.owned : !r.owned;
+        if (kind === "claim") return !r.owned;
         if (kind === "calm" || kind === "crisis") return r.stress >= LD.STRESS_TENSE;
         if (kind === "squeeze") return r.owned || r.trait === "boom" || r.trait === "crisis";
         return true;
@@ -6979,7 +6959,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var r = state.world.regions[eff.regionId];
     if (eff.claim) {
       r.owned = true;
-      if (r.rival != null) { if (notes) notes.push("taken from a rival"); r.rival = null; }
       state.world.lastClaim = { regionId: eff.regionId, turn: state.turn };
       if (notes) notes.push("claimed " + eff.regionName);
     }
@@ -7268,10 +7247,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       add("Successful exit", 25, "The doors closed with you inside", "win");
       add("Headroom", Math.max(0, Math.floor((90 - state.collapse) / 2)), "Sealed at collapse " + state.collapse, "win");
     }
-    if (win && state.rivals && state.rivals.length) {
-      var beat = state.rivals.every(function (rv) { return !rv.sealed; });
-      add("First to the door", beat ? 10 : 0, beat ? "No rival sealed before you" : "A rival sealed first", "win");
-    }
     var md = mandateById(state.mandate);
     var met = mandateMet(state);
     if (md) add("Board mandate", met ? LD.MANDATE_BONUS : 0, md.text + (met ? " · met" : win ? " · missed" : " · needs a win"), "win");
@@ -7472,7 +7447,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 
   </script>
   <script>
-/* Last Dividend — rival executives, crisis spread, deal packs (Prospectus). Pure engine extension. Browser + Node. */
+/* Last Dividend — crisis spread, deal aiming, deal packs (Prospectus). Pure engine extension. Browser + Node. */
 (function (root) {
   var LD = root.LD || (root.LD = {});
   function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
@@ -7484,155 +7459,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   LD.ROUTES.forEach(function (r) { LD.NEIGHBORS[r[0]].push(r[1]); LD.NEIGHBORS[r[1]].push(r[0]); });
   /* Which public network each trade route carries (Networks lens). */
   LD.ROUTE_NET = ["power", "water", "air", "food", "air", "food", "water", "power", "food"];
-
-  /* ---------- Rivals ---------- */
-  LD.RIVAL_COLORS = ["#b9a6ff", "#9fd8ff"];
-  function rivalRng(state) {
-    var r = LD.createRng(state.rivalRng != null ? state.rivalRng : LD.hashString("rivals:" + state.seed));
-    return r;
-  }
-  function saveRng(state, r) { state.rivalRng = r.state(); }
-
-  /* AAA: one passive rival. CCC and below: two. Aggression rises with the rating. */
-  function initRivals(state) {
-    var rating = state.rating | 0;
-    var count = rating >= 7 ? 2 : 1;
-    var aggr = Math.round(rating * 0.08 * 100) / 100; /* AAA 0 … D 0.8 */
-    var r = LD.createRng(LD.hashString("rivals:" + state.seed + ":" + state.executiveId));
-    var pool = LD.EXECUTIVES.filter(function (e) { return e.id !== state.executiveId; });
-    pool = r.shuffle(pool);
-    state.rivals = [];
-    for (var i = 0; i < count && i < pool.length; i++) {
-      var e = pool[i];
-      state.rivals.push({
-        id: e.id, name: e.name, firm: e.firm, idx: i, aggr: aggr,
-        engineer: false, sealed: false, sealTurn: 13 - Math.round(aggr * 4) + r.int(3) + i, leaks: 0
-      });
-    }
-    state.rivalRng = r.state();
-    return state;
-  }
-
-  function rivalRegions(state, idx) {
-    if (!state.world) return [];
-    return LD.REGION_IDS.filter(function (id) { var g = state.world.regions[id]; return g.rival === idx && !g.owned; });
-  }
-
-  function rivalEngineerTax(state) {
-    return (state.rivals || []).filter(function (rv) { return rv.engineer; }).length * 4;
-  }
-
-  /* Called by closeQuarter after the regional report. Returns world-style events. */
-  function resolveRivals(state) {
-    var events = [];
-    if (!state.rivals || !state.rivals.length || !state.world) return events;
-    var rng = rivalRng(state);
-    var unrest = 0, collapse = 0;
-    state.rivals.forEach(function (rv) {
-      if (rv.sealed) return;
-      var name = rv.firm;
-      /* Buy a region. */
-      if (rng() < 0.2 + 0.4 * rv.aggr) {
-        var free = LD.REGION_IDS.filter(function (id) { var g = state.world.regions[id]; return !g.owned && g.rival == null; });
-        var boom = free.filter(function (id) { return state.world.regions[id].trait === "boom"; });
-        var pick = boom.length ? rng.pick(boom) : free.length ? rng.pick(free) : null;
-        if (pick) {
-          state.world.regions[pick].rival = rv.idx;
-          events.push({ regionId: pick, kind: "rival-buy", rival: rv.idx, text: name + " buys up " + LD.REGION_NAMES[pick] + "." });
-        }
-      }
-      /* Their plants and squeezes heat the planet and the street. */
-      var n = rivalRegions(state, rv.idx).length;
-      var c = Math.floor(n * 0.45 * rv.aggr);
-      var u = rv.aggr >= 0.7 ? Math.floor(n * 0.5) : 0;
-      if (c || u) {
-        collapse += c; unrest += u;
-        events.push({ regionId: null, kind: "rival-heat", rival: rv.idx, collapse: c, unrest: u, text: name + " squeezes its holdings" + (c ? ": collapse +" + c : "") + (u ? (c ? ", " : ": ") + "unrest +" + u : "") + "." });
-      }
-      /* Hiring the good engineers makes yours dearer. */
-      if (!rv.engineer && state.turn >= 4 && rng() < 0.12 + 0.4 * rv.aggr) {
-        rv.engineer = true;
-        events.push({ regionId: null, kind: "rival-engineer", rival: rv.idx, text: name + " poaches a chief engineer. Yours now cost $4M more." });
-      }
-      /* Sealing first. */
-      if (state.turn >= rv.sealTurn) {
-        rv.sealed = true;
-        var spike = 3 + Math.round(3 * rv.aggr);
-        collapse += spike;
-        events.push({ regionId: null, kind: "rival-seal", rival: rv.idx, collapse: spike, text: rv.name + " seals " + name + "'s bunker first: \u201cSee you never.\u201d Panic: collapse +" + spike + "." });
-      }
-    });
-    saveRng(state, rng);
-    if (collapse) state.collapse = clamp(state.collapse + collapse, 0, LD.MAX_COLLAPSE);
-    if (unrest) state.unrest = clamp(state.unrest + unrest, 0, LD.MAX_UNREST);
-    events.forEach(function (ev) { state.log.unshift({ turn: state.turn, text: ev.text }); });
-    return events;
-  }
-
-  /* After new deals are drawn: an aggressive rival may snipe one of your pins. */
-  function rivalsSnipe(state) {
-    if (!state.rivals || !state.rivals.length) return null;
-    var rng = rivalRng(state);
-    var out = null;
-    state.rivals.forEach(function (rv) {
-      if (out || rv.sealed) return;
-      var plain = state.offered.filter(function (id) { var d = LD.dealById(id); return d && !d.isCrisis; });
-      if (plain.length < 3 || rng() >= 0.06 + 0.3 * rv.aggr) return;
-      var gone = rng.pick(plain);
-      state.offered = state.offered.filter(function (id) { return id !== gone; });
-      out = { dealId: gone, rival: rv.idx, text: rv.firm + " sniped \u201c" + LD.dealById(gone).title + "\u201d before you could sign." };
-      state.log.unshift({ turn: state.turn, text: out.text });
-    });
-    saveRng(state, rng);
-    state.sniped = out;
-    return out;
-  }
-
-  /* ---------- Player sabotage (uses the quarter's regional order, costs unrest) ---------- */
-  LD.OUTBID = { cost: 12, unrest: 4 };
-  LD.LEAK = { unrest: 5, delay: 2 };
-  function sabotageGuard(state) {
-    if (state.ended) return "Run already ended.";
-    var busyS = LD.fyBusy ? LD.fyBusy(state) : null; if (busyS) return busyS;
-    if (state.world.actedTurn === state.turn) return "One regional order per quarter.";
-    return null;
-  }
-  function canOutbid(state, regionId) {
-    var g = state.world.regions[regionId];
-    return !sabotageGuard(state) && g && g.rival != null && !g.owned && state.cash >= LD.OUTBID.cost;
-  }
-  function outbidRegion(state, regionId) {
-    state = LD.deepClone(state);
-    var err = sabotageGuard(state);
-    var g = state.world.regions[regionId];
-    if (!err && (!g || g.rival == null)) err = "No rival holds that region.";
-    if (!err && state.cash < LD.OUTBID.cost) err = "Not enough cash (" + LD.OUTBID.cost + " required).";
-    if (err) return { ok: false, error: err, state: state };
-    var rv = state.rivals[g.rival];
-    state.cash -= LD.OUTBID.cost;
-    state.unrest = clamp(state.unrest + LD.OUTBID.unrest, 0, LD.MAX_UNREST);
-    g.rival = null; g.owned = true; g.stress = Math.max(g.stress, 2);
-    state.world.actedTurn = state.turn;
-    state.log.unshift({ turn: state.turn, text: "Outbid " + (rv ? rv.firm : "a rival") + " for " + LD.REGION_NAMES[regionId] + " (" + LD.OUTBID.cost + " cash, unrest +" + LD.OUTBID.unrest + ")." });
-    return { ok: true, state: state };
-  }
-  function canLeak(state, idx) {
-    var rv = state.rivals && state.rivals[idx];
-    return !!rv && !rv.sealed && !sabotageGuard(state);
-  }
-  function leakRival(state, idx) {
-    state = LD.deepClone(state);
-    var err = sabotageGuard(state);
-    var rv = state.rivals && state.rivals[idx];
-    if (!err && (!rv || rv.sealed)) err = "That rival is out of reach.";
-    if (err) return { ok: false, error: err, state: state };
-    rv.sealTurn += LD.LEAK.delay;
-    rv.leaks += 1;
-    state.unrest = clamp(state.unrest + LD.LEAK.unrest, 0, LD.MAX_UNREST);
-    state.world.actedTurn = state.turn;
-    state.log.unshift({ turn: state.turn, text: "Leaked " + rv.firm + "'s bunker contracts. Their seal slips to Q" + rv.sealTurn + ". Unrest +" + LD.LEAK.unrest + "." });
-    return { ok: true, state: state };
-  }
 
   /* Aim this quarter's Soothe deal at one of your hot regions (swaps pins if needed). */
   function aimDeal(state, dealId, regionId) {
@@ -7675,7 +7501,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   LD.PACKS = [
     { id: "esg", name: "ESG Report", price: 120, text: "Greenwashing: deals that look like Soothe now and bill collapse later." },
     { id: "disaster", name: "Disaster Capitalism", price: 120, text: "Squeezes that pay more the worse collapse gets, plus a new crisis." },
-    { id: "hostile", name: "Hostile Takeover", price: 150, text: "Acquisitions aimed at rival holdings and your own." }
+    { id: "hostile", name: "Hostile Takeover", price: 150, text: "Acquisitions: buy up regions, utilities and ports." }
   ];
   function d(x) { return x; }
   LD.DEALS.push(
@@ -7694,21 +7520,12 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
         { id: "sell", label: "Sell cooling by the hour", hint: "+24 cash, unrest +14. Strains power.", immediate: { cash: 24, unrest: 14 }, strain: { power: 1 } },
         { id: "wait", label: "Issue heat advice", hint: "Collapse +6.", immediate: { collapse: 6 } }
       ], weight: 14 }),
-    d({ id: "ht-desal", pack: "hostile", claims: true, hostile: true, title: "Buy the competitor's desalination plant", kicker: "Takeover", body: "Their plant, your logo, same brine.", hint: "+18 cash. Claims a rival region if one is on the map. In 2Q: unrest +8.", immediate: { cash: 18 }, delay: { turns: 2, unrest: 8, log: "The rebranded plant raises its prices on day one." }, tags: ["extractive", "water"], weight: 9 }),
-    d({ id: "ht-poison", pack: "hostile", claims: true, hostile: true, title: "Poison-pill a rival's port", kicker: "Takeover", body: "Their board voted yes. Their board is now your board.", hint: "+12 cash. Claims a rival region. Unrest +4.", immediate: { cash: 12, unrest: 4 }, tags: ["extractive"], weight: 8 }),
+    d({ id: "ht-desal", pack: "hostile", claims: true, hostile: true, title: "Buy the competitor's desalination plant", kicker: "Takeover", body: "Their plant, your logo, same brine.", hint: "+18 cash. Claims a region. In 2Q: unrest +8.", immediate: { cash: 18 }, delay: { turns: 2, unrest: 8, log: "The rebranded plant raises its prices on day one." }, tags: ["extractive", "water"], weight: 9 }),
+    d({ id: "ht-poison", pack: "hostile", claims: true, hostile: true, title: "Poison-pill a shipping line's port", kicker: "Takeover", body: "Their board voted yes. Their board is now your board.", hint: "+12 cash. Claims a region. Unrest +4.", immediate: { cash: 12, unrest: 4 }, tags: ["extractive"], weight: 8 }),
     d({ id: "ht-greenmail", pack: "hostile", title: "Greenmail a regional utility", kicker: "Takeover", body: "Buy enough shares to be annoying. Sell them back at a premium.", hint: "+22 cash. In 2Q: collapse +5.", immediate: { cash: 22 }, delay: { turns: 2, collapse: 5, log: "The utility cuts maintenance to pay your premium." }, tags: ["extractive", "power"], weight: 8 }),
     d({ id: "ht-merge", pack: "hostile", claims: true, title: "Merge with a struggling grid", kicker: "Takeover", body: "Synergies. Mostly layoffs.", hint: "+14 cash. Claims a region. In 1Q: unrest +10.", immediate: { cash: 14 }, delay: { turns: 1, unrest: 10, log: "Synergies are announced in the break room." }, tags: ["extractive"], weight: 7 })
   );
 
-  LD.initRivals = initRivals;
-  LD.rivalRegions = rivalRegions;
-  LD.rivalEngineerTax = rivalEngineerTax;
-  LD.resolveRivals = resolveRivals;
-  LD.rivalsSnipe = rivalsSnipe;
-  LD.canOutbid = canOutbid;
-  LD.outbidRegion = outbidRegion;
-  LD.canLeak = canLeak;
-  LD.leakRival = leakRival;
   LD.spreadCrises = spreadCrises;
   LD.aimDeal = aimDeal;
 
@@ -7800,7 +7617,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     { id: "audit", icon: "🔍", name: "Building Audit", text: "Bunker works +15% for the rest of this act" },
     { id: "whistle", icon: "📯", name: "Whistleblower", text: "Your next deal's delayed fallout ×1.5" },
     { id: "stranded", icon: "🪨", name: "Stranded Asset", text: "Takes a Portfolio slot. Worth nothing." },
-    { id: "mole", icon: "🐀", name: "Rival Mole", text: "Your next boss is 15% harder. Leaves after that boss." },
+    { id: "mole", icon: "🐀", name: "The Mole", text: "Your next boss is 15% harder. Leaves after that boss." },
     { id: "toxic", icon: "☣️", name: "Toxic Brand", text: "Soothe deals calm 3 less for the rest of this act" }
   ];
   var BY_ID = {};
@@ -7946,7 +7763,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   };
   function seedBosses(seed) {
     var h = LD.hashString("bosses:" + seed);
-    return { bossI: ["earnings", "earnings", "shortseller"][h % 3], bossII: ["strike", "bid", "crash"][Math.floor(h / 3) % 3], bossIII: ["reckoning", "heatdome", "seawall"][Math.floor(h / 9) % 3] };
+    return { bossI: ["earnings", "earnings", "shortseller"][h % 3], bossII: ["strike", "crash"][Math.floor(h / 3) % 2], bossIII: ["reckoning", "heatdome", "seawall"][Math.floor(h / 9) % 3] };
   }
 
   /* ---------- Credit rating rules (cumulative) ---------- */
@@ -8003,7 +7820,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       info.demand = "Hit the number: pay a $" + info.ask + "M special dividend.";
       info.beat = "Pay $" + info.ask + "M"; info.miss = "Guidance cut: unrest +" + info.missUnrest + ", collapse +4"; }
     if (id === "bid") { info.ask = Math.round(24 * k); info.choice = true;
-      info.demand = "A rival wants your best room. Pay $" + info.ask + "M greenmail to keep it.";
+      info.demand = "A corporate raider wants your best room. Pay $" + info.ask + "M greenmail to keep it.";
       info.beat = "Pay $" + info.ask + "M greenmail"; info.miss = "They strip one level off your best bunker room"; }
     if (id === "strike") { info.low = Math.round(8 * k); info.high = Math.round(18 * k); info.line = 60;
       info.demand = "The street walks out: unrest +" + info.low + " (+" + info.high + " if you are at 40+). End the quarter below " + info.line + " to break it.";
@@ -8156,7 +7973,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var rules = rulesFor(state.rating);
     state.fy = {
       v: 1, act: actOf(state.turn), level: 1, hand: [], bosses: 0, bossLog: [], rules: rules, baseMods: clone(state.mods || LD.DEFAULT_MODS),
-      bossII: (LD.hashString("boss2:" + state.seed) % 2) ? "strike" : "bid",
+      bossII: (LD.hashString("boss2:" + state.seed) % 2) ? "strike" : "crash",
       draft: null, used: {}, drafts: 0, skips: 0, rerolls: 0, rerolled: 0, cap: LD.FY.CAP, skipCash: LD.FY.SKIP_CASH, lastBoss: null
     };
     rebuildMods(state);
@@ -8380,7 +8197,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   /* ---------- Board Memos: one two-way choice per act, between deals ---------- */
   LD.MEMOS = [
     { id: "leak", icon: "📨", title: "Leaked Memo", body: "Someone forwarded the 'acceptable losses' spreadsheet to a journalist.",
-      a: { label: "Bury it", text: "−$8M" }, b: { label: "Leak a rival's memo", text: "+$6M from the short, unrest +6" } },
+      a: { label: "Bury it", text: "−$8M" }, b: { label: "Sell it to a short-seller", text: "+$6M from the short, unrest +6" } },
     { id: "celebrity", icon: "🌟", title: "Celebrity Visit", body: "A beloved actor wants a tour of the 'resilience campus'.",
       a: { label: "Photo op", text: "−$6M, unrest −6" }, b: { label: "Decline", text: "Nothing happens" } },
     { id: "troll", icon: "🧌", title: "Patent Troll", body: "A shell company claims to own the idea of a door.",
@@ -8406,7 +8223,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       a: { label: "Write the plan", text: "+$9M, collapse +3" }, b: { label: "Fund the reservoirs", text: "−$9M, collapse −4" } },
     { id: "headhunter", icon: "📇", title: "The Headhunter", body: "Two fixers are between engagements. Each brings their own cards, and a retainer.", hire: true, call: true,
       a: { label: "Hire the first", text: "" }, b: { label: "Hire the second", text: "" }, c: { label: "Not now", text: "Nothing happens" } },
-    { id: "distressed", icon: "🏚️", title: "Distressed Sale", body: "A rival is liquidating. One framed Asset, priced to move.", call: true,
+    { id: "distressed", icon: "🏚️", title: "Distressed Sale", body: "A bankrupt firm is liquidating. One framed Asset, priced to move.", call: true,
       a: { label: "Buy it", text: "−$10M, it goes on your wall" }, b: { label: "Pass", text: "Nothing happens" } },
     { id: "oldfriend", icon: "🕵️", title: "An Old Friend at the Agency", body: "Someone you went to school with has a favour to offer. Favours talk.", call: true,
       a: { label: "Take the favour", text: "A free card, and a Leak curse" }, b: { label: "Hang up", text: "Nothing happens" } }
@@ -8656,7 +8473,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     { id: "carveout", t: "Lobbyist", r: "C", icon: "✂️", name: "Carve-out", cost: 1, p: 5, win: "carve", up: { p: 7 } },
     { id: "campaign", t: "Lobbyist", r: "C", icon: "🎟️", name: "Campaign Contribution", cost: 0, cash: 2, p: 8, up: { p: 11 } },
     { id: "zoning", t: "Lobbyist", r: "U", icon: "🗺️", name: "Zoning Variance", cost: 1, p: 6, win: "zoning", up: { p: 8 } },
-    { id: "stall", t: "Lobbyist", r: "U", icon: "⏸️", name: "Stall the Rival", cost: 2, sp: "cancel", win: "stall", up: { cost: 1 } },
+    { id: "stall", t: "Lobbyist", r: "U", icon: "⏸️", name: "Stall for Time", cost: 2, sp: "cancel", up: { cost: 1 } },
     { id: "whisper", t: "Lobbyist", r: "U", icon: "🤫", name: "Guidance Whisper", cost: 1, sp: "whisper", up: { cost: 0 } },
     { id: "fasttrack", t: "Lobbyist", r: "U", icon: "📝", name: "Fast-Track Permit", cost: 1, p: 4, win: "permit", up: { p: 6 } },
     { id: "revolving", t: "Lobbyist", r: "R", icon: "🚪", name: "Revolving Door", cost: 2, sp: "cut40", ex: true, expose: 30, up: { cost: 1 } },
@@ -8855,7 +8672,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     crackroom: function () { return "Unplayable. At the Reckoning, each Crack takes a level off a Discount room."; },
     noshred: function () { return "Unplayable. Only Settle Quietly removes it."; }
   };
-  var WIN_TEXT = { carve: "Win: a Squeeze deal pays +$3M.", zoning: "Win: the deal's region loses 1 stress.", stall: "Win against a Rival Bid: their seal slips 1 quarter.",
+  var WIN_TEXT = { carve: "Win: a Squeeze deal pays +$3M.", zoning: "Win: the deal's region loses 1 stress.",
     permit: "Win: your next bunker work this quarter −$4M.", bury: "Win: the deal's delayed fallout −25%.", photo: "Win: city −8, a block lights back up.", cool: "Win: collapse −1." };
   LD.cardText = function (id, up) {
     var o = cv(id, up); if (!o) return "";
@@ -8983,7 +8800,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   /* ---------- Encounters ---------- */
   LD.ENCOUNTERS = {
     regulator: { name: "The Regulator", sub: "On loan from industry", icon: "🕴️", pattern: ["fine", "audit"], win: "Deal pays +10%" },
-    rival: { name: "Rival Bid", sub: "Their banker, smiling", icon: "🦈", pattern: ["undercut", "outbid"], win: "A rival's seal slips 1 quarter" },
+    rival: { name: "The Holdout", sub: "The owner won't sell", icon: "🦈", pattern: ["undercut", "outbid"], win: "+$3M" },
     protest: { name: "The Protest", sub: "They brought a drum", icon: "✊", pattern: ["chant", "swell"], win: "Unrest −3" },
     journalist: { name: "The Journalist", sub: "Has your old emails", icon: "🎙️", pattern: ["question", "expose"], win: "Upgrade a card" },
     hearing: { name: "Senate Hearing", sub: "Elite · you are under oath", icon: "🏛️", elite: true, pattern: ["contempt", "oath", "contempt", "contempt"], win: "An Asset for the wall, Heat reset" },
@@ -9022,7 +8839,9 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (f.hearing) return "hearing";
     if (LD.dunnHearingDue && LD.dunnHearingDue(state)) return "hearing";
     /* Today, a fixer who has run warm all game gets you called to the Senate once, even short of Heat 3. */
-    if (actOf(state.turn) === 3 && state.turn >= 10 && !(f.met && f.met.brennan) && f.fixers.some(function (r) { return r.heat >= 2; })) return "hearing";
+    if (actOf(state.turn) === 3 && state.turn >= 10 && !(f.met && f.met.brennan) && f.fixers.some(function (r) { return r.heat >= (state.turn >= 11 ? 1 : 2); })) return "hearing";
+    /* the select committee that writes in Act III is the Senate: Brennan holds the hearing (once) */
+    if (actOf(state.turn) === 3 && deal && (deal.id === "crisis-inquiry" || deal.id === "settle-action") && !(f.met && f.met.brennan)) return "hearing";
     var kind = LD.dealKind ? LD.dealKind(deal) : "neutral";
     if (LD.doorLevel(state) >= 3) return "protest";
     if (kind === "claim") return "rival";
@@ -9182,7 +9001,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     };
     if (enc !== "protest" && LD.doorLevel(state) >= 3 && !E.boss && !E.elite) fg.pattern = LD.ENCOUNTERS.protest.pattern.slice();
     /* Who is at the door: the act's cast (eras.js). The base encounter keeps the balance; the face brings the moves and the lines. */
-    var opp = LD.pickOpponent ? LD.pickOpponent(state, enc, fg.kind, r) : null, O = opp && LD.oppById(opp);
+    var opp = LD.pickOpponent ? LD.pickOpponent(state, enc, fg.kind, r, deal) : null, O = opp && LD.oppById(opp);
     if (O) {
       fg.opp = opp; fg.encName = E.name; fg.name = O.who; fg.sub = O.role + " \u00b7 " + E.name; fg.pattern = O.pattern.slice();
       if (O.venue) fg.venue = O.venue;
@@ -9432,8 +9251,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var reg = fg.region && state.world && state.world.regions ? state.world.regions[fg.region] : null;
     if (win) {
       if (fg.enc === "regulator") { var b = Math.max(2, Math.round(Math.max(0, fg.dealCash) * 0.1)); state.cash += b; notes.push("deal pays +$" + b + "M"); }
-      if (fg.enc === "rival") { var rv = (state.rivals || []).filter(function (x) { return !x.sealed; }).sort(function (a, b2) { return a.sealTurn - b2.sealTurn; })[0];
-        if (rv) { rv.sealTurn += 1; notes.push(rv.firm + "'s seal slips to Q" + rv.sealTurn); } else { state.cash += 3; notes.push("+$3M"); } }
+      if (fg.enc === "rival") { state.cash += 3; notes.push("+$3M"); }
       if (fg.enc === "protest") { state.unrest = clamp(state.unrest - 3, 0, LD.MAX_UNREST); notes.push("unrest −3"); }
       if (fg.enc === "journalist") { f.upTokens = (f.upTokens || 0) + 1; notes.push("a card upgrade"); }
       if (fg.elite) { var hf = f.fixers.filter(function (x) { return x.id === fg.hearing; })[0]; if (hf) hf.heat = 0; f.hearing = null; f.assetNext = true; notes.push("an Asset for the wall, Heat reset"); }
@@ -9441,7 +9259,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       fg.wins.forEach(function (w) {
         if (w === "carve" && fg.kind === "squeeze") { state.cash += 3; notes.push("Carve-out +$3M"); }
         if (w === "zoning" && reg) { reg.stress = Math.max(0, reg.stress - 1); notes.push("Zoning: stress −1"); }
-        if (w === "stall" && fg.enc === "rival") { var rv2 = (state.rivals || []).filter(function (x) { return !x.sealed; })[0]; if (rv2) { rv2.sealTurn += 1; notes.push("Stalled: " + rv2.firm + " slips again"); } }
         if (w === "permit") { f.permitQ = t; notes.push("next bunker work −$4M"); }
         if (w === "bury") { var cut = 0; state.pending.forEach(function (p) { if (!p.install && p.source === fg.dealTitle && p.due > t) { var u0 = p.unrest || 0, c0 = p.collapse || 0; p.unrest = Math.round(u0 * 0.75); p.collapse = Math.round(c0 * 0.75); cut += u0 - p.unrest + c0 - p.collapse; } }); notes.push("fallout −" + cut); }
         if (w === "photo") { cityAdd(state, -8); notes.push("city −8"); }
@@ -9465,7 +9282,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     f.outcomes = f.outcomes || {}; f.outcomes[out.out] = (f.outcomes[out.out] || 0) + 1;
     if (fg.opp && how) {
       fg.done.how = how;
-      f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, out: out.out, q: t, act: actOf(t), who: fg.name };
+      f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, out: out.out, q: t, act: actOf(t), who: fg.name, dealId: fg.dealId || null };
       if ((fg.opp === "june" || fg.opp === "pops") && how === "crushed" && f.bossII !== "strike" && t < 8) { f.bossII = "strike"; f.strikeSwap = t; notes.push(LD.oppFate && LD.oppFate(state, "june") && LD.oppFate(state, "june").how === "crushed" ? "June Park will lead a general strike at Q8" : "The picket line remembers Pops: a general strike at Q8"); }
     }
     f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite, opp: fg.opp || null, how: how, out: out.out };
@@ -10119,7 +9936,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     mara: { good: { id: "boundaries", name: "Boundaries", text: "Your first Legal card each fight gives +2 Deniability." }, bad: { id: "withholding", name: "Withholding", text: "The Gallery never warms past +2 for you." } },
     reid: { good: { id: "duty", name: "Duty", text: "Cards played in round 1 give +1 Deniability." }, bad: { id: "stonewalling", name: "Stonewalling", text: "Crowds start a notch against you (lobby and protest fights)." } },
     imani: { good: { id: "patience", name: "Patience", text: "1 unspent ◆ carries into the next round." }, bad: { id: "smothering", name: "Smothering", text: "Debt cards tilt the Gallery one further against you." } },
-    julian: { good: { id: "humour", name: "Humour", text: "The first hit that gets through each fight is 2 smaller." }, bad: { id: "envy", name: "Envy", text: "Rivals hit you 1 harder." } },
+    julian: { good: { id: "humour", name: "Humour", text: "The first hit that gets through each fight is 2 smaller." }, bad: { id: "envy", name: "Envy", text: "Holdouts who won't sell hit you 1 harder." } },
     soren: { good: { id: "passion", name: "Passion", text: "Shame and Rumour cards give +1 Pressure." }, bad: { id: "vanity", name: "Vanity", text: "When a card is exposed, the Gallery tilts one further against you." } },
     cassius: { good: { id: "equanimity", name: "Equanimity", text: "Hits that get through never tilt the Gallery." }, bad: { id: "coldcontrol", name: "Cold Control", text: "The Gallery never warms past +1 for you." } }
   };
@@ -10368,7 +10185,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       open: "Your numbers don't add up. They multiply.",
       hit: ["That's not guidance.", "Mm. I'll revise.", "Interesting colour."], block: ["The consensus disagrees.", "Model says no."],
       react: { money: "Is this a research fee? I'll need to disclose that.", public: "Narrative's not a number.", law: "Sue an analyst? Bold. Stupid, but bold." },
-      end: { bought: "Upgraded to 'hold'. Don't make me regret it.", broken: "They pulled my coverage. Of everything.", exposed: "Fine, my fund holds your rival. Disclosed. In font size four.",
+      end: { bought: "Upgraded to 'hold'. Don't make me regret it.", broken: "They pulled my coverage. Of everything.", exposed: "Fine, my fund is short your stock. Disclosed. In font size four.",
         ignored: "Nobody asked a question on the call. Not one.", martyred: "Get me fired. The tape keeps rolling.", pyrrhic: "Beat the number. Missed the point.",
         deal: "Neutral. With an asterisk.", walked: "Downgrade. Effective now." } },
     brennan: { why: "senate committee hearing, room 214. senator brennan has the cameras, the gavel and your old fixer on the witness list.",
@@ -10531,6 +10348,215 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     return baseCb ? baseCb(state, oppId) : null;
   };
   if (LD.CALLBACKS) ["grace-son", "pops-crossed", "benny-corner"].forEach(function (k) { if (LD.CALLBACKS.indexOf(k) === -1) LD.CALLBACKS.push(k); });
+})();
+</script>
+  <script>/* Last Dividend: missions and coherence.
+   Every fight answers four things in its own text: who they are, what you are doing to them in THIS mission, why you are
+   in the same room, and what they do about it. Each deal names the scheme ({doing}), the thing at stake ({it}) and who
+   pays ({stake}); each face lists the kinds of scheme it would plausibly turn up for, and its lines are written against
+   those slots. Moves are named from the face's side. */
+(function () {
+  "use strict";
+  var LD = (window.LD = window.LD || {});
+  /* d: what you are doing (gerund) · it: the thing at stake · st: who or what pays · th: themes */
+  var M = {
+    "water-rights": { d: "buying up the town's water rights", it: "the water rights", st: "every tap in town", th: ["water", "land"] },
+    "quiet-inspector": { d: "leaning on the river inspector", it: "the inspector's report", st: "whatever is in the river", th: ["politics", "water"] },
+    "dump-grain": { d: "dumping the surplus grain abroad", it: "the grain shipment", st: "the bread on this street", th: ["food", "finance"] },
+    "sell-reserves": { d: "selling off the emergency water reserves", it: "the reserve tanks", st: "the summer water", th: ["water", "relief"] },
+    "accelerate-permits": { d: "fast-tracking the extraction permits", it: "the permits", st: "the ground under the block", th: ["politics", "land"] },
+    "offshore-pensions": { d: "moving the pension fund offshore", it: "the pension fund", st: "forty years of pensions", th: ["finance", "labour"] },
+    "fuel-futures": { d: "cornering the diesel market", it: "the diesel", st: "the winter heating oil", th: ["power", "finance"] },
+    "crisis-kits": { d: "selling the city its own crisis kits", it: "the crisis-kit contract", st: "the relief budget", th: ["relief", "politics"] },
+    "rezoning-clinic": { d: "rezoning the clinic lot", it: "the clinic lot", st: "the only trauma bay in the Flats", th: ["land", "health"] },
+    "cut-safety": { d: "cutting the plant's safety staff", it: "the safety crew", st: "the night shift", th: ["labour", "health"] },
+    "blackout-insurance": { d: "selling blackout insurance", it: "the blackout policies", st: "the lights on this street", th: ["power", "finance"] },
+    "lobby-relief": { d: "gutting the drought-relief bill", it: "the relief bill", st: "the drought aid", th: ["politics", "relief", "water"] },
+    "cloud-seeding": { d: "selling cloud-seeding contracts", it: "the cloud-seeding contracts", st: "the rain", th: ["water", "climate"] },
+    "farm-rollups": { d: "buying up the failing farms", it: "the farms", st: "the family farms", th: ["food", "land"] },
+    "media-buy": { d: "buying the local news hour", it: "the news hour", st: "what this city gets told", th: ["media", "politics"] },
+    "charity-filters": { d: "funding the city's water filters, with your name on every one", it: "the filter programme", st: "clean water", th: ["water", "media"] },
+    "well-repairs": { d: "paying for the community well repairs", it: "the well repairs", st: "the wells", th: ["water", "land"] },
+    "seed-vault": { d: "buying a distressed seed vault", it: "the seed vault", st: "next year's harvest", th: ["food", "finance"] },
+    "settle-action": { d: "settling the class action quietly", it: "the settlement", st: "the plaintiffs", th: ["law", "media"] },
+    "calm-quarterly": { d: "publishing a reassuring quarterly", it: "the quarterly", st: "the real numbers", th: ["finance", "media"] },
+    "solar-writeoff": { d: "writing the solar farm off for tax", it: "the solar write-off", st: "the public solar money", th: ["power", "finance"] },
+    "open-books": { d: "publishing the real reserve numbers", it: "the reserve numbers", st: "who knew what, and when", th: ["finance", "media"] },
+    "retention-bonus": { d: "paying retention bonuses to the plant crews", it: "the retention bonuses", st: "the crews who stay", th: ["labour"] },
+    "charter-freight": { d: "chartering the last freight out", it: "the freight charter", st: "what's left on the shelves", th: ["labour", "food"] },
+    "aquifer-tap": { d: "quietly tapping a sealed aquifer", it: "the aquifer", st: "the town's last clean water", th: ["water", "land"] },
+    "divert-filters": { d: "diverting a public filtration shipment", it: "the filter shipment", st: "the clinic's air", th: ["relief", "health"] },
+    "poach-engineers": { d: "poaching the public utility's engineers", it: "the engineers", st: "the city grid", th: ["labour", "power"] },
+    "crisis-strike": { d: "facing down the plant walkout", it: "the walkout", st: "the plant", th: ["labour"] },
+    "crisis-inquiry": { d: "stonewalling the select committee", it: "the inquiry", st: "the paper trail", th: ["politics", "media", "law"] },
+    "crisis-dust": { d: "selling your way through the early dust season", it: "the dust masks", st: "the kids' lungs", th: ["health", "climate"] },
+    "crisis-smoke": { d: "selling your way through the wildfire smoke", it: "the air filters", st: "the kids' lungs", th: ["health", "climate"] },
+    "crisis-bread": { d: "working the bread queues", it: "the bread queues", st: "the bakeries", th: ["food", "relief"] },
+    "crisis-blackout": { d: "working the rolling blackouts", it: "the blackouts", st: "the lights", th: ["power", "relief"] },
+    "crisis-flood": { d: "working the river flood", it: "the flood response", st: "the low streets", th: ["climate", "land", "relief"] },
+    "esg-offset": { d: "planting a carbon-offset forest", it: "the offset forest", st: "the actual emissions", th: ["climate", "media"] },
+    "esg-water-pledge": { d: "pledging net-zero water use", it: "the water pledge", st: "the river", th: ["climate", "water", "media"] },
+    "esg-rewild": { d: "rebranding the strip mine as rewilding", it: "the 'rewilding'", st: "the hills", th: ["climate", "land", "media"] },
+    "esg-solar-glass": { d: "putting solar glass on the town hall", it: "the solar glass", st: "the town hall", th: ["climate", "power", "politics"] },
+    "esg-badge": { d: "buying a sustainability badge", it: "the badge", st: "the truth", th: ["climate", "media"] },
+    "dc-surge": { d: "surge-pricing the evacuation buses", it: "the evacuation buses", st: "the people who can't pay", th: ["relief", "health"] },
+    "dc-rebuild": { d: "taking the no-bid rebuild contract", it: "the rebuild contract", st: "the flooded blocks", th: ["relief", "politics", "land"] },
+    "dc-insure": { d: "cancelling the flood insurance pool", it: "the insurance pool", st: "every policy on the low streets", th: ["finance", "land", "climate"] },
+    "dc-ration": { d: "taking the ration-card exclusive", it: "the ration cards", st: "the queue", th: ["food", "relief"] },
+    "dc-heatwave": { d: "selling your way through the heat dome", it: "the cooling centres", st: "the old folks on the top floors", th: ["climate", "health", "power"] },
+    "ht-desal": { d: "taking over the desalination plant", it: "the desal plant", st: "the city's water", th: ["finance", "water"] },
+    "ht-poison": { d: "poison-pilling a shipping line's port", it: "the port", st: "the dockers", th: ["finance", "labour"] },
+    "ht-greenmail": { d: "greenmailing a regional utility", it: "the utility", st: "the power bills", th: ["finance", "power"] },
+    "ht-merge": { d: "merging with a struggling grid", it: "the grid merger", st: "the grid", th: ["finance", "power"] }
+  };
+  var GENERIC = { d: "pushing your latest deal through", it: "your deal", st: "the neighbourhood", th: [] };
+  LD.MISSIONS = M;
+  LD.missionFor = function (x) { var id = x && typeof x === "object" ? x.dealId : x; return (id && M[id]) || GENERIC; };
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  /* Fill {doing} {it} {stake} (capitalised: {Doing} {It} {Stake}) from the fight's mission. */
+  LD.missionText = function (str, x) {
+    if (!str || str.indexOf("{") === -1) return str || "";
+    var m = LD.missionFor(x);
+    return str.replace(/\{(doing|Doing|it|It|stake|Stake)\}/g, function (_, k) {
+      var v = /^doing$/i.test(k) ? m.d : /^it$/i.test(k) ? m.it : m.st; return k.charAt(0) === k.charAt(0).toUpperCase() ? cap(v) : v; });
+  };
+
+  /* fits: the schemes a face would plausibly come to fight you over. */
+  var FITS = {
+    dunn: ["politics", "land", "relief", "health", "food"], moretti: ["land", "water", "power", "finance"], june: ["labour", "finance"],
+    mickey: ["food", "power", "finance", "relief"], odell: ["land", "health", "water", "climate"], benny: ["food", "relief", "land", "power"],
+    grace: ["media", "politics", "water", "land", "law", "climate"], pops: ["labour", "health"],
+    delacroix: ["politics", "land", "relief", "climate", "media"], okafor: ["media", "finance", "law", "politics"], hale: ["water", "power", "politics", "law", "climate", "food"],
+    harrow: ["finance", "land", "power", "food", "water"], gray: ["relief", "health", "labour", "food", "power"], gil: ["finance", "land", "climate", "water", "power"],
+    pip: ["finance", "labour", "law"], dana: ["land", "health", "relief"],
+    crowe: ["finance", "power", "water", "food"], rosa: ["land", "health", "climate", "relief", "labour", "media"], sorel: ["finance", "media", "law"], ashby: ["finance", "media"],
+    theo: ["climate", "water", "land", "relief"], mina: ["labour", "food", "health", "relief"], honoria: ["land", "finance", "water", "climate"]
+  };
+  Object.keys(FITS).forEach(function (id) { if (LD.OPPONENTS[id]) LD.OPPONENTS[id].fits = FITS[id]; });
+  LD.oppFits = function (id, dealId) { var o = LD.OPPONENTS[id], m = M[dealId]; if (!o || !m || !o.fits) return true; return o.fits.some(function (t) { return m.th.indexOf(t) !== -1; }); };
+  /* Pick only from faces who would plausibly be in this fight; fall back to the whole cast if nobody fits. */
+  var basePick = LD.pickOpponent;
+  LD.pickOpponent = function (state, enc, kind, rng, deal) {
+    var dealId = deal && deal.id;
+    if (!basePick || !dealId || !M[dealId]) return basePick ? basePick(state, enc, kind, rng) : null;
+    var saved = {}, all = LD.OPPONENTS, any = false;
+    Object.keys(all).forEach(function (id) { var o = all[id]; if (o.boss || o.base === "hearing" || o.act !== LD.eraOf(state)) return; if (LD.oppFits(id, dealId)) any = true; });
+    if (!any) return basePick(state, enc, kind, rng);
+    /* hide the faces that don't fit for this one pick (act is the filter basePick already uses) */
+    Object.keys(all).forEach(function (id) { var o = all[id]; if (!o.boss && o.base !== "hearing" && !LD.oppFits(id, dealId)) { saved[id] = o.act; o.act = -1; } });
+    try { return basePick(state, enc, kind, rng); } finally { Object.keys(saved).forEach(function (id) { all[id].act = saved[id]; }); }
+  };
+
+  /* ---------- The text pass: situation (why), opening line, and every line that named the wrong scheme ---------- */
+  var T = {
+    /* 1978 · The Street */
+    dunn: { why: "You're {doing}, and on Harbor Ave nothing gets built, shipped or signed without a permit from the 14th Precinct. Officer Frank Dunn made that his beat. He came up to your office to discuss the fee.",
+      open: "{It}? Lotta permits on a thing like that. Be a shame if they went missing." },
+    moretti: { why: "You're {doing}, and Sal Moretti owns fourteen walk-ups in the way of it, and the boiler in every one. He'll sell, evict or let them burn, whichever pays. He came up to your office to name a price.",
+      open: "Everybody wants a piece of my block for {it}. You're the first one dumb enough to ask me in person.",
+      end: { deal: "Split the difference on {it}. Like gentlemen. Like crooks." } },
+    june: { why: "You're {doing}, and it comes out of Local 9's jobs. June Park, shop steward, runs the vote, the minutes and the coffee urn. She gave you five minutes in the back booth at Rosie's.",
+      open: "{It} puts twelve hundred jobs on the line. You've got five minutes and I'm timing you.",
+      end: { deal: "A contract, in writing, before you touch {it}. Not a peace treaty." } },
+    mickey: { why: "You're {doing}, and nothing moves on the waterfront without Mickey 'the Nail' Russo taking his cut. He asked you to the alley behind Club Pelican to explain how cuts work.",
+      open: "{It}. Nice operation. Lotta things can go wrong with an operation. Fires, mostly.",
+      end: { deal: "Call it a retainer on {it}. Monthly." } },
+    odell: { why: "You're {doing}, and the plan runs straight through Odell Street. Ma Odell has sat on the same stoop for forty years and runs the block association from it. She won't come to you, so you went to her.",
+      open: "Forty years on this stoop. You think I'll trade {stake} for a briefcase?",
+      react: { law: "Papers. Again. I've got a drawer for your papers." },
+      end: { deal: "Leave the block out of {it}, fix the boiler, and shake on it. Firm." } },
+    benny: { why: "You're {doing}, and the whole of Harbor Ave eats on credit at Ostrowski's corner grocery. Benny Ostrowski kept the shop open by candle in the '77 blackout. The street listens to him. You went to the shop to keep him quiet.",
+      open: "Sure, sit. Coffee's on the house. {It} isn't. Not while this street eats on my tab.",
+      end: { deal: "Fine. You keep {it}, I keep the corner and the tab.", pyrrhic: "You got {it}. Feel how cold it is out there.", converted: "Half the street works for you now. Fine. I'll stock your canteen." } },
+    grace: { why: "You're {doing}, and the paper trail sits in the Harbor branch library, which has kept every deed and contract since 1902. Grace Okafor, the librarian, found your company's name in it. You went to the reading room before she read it aloud.",
+      open: "Shh. This is a library. Sit down and read page 212 with me. It's about {it}.",
+      end: { deal: "The records on {it} stay open. Your name stays in them." } },
+    pops: { why: "You're {doing}, and Local 9 is in week six of the walkout at the Calder Steel gate. Ray 'Pops' Delgado, picket captain, decides what crosses. You went down to the gate to get your trucks through.",
+      open: "Twenty-two years at that furnace. You want {it} through my picket line? For what?",
+      end: { deal: "Six more months, then we talk about {it}. My word's good." } },
+    /* 2008 · The Middle */
+    delacroix: { why: "You're {doing}, and it needs one more council vote. Councilman Ray Delacroix, Ward 6, has that vote and a boat he can't afford. He's taking meetings in his City Hall office.",
+      open: "{It}? I've got a ribbon to cut at three. Make my vote worth my while.",
+      end: { walked: "Vote's no on {it}. See you at the fundraiser." } },
+    okafor: { why: "You're {doing}, and Dev Okafor at the Ledger has the internal memo with your signature on page three. He's at the newsroom at 2 a.m., asking for comment before the story runs.",
+      open: "I've got the memo on {it}. And your signature. Want to comment before it runs?" },
+    hale: { why: "You're {doing}, and it needs sign-off from the Resource Oversight Board. Agnes Hale chairs it. She spent eleven years at a firm like yours and knows where the bodies are buried. She has called you to her hearing room.",
+      open: "I spent eleven years at a firm like yours. I know exactly where {it} hides things." },
+    harrow: { why: "You're {doing}, and Bea Harrow of Yield & Residue wants the same deal for her fund, or wants you to fail at it, whichever pays more. She invited you for a drink at the Calder Club.",
+      open: "Darling, {it} is big enough for one of us.",
+      end: { deal: "We'll split {it} down the middle. Like adults." } },
+    gray: { why: "You're {doing}, and the square outside is full of people who hate it. Commissioner Gray can clear them out by morning, for a price, and make it worse if you don't pay. You went to Police HQ to talk overtime.",
+      open: "Square's full of people angry about {it}. I can clear it, or not. Your call. Your money." },
+    gil: { why: "You're {doing}, and Sycamore Court just worked out what it does to their houses and their 401(k)s. Gil Marsh, HOA treasurer, has decided it's your fault, which it is. He's waiting at the end of the cul-de-sac.",
+      open: "Quick one. Section 4(b). Also {it} just sank my 401(k). Mostly 4(b)." },
+    pip: { why: "You're {doing}, and the money comes from Calder Mutual. The board is split six to six. Pip Whitlow, 34, takes the minutes and holds the swing vote. He's asked you into the boardroom.",
+      open: "I'm not supposed to be talking to you about {it}. I'm taking minutes of this, by the way.",
+      end: { pyrrhic: "You got the vote. The bank's still on fire." } },
+    dana: { why: "You're {doing}, and it lands on the Flats, where your bank has already foreclosed on one house in five. Dana Reyes, a night-shift nurse who lost hers last spring, brought two hundred neighbours out. You went down to her street before the six o'clock news did.",
+      open: "Your bank took my house last spring. Now you're coming for {stake}? Not while I'm standing here.",
+      react: { money: "You think I can't be bought? Try me. No. Don't.", public: "Go on, smear a nurse. I've got payslips, and a shoebox of your bank's letters.", law: "Another letter. I've got a shoebox full of them." },
+      end: { bought: "I'll take it. For the kids. Not for you. Never for you.", converted: "The other nurses took the jobs you offered. I need the hours. Don't smile.",
+        broken: "Fine. Keys are on the counter. Kids are at my sister's.", martyred: "Drag a nurse off her own street on the six o'clock news. Go on.",
+        deal: "Leave {it} alone, modify the loans, and we go home. Today.", walked: "We're staying. All of us. {It} can wait." } },
+    /* Today · The Top */
+    crowe: { why: "You're {doing}, and Victor Crowe wants it, and your company with it. Crowe Terminals owns the port, the app and the tide tables. 9:41am, top floor. He sent for you.",
+      open: "I don't build. I acquire. Today I'm acquiring {it}. And you." },
+    rosa: { why: "You're {doing}, and Rosa Lind has brought 300 people, a megaphone and a livestream into your lobby to stop it. 41k watching.",
+      open: "We're not leaving until you drop {it}. We brought snacks. And Gran's casserole dish." },
+    sorel: { why: "You're {doing}, and short-seller Lena Sorel has just published 90 pages on what it hides. She'd like a word in garage B3. No phones.",
+      open: "I'm short your stock because of {it}. I'd like you to hear why, from me." },
+    ashby: { why: "You're {doing}, and Gail Ashby is live on the morning show taking your numbers apart. 1.2m watching. You're on the line.",
+      open: "Your numbers on {it} don't add up. They multiply." },
+    theo: { why: "You're {doing}, and it needs the Sea Wall Board's vote at 6pm. Theo Lind, volunteer, Ma Odell's great-grandson, brought a flood map and a new word. You went down to Pier 9 to change his mind.",
+      open: "Hi. Sorry. You probably know my mum. I'm here about {it}. And the wall." },
+    mina: { why: "You're {doing}, and the riders who feed the Flats are paying for it. Every rider logged off at 7pm. Mina Kaur, 4.8 stars, 0 patience, is in the dark-kitchen alley. You went down to get the app back online.",
+      open: "{It}, on our backs again. Five stars, every night. Tonight I'm rating you." },
+    honoria: { why: "You're {doing}, and the Calder Trust has owned the land, the bonds or the water under it since 1902. Dame Honoria Calder has asked you to lunch at the estate. The helicopter leaves at 12:30.",
+      open: "Sit. Not there. That was Grandfather's chair. Now. {It}." },
+    brennan: { why: "You're {doing}, and the Senate wants to know how. Committee room 214: Senator Walt Brennan has the cameras, the gavel and your old fixer on the witness list.",
+      open: "The committee will come to order. You will not. We'll start with {it}." },
+    /* Bosses: the quarter's reckoning, tied to the deal that rang the bell */
+    ashby_b: { why: "You had just signed off on {doing} when the earnings call came in at 9:00 sharp. Gail Ashby had the analysts on the line and the numbers on her desk.",
+      open: "Welcome to the earnings call. Let's start with {it}. The analysts are on the line. All of them." },
+    sorel_b: { why: "You had just signed off on {doing}. At dawn, ninety pages on it hit the wires. Lena Sorel waited in a parking garage with the index.",
+      open: "Ninety pages on you. Chapter one is {it}. I wrote the index myself." },
+    varga_b: { why: "You're {doing}, and that was the last straw. The whole city walked out at dawn. Tomas Varga holds the hall, the buses and the bakers.",
+      open: "Thirty years I've watched you lot. {It} was the last straw. Today the city stops." },
+    june_b: { why: "You're {doing}, and June Park, 64, is leading the general strike against it. She kept the minutes from 1978.",
+      open: "Remember me? Thirty years. Now {it}, and the whole city walks out." },
+    crowe_b: { why: "You had just signed off on {doing} when Victor Crowe filed a hostile bid at 6:02am. Your board has his number.",
+      open: "Your board has my number. They didn't like {it}. Shall we call them together?" },
+    ticker_b: { why: "You're {doing} when the floor gives way. The Ticker does not take questions." }
+  };
+  LD.COHERENCE = T;
+  Object.keys(T).forEach(function (id) {
+    var o = LD.OPPONENTS[id], t = T[id]; if (!o) return;
+    if (t.why) o.why = t.why; if (t.open) o.open = t.open;
+    if (t.react) { o.react = o.react || {}; Object.keys(t.react).forEach(function (k) { o.react[k] = t.react[k]; }); }
+    if (t.end) { o.end = o.end || {}; Object.keys(t.end).forEach(function (k) { o.end[k] = t.end[k]; if (k === "bought") o.end.paid = t.end[k]; if (k === "broken") o.end.crushed = t.end[k]; }); }
+    if (LD.OPP_LINES && LD.OPP_LINES[id]) { var L = LD.OPP_LINES[id]; if (t.why) L.why = t.why; if (t.open) L.open = t.open; }
+  });
+  /* Moves, named from their side of the table */
+  var MV = {
+    dan_line: { label: "Two Hundred Neighbours", say: "Two hundred of us on this street, and every one did the sums on {it}." },
+    dan_sums: { say: "Your late fee was bigger than my mortgage payment. I did the sums on you too." },
+    dan_kids: { say: "The kids are on the six o'clock news now. Smile for them." },
+    oka_follow: { say: "Just one more. Who signed the memo on {it}?" },
+    pop_line: { say: "Twenty-two years at that furnace. Nothing crosses. Not {it}." },
+    gil_cov: { say: "Section 4(b): lawn height. Also {it}." },
+    pip_swing: { say: "Six to six on {it}. Guess who breaks the tie." },
+    the_map: { say: "Blue is underwater by 2040. {It} is in the blue." },
+    rosa_chant: { say: "Whose city? OUR city! Drop {it}!" },
+    del_zone: { say: "{It}? Committee's backed up. Months. Years." },
+    hale_audit: { say: "We'd love your input on {it}. Under seal." }
+  };
+  Object.keys(MV).forEach(function (k) { var I = LD.INTENTS && LD.INTENTS[k]; if (!I) return; if (MV[k].label) I.label = MV[k].label; if (MV[k].say) I.say = MV[k].say; });
+
+  /* Every place a face speaks goes through the mission filler. */
+  var lineFn = LD.oppLine, reactFn = LD.oppReact;
+  LD.oppLine = function (fg, kind, n) { return LD.missionText(lineFn ? lineFn(fg, kind, n) : "", fg); };
+  LD.oppReact = function (fg, pres) { var r = reactFn ? reactFn(fg, pres) : null; return r ? LD.missionText(r, fg) : r; };
+  LD.moveSay = function (fg, k) { var I = LD.INTENTS && LD.INTENTS[k]; return I && I.say ? LD.missionText(I.say, fg) : ""; };
 })();
 </script>
   <script>
@@ -11627,7 +11653,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   function regionAria(state, id) {
     var r = state.world.regions[id];
     var bits = [LD.REGION_NAMES[id]];
-    bits.push(r.owned ? (r.trait === "hq" ? "your headquarters" : "yours") : r.rival != null && state.rivals && state.rivals[r.rival] ? "held by " + state.rivals[r.rival].firm : "unclaimed");
+    bits.push(r.owned ? (r.trait === "hq" ? "your headquarters" : "yours") : "unclaimed");
     bits.push("stress " + r.stress + " of " + LD.STRESS_MAX + ", " + ({ calm: "calm", tense: "protests", strike: "riots", revolt: "revolt" })[LD.stressLabel(r.stress)]);
     if (r.plant && r.owned) bits.push("plant " + (r.stress >= LD.STRESS_STRIKE ? "on strike" : "+$" + LD.plantIncome(state, id) + "M a quarter"));
     if (LD.willRevolt(state, id)) bits.push("will revolt next quarter");
@@ -11678,7 +11704,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var lines = [];
     var listed = LD.payloadCash(state, payload.immediate);
     if (listed) lines.push((listed > 0 ? "+" : "") + money(listed > 0 ? LD.dealCashAmount(state, listed, d) : listed));
-    if (eff.claim) lines.push("claims " + eff.regionName + (r.rival != null ? " from rival" : ""));
+    if (eff.claim) lines.push("claims " + eff.regionName);
     if (eff.stress) lines.push("stress " + signed(eff.stress) + (next >= LD.STRESS_REVOLT && r.owned ? " · REVOLT" : ""));
     if (d.choices && !choiceId) lines.push(d.choices.length + " responses");
     var sup = LD.defaultSupply(d, payload);
@@ -11710,11 +11736,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     return "M" + A[0].toFixed(1) + " " + A[1].toFixed(1) + " Q" + C[0].toFixed(1) + " " + C[1].toFixed(1) + " " + B[0].toFixed(1) + " " + B[1].toFixed(1);
   }
 
-  function rivalFlag(idx) {
-    var col = LD.RIVAL_COLORS[idx] || "#ccc";
-    return '<g class="rflag"><line x1="0" y1="10" x2="0" y2="-18" stroke="#1d1830" stroke-width="2.4"/><path d="M0 -18 L18 -13 L0 -7Z" fill="' + col + '" stroke="#1d1830" stroke-width="1"/><rect x="-4" y="7" width="8" height="6" fill="' + col + '"/></g>';
-  }
-
   function renderMap(state, ui) {
     ui = ui || {};
     var M = LD.WORLD_MAP;
@@ -11738,7 +11759,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       '<linearGradient id="g-land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d98f"/><stop offset="1" stop-color="#c4913a"/></linearGradient>' +
       '<linearGradient id="g-own" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ff0c4"/><stop offset="1" stop-color="#0f8f72"/></linearGradient>' +
       '<linearGradient id="g-burn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f09a6a"/><stop offset="1" stop-color="#b4482f"/></linearGradient>' +
-      '<linearGradient id="g-rival" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfc3ff"/><stop offset="1" stop-color="#6b5aa8"/></linearGradient>' +
       '<pattern id="p-dots" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#3b2a08" fill-opacity="0.2"/></pattern>' +
       '<pattern id="p-waves" width="40" height="18" patternUnits="userSpaceOnUse"><path d="M2 9 q8 -6 16 0" fill="none" stroke="#7ff2dc" stroke-opacity="0.16" stroke-width="1.4" stroke-linecap="round"/></pattern>' +
       (globe ? '<clipPath id="c-sphere"><circle cx="' + GLOBE.cx + '" cy="' + GLOBE.cy + '" r="' + GLOBE.R + '"/></clipPath>' : "") +
@@ -11771,9 +11791,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     LD.REGION_IDS.forEach(function (id) {
       var r = W.regions[id];
       var lvl = LD.stressLabel(r.stress);
-      var rv = !r.owned && r.rival != null;
       var warn = LD.willRevolt(state, id);
-      var cls = "region r-" + id + (r.owned ? " owned" : "") + (rv ? " rival rv-" + r.rival : "") + " s-" + lvl + (warn ? " warn" : "") + (selRegion === id ? " sel" : "") + (r.trait ? " t-" + r.trait : "");
+      var cls = "region r-" + id + (r.owned ? " owned" : "") + " s-" + lvl + (warn ? " warn" : "") + (selRegion === id ? " sel" : "") + (r.trait ? " t-" + r.trait : "");
       h += '<g class="' + cls + '" data-region="' + id + '"' + (interactive ? ' tabindex="0" role="button" aria-label="' + esc(regionAria(state, id)) + '"' : "") + ">";
       h += '<use class="side" href="#rg-' + id + '" transform="translate(0 7)"/>';
       h += '<use class="top" href="#rg-' + id + '"/>';
@@ -11821,9 +11840,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       if (r.owned) {
         var fl = atP(id, "flag", P);
         h += '<g transform="translate(' + fl[0] + " " + fl[1] + ')">' + flagIcon(r.trait === "hq") + "</g>";
-      } else if (r.rival != null) {
-        var rf = atP(id, "flag", P);
-        h += '<g transform="translate(' + rf[0] + " " + rf[1] + ')">' + rivalFlag(r.rival) + "</g>";
       }
       h += '<circle class="anc" data-anc="' + id + '" cx="' + a[0] + '" cy="' + a[1] + '" r="1"/>';
       var lab = LD.REGION_NAMES[id].toUpperCase();
@@ -12020,8 +12036,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       var bq = LD.bossInfo && (i < cols - 1 || q === state.turn + cols - 1) ? LD.bossInfo(state, q) : null;
       if (!bq && i === cols - 1 && LD.nextBossQ) { var nb = LD.nextBossQ(state); if (nb && nb > q) bq = LD.bossInfo(state, nb); }
       if (bq) marks.push('<button class="rm boss" data-boss-q="' + bq.q + '">' + LD.iconArt(bq, "boss") + " " + esc(bq.name.replace(/^The /, "")) + (bq.q !== q ? " Q" + bq.q : "") + "</button>");
-      var rv = (state.rivals || []).filter(function (r) { return !r.sealed && r.sealTurn === q; });
-      rv.forEach(function (r) { marks.push('<em class="rm rival">' + esc(r.firm.split(" ")[0]) + " seals?</em>"); });
       h += '<div class="rq' + (i === 0 ? " now" : "") + (bq && bq.q === q ? " boss-q" : "") + '"><div class="rq-h">Q' + q + (i === 0 ? " <small>at close</small>" : i === cols - 1 ? "+" : "") + "</div>" + marks.join("");
       here.forEach(function (it) {
         railChips(state, it).forEach(function (c) {
@@ -12051,21 +12065,11 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     return h + "</div>";
   }
 
-  function rivalPanel(state, ui) {
-    if (!state.rivals || !state.rivals.length) return "";
-    var h = '<div class="panel rivals"><div class="panel-k">Rivals</div>';
-    state.rivals.forEach(function (rv) {
-      var n = LD.rivalRegions(state, rv.idx).length;
-      h += '<button class="rv-row' + (ui.selRival === rv.idx ? " sel" : "") + '" data-rival="' + rv.idx + '"><i style="background:' + LD.RIVAL_COLORS[rv.idx] + '"></i><b>' + esc(rv.firm) + "</b><span>" +
-        (rv.sealed ? "Sealed in" : n + " region" + (n === 1 ? "" : "s") + (rv.engineer ? " · engineer" : "") + " · seal ~Q" + rv.sealTurn) + "</span></button>";
-    });
-    return h + "</div>";
-  }
 
   function renderDesk(state, ui) {
     ui = ui || {};
     var dealPhase = state.phase === "deal";
-    var h = '<div class="desk ' + (dealPhase ? "phase-deal" : "phase-bunker") + (ui.selDeal || ui.selRegion || ui.selNet || ui.selRival != null ? " has-sel" : "") + (ui.globe ? " is-globe" : "") + '">';
+    var h = '<div class="desk ' + (dealPhase ? "phase-deal" : "phase-bunker") + (ui.selDeal || ui.selRegion || ui.selNet ? " has-sel" : "") + (ui.globe ? " is-globe" : "") + '">';
     h += '<div class="desk-light" aria-hidden="true"></div>';
     h += '<header class="desk-head"><div class="brand"><div class="wordmark">LAST DIVIDEND<span class="sun" aria-hidden="true"></span></div>' +
       '<div class="tag">' + (LD.ERAS && LD.eraOf && LD.ERAS[LD.eraOf(state)] ? esc("Port Calder, " + LD.ERAS[LD.eraOf(state)].year.replace("Now", "now") + " · " + LD.ERAS[LD.eraOf(state)].name) : "A Brighter Tomorrow, Privately Owned") + '</div></div>' +
@@ -12094,7 +12098,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var delta = state.cash - (prev == null ? last : (state.turn === hist[hist.length - 1].turn ? prev : last));
     h += '<aside class="dash">';
     h += '<div class="panel dash-meters office">' + LD.renderOffice(state, { cashSub: delta ? (delta > 0 ? "▲ " : "▼ ") + money(Math.abs(delta)) + " this Q" : "steady" }) + "</div>";
-    h += rivalPanel(state, ui);
     h += '<div class="panel ticker" aria-label="News"><div class="panel-k">News</div><div class="tick-wrap"><div class="tick-run">';
     var items = tickerItems(state);
     function tickItem(t, i) {
@@ -12240,10 +12243,9 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   function renderRegionDossier(state, rid) {
     var r = state.world.regions[rid];
     var lvl = LD.stressLabel(r.stress);
-    var rv = !r.owned && r.rival != null && state.rivals ? state.rivals[r.rival] : null;
-    var h = '<div class="dz region-dz' + (r.owned ? " owned" : "") + (rv ? " rival" : "") + '">';
+    var h = '<div class="dz region-dz' + (r.owned ? " owned" : "") + '">';
     h += '<button class="dz-x" id="dz-close" aria-label="Close">✕</button>';
-    var status = r.owned ? (r.trait === "hq" ? "Headquarters" : "Your territory") : rv ? "Held by " + rv.firm : "Not yours yet";
+    var status = r.owned ? (r.trait === "hq" ? "Headquarters" : "Your territory") : "Not yours yet";
     h += '<div class="dz-k">' + esc(status) + (r.trait === "boom" ? " · Booming" : r.trait === "crisis" ? " · In crisis" : "") + "</div>";
     h += "<h3>" + esc(LD.REGION_NAMES[rid]) + "</h3>";
     h += '<div class="dz-stat"><span>Mood</span>' + stressPips(r) + "<b>" + esc(MOOD[lvl]) + "</b></div>";
@@ -12260,11 +12262,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       h += '<button class="dz-act" id="btn-aim" data-deal="' + soothe + '" data-region="' + rid + '"><b>Aim “' + esc(LD.dealById(soothe).title) + "” here</b>" +
         '<span class="fx-row">' + chip("good", "Stress −2 here instead") + chip("meh", "Free · then sign it") + "</span></button>";
     }
-    if (rv) {
-      h += '<p class="dz-body">' + esc(rv.firm) + " squeezes this region. Their holdings add collapse and, when they get aggressive, unrest.</p>";
-      h += '<button class="dz-act" id="btn-outbid" data-region="' + rid + '"' + (LD.canOutbid(state, rid) ? "" : " disabled") + "><b>Outbid " + esc(rv.firm) + " · " + money(LD.OUTBID.cost) + "</b>" +
-        '<span class="fx-row">' + chip("own", "Claims it at stress 2") + chip("bad", "Unrest +" + LD.OUTBID.unrest) + chip("meh", "Uses the regional order") + "</span></button>";
-    } else if (!r.owned) {
+    if (!r.owned) {
       h += '<p class="dz-body">Win it with an <b>Acquire</b> deal (＋ pin). Owned land can host a plant.</p>';
     }
     if (r.owned) {
@@ -12302,25 +12300,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     return h;
   }
 
-  function renderRivalDossier(state, idx) {
-    var rv = state.rivals[idx];
-    var n = LD.rivalRegions(state, idx);
-    var h = '<div class="dz rival-dz">';
-    h += '<button class="dz-x" id="dz-close" aria-label="Close">✕</button>';
-    h += '<div class="dz-k">Rival executive · aggression ' + Math.round(rv.aggr * 100) + "%</div><h3>" + esc(rv.name) + "</h3>";
-    h += '<div class="exec-t">' + esc(rv.firm) + "</div>";
-    h += '<div class="dz-stat"><span>Holdings</span><b>' + (n.length ? n.map(function (id) { return LD.REGION_NAMES[id]; }).join(", ") : "none yet") + "</b></div>";
-    h += '<div class="dz-stat"><span>Engineer</span><b>' + (rv.engineer ? "poached (yours +$4M)" : "not yet") + "</b></div>";
-    h += '<div class="dz-stat"><span>Bunker</span><b>' + (rv.sealed ? "sealed in" : "seals around Q" + rv.sealTurn + " (panic: collapse spike)") + "</b></div>";
-    if (!rv.sealed) {
-      h += '<button class="dz-act" id="btn-leak" data-rival="' + idx + '"' + (LD.canLeak(state, idx) ? "" : " disabled") + "><b>Leak their contracts</b>" +
-        '<span class="fx-row">' + chip("good", "Their seal slips " + LD.LEAK.delay + "Q") + chip("bad", "Unrest +" + LD.LEAK.unrest) + chip("meh", "Uses the regional order") + "</span></button>";
-      if (n.length) h += '<p class="dz-note">Tap one of their regions to outbid them for it.</p>';
-    }
-    h += "</div>";
-    return h;
-  }
-
   function renderExecDossier(state) {
     var exec = LD.execById(state.executiveId);
     var initials = exec.name.replace(/^Dr\. /, "").split(" ").map(function (p) { return p[0]; }).join("");
@@ -12348,15 +12327,13 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (ui.selDeal && state.phase === "deal" && state.offered.indexOf(ui.selDeal) !== -1) return renderDealDossier(state, ui.selDeal);
     if (ui.selRegion) return renderRegionDossier(state, ui.selRegion);
     if (ui.selNet) return renderNetDossier(state, ui.selNet);
-    if (ui.selRival != null && state.rivals && state.rivals[ui.selRival]) return renderRivalDossier(state, ui.selRival);
     return renderExecDossier(state);
   }
 
   /* Short hover / long-press card for a region. */
   function regionTip(state, id) {
     var r = state.world.regions[id];
-    var rv = !r.owned && r.rival != null && state.rivals ? state.rivals[r.rival] : null;
-    var h = "<b>" + esc(LD.REGION_NAMES[id]) + "</b><span>" + esc(r.owned ? (r.trait === "hq" ? "Your HQ" : "Yours") : rv ? rv.firm : "Unclaimed") + (r.trait === "boom" ? " · Booming" : "") + "</span>";
+    var h = "<b>" + esc(LD.REGION_NAMES[id]) + "</b><span>" + esc(r.owned ? (r.trait === "hq" ? "Your HQ" : "Yours") : "Unclaimed") + (r.trait === "boom" ? " · Booming" : "") + "</span>";
     h += '<span class="tip-pips">' + stressPips(r) + " " + esc(MOOD[LD.stressLabel(r.stress)].split(" (")[0]) + "</span>";
     if (r.owned && r.plant) h += "<span>Plant " + (r.stress >= LD.STRESS_STRIKE ? "on strike" : "+" + money(LD.plantIncome(state, id)) + "/Q") + " · collapse +1/Q</span>";
     if (LD.willRevolt(state, id)) h += '<span class="tip-warn">Revolts next quarter</span>';
@@ -12370,10 +12347,10 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (f.fy) return "💼";
     var w = f.world;
     if (!w) return "✉";
-    return { income: "$", strike: "✊", riot: "🔥", protest: "✊", revolt: "⚑", brine: "≈", spread: "!", "rival-buy": "⚐", "rival-heat": "♨", "rival-engineer": "⛑", "rival-seal": "⛔" }[w.kind] || "•";
+    return { income: "$", strike: "✊", riot: "🔥", protest: "✊", revolt: "⚑", brine: "≈", spread: "!" }[w.kind] || "•";
   }
 
-  function renderReport(prev, next, fired, tick, sniped) {
+  function renderReport(prev, next, fired, tick) {
     var h = '<div class="report"><div class="dz-k">Quarterly report</div><h3>Q' + prev.turn + " closes</h3>";
     h += '<div class="rep-deltas">';
     [["Cash", prev.cash, next.cash, true], ["Unrest", prev.unrest, next.unrest, false], ["Collapse", prev.collapse, next.collapse, false]].forEach(function (x) {
@@ -12386,7 +12363,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       h += "<li" + (f.fy === "boss" ? ' class="rep-boss"' : "") + (f.world && f.world.regionId ? ' data-region="' + f.world.regionId + '"' : "") + "><i>" + reportIcon(f) + "</i>" + esc(f.text) + "</li>";
     });
     if (tick) h += "<li><i>↗</i>Collapse drifts +" + tick + (prev.turn >= LD.mods(next).lateAccelTurn ? " (the curve steepens)" : "") + ".</li>";
-    if (sniped) h += "<li><i>⚐</i>" + esc(sniped.text) + "</li>";
     h += "</ul></div>";
     return h;
   }
@@ -12792,7 +12768,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       h += '<button class="bp-btn q-sound" id="btn-engineer"' + (locked || acted || !LD.canHireEngineer(state) ? " disabled" : "") + "><b>Hire · " + money(ec) + "</b><span>uses this quarter's bunker order</span></button>";
       if (locked) h += '<p class="bp-note">Sign a deal on the map first.</p>';
       else if (LD.engineerBlocked(state)) h += '<p class="bp-note">' + esc(LD.engineerBlocked(state)) + "</p>";
-      if (LD.rivalEngineerTax(state)) h += '<p class="bp-note">Rivals poached the market: +' + money(LD.rivalEngineerTax(state)) + ".</p>";
       return h;
     }
     if (spot === "private") {
@@ -12861,8 +12836,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   if (typeof module !== "undefined" && module.exports) module.exports = LD;
 })(typeof globalThis !== "undefined" ? globalThis : this);
 
-  </script>
-  <script>
+  </script><script>
 /* Last Dividend — Fiscal Year renderers: draft, Portfolio, boss cards, act chips. Pure string builders. Browser + Node. */
 (function (root) {
   var LD = root.LD || (root.LD = {});
@@ -13245,7 +13219,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       h += '</ol><p class="fy-note">Rules stack: a tier keeps every rule above it. Exits pay ×(1 + 0.3 × tier) Dividends.</p>';
     } else if (kind === "bosses") {
       h += '<div class="fy-head"><div class="dz-k">Boss quarters</div><h2>Who can show up</h2></div><ul class="fy-list ex-list">';
-      [["earnings", "shortseller"], ["strike", "bid", "crash"], ["reckoning", "heatdome", "seawall"]].forEach(function (grp, ai) {
+      [["earnings", "shortseller"], ["strike", "crash"], ["reckoning", "heatdome", "seawall"]].forEach(function (grp, ai) {
         grp.forEach(function (id) { var b = LD.BOSSES[id], bo = LD.bossOpp && state && state.fy ? LD.oppById(LD.bossOpp(state, id)) : null, bo0 = !bo && LD.oppById ? LD.oppById({ earnings: "ashby_b", shortseller: "sorel_b", strike: "varga_b", bid: "crowe_b", crash: "ticker_b" }[id]) : null; bo = bo || bo0;
           h += '<li><span class="fy-ico" aria-hidden="true">' + IA(b, "boss", id) + "</span><div><b>" + esc(b.name) + "</b> <em>Act " + LD.ACTS[ai].roman + " · " + esc(LD.ACTS[ai].year) + "</em>" + (bo ? "<span>" + esc(bo.who + " · " + bo.role) + "</span>" : "") + "</div></li>"; });
       });
@@ -13374,7 +13348,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (fg.done) return { t: LD.oppLine(fg, "end"), k: "end" };
     if (fg.round === 1 && !fg.played) return { t: LD.oppLine(fg, "open"), k: "open" };
     var I = fg.intent && LD.INTENTS[fg.intent.k];
-    return { t: I && I.say ? I.say : "", k: "move" };
+    return { t: LD.moveSay ? LD.moveSay(fg, fg.intent.k) : I && I.say ? I.say : "", k: "move" };
   }
   function sceneHtml(state, fg, ui) {
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
@@ -13414,7 +13388,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   LD.fightOpener = function (state, fg) {
     fg = fg || (state && state.fy && state.fy.fight); if (!fg) return "";
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
-    return (F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
+    return (F.opp && F.opp.why && LD.missionText ? LD.missionText(F.opp.why, fg) : F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
   };
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
      and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */
@@ -13720,7 +13694,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       var pose = out === "martyred" ? "attack" : out === "bought" || out === "converted" || out === "deal" || (!out && how === "paid") ? (o.paid ? "paid" : "idle") : out ? (out === "walked" ? "idle" : "defeated") : how === "crushed" ? "defeated" : "idle";
       var label = out ? LD.OUT_LABEL[out] : LD.HOW_LABEL ? LD.HOW_LABEL[how] : how;
       return { id: id, who: o.who || f.who || id, short: o.short || id.split("_")[0].charAt(0).toUpperCase() + id.split("_")[0].slice(1), role: o.role || "",
-        how: how, out: out, label: label, tone: OUT_TONE[out || how] || "", q: f.q || 0, art: o.art ? "assets/fight/opp-" + o.art + "-" + pose + ".webp" : "", quote: (o.end || {})[out || how] || (o.end || {})[how] || "" };
+        how: how, out: out, label: label, tone: OUT_TONE[out || how] || "", q: f.q || 0, art: o.art ? "assets/fight/opp-" + o.art + "-" + pose + ".webp" : "", quote: (LD.missionText || function (s) { return s; })((o.end || {})[out || how] || (o.end || {})[how] || "", f.dealId || null) };
     }).sort(function (a, b) { return a.q - b.q; });
     var tally = {};
     fights.forEach(function (f) { var k = f.label; tally[k] = (tally[k] || 0) + 1; });
@@ -14909,7 +14883,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   }
 
   /* ---------- Desk (world map) ---------- */
-  var sel = { deal: null, region: null, net: null, rival: null, choice: null };
+  var sel = { deal: null, region: null, net: null, choice: null };
   var bunkerMode = "install";
   var hidePins = false;
   var lens = "none";
@@ -14934,7 +14908,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   function uiOpts() {
     var c = coachInfo();
     var phone = isPhone();
-    return { selDeal: sel.deal, selRegion: sel.region, selNet: sel.net, selRival: sel.rival, coach: c.coach, coachDeal: c.coachDeal, coachText: c.coachText,
+    return { selDeal: sel.deal, selRegion: sel.region, selNet: sel.net, coach: c.coach, coachDeal: c.coachDeal, coachText: c.coachText,
       hidePins: hidePins, lens: lens, interactive: true, phone: phone, globe: !phone };
   }
 
@@ -15005,7 +14979,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (!desk) return;
     var dz = $("dossier");
     dz.innerHTML = LD.renderDossier(state, uiOpts());
-    desk.classList.toggle("has-sel", !!(sel.deal || sel.region || sel.net || sel.rival != null));
+    desk.classList.toggle("has-sel", !!(sel.deal || sel.region || sel.net));
     Array.prototype.forEach.call(desk.querySelectorAll(".pin"), function (n) {
       n.classList.toggle("sel", n.getAttribute("data-deal") === sel.deal);
       if (sel.deal) n.classList.remove("coach");
@@ -15014,7 +14988,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       n.classList.toggle("sel", n.getAttribute("data-region") === sel.region);
     });
     Array.prototype.forEach.call(desk.querySelectorAll(".net-chip"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
-    Array.prototype.forEach.call(desk.querySelectorAll(".rv-row"), function (n) { n.classList.toggle("sel", +n.getAttribute("data-rival") === sel.rival); });
     updatePreview(sel.deal, null);
     var cb = desk.querySelector(".coach-bubble.c-pin");
     if (cb && sel.deal) cb.remove();
@@ -15036,7 +15009,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (rail) { rail.innerHTML = LD.renderRail(state, dealId, choiceId); bindBossLinks(rail); }
   }
 
-  function clearSel() { sel.deal = null; sel.region = null; sel.net = null; sel.rival = null; }
+  function clearSel() { sel.deal = null; sel.region = null; sel.net = null; }
   function selectDealPin(id) {
     if (state.phase !== "deal") return;
     clearSel();
@@ -15047,7 +15020,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   }
   function selectRegion(id) { clearSel(); sel.region = id; refreshSelection(); pennyTip("region"); }
   function selectNet(id) { clearSel(); sel.net = id; refreshSelection(); }
-  function selectRival(i) { clearSel(); sel.rival = i; refreshSelection(); }
 
   function activateOnKey(n, fn) {
     n.addEventListener("keydown", function (e) {
@@ -15113,9 +15085,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     });
     Array.prototype.forEach.call(document.querySelectorAll(".desk .net-chip"), function (n) {
       n.addEventListener("click", function () { tick(); selectNet(n.getAttribute("data-net")); });
-    });
-    Array.prototype.forEach.call(document.querySelectorAll(".desk .rv-row"), function (n) {
-      n.addEventListener("click", function () { tick(); selectRival(+n.getAttribute("data-rival")); });
     });
     Array.prototype.forEach.call(document.querySelectorAll(".desk .lens-btn"), function (n) {
       n.addEventListener("click", function () {
@@ -15285,30 +15254,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       clearSel();
       renderDesk();
       selectDealPin(id);
-    });
-    var outbid = $("btn-outbid");
-    if (outbid) outbid.addEventListener("click", function () {
-      tick();
-      var rid = outbid.getAttribute("data-region");
-      var prev = state;
-      var res = LD.outbidRegion(state, rid);
-      if (!res.ok) { flash(res.error); return; }
-      state = res.state;
-      persistRun();
-      renderDesk(prev);
-      popRegion(rid, "claimed");
-      floatAt(rid, "Outbid!", "own");
-    });
-    var leak = $("btn-leak");
-    if (leak) leak.addEventListener("click", function () {
-      tick();
-      var prev = state;
-      var res = LD.leakRival(state, +leak.getAttribute("data-rival"));
-      if (!res.ok) { flash(res.error); return; }
-      state = res.state;
-      persistRun();
-      renderDesk(prev);
-      floatCenter("Leaked! Their seal slips", "good");
     });
   }
 
@@ -15599,7 +15544,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     closing = true;
     state = res.state;
     pennyEmit("endq");
-    if ((res.world || []).some(function (ev) { return /^rival/.test(ev.kind || ""); }) || res.sniped) PN.pendingRival = true;
     if (state.ended) recordEnding();
     else persistRun();
     var meta = loadMeta();
@@ -15647,25 +15591,23 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
         var m = /\(([^)]*)\)/.exec(f.text || "");
         beats.push(function (dy) { floatCenter(short + (m ? " · " + m[1] : ""), f.item ? "good" : "bad", 0, dy); });
       });
-      /* 2. Regions and rivals react, one at a time, never overlapping. */
+      /* 2. Regions react, one at a time, never overlapping. */
       (res.world || []).forEach(function (ev) {
         var label = ev.kind === "income" ? "+" + LD.formatMoney(ev.cash) : ev.kind === "strike" ? "Strike!" : ev.kind === "riot" ? "Riots +" + ev.unrest :
-          ev.kind === "protest" ? "Protest +" + ev.unrest : ev.kind === "revolt" ? "Nationalised! Unrest +" + ev.unrest : ev.kind === "spread" ? "Crisis spreads" :
-          ev.kind === "rival-buy" ? state.rivals[ev.rival].firm + " buys in" : ev.text;
-        var cls = ev.kind === "income" ? "cash" : ev.kind === "rival-buy" ? "rival" : "bad";
+          ev.kind === "protest" ? "Protest +" + ev.unrest : ev.kind === "revolt" ? "Nationalised! Unrest +" + ev.unrest : ev.kind === "spread" ? "Crisis spreads" : ev.text;
+        var cls = ev.kind === "income" ? "cash" : "bad";
         if (ev.regionId) beats.push(function () { floatAt(ev.regionId, label, cls); popRegion(ev.regionId, "ev-" + ev.kind, 0); });
-        else beats.push(function (dy) { floatCenter(label, ev.kind === "rival-seal" ? "bad big" : "bad", 0, dy); });
+        else beats.push(function (dy) { floatCenter(label, "bad", 0, dy); });
       });
       /* 3. Collapse drifts: the world visibly worsens. */
       if (res.tick) beats.push(function (dy) { floatCenter("Collapse +" + res.tick, "bad", 0, dy); var sl = document.querySelector(".desk .board-slab"); if (sl) sl.classList.add("worsen"); });
-      if (res.sniped) beats.push(function (dy) { floatCenter(res.sniped.text, "rival", 0, dy); });
       beats.forEach(function (b, i) { later(function () { b((i % 3) * 38); }, 150 + i * step); });
       later(finish, Math.max(1100, 150 + beats.length * step + 700));
     }, reduced() ? 300 : 850);
   }
 
   function showReport(prev, res) {
-    var body = LD.renderReport(prev, state, res.fired, res.tick, res.sniped);
+    var body = LD.renderReport(prev, state, res.fired, res.tick);
     showOverlay("", body,
       '<button class="btn btn-coral" id="ov-ok">' + (state.ended ? "See how it ends" : "Open Q" + state.turn) + "</button>",
       function () {
@@ -16112,7 +16054,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     DF.busy = true; DF.cbHide = true;
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
     var bub = $("sc-bubble"), I0 = res.intent && LD.INTENTS[res.intent.k];
-    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(I0.say || ""); }
+    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); }
     DF.say = null; DF.cap = null;
     var cp = $("sc-cap"); if (cp && cp.parentNode) cp.parentNode.removeChild(cp);
     scAttackAnim(res.hit && res.hit.n);
@@ -16560,7 +16502,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   }
 
   /* ---------- Penny · Onboarding: guided first quarter + one-time contextual tips ---------- */
-  var PN = { on: false, mode: null, idx: -1, cur: null, loop: null, typer: null, typed: true, el: null, shownFor: null, pendingRival: false, scrolled: false, waitSince: 0 };
+  var PN = { on: false, mode: null, idx: -1, cur: null, loop: null, typer: null, typed: true, el: null, shownFor: null, scrolled: false, waitSince: 0 };
   var PENNY_FACES = { wink: "penny-wink", excited: "penny-excited", worried: "penny-worried", smug: "penny-smug" };
   function pq(s) { return document.querySelector(s); }
   function pvis(n) { if (!n) return false; var r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0; }
@@ -16671,7 +16613,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       target: function () { return pq("#btn-endq"); },
       act: function () { clickEl(pq("#btn-endq")); } },
     { id: "react", n: 8, face: "wink", passive: true, on: "report", scrollTo: ".desk .board",
-      text: "Here it comes… income, protests, rivals, Collapse ticking up. Hit <b>Skip</b> any time if you're busy being visionary.",
+      text: "Here it comes… income, protests, Collapse ticking up. Hit <b>Skip</b> any time if you're busy being visionary.",
       skip: function () { return reportOpen(); },
       target: function () { return null; } },
     { id: "report", n: 8, face: "smug", on: "report-closed", label: "Next quarter ▸",
@@ -16689,11 +16631,9 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   var PENNY_TIPS = {
     crisis: { face: "worried", text: function () { return "Uh-oh, a <b>crisis</b>! You pick a response instead of a plain signature. Paying it off works… until Unrest hits " + LD.mods(state).crisisNoPayAt + ". Then the street stops cashing cheques."; },
       target: function () { return pq("#dossier .deal-dz") || pq("#dossier"); } },
-    rival: { face: "worried", text: function () { return "A <b>rival executive</b> just moved! Rivals snipe pins, buy regions and race you to seal. Tap one here to <b>leak</b> their contracts, or <b>outbid</b> them from a region dossier."; },
-      target: function () { return pq(".desk .rivals"); } },
     "private": { face: "smug", text: function () { return "<b>Go private</b>: run your own supply! Installs ignore public network damage and never arrive late… but every deal pays only " + Math.round(LD.conversionRate(state) * 100) + "% from then on. Once per run!"; },
       target: function () { return pq("#bk-panel") || pq('#overlay [data-spot="private"]'); } },
-    region: { face: "wink", text: function () { return "A <b>region dossier</b>! Regions you own take one regional order per quarter: plants, soothing, outbids. The <b>Mood / Networks / Holdings</b> lenses up top read the whole map at a glance."; },
+    region: { face: "wink", text: function () { return "A <b>region dossier</b>! Regions you own take one regional order per quarter: plants and soothing. The <b>Mood / Networks / Holdings</b> lenses up top read the whole map at a glance."; },
       target: function () { return pq("#dossier .dz") || pq("#dossier"); } },
     dividends: { face: "excited", text: function () { return "Payday! Every run pays <b>Dividends ◈</b>, itemised in your Shareholder Letter. Spend them in the <b>Summit Lounge</b>: new executives, perks, deal packs and very tasteful cosmetics."; },
       target: function () { return pq("#screen-end .letter") || pq("#screen-boardroom .lg-bal"); } },
@@ -16974,7 +16914,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       var at = PN.cur;
       setTimeout(function () { if (PN.cur === at && PN.on) pennyAdvance(); }, 60);
     }
-    if (ev === "report-closed" && PN.pendingRival) { PN.pendingRival = false; setTimeout(function () { pennyTip("rival"); }, 400); }
   }
   function pennyStop() {
     PN.on = false;
@@ -17003,7 +16942,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (!tip) return;
     var t = tip.target();
     if (!t || !pvis(t)) return;
-    if (key === "rival" && !state) return;
     pennySave(function (p) { p.tips[key] = true; });
     PN.on = true;
     PN.mode = "tip";

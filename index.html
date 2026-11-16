@@ -4924,6 +4924,112 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .ia.ia-x { width: auto; height: auto; }
 /* Fight opener caption (the line the old intro card carried): low on the stage so it never covers the opponent's speech bubble */
 .sc-cap.sc-why { top: auto; bottom: 36px; }
+
+/* ==== Office strip repaint (2026-11-16) — append after the existing .of-* rules in src/css/style.css.
+   Assets live in assets/office/. Era comes from body.era-1/2/3 (already set); executive from .of-room.ex-<id> (NEW hook). ==== */
+
+/* Back wall plate per era (replaces room-hub*.webp behind the strip only) */
+.office .of-room { background: #c9a96a url("assets/office/wall-e1.webp") center 40% / cover no-repeat; }
+body.era-1 .office .of-room { background-image: url("assets/office/wall-e1.webp"); }
+body.era-2 .office .of-room { background-image: url("assets/office/wall-e2.webp"); background-color: #5f7f86; }
+body.era-3 .office .of-room { background-image: url("assets/office/wall-e3.webp"); background-color: #e6cf9a; }
+.office .of-room::before { opacity: .45; z-index: 6; mix-blend-mode: multiply; } /* paper grain over everything, under the gauges */
+
+/* Window: painted view plate behind the live SVG; SVG keeps only the collapse overlays (smog, fires, plumes, flood) */
+.of-window { border: 3px solid #5a3a1c; box-shadow: inset 0 0 0 1px #1f2e2f, 0 0 0 1.5px #1f2e2f, 2px 2px 0 rgba(20, 32, 33, .4); border-radius: 1px; background: #e9d9b6; }
+body.era-2 .of-window { border-color: #3f5557; }
+body.era-3 .of-window { border-width: 2px; border-color: #1f2e2f; }
+.of-glass { background: url("assets/office/view-e1.webp") center 62% / cover no-repeat; }
+body.era-2 .of-glass { background-image: url("assets/office/view-e2.webp"); }
+body.era-3 .of-glass { background-image: url("assets/office/view-e3.webp"); }
+.of-window::after { width: 3px; margin-left: -1.5px; background: #1f2e2f; opacity: 1; }
+body.era-1 .of-window::after { background: #5a3a1c; box-shadow: 0 0 0 1px #1f2e2f; }
+body.era-3 .of-window::after { width: 1.5px; }
+.of-city .sky, .of-city .sun, .of-city .skyline, .of-city .era-props, .of-city .sea, .of-city .glint, .of-city .isle, .of-city .palm { display: none; }
+.of-city .smog { mix-blend-mode: multiply; }
+.of-room.city-2 .of-glass { filter: sepia(.18) saturate(.9); }
+.of-room.city-3 .of-glass { filter: sepia(.32) saturate(.78) brightness(.9); }
+.of-room.city-4 .of-glass { filter: sepia(.45) saturate(.65) brightness(.74); }
+.of-room.holo .of-glass { filter: none; } /* Holo-View shows the calm plate */
+
+/* Desk: painted desk front that overlaps the seated executive's lap; the live cash stack stays on top */
+.of-desk { z-index: 3; }
+.of-desk::before { content: ""; position: absolute; left: -6%; right: -6%; bottom: -2px; height: 210%; background: url("assets/office/desk-e1.webp") center bottom / 100% 100% no-repeat; pointer-events: none; }
+body.era-2 .of-desk::before { background-image: url("assets/office/desk-e2.webp"); }
+body.era-3 .of-desk::before { background-image: url("assets/office/desk-e3.webp"); height: 175%; }
+.of-desksvg { z-index: 1; }
+.of-desksvg .dtop, .of-desksvg .lamp, .of-desksvg .lampshade { display: none; }
+.of-desksvg .stack rect { fill: #e9d9a6; stroke: #1f2e2f; stroke-width: .6; }
+.of-desksvg .stack rect:nth-child(odd) { fill: #8fb3a4; }
+@media (min-width: 900px) and (orientation: landscape), (min-width: 1000px) { .of-desk::before { height: 160%; left: 0; right: 0; background-size: 100% 100%; } }
+
+/* Executive: their own art at the desk (front-<id>.webp, unchanged) + plant + signature props (NEW elements) */
+.of-exec { z-index: 2; }
+.of-plant { position: absolute; z-index: 1; left: 2%; bottom: -14%; height: 82%; aspect-ratio: 177 / 288; background: url("assets/office/plant-e1.webp") center bottom / contain no-repeat; pointer-events: none; }
+body.era-2 .of-plant { background-image: url("assets/office/plant-e2.webp"); aspect-ratio: 153 / 264; }
+body.era-3 .of-plant { background-image: url("assets/office/plant-e3.webp"); aspect-ratio: 195 / 272; }
+.of-sig { position: absolute; pointer-events: none; background: center / contain no-repeat; filter: drop-shadow(1.5px 1.5px 0 rgba(20, 32, 33, .35)); }
+.of-sig-wall { z-index: 0; right: 3%; top: 30%; height: 34%; aspect-ratio: 1.1; }
+.of-sig-desk { z-index: 4; left: 4%; bottom: 88%; height: 70%; aspect-ratio: 1; }
+.of-sig-floor { z-index: 4; right: -2%; bottom: 0; height: 120%; aspect-ratio: 1; }
+@media (max-width: 899px) and (orientation: portrait), (max-width: 699px) { .of-sig-floor { display: none; } .of-sig-desk { height: 95%; } }
+.of-room.ex-mara    .of-sig-wall { background-image: url("assets/office/exec-mara-wall.webp"); }
+.of-room.ex-mara    .of-sig-desk { background-image: url("assets/office/exec-mara-desk.webp"); }
+.of-room.ex-mara    .of-sig-floor { background-image: url("assets/office/exec-mara-floor.webp"); }
+.of-room.ex-reid    .of-sig-wall { background-image: url("assets/office/exec-reid-wall.webp"); aspect-ratio: .76; }
+.of-room.ex-reid    .of-sig-desk { background-image: url("assets/office/exec-reid-desk.webp"); }
+.of-room.ex-reid    .of-sig-floor { background-image: url("assets/office/exec-reid-floor.webp"); }
+.of-room.ex-imani   .of-sig-wall { background-image: url("assets/office/exec-imani-wall.webp"); }
+.of-room.ex-imani   .of-sig-desk { background-image: url("assets/office/exec-imani-desk.webp"); }
+.of-room.ex-imani   .of-sig-floor { background-image: url("assets/office/exec-imani-floor.webp"); }
+.of-room.ex-julian  .of-sig-wall { background-image: url("assets/office/exec-julian-wall.webp"); aspect-ratio: 1.26; }
+.of-room.ex-julian  .of-sig-desk { background-image: url("assets/office/exec-julian-desk.webp"); }
+.of-room.ex-julian  .of-sig-floor { background-image: url("assets/office/exec-julian-floor.webp"); }
+.of-room.ex-soren   .of-sig-wall { background-image: url("assets/office/exec-soren-wall.webp"); }
+.of-room.ex-soren   .of-sig-desk { background-image: url("assets/office/exec-soren-desk.webp"); }
+.of-room.ex-soren   .of-sig-floor { background-image: url("assets/office/exec-soren-floor.webp"); }
+.of-room.ex-cassius .of-sig-wall { background-image: url("assets/office/exec-cassius-wall.webp"); aspect-ratio: 1.22; }
+.of-room.ex-cassius .of-sig-desk { background-image: url("assets/office/exec-cassius-desk.webp"); }
+.of-room.ex-cassius .of-sig-floor { background-image: url("assets/office/exec-cassius-floor.webp"); }
+
+/* Front door: painted closed leaf inside .dleaf (so knock rattle/shake still animate it) + painted open frame under it */
+.of-doorsvg .dframe, .of-doorsvg .dpanel, .of-doorsvg .glass, .of-doorsvg .knob, .of-doorsvg .plate, .of-doorsvg .stud { display: none; }
+.of-doorsvg .dimg-open { opacity: 0; }
+.of-doorsvg .heads { mix-blend-mode: multiply; }
+.of-doorsvg .gap { fill: #f3e6c8; opacity: .55; }
+.of-room.door-3 .of-doorsvg .gap { fill: #b8553a; opacity: .95; }
+.of-room.padded .of-doorsvg .dimg-closed { filter: sepia(.5) hue-rotate(-20deg) saturate(1.4); } /* soundproofed tint; swap for a padded leaf later */
+.of-room.ofx-visit.ofx-go .of-doorsvg .dleaf { animation: ofxLeafOff 2.2s steps(1) both; }
+.of-room.ofx-visit.ofx-go .of-doorsvg .dimg-open { animation: ofxOpenOn 2.2s steps(1) both; }
+@keyframes ofxLeafOff { 0%, 27% { opacity: 1; transform: none; } 28%, 100% { opacity: 0; } }
+@keyframes ofxOpenOn { 0%, 27% { opacity: 0; } 28%, 100% { opacity: 1; } }
+
+/* Back door (away fights): painted service door per era */
+.ofx-back { background: #17233a; border: 0; box-shadow: inset 0 0 0 2px #1f2e2f; }
+.ofx-bleaf { inset: 0; box-shadow: none; background: url("assets/office/backdoor-e1-leaf.webp") center / 100% 100% no-repeat; }
+.of-room.ofx-e2 .ofx-bleaf { background-image: url("assets/office/backdoor-e2-leaf.webp"); }
+.of-room.ofx-e3 .ofx-bleaf { background-image: url("assets/office/backdoor-e3-leaf.webp"); }
+
+/* Vehicles: painted sprites (img instead of inline SVG) */
+.ofx-veh img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ofx-car { aspect-ratio: 389 / 150; height: 30%; bottom: 4%; }
+.ofx-air { aspect-ratio: 406 / 149; height: 26%; bottom: auto; top: 14%; }
+
+/* Matte pass on leftovers that still glow */
+body.era-3 .of-wallart i:not(.empty) { box-shadow: 2px 2px 0 rgba(20, 32, 33, .45), inset 0 0 0 1px #1f2e2f; background: #f3e6c8; }
+.of-wallart i { background: #f3e6c8; border-color: #1f2e2f; }
+.of-wallart i.empty { background: rgba(243, 230, 200, .35); }
+
+/* Wall-art slots in the short office strip (phones and portrait tablets): the executive's head reaches the top of the
+   room, so the row hangs top-left over the wall and window frame instead of across the head. Empty slots only on tablet. */
+@media (orientation: portrait), (max-width: 899px) {
+  .office .of-wallart { top: 2%; left: 3%; right: auto; justify-content: flex-start; gap: 2px; }
+  .office .of-wallart i { width: 14px; height: 15px; font-size: 9px; border-width: 1.5px; }
+  .office .of-wallart i .ia, .office .of-wallart i img { width: 100%; height: 100%; }
+}
+@media (max-width: 620px) {
+  .office .of-wallart i.empty, .office .of-wallart i:nth-child(n+6) { display: none; }
+}
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -9777,7 +9883,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       pattern: ["gray_kettle", "gray_ot"], debate: "Protest policing, overtime and who pays",
       open: "Square's full. I can clear it, or not. Your call. Your money.", hit: ["Easy. I've got a pension.", "That's assault on a public servant.", "Hm. Let's renegotiate."], block: ["The badge stops that.", "Riot gear, pal."],
       end: { paid: "Square'll be clear by morning. Off the record.", crushed: "I'll remember this at the next riot.", walked: "Overtime's overtime. Pay it." } },
-    crowe: { act: 3, base: "rival", who: "Victor Crowe", role: "Crowe Terminals", art: "crowe", room: "rival", place: "Crowe Terminals, top floor", ar: 0.571,
+    crowe: { act: 3, base: "rival", who: "Victor Crowe", role: "Meridian Freight Exchange", art: "crowe", room: "exchange", place: "Meridian Freight Exchange, top floor", ar: 0.571,
       pattern: ["cro_fee", "cro_acq"], debate: "Tech monopolies and the platform tax",
       open: "I don't build. I acquire. Today I'm acquiring you.", hit: ["A rounding error.", "Hm. My board will notice that.", "Interesting. Annoying."], block: ["I own the platform you said that on.", "Priced in."],
       end: { paid: "A partnership. I'll own you more slowly.", crushed: "My brother always said you were the clever one.", walked: "Welcome to the platform. Thirty percent." } },
@@ -9814,7 +9920,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       pattern: ["jun_chant", "var_picket", "var_general", "var_picket"], debate: "The general strike, one more time",
       open: "Remember me? Thirty years. Now the whole city walks out.", hit: ["You did that in '78 too.", "We're older. Not softer.", "...Still hits."], block: ["The line holds. It always held.", "Solidarity, pal."],
       end: { paid: "The city gets the contract. You don't get forgiven.", crushed: "Twice. You've broken me twice. Never again.", walked: "Told you we'd be back." } },
-    crowe_b: { act: 2, boss: "bid", who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "rival", place: "Crowe Terminals, top floor", ar: 0.571,
+    crowe_b: { act: 2, boss: "bid", who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "exchange", place: "Meridian Freight Exchange, top floor", ar: 0.571,
       pattern: ["cro_green", "cro_strip", "cro_green", "cro_strip"], debate: "Raiders, greenmail and the leveraged buyout",
       open: "Your board has my number. Shall we call them together?", hit: ["A rounding error.", "Hm. My board will notice that.", "Interesting. Annoying."], block: ["Priced in.", "I bought that argument last year."],
       end: { paid: "Greenmail accepted. Pleasure.", crushed: "I'll be back when you're cheaper.", walked: "Your bunker's mine. Room by room." } },
@@ -10160,7 +10266,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
         ignored: "Nobody came out today. Rain, they said.", martyred: "Evict a nurse on the six o'clock news. Go on.", pyrrhic: "You won. The whole street knows exactly how.",
         deal: "Modify the loan and we go home. Today.", walked: "We're staying. All of us." } },
     /* ===== Now · The Top ===== */
-    crowe: { why: "crowe terminals owns the port, the app and the tide tables. victor crowe would like your company as well. 9:41am.",
+    crowe: { why: "meridian freight exchange owns the port, the app and the tide tables. victor crowe would like your company as well. 9:41am.",
       open: "I don't build. I acquire. Today I'm acquiring you.",
       hit: ["A rounding error.", "Hm. My board will notice that.", "Interesting. Annoying."], block: ["I own the platform you said that on.", "Priced in."],
       react: { money: "You're offering me money. Adorable.", public: "Trending? I own the trend.", law: "My lawyers have lawyers. Their lawyers are bots." },
@@ -10499,7 +10605,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
         broken: "Fine. Keys are on the counter. Kids are at my sister's.", martyred: "Drag a nurse off her own street on the six o'clock news. Go on.",
         deal: "Leave {it} alone, modify the loans, and we go home. Today.", walked: "We're staying. All of us. {It} can wait." } },
     /* Today · The Top */
-    crowe: { why: "You're {doing}, and Victor Crowe wants it, and your company with it. Crowe Terminals owns the port, the app and the tide tables. 9:41am, top floor. He sent for you.",
+    crowe: { why: "You're {doing}, and Victor Crowe wants it, and your company with it. Meridian Freight Exchange owns the port, the app and the tide tables. 9:41am, top floor. He sent for you.",
       open: "I don't build. I acquire. Today I'm acquiring {it}. And you." },
     rosa: { why: "You're {doing}, and Rosa Lind has brought 300 people, a megaphone and a livestream into your lobby to stop it. 41k watching.",
       open: "We're not leaving until you drop {it}. We brought snacks. And Gran's casserole dish." },
@@ -13105,10 +13211,12 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (holo) h += '<rect class="scan" x="0" y="0" width="200" height="110"/>';
     return h + "</svg>";
   }
-  function doorSvg(lv, quiet, padded) {
+  function doorSvg(lv, quiet, padded, era) {
+    var e = Math.max(1, Math.min(3, era || 3));
     var h = '<svg class="of-doorsvg" viewBox="0 0 60 100" aria-hidden="true">';
+    h += '<image class="dimg-open" href="assets/office/door-e' + e + '-open.webp" x="2" y="2" width="56" height="98" preserveAspectRatio="xMidYMax meet"/>';
     h += '<rect class="dframe" x="4" y="4" width="52" height="96" rx="3"/>';
-    h += '<g class="dleaf"><rect class="dpanel" x="9" y="9" width="42" height="88" rx="2"/>';
+    h += '<g class="dleaf"><image class="dimg-closed" href="assets/office/door-e' + e + '-closed.webp" x="2" y="2" width="56" height="98" preserveAspectRatio="xMidYMax meet"/><rect class="dpanel" x="9" y="9" width="42" height="88" rx="2"/>';
     if (padded) { for (var r = 0; r < 4; r++) for (var c = 0; c < 3; c++) h += '<circle class="stud" cx="' + (16 + c * 14) + '" cy="' + (20 + r * 20) + '" r="1.6"/>'; }
     h += '<rect class="glass" x="16" y="15" width="28" height="30" rx="2"/>';
     h += '<g class="sign"><rect x="21" y="18" width="18" height="11"/><rect x="29" y="29" width="2" height="16"/></g>';
@@ -13143,7 +13251,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       (f.deck ? '<button class="of-deckbtn" id="btn-deck" aria-label="Deck, ' + f.deck.length + ' cards">🃏 ' + f.deck.length + "</button>" : "") +
       (ring ? '<button class="of-phone ringing" id="btn-phone" aria-label="' + esc(ERA ? ERA.phone : "The phone is ringing") + '">' + (ERA ? ERA.phoneIcon : "☎") + "</button>" : "") +
       (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</span></div>";
-    h += '<div class="of-room mood-' + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
+    var exk = execArt(state.executiveId);
+    h += '<div class="of-room ex-' + exk + " mood-" + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
     h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';
     if (f.hand) { h += '<div class="of-wallart" aria-hidden="true">'; for (var wi = 0; wi < (f.cap || 5); wi++) { var wa = f.hand[wi] && LD.assetById(f.hand[wi].id); h += wa ? "<i>" + IA(wa) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
     /* Window */
@@ -13153,14 +13262,14 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
         (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
         "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
     /* Executive */
-    h += '<div class="of-exec" data-art="office-exec" aria-label="' + esc(exec.name) + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + '">' + (function () { var fa = LD.execFrontArt(state.executiveId); return '<img class="of-portrait" src="' + fa.src + '" alt="" draggable="false" style="--ar:' + fa.ar + '"><span class="of-mood" aria-hidden="true"></span>'; })() + "</div>";
+    h += '<div class="of-exec" data-art="office-exec" aria-label="' + esc(exec.name) + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + '">' + '<i class="of-plant" aria-hidden="true"></i><i class="of-sig of-sig-wall" aria-hidden="true"></i>' + (function () { var fa = LD.execFrontArt(state.executiveId); return '<img class="of-portrait" src="' + fa.src + '" alt="" draggable="false" style="--ar:' + fa.ar + '"><span class="of-mood" aria-hidden="true"></span>'; })() + "</div>";
     /* Desk + cash */
     var bills = Math.max(0, Math.min(8, Math.round(state.cash / 8)));
     var stack = ""; for (var i = 0; i < bills; i++) stack += '<rect x="' + (6 + (i % 2) * 3) + '" y="' + (26 - i * 3.2) + '" width="26" height="3" rx="0.8"/>';
-    h += '<div class="of-desk" data-art="office-desk"><svg class="of-desksvg" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><rect class="dtop" x="0" y="4" width="120" height="30" rx="2"/><g class="stack">' + stack + '</g><rect class="lamp" x="96" y="0" width="3" height="10"/><path class="lampshade" d="M90 2 h15 l-3 -6 h-9z"/></svg></div>';
+    h += '<div class="of-desk" data-art="office-desk"><svg class="of-desksvg" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><rect class="dtop" x="0" y="4" width="120" height="30" rx="2"/><g class="stack">' + stack + '</g><rect class="lamp" x="96" y="0" width="3" height="10"/><path class="lampshade" d="M90 2 h15 l-3 -6 h-9z"/></svg><i class="of-sig of-sig-desk" aria-hidden="true"></i><i class="of-sig of-sig-floor" aria-hidden="true"></i></div>';
     /* Door + unrest */
     var dn = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
-    h += '<div class="of-door" data-art="office-door">' + doorSvg(door, quiet, padded) + '<span class="of-knock" aria-hidden="true">' + (door >= 3 ? "BANG!" : door >= 2 ? "THUD" : "knock") + "</span>" +
+    h += '<div class="of-door" data-art="office-door">' + doorSvg(door, quiet, padded, ERA ? ERA.act : 3) + '<span class="of-knock" aria-hidden="true">' + (door >= 3 ? "BANG!" : door >= 2 ? "THUD" : "knock") + "</span>" +
       (door >= 3 && !quiet ? '<span class="of-voices" aria-hidden="true">“Open up!”</span>' : "") +
       ogauge("unrest", "✊", "Unrest", state.unrest, false, dn,
         "Unrest " + state.unrest + "/100 · " + dn + ". Crisis deals likely from 48; crises cannot be paid off from " + m.crisisNoPayAt + "; the board removes you at " + LD.MAX_UNREST + ".") + "</div>";
@@ -13316,8 +13425,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   /* ---------- Fight scenes: one shared stage, a room and a face per faction ---------- */
   var FACTIONS = {
     regulator: { who: "Agnes Hale", role: "Federal Regulator", art: "hale", room: "regulator", place: "Her hearing room" },
-    rival: { who: "Victor Crowe", role: "Crowe Terminals", art: "crowe", room: "rival", place: "Crowe Terminals, top floor" },
-    bid: { who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "rival", place: "Crowe Terminals, top floor" },
+    rival: { who: "Victor Crowe", role: "Meridian Freight Exchange", art: "crowe", room: "exchange", place: "Meridian Freight Exchange, top floor" },
+    bid: { who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "exchange", place: "Meridian Freight Exchange, top floor" },
     protest: { who: "Rosa Lind", role: "The People", art: "rosa", room: "protest", place: "Your lobby glass" },
     journalist: { who: "Dev Okafor", role: "The Ledger", art: "okafor", room: "journalist", place: "The Ledger's front steps" },
     hearing: { who: "Sen. Walt Brennan", role: "Senate Committee", art: "brennan", room: "senate", place: "The Senate chamber" },
@@ -13393,30 +13502,14 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
      and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */
   var OFX_FAR = { senate: 1, crash: 1, keys: 1 };
-  var OFX_VEH = {
-    car: [
-      /* 1978 Checker-style cab */
-      '<svg viewBox="0 0 64 26"><path d="M4 18 L6 11 L16 10 L22 3 H42 L49 10 L60 12 L61 19 Z" fill="#c9942a" stroke="#1f2e2f" stroke-width="1.6" stroke-linejoin="round"/><rect x="21" y="11" width="22" height="3" fill="#1f2e2f"/><path d="M24 5 H33 V10 H20 Z M35 5 H41 L46 10 H35 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.2"/><rect x="28" y="0.5" width="8" height="2.6" fill="#f8eedb" stroke="#1f2e2f" stroke-width="1"/><circle cx="16" cy="19" r="4.6" fill="#17233a" stroke="#1f2e2f" stroke-width="1.4"/><circle cx="49" cy="19" r="4.6" fill="#17233a" stroke="#1f2e2f" stroke-width="1.4"/><circle cx="16" cy="19" r="1.6" fill="#c9b07a"/><circle cx="49" cy="19" r="1.6" fill="#c9b07a"/></svg>',
-      /* 2008 black town car */
-      '<svg viewBox="0 0 70 24"><path d="M3 17 L5 11 L18 9 L25 3 H46 L54 9 L67 11 L68 18 Z" fill="#1f2e2f" stroke="#0e1626" stroke-width="1.6" stroke-linejoin="round"/><path d="M27 5 H36 V9 H22 Z M38 5 H45 L51 9 H38 Z" fill="#8fa3a4" stroke="#0e1626" stroke-width="1.1"/><path d="M6 13 H66" stroke="#c8cfcc" stroke-width="1"/><circle cx="17" cy="18" r="4.4" fill="#0e1626" stroke="#c8cfcc" stroke-width="1.2"/><circle cx="54" cy="18" r="4.4" fill="#0e1626" stroke="#c8cfcc" stroke-width="1.2"/></svg>',
-      /* Today: matte electric coupe */
-      '<svg viewBox="0 0 66 24"><path d="M3 18 C3 12 10 11 18 10 C24 4 40 3 48 9 C58 10 63 12 63 18 Z" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.6" stroke-linejoin="round"/><path d="M22 9.5 C27 5 39 5 45 9.5 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.1"/><path d="M58 13 h4" stroke="#f3e6c8" stroke-width="1.6"/><circle cx="17" cy="18.5" r="4.4" fill="#17233a" stroke="#1f2e2f" stroke-width="1.3"/><circle cx="50" cy="18.5" r="4.4" fill="#17233a" stroke="#1f2e2f" stroke-width="1.3"/></svg>'
-    ],
-    air: [
-      /* 1978 airship */
-      '<svg viewBox="0 0 80 30"><ellipse cx="38" cy="12" rx="32" ry="10" fill="#e3d2a6" stroke="#1f2e2f" stroke-width="1.6"/><path d="M14 12 H64 M38 2.5 V21.5" stroke="#b8553a" stroke-width="1.2" opacity=".8"/><path d="M5 12 L-1 5 L1 12 L-1 19 Z" fill="#b8553a" stroke="#1f2e2f" stroke-width="1.2"/><rect x="30" y="21" width="15" height="6" rx="1.5" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.2"/></svg>',
-      /* 2008 airliner */
-      '<svg viewBox="0 0 80 26"><path d="M4 13 C4 10 10 9 18 9 H66 C72 9 77 11 77 13 C77 15 72 16 66 16 H18 C10 16 4 15 4 13 Z" fill="#f3e6c8" stroke="#1f2e2f" stroke-width="1.5"/><path d="M8 9 L4 2 H11 L19 9 Z" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.2"/><path d="M34 15 L46 25 H52 L46 15 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.2"/><path d="M20 12.5 H62" stroke="#1f5a5c" stroke-width="1.6" stroke-dasharray="2 2"/></svg>',
-      /* Today private jet */
-      '<svg viewBox="0 0 72 24"><path d="M6 13 C6 10 14 9.5 24 9.5 H58 C66 9.5 70 11.5 70 13 C70 14.5 66 15.5 58 15.5 H24 C14 15.5 6 15 6 13 Z" fill="#f8eedb" stroke="#1f2e2f" stroke-width="1.5"/><path d="M8 10 L5 3 H10 L18 10 Z" fill="#17233a" stroke="#1f2e2f" stroke-width="1.2"/><rect x="14" y="7" width="7" height="3.4" rx="1.5" fill="#17233a"/><path d="M32 15 L42 22 H47 L42 15 Z" fill="#c9942a" stroke="#1f2e2f" stroke-width="1.1"/><path d="M28 12 H56" stroke="#1f2e2f" stroke-width="1.4" stroke-dasharray="1.6 2.4"/></svg>'
-    ]
-  };
+  var OFX_VEH = { car: [1, 2, 3].map(function (e) { return '<img src="assets/office/veh-car-e' + e + '.webp" alt="" draggable="false">'; }),
+    air: [1, 2, 3].map(function (e) { return '<img src="assets/office/veh-air-e' + e + '.webp" alt="" draggable="false">'; }) };
   LD.officeEntrance = function (state) {
     var fg = state && state.fy && state.fy.fight; if (!fg) return null;
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
     var away = venue === "away", air = away && !!OFX_FAR[F.room];
     return { away: away, air: air, era: era, who: F.who, place: F.place || "", opp: "assets/fight/opp-" + F.art + "-idle.webp", ar: F.ar || ART_AR[F.art] || 0.6,
-      veh: away ? OFX_VEH[air ? "air" : "car"][era - 1] : "" };
+      veh: away ? OFX_VEH[air ? "air" : "car"][era - 1] : "", back: "assets/fight/back-" + execArt(state.executiveId) + ".webp" };
   };
   /* The Gallery: a 7-notch crowd meter between you and them. */
   function galHtml(fg) {
@@ -15962,8 +16055,14 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       var bw = Math.max(18, Math.round(h * 0.34)), bx = Math.round(eb.left - rb.left - bw - 10);
       var win = room.querySelector(".of-window .of-glass") || room.querySelector(".of-window");
       var wb = win.getBoundingClientRect(); win.style.setProperty("--ww", Math.round(wb.width) + "px");
-      if (bx < wb.right - rb.left + 2) bx = Math.round(wb.right - rb.left + 4);
-      add(room, '<span class="ofx-back" style="left:' + bx + "px;width:" + bw + 'px"><i class="ofx-bleaf"></i><b>EXIT</b></span>');
+      /* only dodge the window when it shares the exec's row (phone strip); on the tablet stack the window sits above */
+      var sameRow = wb.bottom > eb.top + 4;
+      if (sameRow && bx < wb.right - rb.left + 2) bx = Math.round(wb.right - rb.left + 4);
+      if (bx < 2) bx = 2;
+      var btop = sameRow ? "" : "top:" + Math.max(0, Math.round(eb.top - rb.top - 14)) + "px;";
+      add(room, '<span class="ofx-back" style="' + btop + "left:" + bx + "px;width:" + bw + 'px"><i class="ofx-bleaf"></i><b>EXIT</b></span>');
+      /* the executive turns their back (their own back-<id> art) on the way out */
+      if (ex && ex.tagName === "IMG" && E.back) { ex.dataset.front = ex.getAttribute("src"); ex.setAttribute("src", E.back); }
       var dx = Math.round(bx + bw / 2 - (eb.left + eb.width / 2 - rb.left));
       room.style.setProperty("--ofx-dx", dx + "px");
       add(win, '<span class="ofx-veh ' + (E.air ? "ofx-air" : "ofx-car") + '">' + E.veh + "</span>");
@@ -15973,6 +16072,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       if (ended) return; ended = true; timers.forEach(clearTimeout);
       shield.removeEventListener("pointerdown", onSkip); document.removeEventListener("keydown", onKey, true);
       added.forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+      if (ex && ex.dataset && ex.dataset.front) { ex.setAttribute("src", ex.dataset.front); delete ex.dataset.front; }
       room.classList.remove("ofx", "ofx-go", cls, "ofx-e" + E.era); room.style.removeProperty("--ofx-dx"); if (office) { office.classList.remove("ofx-focus"); office.style.removeProperty("--ofx-s"); office.style.transformOrigin = ""; }
       done(true, skipped);
     }

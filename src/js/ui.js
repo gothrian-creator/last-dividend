@@ -1151,7 +1151,7 @@
     pennyEmit("signed");
     var dcash = state.cash - prev.cash, dun = state.unrest - prev.unrest, dco = state.collapse - prev.collapse;
     if (dcash >= 15) officeReact("glee"); else if (dun >= 8 || dco >= 5) officeReact("shock");
-    if (state.fy && state.fy.fight) { DF.start = prev; setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight && !doorOpen() && !FI.on) { if (LD.fightVenue(state.fy.fight) !== "away") knockNow(); setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight) startFight(); }, reduced() ? 120 : 450); } }, reduced() ? 200 : 700); }
+    if (state.fy && state.fy.fight) { DF.start = prev; setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight && !doorOpen() && !FI.on) { setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight) startFight(); }, reduced() ? 120 : 200); } }, reduced() ? 200 : 450); }
     var rid = res.region ? res.region.regionId : (prev.world && prev.world.pins[id]);
     if (rid) {
       var dc = state.cash - prev.cash;
@@ -1744,20 +1744,84 @@
     if (FI.on) return;
     var want = false; try { want = fightIntroWanted(); } catch (e) { want = false; }
     if (!want) { openFight(); return; }
-    try { playFightIntro(openFight); } catch (e) {
+    try {
+      if (reduced() || screen !== "desk") playFightIntro(openFight);
+      else { FI.on = true; playOfficeEntrance(function (ran, skipped) { FI.on = false; if (skipped) { FI.key = LD.fightIntroKey(state); openFight(); return; } playFightIntro(openFight, { short: ran }); }); }
+    } catch (e) {
       if (window.console) console.error(e);
       FI.on = false; var x = document.getElementById("fi"); if (x && x.parentNode) x.parentNode.removeChild(x); openFight();
     }
   }
-  function playFightIntro(cb) {
+  /* Hub office strip: the actual opponent walks in through the strip door to your desk, or you leave by the back
+     door and a car / plane pulls away in the window. ~2 s, tap anywhere to skip; then a short full-screen card. */
+  function playOfficeEntrance(done) {
+    var room = document.querySelector(".desk .office .of-room");
+    var E = LD.officeEntrance ? LD.officeEntrance(state) : null;
+    if (!room || !E || screen !== "desk") { done(false); return; }
+    var office = room.closest(".office"), rb = room.getBoundingClientRect();
+    if (rb.width < 120 || rb.height < 40) { done(false); return; }
+    try { room.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch (e) {}
+    rb = room.getBoundingClientRect();
+    var ex = room.querySelector(".of-exec .of-portrait") || room.querySelector(".of-exec"), dr = room.querySelector(".of-door .of-doorsvg") || room.querySelector(".of-door");
+    var eb = ex.getBoundingClientRect(), db = dr.getBoundingClientRect();
+    var added = [], ended = false, timers = [];
+    function add(parent, html) { var t = document.createElement("div"); t.innerHTML = html; var n = t.firstChild; parent.appendChild(n); added.push(n); return n; }
+    var shield = add(document.body, '<div id="ofx-shield" role="button" aria-label="Skip"><span class="fi-skip ofx-skip">Tap to skip</span></div>');
+    var cls = E.away ? "ofx-away" : "ofx-visit";
+    if (office) { var ob = office.getBoundingClientRect(), vw0 = window.innerWidth, vh0 = window.innerHeight;
+      var sc = rb.height >= 110 ? 1 : Math.max(1, Math.min(1.45, (vw0 - 12) / ob.width, (vh0 - 12) / ob.height));
+      /* keep the scaled strip on screen: shift the origin toward the nearest edge */
+      office.style.setProperty("--ofx-s", sc.toFixed(3));
+      var ox = Math.max(0, Math.min(100, ((ob.left + ob.width / 2) - vw0 / 2) / Math.max(1, vw0 - ob.width) * 100 + 50));
+      var oy = ob.top + ob.height * sc > vh0 - 6 ? 100 : ob.top - ob.height * (sc - 1) / 2 < 6 ? 0 : 50;
+      office.style.transformOrigin = ox.toFixed(0) + "% " + oy + "%"; }
+    room.classList.add("ofx", cls, "ofx-e" + E.era); if (office) office.classList.add("ofx-focus");
+    var h = rb.height;
+    if (!E.away) {
+      /* visitor sprite: their own fight art, scaled to the strip, walking from the door to the desk */
+      var vh = Math.round(h * 0.8), vw = Math.round(vh * E.ar);
+      var x0 = Math.round(db.left + db.width / 2 - rb.left - vw / 2), x1 = Math.round(eb.right - rb.left + 4);
+      if (x1 > x0) x1 = x0;
+      add(room, '<span class="ofx-visitor" style="--x0:' + x0 + "px;--x1:" + x1 + "px;height:" + vh + "px;width:" + vw + 'px"><img src="' + E.opp + '" alt="" draggable="false"><b class="ofx-tag">' + LD.escapeHtml(E.who) + "</b></span>");
+    } else {
+      /* back door at the left of the exec's wall; the exec walks to it; a vehicle leaves in the window */
+      var bw = Math.max(18, Math.round(h * 0.34)), bx = Math.round(eb.left - rb.left - bw - 10);
+      var win = room.querySelector(".of-window .of-glass") || room.querySelector(".of-window");
+      var wb = win.getBoundingClientRect(); win.style.setProperty("--ww", Math.round(wb.width) + "px");
+      if (bx < wb.right - rb.left + 2) bx = Math.round(wb.right - rb.left + 4);
+      add(room, '<span class="ofx-back" style="left:' + bx + "px;width:" + bw + 'px"><i class="ofx-bleaf"></i><b>EXIT</b></span>');
+      var dx = Math.round(bx + bw / 2 - (eb.left + eb.width / 2 - rb.left));
+      room.style.setProperty("--ofx-dx", dx + "px");
+      add(win, '<span class="ofx-veh ' + (E.air ? "ofx-air" : "ofx-car") + '">' + E.veh + "</span>");
+      add(win, '<b class="ofx-dest">→ ' + LD.escapeHtml(E.place) + "</b>");
+    }
+    function finish(skipped) {
+      if (ended) return; ended = true; timers.forEach(clearTimeout);
+      shield.removeEventListener("pointerdown", onSkip); document.removeEventListener("keydown", onKey, true);
+      added.forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+      room.classList.remove("ofx", "ofx-go", cls, "ofx-e" + E.era); room.style.removeProperty("--ofx-dx"); if (office) { office.classList.remove("ofx-focus"); office.style.removeProperty("--ofx-s"); office.style.transformOrigin = ""; }
+      done(true, skipped);
+    }
+    function onSkip(e) { if (e) { e.preventDefault(); e.stopPropagation(); } finish(true); }
+    function onKey(e) { if (e.key === "Escape" || e.key === " " || e.key === "Enter") onSkip(e); }
+    shield.addEventListener("pointerdown", onSkip); document.addEventListener("keydown", onKey, true);
+    void room.offsetWidth; room.classList.add("ofx-go");
+    if (!E.away) { knockNow(); timers.push(setTimeout(function () { SFX.play("flip"); officeReact("shock"); }, 450)); }
+    else timers.push(setTimeout(function () { SFX.play("pick"); }, 900));
+    timers.push(setTimeout(function () { finish(false); }, E.away ? 2300 : 2150));
+    timers.push(setTimeout(function () { finish(false); }, 5000));
+  }
+  function playFightIntro(cb, o) {
     if (FI.on) return;
-    var html = LD.renderFightIntro(state, { reduced: reduced() });
+    o = o || {};
+    var short = !!o.short && !reduced();
+    var html = LD.renderFightIntro(state, { reduced: reduced(), short: short });
     if (!html) { cb(); return; }
     FI.on = true; FI.key = LD.fightIntroKey(state);
     var host = document.createElement("div"); host.id = "fi"; host.innerHTML = html;
     document.body.appendChild(host);
     var root = host.firstChild, away = root.classList.contains("fi-away"), rm = reduced();
-    var total = rm ? 1000 : 3000, ended = false;
+    var total = rm ? 1000 : short ? 1050 : 3000, ended = false;
     function clear() { FI.timers.forEach(clearTimeout); FI.timers = []; }
     function end() {
       if (ended) return; ended = true; clear();
@@ -1777,7 +1841,7 @@
     function begin() {
       if (go || ended) return; go = true;
       root.classList.add("go");
-      if (!rm) {
+      if (!rm && !short) {
         if (!away) FI.timers.push(setTimeout(function () { SFX.play("knock", Math.max(1, LD.doorLevel(state))); }, 60));
         FI.timers.push(setTimeout(function () { SFX.play(away ? "pick" : "flip"); }, away ? 120 : 380));
       }

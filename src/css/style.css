@@ -4792,7 +4792,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .fi-wall { position: absolute; left: 0; right: 0; top: 0; height: var(--fl); background: var(--wallc); }
 .fi-wall::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22%; background: var(--wain); border-top: 3px solid var(--ink); background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--dw) * 0.6), rgba(20, 30, 31, 0.28) calc(var(--dw) * 0.6) calc(var(--dw) * 0.6 + 2px)); }
 .fi-rail { position: absolute; left: 0; right: 0; top: 11vh; height: 0; border-top: 3px solid var(--ink); opacity: 0.55; }
-.fi-frame { position: absolute; top: 22vh; left: calc(50% - var(--dw) * 0.5 - min(30vw, var(--dw) * 0.85)); width: min(22vw, var(--dw) * 0.62); aspect-ratio: 3 / 2; background: var(--paper); border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(20, 32, 33, 0.4), inset 0 0 0 5px var(--ochre); color: var(--terra-d); padding: 9%; box-sizing: border-box; }
+.fi-frame { position: absolute; top: 22vh; left: max(4vw, calc(50% - var(--dw) * 0.5 - min(30vw, var(--dw) * 0.85))); width: min(22vw, var(--dw) * 0.62, calc(50vw - var(--dw) * 0.5 - 9vw)); aspect-ratio: 3 / 2; background: var(--paper); border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(20, 32, 33, 0.4), inset 0 0 0 5px var(--ochre); color: var(--terra-d); padding: 9%; box-sizing: border-box; }
 .fi-frame svg { width: 100%; height: 100%; display: block; }
 .fi-floor { position: absolute; left: 0; right: 0; top: var(--fl); bottom: 0; background: var(--floor); border-top: 3px solid var(--ink);
   background-image: repeating-linear-gradient(180deg, transparent 0 3.2vh, var(--floor2) 3.2vh calc(3.2vh + 2px)), linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 60%); }
@@ -4829,7 +4829,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .fi-you { position: absolute; z-index: 6; left: -4%; bottom: -3%; height: 40vh; max-width: 52vw; aspect-ratio: var(--ar, 0.8); opacity: 0; transform: translateY(12%); }
 .fi-you img, .fi-walker img, .fi-sil img { width: 100%; height: 100%; object-fit: contain; object-position: 0 100%; display: block; filter: drop-shadow(-2px -2px 0 rgba(20, 32, 33, 0.25)); }
 /* visitor timeline (2.9 s) */
-.fi-visit.go .fi-knock { animation: fiKnock 0.5s steps(3) 0.02s 1 both; }
+.fi-visit.go .fi-knock { animation: fiKnock 1.05s steps(6) 0.02s 1 both; }
 .fi-visit.go .fi-leaf { animation: fiSwing 0.62s cubic-bezier(0.3, 0.1, 0.2, 1) 0.48s both; }
 .fi-visit.go .fi-light { animation: fiSpill 0.5s ease-out 0.54s both; }
 .fi-visit.go .fi-shade { animation: fiShade 0.8s ease-out 0.78s both; }
@@ -4838,7 +4838,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .fi-visit.go .fi-you { animation: fiYou 0.45s ease-out 1.2s both; }
 .fi-visit.go .fi-scene { animation: fiPush 3s ease-in-out both; }
 @keyframes fiIn { to { opacity: 1; } }
-@keyframes fiKnock { 0% { opacity: 1; transform: translateX(-50%) rotate(-6deg); } 50% { opacity: 1; transform: translateX(-53%) rotate(-3deg) scale(1.06); } 85% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) rotate(-6deg); } }
+@keyframes fiKnock { 0% { opacity: 1; transform: translateX(-50%) rotate(-6deg); } 25%, 65% { opacity: 1; transform: translateX(-53%) rotate(-3deg) scale(1.06); } 45% { opacity: 1; transform: translateX(-50%) rotate(-6deg); } 88% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) rotate(-6deg); } }
 @keyframes fiSwing { from { transform: rotateY(0); } to { transform: rotateY(-96deg); } }
 @keyframes fiSpill { from { transform: translateX(-50%) scaleY(0); } to { transform: translateX(-50%) scaleY(1); } }
 @keyframes fiShade { from { transform: translateX(-50%) scaleY(0); } to { transform: translateX(-50%) scaleY(1); } }
@@ -4924,3 +4924,66 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .fi-rm .fi-plate { transform: none; } .fi-rm .fi-cap { opacity: 1; transform: none; } .fi-rm .fi-skip { opacity: 1; }
 .fi-rm *, .fi-rm.go * { animation: none !important; }
 @media (orientation: portrait) { .fi-sil { height: 21vh; } }
+
+/* ---------- Hub office strip entrance (visitor walks in / exec leaves, vehicle in the window) ---------- */
+#ofx-shield { position: fixed; inset: 0; z-index: 8450; cursor: pointer; background: transparent; -webkit-tap-highlight-color: transparent; }
+#ofx-shield .ofx-skip { opacity: 0; animation: fiFade 0.3s ease-out 0.4s both; position: fixed; right: 12px; top: 10px; font: 700 12px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: #f8eedb; background: rgba(23, 35, 58, 0.82); padding: 6px 9px; border-radius: 3px; }
+.desk .office.ofx-focus { position: relative; z-index: 8401; transform: scale(var(--ofx-s, 1)); transition: transform 0.22s ease-out; box-shadow: 0 0 0 3px #1f2e2f, 0 0 0 6px #c9942a, 5px 7px 0 6px rgba(20, 32, 33, 0.45); border-radius: 12px; }
+.of-room.ofx .of-knock { z-index: 6; }
+/* the door swings open onto a lit hall */
+.of-room.ofx-visit .of-doorsvg .dleaf { transform-box: fill-box; transform-origin: 0 50%; }
+.of-room.ofx-visit.ofx-go .of-doorsvg .dleaf { animation: ofxDoor 2.2s cubic-bezier(0.3, 0.1, 0.2, 1) both; }
+.of-room.ofx-visit.ofx-go .of-doorsvg .dframe { animation: ofxHall 2.2s linear both; }
+.of-room.ofx-visit.ofx-go .of-door .of-knock { animation: ofxKnock 0.9s steps(4) both; }
+@keyframes ofxDoor { 0%, 20% { transform: scaleX(1); } 40%, 100% { transform: scaleX(0.14); } }
+@keyframes ofxHall { 0%, 22% { fill: #2a1a0c; } 30%, 100% { fill: #f3e6c8; } }
+@keyframes ofxKnock { 0% { opacity: 1; transform: translateX(-50%) rotate(-4deg); } 50% { opacity: 1; transform: translateX(-54%) rotate(3deg) scale(1.08); } 85% { opacity: 1; } 100% { opacity: 0; } }
+/* the opponent: their own fight art */
+.ofx-visitor { position: absolute; z-index: 5; bottom: 2px; left: 0; transform: translateX(var(--x0)); opacity: 0; pointer-events: none; }
+.ofx-visitor img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: block; filter: drop-shadow(2px 0 0 rgba(20, 32, 33, 0.45)); }
+.ofx-visitor::before { content: ""; position: absolute; left: -20%; right: -20%; bottom: -2px; height: 10%; background: rgba(23, 35, 58, 0.45); border-radius: 50%; }
+.ofx-tag { position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, 4px); white-space: nowrap; padding: 2px 7px; background: #f8eedb; color: #1f2e2f; border: 2px solid #1f2e2f; box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.5); font: 700 11px/1.2 var(--font-serif); opacity: 0; }
+.of-room.ofx-visit.ofx-go .ofx-visitor { animation: ofxWalkIn 2.2s cubic-bezier(0.35, 0.1, 0.3, 1) both; }
+.of-room.ofx-visit.ofx-go .ofx-visitor img { animation: ofxBob 0.26s steps(2) 0.75s 4; }
+.of-room.ofx-visit.ofx-go .ofx-tag { animation: ofxTag 2.2s ease-out both; }
+@keyframes ofxWalkIn { 0%, 24% { opacity: 0; transform: translateX(var(--x0)) scale(0.9); } 32% { opacity: 1; transform: translateX(var(--x0)) scale(0.92); } 75%, 100% { opacity: 1; transform: translateX(var(--x1)) scale(1); } }
+@keyframes ofxBob { 50% { transform: translateY(-3%); } }
+@keyframes ofxTag { 0%, 62% { opacity: 0; transform: translate(-50%, 8px); } 72%, 100% { opacity: 1; transform: translate(-50%, 4px); } }
+/* away: the back door, the exec leaves, a vehicle pulls out */
+.ofx-back { position: absolute; z-index: 2; top: 10%; bottom: 0; background: #0e1626; border: 2px solid #1f2e2f; border-bottom: 0; box-shadow: inset 0 0 0 2px #6f8384; opacity: 0; }
+.ofx-bleaf { position: absolute; inset: 2px; background: #5d6f63; box-shadow: inset 0 0 0 1.5px #1f2e2f; transform-origin: 0 50%; }
+.ofx-back b { position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, -2px); padding: 0 3px; background: #b8553a; color: #f8eedb; border: 1.5px solid #1f2e2f; font: 800 8px/1.3 var(--font-sans); letter-spacing: 0.08em; }
+.of-room.ofx-away.ofx-go .ofx-back { animation: ofxFadeIn 0.25s ease-out both; }
+.of-room.ofx-away.ofx-go .ofx-bleaf { animation: ofxBackDoor 2.3s ease-in-out both; }
+.of-room.ofx-away.ofx-go .of-exec .of-portrait { animation: ofxLeave 2.3s ease-in both; }
+@keyframes ofxFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ofxBackDoor { 0%, 10% { transform: scaleX(1); } 22%, 46% { transform: scaleX(0.12); } 56%, 100% { transform: scaleX(1); } }
+@keyframes ofxLeave { 0%, 8% { transform: none; opacity: 1; } 16% { transform: translateY(-6%); } 40% { transform: translateX(var(--ofx-dx)) translateY(-6%) scale(0.9); opacity: 1; } 47%, 100% { transform: translateX(var(--ofx-dx)) translateY(-6%) scale(0.82); opacity: 0; } }
+.ofx-veh { position: absolute; z-index: 4; display: block; pointer-events: none; opacity: 0; }
+.ofx-veh svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.ofx-car { bottom: 5%; left: 40%; height: 34%; aspect-ratio: 64 / 26; }
+.ofx-air { bottom: 12%; left: 34%; height: 30%; aspect-ratio: 80 / 28; }
+.of-room.ofx-away.ofx-go .ofx-car { animation: ofxDrive 2.3s cubic-bezier(0.5, 0, 0.8, 0.6) both; }
+.of-room.ofx-away.ofx-go .ofx-air { animation: ofxFly 2.3s cubic-bezier(0.45, 0, 0.75, 0.6) both; }
+@keyframes ofxDrive { 0%, 6% { opacity: 0; transform: none; } 14%, 46% { opacity: 1; transform: none; } 49% { transform: translateY(-5%); } 52% { transform: none; } 100% { opacity: 1; transform: translateX(calc(var(--ww, 300px) * 0.62 + 10%)); } }
+@keyframes ofxFly { 0%, 6% { opacity: 0; transform: none; } 14%, 48% { opacity: 1; transform: none; } 62% { transform: translate(20%, -10%) rotate(-6deg); } 100% { opacity: 1; transform: translate(calc(var(--ww, 300px) * 0.66 + 10%), -230%) rotate(-12deg) scale(0.72); } }
+.ofx-dest { position: absolute; z-index: 5; left: 4px; top: 4px; max-width: calc(100% - 8px); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; padding: 2px 7px; background: #e9c35a; color: #1f2e2f; border: 2px solid #1f2e2f; box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.5); font: 700 11px/1.25 var(--font-sans); opacity: 0; }
+.of-room.ofx-away.ofx-go .ofx-dest { animation: ofxTag 2.3s ease-out both; animation-name: ofxDest; }
+@keyframes ofxDest { 0%, 44% { opacity: 0; transform: translateY(-4px); } 52%, 100% { opacity: 1; transform: none; } }
+/* short full-screen card after the strip: arrival frame, plate and line, then the fight */
+.fi-short .fi-leaf { transform: rotateY(-96deg); }
+.fi-short .fi-light, .fi-short .fi-shade { transform: translateX(-50%) scaleY(1); }
+.fi-short.fi-visit .fi-opp { opacity: 1; transform: translateX(-38%) translateY(calc(100vh - var(--fl) - 1vh)) scale(1.22); }
+.fi-short .fi-silo { opacity: 0; }
+.fi-short .fi-you { opacity: 1; transform: none; }
+.fi-short .fi-strip { transform: translateX(-200vw); }
+.fi-short.go * { animation: none !important; }
+.fi-short.go .fi-plate { animation: fiPlate 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.1) 0.04s both !important; }
+.fi-short.go .fi-cap { animation: fiCap 0.22s ease-out 0.18s both !important; }
+.fi-short.go .fi-skip { animation: fiFade 0.2s ease-out 0.2s both !important; }
+.fi-short.go .fi-scene, .fi-short.go .fi-p3 { animation: fiPush 1.1s ease-out both !important; }
+
+.of-room.ofx .ld-act, .desk .office.ofx-focus .ld-act { outline: none !important; animation-name: none !important; }
+.of-room.ofx-away .of-exec .of-mood { opacity: 0; }
+.of-room.ofx .meter { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
+@media (max-width: 520px) { .ofx-dest { font-size: 9.5px; padding: 1px 4px; } .ofx-tag { font-size: 9.5px; padding: 1px 4px; } .ofx-back b { font-size: 6.5px; } }

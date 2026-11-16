@@ -47,9 +47,10 @@ const RM = !!process.env.RM;
         localStorage.clear();
         const eraDrive = new Function("module", DRIVER + "; return eraDrive;")(undefined);
         const st = eraDrive(window.LD, opts);
-        if (!st || !st.fy || !st.fy.fight) return false;
+        if (!st || !st.fy || (!opts.hub && !st.fy.fight)) return false;
+        if (opts.forceOpp && st.fy.fight) { st.fy.fight.opp = opts.forceOpp; st.fy.fight.venue = "away"; }
         localStorage.setItem("lastDividend.v1", JSON.stringify({ penny: { offered: true, done: true, tipsOff: true, tips: {} }, audioOff: true, seenTutorial: true, coachDone: true, midRun: st }));
-        return st.turn + " " + st.fy.fight.opp + " " + window.LD.fightVenue(st.fy.fight);
+        return st.turn + " " + (st.fy.fight ? st.fy.fight.opp + " " + window.LD.fightVenue(st.fy.fight) : "desk");
       }, DRIVER, opts);
       if (!ok) { errors.push("no state " + name); continue; }
       await page.goto(origin + (LIVE ? "?cb=" + Date.now() : ""), { waitUntil: "networkidle0" });
@@ -61,13 +62,20 @@ const RM = !!process.env.RM;
       }
       await click("#btn-continue");
       if (await page.waitForSelector("#fy-boss-ok", { timeout: 900 }).catch(() => null)) await click("#fy-boss-ok");
-      const seen = await page.waitForSelector("#fi .fi.go", { timeout: 4000 }).then(() => true).catch(() => false);
+      if (opts.hub) {
+        await page.waitForSelector(".desk .pin[data-deal]", { timeout: 6000 }); await sleep(600);
+        await page.screenshot({ path: path.join(OUT, vp + "-" + name + "-hub.png") });
+        await click(".desk .pin[data-deal]"); await sleep(500);
+        if (!(await click("#btn-sign:not([disabled])"))) await click("#dossier .dz-choice:not([disabled])");
+      }
+      const seen = await page.waitForSelector((opts.hub || opts.strip) && !RM ? ".of-room.ofx-go" : "#fi .fi.go", { timeout: opts.hub ? 8000 : 4000 }).then(() => true).catch(() => false);
       if (!seen) errors.push("no intro " + vp + " " + name);
       t0 = Date.now();
-      const marks = RM ? [300] : [150, 700, 1300, 2000, 2700];
+      const marks = RM ? [300] : (opts.hub || opts.strip) ? [150, 600, 1100, 1600, 2050, 2600, 3200] : [150, 700, 1300, 2000, 2700];
       for (const m of marks) { const w = m - (Date.now() - t0); if (w > 0) await sleep(w); await page.screenshot({ path: path.join(OUT, vp + "-" + name + (RM ? "-reduced" : "") + "-t" + m + ".png") }); }
       await page.waitForFunction(() => !document.getElementById("fi") && document.getElementById("door").classList.contains("on"), { timeout: 6000 }).catch(() => errors.push("fight never opened " + vp + " " + name));
       const dt = Date.now() - t0;
+      const who = await page.evaluate(() => { const w = document.querySelector("#door .df-title b"); return w ? w.textContent.trim().slice(0, 40) : "?"; });
       await sleep(900);
       await page.screenshot({ path: path.join(OUT, vp + "-" + name + (RM ? "-reduced" : "") + "-fight.png") });
       if (rec) {
@@ -81,10 +89,10 @@ const RM = !!process.env.RM;
         cp.execSync("ffmpeg -y -loglevel error -f concat -safe 0 -i " + dir + "/list.txt -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2,fps=30\" -pix_fmt yuv420p -c:v libx264 -crf 20 " + mp4);
         console.log("mp4", mp4, frames.length + " frames");
       }
-      console.log(vp, name, ok, "intro→fight " + dt + "ms");
+      console.log(vp, name, ok, "→ fought:", who, "| intro→fight " + dt + "ms");
     }
     // skip test: tap during the intro opens the fight at once, and only once
-    if (vp === "412x915" && !RM) {
+    if (vp === "412x915" && !RM && !SCENES[0][1].hub) {
       const [name, opts] = SCENES[0];
       await page.goto(origin, { waitUntil: "networkidle0" });
       await page.evaluate((DRIVER, opts) => { localStorage.clear(); const st = new Function("module", DRIVER + "; return eraDrive;")(undefined)(window.LD, opts); localStorage.setItem("lastDividend.v1", JSON.stringify({ penny: { offered: true, done: true, tipsOff: true, tips: {} }, audioOff: true, seenTutorial: true, coachDone: true, midRun: st })); }, DRIVER, opts);

@@ -536,7 +536,7 @@
     var line = (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
     var opp = "assets/fight/opp-" + F.art + "-idle.webp", oppAr = F.ar || ART_AR[F.art] || 0.6;
     var mode = venue === "away" ? "away" : "visit";
-    var h = '<div class="fi fi-' + mode + " fi-v-" + venue + " fi-e" + era + (opts.reduced ? " fi-rm" : "") + '" role="dialog" aria-live="polite" aria-label="' + esc(F.who + " — " + kind) + '">';
+    var h = '<div class="fi fi-' + mode + " fi-v-" + venue + " fi-e" + era + (opts.reduced ? " fi-rm" : "") + (opts.short ? " fi-short" : "") + '" role="dialog" aria-live="polite" aria-label="' + esc(F.who + " — " + kind) + '">';
     function wall(cls) { return '<div class="fi-wall ' + (cls || "") + '"><span class="fi-rail"></span><span class="fi-frame" aria-hidden="true"><svg viewBox="0 0 60 40" preserveAspectRatio="none"><polyline points="4,32 14,26 22,29 32,15 42,19 56,6" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg></span></div><div class="fi-floor"></div>'; }
     var you = '<div class="fi-you" style="--ar:' + exAr + '"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
     function silo(src) { return '<span class="fi-silo" style="-webkit-mask-image:url(' + src + ');mask-image:url(' + src + ')"></span>'; }
@@ -568,6 +568,34 @@
     var F = LD.fightFace(fg), ex = execArt(state.executiveId), a = ["assets/fight/opp-" + F.art + "-idle.webp", "assets/fight/back-" + ex + ".webp"];
     if (LD.fightVenue(fg) === "away") a.push("assets/fight/room-" + F.room + ".webp");
     return a;
+  };
+  /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
+     and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */
+  var OFX_FAR = { senate: 1, crash: 1 };
+  var OFX_VEH = {
+    car: [
+      /* 1978 Checker-style cab */
+      '<svg viewBox="0 0 64 26"><path d="M4 18 L6 11 L16 10 L22 3 H42 L49 10 L60 12 L61 19 Z" fill="#c9942a" stroke="#1f2e2f" stroke-width="1.6" stroke-linejoin="round"/><rect x="21" y="11" width="22" height="3" fill="#1f2e2f"/><path d="M24 5 H33 V10 H20 Z M35 5 H41 L46 10 H35 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.2"/><rect x="28" y="0.5" width="8" height="2.6" fill="#f8eedb" stroke="#1f2e2f" stroke-width="1"/><circle cx="16" cy="19" r="4.6" fill="#17233a" stroke="#1f2e2f" stroke-width="1.4"/><circle cx="49" cy="19" r="4.6" fill="#17233a" stroke="#1f2e2f" stroke-width="1.4"/><circle cx="16" cy="19" r="1.6" fill="#c9b07a"/><circle cx="49" cy="19" r="1.6" fill="#c9b07a"/></svg>',
+      /* 2008 black town car */
+      '<svg viewBox="0 0 70 24"><path d="M3 17 L5 11 L18 9 L25 3 H46 L54 9 L67 11 L68 18 Z" fill="#1f2e2f" stroke="#0e1626" stroke-width="1.6" stroke-linejoin="round"/><path d="M27 5 H36 V9 H22 Z M38 5 H45 L51 9 H38 Z" fill="#8fa3a4" stroke="#0e1626" stroke-width="1.1"/><path d="M6 13 H66" stroke="#c8cfcc" stroke-width="1"/><circle cx="17" cy="18" r="4.4" fill="#0e1626" stroke="#c8cfcc" stroke-width="1.2"/><circle cx="54" cy="18" r="4.4" fill="#0e1626" stroke="#c8cfcc" stroke-width="1.2"/></svg>',
+      /* Today: matte electric coupe */
+      '<svg viewBox="0 0 66 24"><path d="M3 18 C3 12 10 11 18 10 C24 4 40 3 48 9 C58 10 63 12 63 18 Z" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.6" stroke-linejoin="round"/><path d="M22 9.5 C27 5 39 5 45 9.5 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.1"/><path d="M58 13 h4" stroke="#f3e6c8" stroke-width="1.6"/><circle cx="17" cy="18.5" r="4.4" fill="#17233a" stroke="#1f2e2f" stroke-width="1.3"/><circle cx="50" cy="18.5" r="4.4" fill="#17233a" stroke="#1f2e2f" stroke-width="1.3"/></svg>'
+    ],
+    air: [
+      /* 1978 airship */
+      '<svg viewBox="0 0 80 30"><ellipse cx="38" cy="12" rx="32" ry="10" fill="#e3d2a6" stroke="#1f2e2f" stroke-width="1.6"/><path d="M14 12 H64 M38 2.5 V21.5" stroke="#b8553a" stroke-width="1.2" opacity=".8"/><path d="M5 12 L-1 5 L1 12 L-1 19 Z" fill="#b8553a" stroke="#1f2e2f" stroke-width="1.2"/><rect x="30" y="21" width="15" height="6" rx="1.5" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.2"/></svg>',
+      /* 2008 airliner */
+      '<svg viewBox="0 0 80 26"><path d="M4 13 C4 10 10 9 18 9 H66 C72 9 77 11 77 13 C77 15 72 16 66 16 H18 C10 16 4 15 4 13 Z" fill="#f3e6c8" stroke="#1f2e2f" stroke-width="1.5"/><path d="M8 9 L4 2 H11 L19 9 Z" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.2"/><path d="M34 15 L46 25 H52 L46 15 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.2"/><path d="M20 12.5 H62" stroke="#1f5a5c" stroke-width="1.6" stroke-dasharray="2 2"/></svg>',
+      /* Today private jet */
+      '<svg viewBox="0 0 72 24"><path d="M6 13 C6 10 14 9.5 24 9.5 H58 C66 9.5 70 11.5 70 13 C70 14.5 66 15.5 58 15.5 H24 C14 15.5 6 15 6 13 Z" fill="#f8eedb" stroke="#1f2e2f" stroke-width="1.5"/><path d="M8 10 L5 3 H10 L18 10 Z" fill="#17233a" stroke="#1f2e2f" stroke-width="1.2"/><rect x="14" y="7" width="7" height="3.4" rx="1.5" fill="#17233a"/><path d="M32 15 L42 22 H47 L42 15 Z" fill="#c9942a" stroke="#1f2e2f" stroke-width="1.1"/><path d="M28 12 H56" stroke="#1f2e2f" stroke-width="1.4" stroke-dasharray="1.6 2.4"/></svg>'
+    ]
+  };
+  LD.officeEntrance = function (state) {
+    var fg = state && state.fy && state.fy.fight; if (!fg) return null;
+    var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
+    var away = venue === "away", air = away && !!OFX_FAR[F.room];
+    return { away: away, air: air, era: era, who: F.who, place: F.place || "", opp: "assets/fight/opp-" + F.art + "-idle.webp", ar: F.ar || ART_AR[F.art] || 0.6,
+      veh: away ? OFX_VEH[air ? "air" : "car"][era - 1] : "" };
   };
   LD.renderFight = function (state, ui) {
     ui = ui || {};

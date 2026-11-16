@@ -192,6 +192,11 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   const h2 = LD.renderRecap(d2, LD.recapTemplate("reid", d2.era), { final: true });
   ok(d2.era === 3 && !/rc-snap/.test(h2) && (h2.match(/class="rc-wire on"/g) || []).length === 3 && /Private grid online/.test(h2) && /final tix/.test(h2), "Reid escape today: line lights all the way, final page opens with tickets");
   ok(!/Boardroom/.test(h1 + h2 + h0), "recap has no Boardroom strings");
+  const r3 = JSON.parse(JSON.stringify(r)); r3.fy.fates = { benny: { how: "crushed", out: "exposed", q: 2 }, grace: { how: "paid", out: "reconciled", q: 3 }, dunn: { how: "paid", out: "bought", q: 4 } };
+  const d3 = LD.recapData(r3, {}, {});
+  const h3 = LD.renderRecap(d3, LD.recapTemplate("reid", d3.era), {}), h4 = LD.renderRecap(d3, LD.recapTemplate("mara", d3.era), {});
+  ok(/EXPOSED/.test(h3) && /RECONCILED/.test(h3) && /BOUGHT/.test(h4) && !/PAID OFF/.test(h3 + h4), "recap stamps show the narrative ending (Exposed, Reconciled, Bought)");
+  ok(/rc-door-tally/.test(h3) && /1 Exposed/.test(h3) && /opp-benny-defeated/.test(h3), "Ledger beat tallies endings; Door beat uses the ending pose");
 }
 
 {
@@ -223,6 +228,7 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     if (!O.why || !O.open || !O.hit || O.hit.length < 2 || !O.block || !O.block.length) ob.push(k + ": lines");
     if (!O.react || !O.react.money || !O.react.public || !O.react.law) ob.push(k + ": react");
     LD.OUTCOMES.forEach((o) => { if (!O.end || !O.end[o]) ob.push(k + ": end " + o); });
+    if (O.end && (O.end.converted === O.end.bought || O.end.reconciled === O.end.deal)) ob.push(k + ": converted/reconciled reuse another line");
     if (O.sig && !LD.INTENTS[O.sig]) ob.push(k + ": sig " + O.sig);
     ["idle", "attack", "hit", "block", "defeated"].concat(O.paid ? ["paid"] : []).forEach((p) => { if (!fs.existsSync(path.join(ROOT, "assets/fight/opp-" + O.art + "-" + p + ".webp"))) ob.push(k + ": art " + p); });
     if (O.room && !fs.existsSync(path.join(ROOT, "assets/fight/room-" + O.room + ".webp"))) ob.push(k + ": room " + O.room);

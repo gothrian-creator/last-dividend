@@ -2314,9 +2314,9 @@
     for (var t = 1; t <= turn; t++) st.track.q.push({ t: t, cash: 30 + t * 4, unrest: Math.min(100, 14 + t * (win ? 6 : 14)), collapse: 20 + t * 7 });
     st.track.deals = [{ q: 1, id: "demo1", title: "Blackout Insurance", cash: 18 }, { q: 2, id: "demo2", title: "Divert the Filters", cash: 26 }, { q: Math.min(turn, 4), id: "demo3", title: "Sell the Reserves", cash: 12 }];
     var F = st.fy || (st.fy = {});
-    F.fates = { dunn: { how: "paid", q: 1, act: 1 }, mickey: { how: "crushed", q: 2, act: 1 }, june: { how: "walked", q: 3, act: 1 } };
+    F.fates = { dunn: { how: "paid", out: "bought", q: 1, act: 1 }, mickey: { how: "crushed", out: "exposed", q: 2, act: 1 }, june: { how: "walked", out: "walked", q: 3, act: 1 } };
     if (era === 2) { F.fates.dunn.q = 2; F.fates.mickey.q = 3; F.fates.june.q = 4; }
-    if (era === 3) { F.fates.dunn.q = 2; F.fates.mickey.q = 3; F.fates.june.q = 4; F.fates.delacroix = { how: "paid", q: 7, act: 2 }; }
+    if (era === 3) { F.fates.dunn.q = 2; F.fates.mickey.q = 3; F.fates.june.q = 4; F.fates.delacroix = { how: "paid", out: "reconciled", q: 7, act: 2 }; }
     F.bosses = era >= 2 ? 1 : 0;
     LD.SYSTEMS.forEach(function (s, i) { st.bunker[s.id].level = win ? 2 : i < 2 ? 2 : i === 2 ? 1 : 0; st.bunker[s.id].quality = "sound"; });
     if (!win && reason === "failed-systems") LD.SYSTEMS.forEach(function (s) { st.bunker[s.id].level = 2; st.bunker[s.id].quality = "cheap"; });

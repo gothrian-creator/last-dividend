@@ -427,7 +427,7 @@
    "settle","countersue","astro","oped","spin","tnp","photoop","crisiscomms","study","funded","unsettled","longterm",
    "c_class","c_subpoena","c_whistle","c_leak","c_crack","c_stranded",
    "glance","pause","smirk","watch","chair","handshake","envelope","played","stoop","chainmail","deepfake","dossier","poll","ratio","frontpage",
-   "perpwalk","lunch","mortgage","marker","margincall","consent","arbitration","layoff","eviction","gig","boardseat","bothstages","turnwitness","littleleague","botswarm"].forEach(function (k) { CARD_ART[k] = "assets/cardart/card-" + k + ".webp"; });
+   "perpwalk","lunch","mortgage","marker","margincall","consent","arbitration","layoff","eviction","gig","boardseat","bothstages","turnwitness","littleleague","botswarm","tab","sunday","grandmas","godparent"].forEach(function (k) { CARD_ART[k] = "assets/cardart/card-" + k + ".webp"; });
   LD.CARD_ART = CARD_ART;
   var RAR_NAME = { S: "Starter", C: "Common", U: "Uncommon", R: "Rare", M: "Fixture", X: "Curse" };
   function cardFace(id, up, opts) {

@@ -336,6 +336,40 @@
       end: { bought: "▲ BAILED OUT. CONGRATULATIONS.", broken: "▲ RECOVERY (FOR SOME)", exposed: "▲ RESTATED. ▼ TRUST", ignored: "— FLAT —", martyred: "▼ CONTAGION", pyrrhic: "▲ GREEN. ▼ EVERYTHING ELSE",
         deal: "▲ STABILITY FUND", walked: "▼ MARGIN CALLED" } }
   };
+  /* Converted (you took their people: they work for you now) and Reconciled (a favour returned: a seat at the table, maybe). */
+  var CR = {
+    dunn: ["Precinct's got a new friend. Don't make me say it twice, and don't make me say it in court.", "You sent flowers when my old man passed. Okay. The precinct can forget a few things."],
+    moretti: ["My super works for you now. So do my lawyers. I'll keep the name on the door.", "You came to my mother's wake. Fourteen buildings don't make a man forget that."],
+    june: ["Half my shop floor already signed your card. I'll go where my people go.", "You paid for my father's headstone. Nobody asked you to. Sit down. Have a coffee."],
+    mickey: ["The boys like your money better. Fine. Mickey goes where the boys go.", "You kept my nephew out of it. That's a debt. I pay my debts."],
+    odell: ["The block voted. They're with you. God help them. I'll keep an eye on you from inside.", "You fixed Mrs. Pruitt's stairs yourself. Come Sunday. Bring nothing. I mean it."],
+    delacroix: ["My whole ward office is on your payroll. I suppose that makes me staff.", "You remembered my daughter's name. In this town, that's a coalition."],
+    okafor: ["My editor took your job offer. So did my sources. I suppose I'm next.", "You kept the Harbor branch open. Mom would want me to say thank you. So, thank you."],
+    hale: ["Three of my board members now consult for you. I'll be the fourth. Quietly.", "You returned the files I needed. Unredacted. I'll note it in the record."],
+    harrow: ["My partners defected. Splendid. I'll defect with them and call it strategy.", "You held the door for me at the gala, once, when no one else did. Very well. Lunch."],
+    gray: ["The union reps are yours. The squad cars follow the union. So do I.", "You paid for Officer Diaz's funeral. The square can wait a day."],
+    crowe: ["My board voted with you. I always said loyalty was a pricing problem.", "You called Mother on her birthday. I didn't. Fine. One dinner. Not a truce."],
+    rosa: ["Half my volunteers took your jobs. I can't blame them. I'll take one too, and watch.", "Gran says you kept her heating on in '09. Fine. You can sit at our table. Once."],
+    sorel: ["My analysts went long on you. Traitors. Fine. I'm long on you too.", "You covered my margin in the crash and never said a word. I don't forget a hedge."],
+    ashby: ["My whole desk moved to your bank. I'll move my coverage with them.", "You took my call when the desk was laughing at me. Upgraded. Personally."],
+    brennan: ["My staffers took your offers. My donors too. The committee recognises… the reality.", "You came to the VFW fish fry. Nobody from your world ever comes. The chair yields."],
+    ashby_b: ["My juniors are on your deal team now. Consider me covered.", "You sent my mother a card. She framed it. Rating: buy, and dinner."],
+    sorel_b: ["My research staff went to work for you. Chapter four is your chapter now.", "You returned my call when nobody would. I'm closing the short. Call it even."],
+    varga_b: ["The local voted. They're with you. I go where the local goes.", "You stood on the line with us in the snow, once. One meeting. No cameras."],
+    june_b: ["The young ones signed your cards. I won't leave them alone with you.", "You kept the steelworks widows' pensions whole. My mother's too. I remember. Sit down."],
+    crowe_b: ["My board defected. Fine. I'll chair your committee.", "You visited Mother in the hospital. I didn't. One dinner."],
+    ticker_b: ["▲ ACQUIRED: ALL OF IT", "▲ RECOVERY · ▲ CONFIDENCE · ▲ FAMILY OFFICE"],
+    benny: ["Half the street works your dock now. Fine. I'll stock your canteen.", "You paid the tab when my daughter was sick. Sit. Coffee's on the house. Really this time."],
+    grace: ["My volunteers took your jobs. The night classes will meet in your lobby, then.", "You returned every overdue book from your office. With a donation. Fine. You may have a card."],
+    pops: ["The picket's breaking for your shift money. I'm too old to stand out here alone.", "You brought soup to the line in week four. Didn't say a word. That's a man I'll talk to."],
+    gil: ["The board switched sides. I'll draft the newsletter. For you.", "You fixed the cul-de-sac light yourself. On a Saturday. Barbecue's at six."],
+    pip: ["The other eleven voted with you. I'll be twelve. I'll take the minutes.", "You remembered my mum's name at the AGM. I'll vote yes. On the record."],
+    dana: ["The other nurses took your clinic jobs. I need the hours. Don't smile.", "You modified the loan before I asked. The kids want to meet you. I don't. But okay."],
+    mina: ["Half the riders logged into your app. I'm logging in too. Not a vibe.", "You tipped the whole kitchen and didn't post it. Okay. One coffee. You're paying."],
+    honoria: ["The trustees voted. The family office is yours. How vulgar. Do carry on.", "You remembered Grandfather's tide tables. Sit. The good chair. Just this once."],
+    theo: ["The volunteers took your jobs on the wall. Fine. I'll supervise the wall.", "Gran says you kept her heat on. Dinner's Sunday. Bring nothing. She means it."]
+  };
+  Object.keys(CR).forEach(function (id) { if (LINES[id]) { LINES[id].end.converted = CR[id][0]; LINES[id].end.reconciled = CR[id][1]; } });
   LD.OPP_LINES = LINES;
   var FAM = { obligation: "money", patronage: "money", kinship: "money", shame: "public", rumour: "public", info: "public", solidarity: "public", status: "public", legal: "law", precarity: "law" };
   LD.PRESSURE_FAMILY = FAM;

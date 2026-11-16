@@ -338,6 +338,8 @@
       if (id === "delacroix" && fate(state, "moretti")) x *= 2;
       if (id === "june" && f.bossII === "strike") x *= 2;
       if (id === "dunn" && state.turn <= 2) x *= 2;
+      if (id === "pops") x *= enc === "protest" ? 3 : 2; /* the picket captain turns up at every 1978 door with a labour angle; June runs the hall */
+      if (id === "pops" && fate(state, "june")) x *= 2;
       return x;
     });
     var tot = w.reduce(function (a, b) { return a + b; }, 0), r = (rng ? rng() : Math.random()) * tot;

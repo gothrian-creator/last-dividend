@@ -26,11 +26,15 @@
     var fates = (state.fy && state.fy.fates) || {};
     var fights = Object.keys(fates).map(function (id) {
       var f = fates[id] || {}, o = (LD.OPPONENTS && LD.OPPONENTS[id]) || {};
-      var how = f.how || "walked";
-      var pose = how === "paid" ? (o.paid ? "paid" : "idle") : how === "crushed" ? "defeated" : "idle";
-      return { id: id, who: o.who || f.who || id, short: id.charAt(0).toUpperCase() + id.slice(1), role: o.role || "",
-        how: how, q: f.q || 0, art: o.art ? "assets/fight/opp-" + o.art + "-" + pose + ".webp" : "", quote: (o.end || {})[how] || "" };
+      var how = f.how || "walked", out = f.out && LD.OUT_LABEL && LD.OUT_LABEL[f.out] ? f.out : null;
+      var pose = out === "martyred" ? "attack" : out === "bought" || out === "converted" || out === "deal" || (!out && how === "paid") ? (o.paid ? "paid" : "idle") : out ? (out === "walked" ? "idle" : "defeated") : how === "crushed" ? "defeated" : "idle";
+      var label = out ? LD.OUT_LABEL[out] : LD.HOW_LABEL ? LD.HOW_LABEL[how] : how;
+      return { id: id, who: o.who || f.who || id, short: o.short || id.split("_")[0].charAt(0).toUpperCase() + id.split("_")[0].slice(1), role: o.role || "",
+        how: how, out: out, label: label, tone: OUT_TONE[out || how] || "", q: f.q || 0, art: o.art ? "assets/fight/opp-" + o.art + "-" + pose + ".webp" : "", quote: (o.end || {})[out || how] || (o.end || {})[how] || "" };
     }).sort(function (a, b) { return a.q - b.q; });
+    var tally = {};
+    fights.forEach(function (f) { var k = f.label; tally[k] = (tally[k] || 0) + 1; });
+    var doorTally = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; }).map(function (k) { return tally[k] + " " + k.charAt(0) + k.slice(1).toLowerCase(); });
     var moreFights = 0;
     if (fights.length > 4) { moreFights = fights.length - 4; fights = fights.slice(-4); }
     var rooms = (LD.SYSTEMS || []).map(function (s) {
@@ -49,7 +53,7 @@
       exec: exec, execId: exec.id, era: era, kind: win ? "win" : "lose", win: win, reason: e.reason || (win ? "evacuated" : "unrest"), cause: cause,
       title: e.title || "", body: e.body || "", turn: state.turn | 0, seed: state.seedLabel != null ? String(state.seedLabel) : String(state.seed || ""),
       rating: LD.ratingName ? LD.ratingName(state.rating | 0) : "AAA", cash: state.cash | 0, unrest: state.unrest | 0, collapse: state.collapse | 0,
-      stops: stops, fights: fights, moreFights: moreFights, rooms: rooms, ready: ready, roomsTotal: rooms.length || 4,
+      stops: stops, fights: fights, doorTally: doorTally, moreFights: moreFights, rooms: rooms, ready: ready, roomsTotal: rooms.length || 4,
       ledger: lines, total: pay.total | 0, balance: meta.dividends != null ? meta.dividends | 0 : null,
       xp: info.xp || null, unlocks: info.unlocks || [], newRating: info.newRating != null ? info.newRating : null,
       bigDeal: big, peak: peak, deals: deals.length, partial: !state.track
@@ -131,6 +135,15 @@
     },
     fight: { paid: "Paid off", crushed: "Crushed", walked: "They walked" }
   };
+  /* The ending a face got, in the template's voice: fax caps in 1978, minutes in 2008, a feed line Today. */
+  var OUT_TONE = { crushed: "red", walked: "ink", exposed: "red", martyred: "red", broken: "teal", ignored: "ink", pyrrhic: "", bought: "", converted: "", deal: "", reconciled: "green" };
+  var OUT_WORD = { bought: "bought", converted: "came over to us", broken: "broken", exposed: "exposed", ignored: "ignored", martyred: "made a martyr", pyrrhic: "won, at a cost", deal: "settled", walked: "walked out", reconciled: "reconciled" };
+  function outPhrase(tpl, f) {
+    if (tpl.era === 1) return "{N} " + LD.OUT_LABEL[f.out] + " STOP";
+    if (tpl.era === 2) return "Q{Q} \u2014 {W}: " + OUT_WORD[f.out];
+    return "{W} \u00b7 " + OUT_WORD[f.out];
+  }
+  function doorTally(d) { return d.doorTally && d.doorTally.length ? '<p class="rc-door-tally">At the door: ' + esc(d.doorTally.join(" \u00b7 ")) + "</p>" : ""; }
   function fill(s, d, f) {
     return String(s || "").replace(/\{R\}/g, d.ready).replace(/\{P\}/g, Math.round(100 * d.ready / (d.roomsTotal || 4)))
       .replace(/\{N\}/g, f ? cap(f.short) : "").replace(/\{W\}/g, f ? f.who : "").replace(/\{Q\}/g, f ? f.q : "");
@@ -237,7 +250,7 @@
     var coins = "";
     for (var c = 0; c < 9; c++) coins += '<i class="rc-coin" style="--cd:' + (200 + c * 170) + "ms;--cx:" + ((c * 37) % 60 - 30) + 'px">' + tok("div") + "</i>";
     h += '<div class="rc-total"><span class="rc-coins" aria-hidden="true">' + coins + '</span><small>' + esc(opts.totalLabel || "Total") + '</small><b>' + tok("div") + '<span class="rc-count" data-to="' + d.total + '">' + d.total + "</span></b>" +
-      (d.balance != null ? '<em>Balance \u25c8 ' + d.balance + "</em>" : "") + "</div></div>";
+      (d.balance != null ? '<em>Balance \u25c8 ' + d.balance + "</em>" : "") + "</div>" + doorTally(d) + "</div>";
     return h;
   }
   function xpBar(d) {
@@ -299,8 +312,8 @@
       door += '<ul class="rc-calls">';
       d.fights.forEach(function (f, i) {
         var t0 = 250 + i * 520;
-        door += '<li class="rc-call how-' + f.how + '" style="--cd:' + t0 + 'ms">' + portrait(f) + '<span class="rc-call-t">' + typed(fill(C.fight[f.how], d, f), "", t0 + 120, tpl.era === 3 ? 16 : 22) +
-          (f.quote ? "<small>\u201c" + esc(f.quote) + "\u201d</small>" : "") + "</span>" + stamp(LD.HOW_LABEL ? LD.HOW_LABEL[f.how] : f.how, f.how === "crushed" ? "red" : f.how === "walked" ? "ink" : "", t0 + 380) + "</li>";
+        door += '<li class="rc-call how-' + f.how + '" style="--cd:' + t0 + 'ms">' + portrait(f) + '<span class="rc-call-t">' + typed(fill(f.out ? outPhrase(tpl, f) : C.fight[f.how], d, f), "", t0 + 120, tpl.era === 3 ? 16 : 22) +
+          (f.quote ? "<small>\u201c" + esc(f.quote) + "\u201d</small>" : "") + "</span>" + stamp(f.label, f.tone, t0 + 380) + "</li>";
       });
       door += "</ul>" + (d.moreFights ? '<p class="rc-more">+' + d.moreFights + " earlier</p>" : "");
     }
@@ -331,7 +344,7 @@
       door += '<ul class="rc-visas">';
       d.fights.forEach(function (f, i) {
         var t0 = 250 + i * 520;
-        door += '<li class="how-' + f.how + '" style="--cd:' + t0 + 'ms">' + portrait(f) + "<b>" + esc(f.who) + "</b><small>Q" + f.q + "</small>" + stamp(LD.HOW_LABEL ? LD.HOW_LABEL[f.how] : f.how, f.how === "crushed" ? "red" : f.how === "walked" ? "ink" : "", t0 + 300) + "</li>";
+        door += '<li class="how-' + f.how + '" style="--cd:' + t0 + 'ms">' + portrait(f) + "<b>" + esc(f.who) + "</b><small>Q" + f.q + "</small>" + stamp(f.label, f.tone, t0 + 300) + "</li>";
       });
       door += "</ul>" + (d.moreFights ? '<p class="rc-more">+' + d.moreFights + " earlier</p>" : "");
     }

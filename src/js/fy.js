@@ -993,6 +993,11 @@
     { id: "turnwitness", t: "Lawyer", r: "R", icon: "🕵️", name: "Turn Their Witness", cost: 2, p: 3, sp: "cancel", ex: true, up: { p: 6 } },
     { id: "littleleague", t: "PR", r: "C", era: 1, icon: "⚾", name: "Sponsor the Little League", cost: 0, cash: 2, p: 6, up: { p: 8 } },
     { id: "botswarm", t: "PR", r: "U", era: 3, icon: "🤖", name: "Bot Swarm", cost: 1, p: 6, sp: "vsprotest", expose: 25, up: { p: 8 } },
+    /* Favour: kinship cards. Win mostly with these and they come round: Reconciled. */
+    { id: "tab", t: "Shared", r: "C", icon: "📒", name: "Put It On My Tab", cost: 1, p: 3, d: 3, next: 2, up: { p: 5, d: 4 } },
+    { id: "sunday", t: "Shared", r: "U", icon: "🍰", name: "Sunday Visit", cost: 1, p: 5, draw: 1, up: { p: 7 } },
+    { id: "grandmas", t: "Shared", r: "R", icon: "👵", name: "Both Grandmothers Are Coming", cost: 2, p: 8, ghold: true, up: { p: 11 } },
+    { id: "godparent", t: "Lobbyist", r: "U", icon: "🕊️", name: "Godparent to Their Kid", cost: 1, cash: 2, p: 7, up: { p: 9 } },
     { id: "c_class", t: "Curse", r: "X", icon: "⚖️", name: "Class Action", unplay: true, sp: "classaction" },
     { id: "c_subpoena", t: "Curse", r: "X", icon: "📜", name: "Subpoena", cost: 1, sp: "discardpay" },
     { id: "c_whistle", t: "Curse", r: "X", icon: "📯", name: "Whistleblower", unplay: true, sp: "drawheat" },
@@ -1076,6 +1081,10 @@
     boardseat: "status | S+ | dark | equanimity | entitlement | verbal | any | engine/self | single | light: A Seat at the Table | ignored",
     bothstages: "patronage | none: the Machine has no temper, only allies | grey | peoplepleasing | splitting | verbal | 2008 | control/gallery | group | light: One Stage | converted",
     turnwitness: "patronage | W- | dark | envy | cognitive-dissonance | verbal | any | control/ally | single | light: Protect the Witness | converted",
+    tab: "kinship | W+ | light | patience | reciprocity | verbal | any | control/hero | single | light: Pay Me When You Can | reconciled,deal",
+    sunday: "kinship | W+ | light | duty | attachment | verbal | any | engine/ally | single | light: Same Story, Same Laugh | reconciled",
+    grandmas: "kinship | W+ | light | passion | belonging | verbal | any | control/gallery | group | light: Two Chairs at the Table | reconciled,deal",
+    godparent: "kinship | W- | dark | smothering | ingratiation | verbal | any | aggro/hero | group | light: Stand Up at the Christening | reconciled,bought",
     littleleague: "kinship | W+ | dark | vanity | halo-effect | verbal | 1978 | aggro/gallery | group | light: Coach the Team | reconciled,deal",
     botswarm: "solidarity | S- | dark | vanity | social-proof | verbal | now | aggro/gallery | group | light: Real Neighbours | exposed,martyred",
     c_class: "none: a curse is never played as pressure | none: curses carry no temper | neutral | none: a curse has no owner | guilt | verbal | any | none: curses are inert in PvP | single | none: curses have no Light reading | pyrrhic",
@@ -1294,6 +1303,8 @@
     if (bossAt(state, state.turn) && !LD.BOSSES[bossAt(state, state.turn)].final) return bossAt(state, state.turn);
     if (f.hearing) return "hearing";
     if (LD.dunnHearingDue && LD.dunnHearingDue(state)) return "hearing";
+    /* Today, a fixer who has run warm all game gets you called to the Senate once, even short of Heat 3. */
+    if (actOf(state.turn) === 3 && state.turn >= 10 && !(f.met && f.met.brennan) && f.fixers.some(function (r) { return r.heat >= 2; })) return "hearing";
     var kind = LD.dealKind ? LD.dealKind(deal) : "neutral";
     if (LD.doorLevel(state) >= 3) return "protest";
     if (kind === "claim") return "rival";
@@ -1737,7 +1748,7 @@
     if (fg.opp && how) {
       fg.done.how = how;
       f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, out: out.out, q: t, act: actOf(t), who: fg.name };
-      if (fg.opp === "june" && how === "crushed" && f.bossII !== "strike" && t < 8) { f.bossII = "strike"; f.strikeSwap = t; notes.push("June Park will lead a general strike at Q8"); }
+      if ((fg.opp === "june" || fg.opp === "pops") && how === "crushed" && f.bossII !== "strike" && t < 8) { f.bossII = "strike"; f.strikeSwap = t; notes.push(LD.oppFate && LD.oppFate(state, "june") && LD.oppFate(state, "june").how === "crushed" ? "June Park will lead a general strike at Q8" : "The picket line remembers Pops: a general strike at Q8"); }
     }
     f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite, opp: fg.opp || null, how: how, out: out.out };
     f.fights = f.fights || { won: 0, lost: 0, settled: 0 };

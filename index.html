@@ -4789,153 +4789,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 @media (max-width: 520px) { .rc-scroll { padding-top: clamp(56px, 16vh, 150px); } .rc-doc { gap: 13px; } }
 @media (orientation: landscape) and (min-width: 1000px) { .rc-scroll { padding-top: 14px; } .rc-doc { max-width: 1120px; } }
 
-/* ---------- Fight intro: door swings open / out the back door (2-3 s, tap to skip) ---------- */
-#fi { position: fixed; inset: 0; z-index: 8500; cursor: pointer; transition: opacity 0.24s ease-out; -webkit-tap-highlight-color: transparent; }
-#fi.out { opacity: 0; pointer-events: none; }
-.fi { --ink: #1f2e2f; --navy: #17233a; --cream: #f3e6c8; --paper: #f8eedb; --teal: #1f5a5c; --teal-d: #163c3e; --ochre: #c9942a; --terra: #b8553a; --terra-d: #8f3b27;
-  --wallc: #dcc697; --wain: #1f5a5c; --floor: #8a5a34; --floor2: #774b2a; --leaf: #7b4a2b; --leaf2: #6a3f24; --glass: #cfd8c8;
-  --dh: min(56vh, 118vw); --dw: calc(var(--dh) * 0.48); --fl: 74vh;
-  position: absolute; inset: 0; overflow: hidden; background: var(--navy); font-family: var(--font-sans); color: var(--ink); opacity: 0; }
-.fi.go { animation: fiIn 0.16s ease-out forwards; }
-.fi.fi-e2 { --wallc: #b9c2b8; --wain: #17233a; --floor: #3d4a5a; --floor2: #344050; --leaf: #2c4a4f; --leaf2: #223b40; --glass: #a9c3c0; }
-.fi.fi-e3 { --wallc: #ece0c6; --wain: #b8553a; --floor: #c7b08a; --floor2: #b89f78; --leaf: #c9a472; --leaf2: #b48f5e; --glass: #e6dcc6; }
-.fi::after { content: ""; position: absolute; inset: 0; background: var(--jy-grain); background-size: 180px 180px; opacity: 0.6; pointer-events: none; z-index: 20; }
-.fi-scene, .fi-pane { position: absolute; inset: 0; overflow: hidden; }
-.fi-wall { position: absolute; left: 0; right: 0; top: 0; height: var(--fl); background: var(--wallc); }
-.fi-wall::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22%; background: var(--wain); border-top: 3px solid var(--ink); background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--dw) * 0.6), rgba(20, 30, 31, 0.28) calc(var(--dw) * 0.6) calc(var(--dw) * 0.6 + 2px)); }
-.fi-rail { position: absolute; left: 0; right: 0; top: 11vh; height: 0; border-top: 3px solid var(--ink); opacity: 0.55; }
-.fi-frame { position: absolute; top: 22vh; left: max(4vw, calc(50% - var(--dw) * 0.5 - min(30vw, var(--dw) * 0.85))); width: min(22vw, var(--dw) * 0.62, calc(50vw - var(--dw) * 0.5 - 9vw)); aspect-ratio: 3 / 2; background: var(--paper); border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(20, 32, 33, 0.4), inset 0 0 0 5px var(--ochre); color: var(--terra-d); padding: 9%; box-sizing: border-box; }
-.fi-frame svg { width: 100%; height: 100%; display: block; }
-.fi-floor { position: absolute; left: 0; right: 0; top: var(--fl); bottom: 0; background: var(--floor); border-top: 3px solid var(--ink);
-  background-image: repeating-linear-gradient(180deg, transparent 0 3.2vh, var(--floor2) 3.2vh calc(3.2vh + 2px)), linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 60%); }
-.fi-e2 .fi-floor { background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 70%); }
-/* the door */
-.fi-door { position: absolute; z-index: 3; left: 50%; bottom: calc(100vh - var(--fl)); width: var(--dw); height: var(--dh); transform: translateX(-50%); box-sizing: border-box;
-  border: max(8px, calc(var(--dw) * 0.06)) solid var(--cream); border-bottom: 0; outline: 3px solid var(--ink); box-shadow: inset 0 0 0 3px var(--ink), 6px 0 0 rgba(20, 32, 33, 0.35); perspective: 900px; }
-.fi-e2 .fi-door { border-color: #8e9a98; }
-.fi-beyond { position: absolute; inset: 0; background: var(--paper); overflow: hidden; }
-.fi-beyond::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 26%; background: var(--ochre); border-top: 2px solid var(--ink); }
-.fi-hall { position: absolute; left: 22%; right: 22%; top: 18%; bottom: 26%; background: #e2cf9f; border: 2px solid rgba(31, 46, 47, 0.5); border-bottom: 0; }
-.fi-e2 .fi-beyond { background: #dfe4dc; } .fi-e2 .fi-beyond::before { background: #9aa6a4; }
-.fi-leaf { position: absolute; inset: 0; z-index: 3; background: var(--leaf); transform-origin: 0 50%; box-shadow: inset 0 0 0 3px var(--ink); backface-visibility: hidden; }
-.fi-glass { position: absolute; left: 13%; right: 13%; top: 9%; height: 38%; background: var(--glass); border: 3px solid var(--ink); display: grid; place-items: center; overflow: hidden;
-  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.0) 0 7px, rgba(31, 46, 47, 0.07) 7px 9px); }
-.fi-glass b { font-family: var(--era-font, var(--font-serif)); font-size: calc(var(--dw) * 0.088); letter-spacing: 0.14em; color: var(--ink); text-align: center; line-height: 1.1; padding: 0 6%; }
-.fi-e2 .fi-glass { bottom: 9%; height: auto; } .fi-e2 .fi-panel { display: none; }
-.fi-e3 .fi-glass { left: auto; right: 12%; width: 18%; top: 10%; height: 80%; } .fi-e3 .fi-glass b { writing-mode: vertical-rl; font-size: calc(var(--dw) * 0.07); }
-.fi-panel { position: absolute; left: 13%; right: 13%; top: 54%; bottom: 8%; border: 3px solid var(--ink); background: var(--leaf2); }
-.fi-e3 .fi-panel { display: none; }
-.fi-knob { position: absolute; right: 9%; top: 50%; width: calc(var(--dw) * 0.08); aspect-ratio: 1; border-radius: 50%; background: var(--ochre); border: 2px solid var(--ink); }
-.fi-e2 .fi-knob { width: calc(var(--dw) * 0.04); height: calc(var(--dh) * 0.18); aspect-ratio: auto; border-radius: 3px; top: 42%; background: #c8cfcc; }
-.fi-e3 .fi-knob { right: auto; left: 10%; border-radius: 3px; width: calc(var(--dw) * 0.06); height: calc(var(--dw) * 0.1); aspect-ratio: auto; background: var(--ink); }
-.fi-knock { position: absolute; z-index: 5; left: 50%; top: calc(-1 * var(--dw) * 0.3); white-space: nowrap; font: 800 clamp(26px, calc(var(--dw) * 0.17), 60px)/1 var(--font-serif); color: var(--terra); -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; letter-spacing: 0.02em; transform: translateX(-50%) rotate(-6deg); opacity: 0; }
-/* light spilling in, and their shadow across your floor */
-.fi-light { position: absolute; z-index: 1; left: 50%; top: var(--fl); bottom: 0; width: calc(var(--dw) * 3.6); transform: translateX(-50%) scaleY(0); transform-origin: 50% 0; background: rgba(248, 238, 219, 0.5);
-  clip-path: polygon(calc(50% - var(--dw) * 0.38) 0, calc(50% + var(--dw) * 0.38) 0, 100% 100%, 0 100%); }
-.fi-shade { position: absolute; z-index: 2; left: 50%; top: var(--fl); bottom: 0; width: calc(var(--dw) * 1.7); transform: translateX(-50%) scaleY(0); transform-origin: 50% 0; background: rgba(23, 35, 58, 0.72);
-  clip-path: polygon(44% 0, 56% 0, 78% 100%, 22% 100%); }
-.fi-opp { position: absolute; z-index: 2; left: 50%; bottom: 0; height: 96%; aspect-ratio: var(--ar, 0.6); transform: translateX(-50%) scale(0.86); transform-origin: 50% 100%; opacity: 0; }
-.fi-opp img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: block; }
-.fi-silo { position: absolute; inset: 0; background: #17233a; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: 50% 100%; mask-position: 50% 100%; }
-.fi-sil .fi-silo { background: #0b1220; -webkit-mask-position: 0 100%; mask-position: 0 100%; }
-.fi-you { position: absolute; z-index: 6; left: -4%; bottom: -3%; height: 40vh; max-width: 52vw; aspect-ratio: var(--ar, 0.8); opacity: 0; transform: translateY(12%); }
-.fi-you img, .fi-walker img, .fi-sil img { width: 100%; height: 100%; object-fit: contain; object-position: 0 100%; display: block; filter: drop-shadow(-2px -2px 0 rgba(20, 32, 33, 0.25)); }
-/* visitor timeline (2.9 s) */
-.fi-visit.go .fi-knock { animation: fiKnock 1.05s steps(6) 0.02s 1 both; }
-.fi-visit.go .fi-leaf { animation: fiSwing 0.62s cubic-bezier(0.3, 0.1, 0.2, 1) 0.48s both; }
-.fi-visit.go .fi-light { animation: fiSpill 0.5s ease-out 0.54s both; }
-.fi-visit.go .fi-shade { animation: fiShade 0.8s ease-out 0.78s both; }
-.fi-visit.go .fi-opp { animation: fiStep 1.05s cubic-bezier(0.25, 0.6, 0.3, 1) 0.72s both; }
-.fi-visit.go .fi-opp .fi-silo { animation: fiLit 0.5s ease-out 1.15s both; }
-.fi-visit.go .fi-you { animation: fiYou 0.45s ease-out 1.2s both; }
-.fi-visit.go .fi-scene { animation: fiPush 3s ease-in-out both; }
-@keyframes fiIn { to { opacity: 1; } }
-@keyframes fiKnock { 0% { opacity: 1; transform: translateX(-50%) rotate(-6deg); } 25%, 65% { opacity: 1; transform: translateX(-53%) rotate(-3deg) scale(1.06); } 45% { opacity: 1; transform: translateX(-50%) rotate(-6deg); } 88% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) rotate(-6deg); } }
-@keyframes fiSwing { from { transform: rotateY(0); } to { transform: rotateY(-96deg); } }
-@keyframes fiSpill { from { transform: translateX(-50%) scaleY(0); } to { transform: translateX(-50%) scaleY(1); } }
-@keyframes fiShade { from { transform: translateX(-50%) scaleY(0); } to { transform: translateX(-50%) scaleY(1); } }
-@keyframes fiStep { 0% { opacity: 0; transform: translateX(-50%) scale(0.8); } 18% { opacity: 1; transform: translateX(-50%) scale(0.84); }
-  60% { transform: translateX(-44%) translateY(11vh) scale(1.1); } 100% { opacity: 1; transform: translateX(-38%) translateY(calc(100vh - var(--fl) - 1vh)) scale(1.22); } }
-@keyframes fiLit { to { opacity: 0; } }
-@keyframes fiYou { from { opacity: 0; transform: translateY(12%); } to { opacity: 1; transform: none; } }
-@keyframes fiPush { 0%, 35% { transform: none; } 100% { transform: scale(1.04); } }
-/* the stepped-in visitor must clear the door frame */
-.fi-visit .fi-door { overflow: visible; }
-.fi-visit .fi-beyond { overflow: hidden; }
-/* back door: strip of three panes, panned */
-.fi-strip { position: absolute; top: 0; bottom: 0; left: 0; width: 300vw; display: flex; }
-.fi-strip .fi-pane { position: relative; inset: auto; flex: 0 0 100vw; height: 100%; }
-.fi-exit { border-color: #9aa6a4; }
-.fi-exit .fi-leaf { background: #6f8384; }
-.fi-e1 .fi-exit .fi-leaf { background: #5d6f63; }
-.fi-bar { position: absolute; left: 10%; right: 10%; top: 50%; height: calc(var(--dh) * 0.035); background: #c8cfcc; border: 2px solid var(--ink); border-radius: 3px; }
-.fi .fi-beyond.fi-dark { background: var(--navy); } .fi .fi-beyond.fi-dark::before { background: #22304a; border-top-color: #0e1626; }
-.fi-sign { position: absolute; left: 50%; top: calc(-1 * var(--dh) * 0.12); transform: translateX(-50%); white-space: nowrap; padding: 3px 10px; background: var(--terra); color: var(--paper); border: 2px solid var(--ink); font: 800 calc(var(--dw) * 0.08)/1.1 var(--font-sans); letter-spacing: 0.12em; }
-.fi-walker { position: absolute; z-index: 6; left: 50%; bottom: -4%; height: 58vh; max-width: 80vw; aspect-ratio: var(--ar, 0.8); transform-origin: 50% 100%; transform: translateX(-40%); }
-.fi-p2 { background: var(--navy); }
-.fi-p2::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 26vh; background: #22304a; border-top: 3px solid #0e1626; }
-.fi-pipe { position: absolute; left: 0; right: 0; top: 14vh; height: 2.2vh; background: var(--teal-d); border-top: 2px solid #0e1626; border-bottom: 2px solid #0e1626; }
-.fi-pipe.b { top: 19vh; height: 1.2vh; background: #2c3d55; }
-.fi-stairs { position: absolute; left: 50vw; width: 50vw; bottom: 26vh; height: 46vh; overflow: visible; }
-.fi-dframe { position: absolute; left: 12vw; bottom: 26vh; width: min(22vw, 18vh); height: 38vh; border: 4px solid #0e1626; border-bottom: 0; background: #1d2b40; box-shadow: inset 0 0 0 3px #2c3d55; }
-.fi-lamp { position: absolute; top: 25vh; left: 28vw; width: 3.4vh; aspect-ratio: 1; border-radius: 50%; background: var(--ochre); border: 2px solid #0e1626; }
-.fi-lamp.b { left: 72vw; }
-.fi-lamp, .fi-cone { z-index: 1; }
-.fi-cone { position: absolute; top: calc(25vh + 3.4vh); left: calc(28vw + 1.7vh); width: 26vh; height: calc(100vh - 28.4vh); transform: translateX(-50%); background: rgba(243, 230, 200, 0.12); clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%); }
-.fi-cone.b { left: calc(72vw + 1.7vh); }
-.fi-sil { position: absolute; z-index: 2; bottom: 24vh; left: 4vw; height: 27vh; aspect-ratio: var(--ar, 0.8); opacity: 0; }
-.fi-room { position: absolute; inset: 0; background-size: cover; background-position: center 38%; }
-.fi-p3 .fi-opp { left: 57%; height: 84%; opacity: 1; transform: translateX(-50%); }
-.fi-p3 .fi-you { opacity: 1; transform: none; }
-/* away timeline (3.0 s) */
-.fi-away.go .fi-exit .fi-leaf { animation: fiSwing 0.4s cubic-bezier(0.3, 0.1, 0.2, 1) 0.18s both; }
-.fi-away.go .fi-walker { animation: fiWalk 0.75s ease-in 0.12s both; }
-.fi-away.go .fi-strip { animation: fiPan 1.55s cubic-bezier(0.55, 0, 0.35, 1) 0.68s both; }
-.fi-away.go .fi-sil { animation: fiSilWalk 1.4s linear 0.8s both; }
-.fi-away.go .fi-p3 .fi-opp { animation: fiArrive 0.55s ease-out 1.85s both; }
-@keyframes fiWalk { 0% { transform: translateX(-40%) scale(1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translateX(-50%) translateY(-24vh) scale(0.5); opacity: 0; } }
-@keyframes fiPan { 0% { transform: translateX(0); } 38%, 52% { transform: translateX(-100vw); } 100% { transform: translateX(-200vw); } }
-@keyframes fiSilWalk { 0% { opacity: 0; transform: translateX(0); } 15%, 82% { opacity: 1; } 100% { opacity: 0; transform: translateX(52vw) translateY(-10vh) scale(0.9); } }
-.fi-away.go .fi-sil .fi-silo { animation: fiBob 0.3s steps(2) 0.8s 5; }
-@keyframes fiBob { 50% { transform: translateY(-2.5%); } }
-@keyframes fiArrive { from { transform: translateX(-50%) scale(0.94); } to { transform: translateX(-50%) scale(1); } }
-/* name plate + narrator box */
-.fi-plate { position: absolute; z-index: 10; left: 5vw; top: max(14px, 6vh); max-width: min(78vw, 460px); padding: 10px 16px 12px; background: var(--paper); border: 3px solid var(--ink); box-shadow: 4px 5px 0 rgba(20, 32, 33, 0.6); display: grid; gap: 2px; transform: translateX(-120%); }
-.fi-kind { font: 800 12px/1.2 var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra-d); }
-.fi-who { font: 700 clamp(26px, 7.4vw, 46px)/1.02 var(--font-serif); color: var(--ink); }
-.fi-role { font: 600 15px/1.3 var(--font-sans); color: var(--teal); }
-.fi-cap { position: absolute; z-index: 10; right: 5vw; bottom: max(16px, 7vh); max-width: min(80vw, 440px); padding: 9px 14px; background: #e9c35a; border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(20, 32, 33, 0.6); font: 600 clamp(15px, 4vw, 19px)/1.35 var(--era-font, var(--font-sans)); color: var(--ink); opacity: 0; transform: translateY(10px); }
-.fi-e1 .fi-cap { font-family: "Courier Prime", "Courier New", monospace; }
-.fi-skip { position: absolute; z-index: 11; right: 12px; top: 10px; font: 700 12px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--paper); background: rgba(23, 35, 58, 0.78); padding: 6px 9px; border-radius: 3px; opacity: 0; }
-.fi.go .fi-skip { animation: fiFade 0.3s ease-out 0.5s both; }
-.fi-visit.go .fi-plate { animation: fiPlate 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.1) 1.42s both; }
-.fi-visit.go .fi-cap { animation: fiCap 0.3s ease-out 1.7s both; }
-.fi-away.go .fi-plate { animation: fiPlate 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.1) 1.95s both; }
-.fi-away.go .fi-cap { animation: fiCap 0.3s ease-out 0.95s both; }
-@keyframes fiPlate { from { transform: translateX(-120%); } to { transform: none; } }
-@keyframes fiCap { to { opacity: 1; transform: none; } }
+/* Fight intro card removed (the hub office strip shows the arrival); fiFade still drives the strip's skip chip */
 @keyframes fiFade { to { opacity: 1; } }
-@media (orientation: landscape) {
-  .fi { --dh: 58vh; }
-  .fi-you { height: 44vh; }
-  .fi-plate { left: 4vw; }
-}
-@media (orientation: portrait) {
-  .fi-cap { left: 5vw; right: auto; }
-  .fi-p3 .fi-opp { left: 60%; height: 62%; bottom: 14%; }
-  .fi-p3 .fi-room { background-position: 62% 38%; }
-}
-/* reduced motion: no swings or pans, just the arrival frame, faded */
-.fi.fi-rm.go { animation: fiIn 0.15s ease-out forwards; }
-.fi-rm .fi-leaf { transform: rotateY(-96deg); }
-.fi-rm .fi-light, .fi-rm .fi-shade { transform: translateX(-50%) scaleY(1); }
-.fi-rm.fi-visit .fi-opp { opacity: 1; transform: translateX(-38%) translateY(calc(100vh - var(--fl) - 1vh)) scale(1.22); }
-.fi-rm .fi-silo { opacity: 0; }
-.fi-rm .fi-you { opacity: 1; transform: none; }
-.fi-rm .fi-strip { transform: translateX(-200vw); }
-.fi-rm .fi-plate { transform: none; } .fi-rm .fi-cap { opacity: 1; transform: none; } .fi-rm .fi-skip { opacity: 1; }
-.fi-rm *, .fi-rm.go * { animation: none !important; }
-@media (orientation: portrait) { .fi-sil { height: 21vh; } }
 
 /* ---------- Hub office strip entrance (visitor walks in / exec leaves, vehicle in the window) ---------- */
 #ofx-shield { position: fixed; inset: 0; z-index: 8450; cursor: pointer; background: transparent; -webkit-tap-highlight-color: transparent; }
@@ -4982,18 +4837,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .ofx-dest { position: absolute; z-index: 5; left: 4px; top: 4px; max-width: calc(100% - 8px); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; padding: 2px 7px; background: #e9c35a; color: #1f2e2f; border: 2px solid #1f2e2f; box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.5); font: 700 11px/1.25 var(--font-sans); opacity: 0; }
 .of-room.ofx-away.ofx-go .ofx-dest { animation: ofxTag 2.3s ease-out both; animation-name: ofxDest; }
 @keyframes ofxDest { 0%, 44% { opacity: 0; transform: translateY(-4px); } 52%, 100% { opacity: 1; transform: none; } }
-/* short full-screen card after the strip: arrival frame, plate and line, then the fight */
-.fi-short .fi-leaf { transform: rotateY(-96deg); }
-.fi-short .fi-light, .fi-short .fi-shade { transform: translateX(-50%) scaleY(1); }
-.fi-short.fi-visit .fi-opp { opacity: 1; transform: translateX(-38%) translateY(calc(100vh - var(--fl) - 1vh)) scale(1.22); }
-.fi-short .fi-silo { opacity: 0; }
-.fi-short .fi-you { opacity: 1; transform: none; }
-.fi-short .fi-strip { transform: translateX(-200vw); }
-.fi-short.go * { animation: none !important; }
-.fi-short.go .fi-plate { animation: fiPlate 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.1) 0.04s both !important; }
-.fi-short.go .fi-cap { animation: fiCap 0.22s ease-out 0.18s both !important; }
-.fi-short.go .fi-skip { animation: fiFade 0.2s ease-out 0.2s both !important; }
-.fi-short.go .fi-scene, .fi-short.go .fi-p3 { animation: fiPush 1.1s ease-out both !important; }
 
 .of-room.ofx .ld-act, .desk .office.ofx-focus .ld-act { outline: none !important; animation-name: none !important; }
 .of-room.ofx-away .of-exec .of-mood { opacity: 0; }
@@ -5095,6 +4938,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .ia > i { display: none; font-style: normal; }
 .ia.ia-x img { display: none; } .ia.ia-x > i { display: inline; }
 .ia.ia-x { width: auto; height: auto; }
+/* Fight opener caption (the line the old intro card carried): low on the stage so it never covers the opponent's speech bubble */
+.sc-cap.sc-why { top: auto; bottom: 36px; }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -13552,65 +13397,24 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
         (img ? '<img src="' + img + '" alt="" draggable="false">' : "") + '<div class="sc-cb-t"><b>' + esc(cb.who) + '</b><q>' + esc(cb.line) + "</q><em>" + esc(cb.effect) + '</em></div><button class="sc-cb-ok" id="sc-cb-ok">Face them ▸</button></div>';
     }
     h += '<div class="sc-you" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
+    if (!fg.done && !fg.played && (fg.round | 0) <= 1 && !(ui.cap && ui.cap.t) && !(fg.cb && !ui.cbHide)) { var opener = LD.fightOpener(state, fg); if (opener) h += '<div class="sc-cap sc-why e' + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)) + '" id="sc-why" role="note"><span>' + esc(opener) + "</span></div>"; }
     if (ui.cap && ui.cap.t && !fg.done) h += '<div class="sc-cap e' + ui.cap.era + (ui.cap.w4 ? " w4" : "") + '" id="sc-cap" role="note"><span>' + esc(ui.cap.t) + "</span></div>";
     h += '<div class="sc-place" aria-hidden="true">' + (venue === "home" ? "🚪 Your office · they came to you" : venue === "lobby" ? "🏢 Your lobby · through the glass" : "↩ Out the back door · " + esc(F.place)) + "</div>";
     if (fg.done) h += '<div class="sc-stamp ' + (how || "lost") + (out ? " o-" + out : "") + '" aria-hidden="true">' + (F.opp && out && LD.OUT_LABEL && LD.OUT_LABEL[out] ? LD.OUT_LABEL[out] : F.opp && LD.HOW_LABEL[how] ? LD.HOW_LABEL[how] : fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
     return h;
   }
-  /* ---------- Fight intro: a 2-3 s comic beat before the fight screen ----------
-     Visitors (home / lobby): your office door swings open, a silhouette steps in out of the hall light and its
-     shadow falls across your floor. Away: you slip out the back door, down the stairwell, into their room. */
+  /* ---------- Fight opener: the narrator line that used to sit on the intro card. Shown in the fight as the
+     yellow caption until your first play (the opponent's own opening words stay in their speech bubble). ---------- */
   var FI_LINES = {
     home: ["The door swings open. {s} doesn't knock twice.", "Nothing on the calendar. {s} walks in anyway.", "No invite, no ping. {s} is already in the room."],
     lobby: ["Down in the lobby, the crowd is pressed to the glass.", "The lobby glass is rattling. Somebody brought a camera.", "The lobby glass is shaking, and it's streaming live."],
     away: ["Out the back stairs, collar up. Next stop: {p}.", "Out the service exit before the press sees. {p}.", "Out the back, phone face-down. {p}."]
   };
-  var FI_SIGN = { home: ["PRIVATE", "EXECUTIVE SUITE", "FOCUS ROOM"], lobby: ["LOBBY", "LOBBY", "LOBBY"] };
-  var FI_EXIT = ["STAIRS", "SERVICE EXIT", "EXIT"];
   LD.fightIntroKey = function (state) { var fg = state && state.fy && state.fy.fight; return fg ? (fg.q || 0) + ":" + (fg.enc || "") + ":" + (fg.opp || "") : ""; };
-  LD.renderFightIntro = function (state, opts) {
-    opts = opts || {};
-    var fg = state && state.fy && state.fy.fight; if (!fg) return "";
-    var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
-    var era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
-    var ex = execArt(state.executiveId), exAr = ART_AR["back-" + ex] || 0.8;
-    var kind = fg.boss ? "Boss" : fg.elite ? "Elite" : venue === "home" ? "Home turf" : venue === "lobby" ? "At the glass" : "Away";
-    var place = venue === "home" ? "Your office" : venue === "lobby" ? "Your lobby" : (F.place || "Their turf");
-    var line = (F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
-    var opp = "assets/fight/opp-" + F.art + "-idle.webp", oppAr = F.ar || ART_AR[F.art] || 0.6;
-    var mode = venue === "away" ? "away" : "visit";
-    var h = '<div class="fi fi-' + mode + " fi-v-" + venue + " fi-e" + era + (opts.reduced ? " fi-rm" : "") + (opts.short ? " fi-short" : "") + '" role="dialog" aria-live="polite" aria-label="' + esc(F.who + " — " + kind) + '">';
-    function wall(cls) { return '<div class="fi-wall ' + (cls || "") + '"><span class="fi-rail"></span><span class="fi-frame" aria-hidden="true"><svg viewBox="0 0 60 40" preserveAspectRatio="none"><polyline points="4,32 14,26 22,29 32,15 42,19 56,6" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg></span></div><div class="fi-floor"></div>'; }
-    var you = '<div class="fi-you" style="--ar:' + exAr + '"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
-    function silo(src) { return '<span class="fi-silo" style="-webkit-mask-image:url(' + src + ');mask-image:url(' + src + ')"></span>'; }
-    var oppEl = '<div class="fi-opp" style="--ar:' + oppAr + '"><img src="' + opp + '" alt="" draggable="false">' + (venue === "away" ? "" : silo(opp)) + "</div>";
-    if (mode === "visit") {
-      var sign = FI_SIGN[venue === "lobby" ? "lobby" : "home"][era - 1];
-      h += '<div class="fi-scene">' + wall() +
-        '<div class="fi-light"></div><div class="fi-shade"></div>' +
-        '<div class="fi-door"><div class="fi-beyond"><span class="fi-hall"></span></div>' + oppEl +
-        '<div class="fi-leaf"><span class="fi-glass"><b>' + esc(sign) + '</b></span><span class="fi-panel"></span><span class="fi-knob"></span></div>' +
-        '<span class="fi-knock" aria-hidden="true">' + (venue === "lobby" ? "BANG BANG" : era === 3 ? "tap tap" : "knock knock") + "</span></div>" +
-        you + "</div>";
-    } else {
-      h += '<div class="fi-strip">' +
-        '<div class="fi-pane fi-p1">' + wall("fi-wall-back") + '<div class="fi-door fi-exit"><div class="fi-beyond fi-dark"></div><div class="fi-leaf"><span class="fi-bar"></span></div><span class="fi-sign">' + esc(FI_EXIT[era - 1]) + "</span></div>" +
-          '<div class="fi-walker" style="--ar:' + exAr + '"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div></div>' +
-        '<div class="fi-pane fi-p2"><span class="fi-pipe"></span><span class="fi-pipe b"></span><svg class="fi-stairs" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,100 0,84 17,84 17,68 34,68 34,52 51,52 51,36 68,36 68,20 85,20 85,4 100,4 100,100" fill="#22304a" stroke="#0e1626" stroke-width="2" vector-effect="non-scaling-stroke"/><polyline points="4,62 21,46 38,30 55,14 72,-2" fill="none" stroke="#c9942a" stroke-width="4" vector-effect="non-scaling-stroke"/><line x1="8" y1="58" x2="8" y2="84" stroke="#c9942a" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".7"/><line x1="25" y1="42" x2="25" y2="68" stroke="#c9942a" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".7"/><line x1="42" y1="26" x2="42" y2="52" stroke="#c9942a" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".7"/><line x1="59" y1="10" x2="59" y2="36" stroke="#c9942a" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".7"/></svg><span class="fi-dframe"></span><span class="fi-lamp"></span><span class="fi-lamp b"></span><span class="fi-cone"></span><span class="fi-cone b"></span>' +
-          '<span class="fi-sil" style="--ar:' + exAr + '">' + silo("assets/fight/back-" + ex + ".webp") + "</span></div>" +
-        '<div class="fi-pane fi-p3"><div class="fi-room" style="background-image:url(assets/fight/room-' + F.room + '.webp)"></div>' + oppEl + you + "</div>" +
-        "</div>";
-    }
-    h += '<div class="fi-plate"><span class="fi-kind">' + esc(kind) + " · " + esc(place) + '</span><b class="fi-who">' + esc(F.who) + '</b><span class="fi-role">' + esc(F.role || "") + "</span></div>" +
-      '<div class="fi-cap"><span>' + esc(line) + "</span></div>" +
-      '<span class="fi-skip">Tap to skip</span></div>';
-    return h;
-  };
-  LD.fightIntroArt = function (state) {
-    var fg = state && state.fy && state.fy.fight; if (!fg) return [];
-    var F = LD.fightFace(fg), ex = execArt(state.executiveId), a = ["assets/fight/opp-" + F.art + "-idle.webp", "assets/fight/back-" + ex + ".webp"];
-    if (LD.fightVenue(fg) === "away") a.push("assets/fight/room-" + F.room + ".webp");
-    return a;
+  LD.fightOpener = function (state, fg) {
+    fg = fg || (state && state.fy && state.fy.fight); if (!fg) return "";
+    var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
+    return (F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
   };
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
      and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */
@@ -16161,26 +15965,27 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       scBurst(n ? "Hit " + n : "Blocked!", n ? "ouch" : "shield", you || "#sc-opp");
     }, reduced() ? 0 : 200);
   }
-  /* Fight intro: someone comes through the door (or you go out the back) before the fight screen. Tap to skip. */
-  var FI = { on: false, key: null, done: null, timers: [] };
+  /* Fight start: on the hub the office strip plays the arrival (visitor walks in / you leave by the back door),
+     then the fight opens directly. Tap skips the strip. FI.key makes it once per fight (a resume doesn't replay it). */
+  var FI = { on: false, key: null };
   function fightIntroWanted() {
     var fg = state && state.fy && state.fy.fight;
-    return !!(fg && !fg.done && !fg.played && (fg.round | 0) <= 1 && LD.renderFightIntro && FI.key !== LD.fightIntroKey(state));
+    return !!(fg && !fg.done && !fg.played && (fg.round | 0) <= 1 && FI.key !== LD.fightIntroKey(state));
   }
   function startFight() {
     if (FI.on) return;
     var want = false; try { want = fightIntroWanted(); } catch (e) { want = false; }
-    if (!want) { openFight(); return; }
+    if (!want || reduced() || screen !== "desk") { if (want) FI.key = LD.fightIntroKey(state); openFight(); return; }
     try {
-      if (reduced() || screen !== "desk") playFightIntro(openFight);
-      else { FI.on = true; playOfficeEntrance(function (ran, skipped) { FI.on = false; if (skipped) { FI.key = LD.fightIntroKey(state); openFight(); return; } playFightIntro(openFight, { short: ran }); }); }
+      FI.on = true;
+      playOfficeEntrance(function () { FI.on = false; FI.key = LD.fightIntroKey(state); openFight(); });
     } catch (e) {
       if (window.console) console.error(e);
-      FI.on = false; var x = document.getElementById("fi"); if (x && x.parentNode) x.parentNode.removeChild(x); openFight();
+      FI.on = false; openFight();
     }
   }
   /* Hub office strip: the actual opponent walks in through the strip door to your desk, or you leave by the back
-     door and a car / plane pulls away in the window. ~2 s, tap anywhere to skip; then a short full-screen card. */
+     door and a car / plane pulls away in the window. ~2 s, tap anywhere to skip; then straight into the fight. */
   function playOfficeEntrance(done) {
     var room = document.querySelector(".desk .office .of-room");
     var E = LD.officeEntrance ? LD.officeEntrance(state) : null;
@@ -16193,7 +15998,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var eb = ex.getBoundingClientRect(), db = dr.getBoundingClientRect();
     var added = [], ended = false, timers = [];
     function add(parent, html) { var t = document.createElement("div"); t.innerHTML = html; var n = t.firstChild; parent.appendChild(n); added.push(n); return n; }
-    var shield = add(document.body, '<div id="ofx-shield" role="button" aria-label="Skip"><span class="fi-skip ofx-skip">Tap to skip</span></div>');
+    var shield = add(document.body, '<div id="ofx-shield" role="button" aria-label="Skip"><span class="ofx-skip">Tap to skip</span></div>');
     var cls = E.away ? "ofx-away" : "ofx-visit";
     if (office) { var ob = office.getBoundingClientRect(), vw0 = window.innerWidth, vh0 = window.innerHeight;
       var sc = rb.height >= 110 ? 1 : Math.max(1, Math.min(1.45, (vw0 - 12) / ob.width, (vh0 - 12) / ob.height));
@@ -16238,48 +16043,6 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     timers.push(setTimeout(function () { finish(false); }, E.away ? 2300 : 2150));
     timers.push(setTimeout(function () { finish(false); }, 5000));
   }
-  function playFightIntro(cb, o) {
-    if (FI.on) return;
-    o = o || {};
-    var short = !!o.short && !reduced();
-    var html = LD.renderFightIntro(state, { reduced: reduced(), short: short });
-    if (!html) { cb(); return; }
-    FI.on = true; FI.key = LD.fightIntroKey(state);
-    var host = document.createElement("div"); host.id = "fi"; host.innerHTML = html;
-    document.body.appendChild(host);
-    var root = host.firstChild, away = root.classList.contains("fi-away"), rm = reduced();
-    var total = rm ? 1000 : short ? 1050 : 3000, ended = false;
-    function clear() { FI.timers.forEach(clearTimeout); FI.timers = []; }
-    function end() {
-      if (ended) return; ended = true; clear();
-      host.removeEventListener("pointerdown", skip); document.removeEventListener("keydown", key, true);
-      FI.on = false;
-      try { if (state && state.fy && state.fy.fight && !state.ended) cb(); } catch (e) { if (window.console) console.error(e); }
-      host.classList.add("out");
-      setTimeout(function () { if (host.parentNode) host.parentNode.removeChild(host); }, rm ? 120 : 260);
-    }
-    function skip(e) { if (e) { e.preventDefault(); e.stopPropagation(); } end(); }
-    function key(e) { if (e.key === "Escape" || e.key === " " || e.key === "Enter") skip(e); }
-    host.addEventListener("pointerdown", skip);
-    document.addEventListener("keydown", key, true);
-    FI.done = end;
-    /* Start the clock once the art is in (or after 450 ms at worst), and always finish: the fail-safe can't be skipped. */
-    var go = false, art = LD.fightIntroArt ? LD.fightIntroArt(state) : [], left = art.length;
-    function begin() {
-      if (go || ended) return; go = true;
-      root.classList.add("go");
-      if (!rm && !short) {
-        if (!away) FI.timers.push(setTimeout(function () { SFX.play("knock", Math.max(1, LD.doorLevel(state))); }, 60));
-        FI.timers.push(setTimeout(function () { SFX.play(away ? "pick" : "flip"); }, away ? 120 : 380));
-      }
-      FI.timers.push(setTimeout(end, total));
-    }
-    art.forEach(function (src) { var im = new Image(); im.onload = im.onerror = function () { if (--left <= 0) begin(); }; im.src = src; });
-    if (!left) begin();
-    FI.timers.push(setTimeout(begin, 450));
-    setTimeout(function () { if (!ended) end(); }, total + 2500);
-  }
-  LD.fightIntroSkip = function () { if (FI.done) FI.done(); };
   function openFight() {
     if (!state || !state.fy || !state.fy.fight || FI.on) return;
     hideOverlay();
@@ -16293,7 +16056,10 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
     showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap }), "df-mode");
     var root = doorEl();
-    var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"); if (cb && cb.parentNode) cb.parentNode.removeChild(cb); });
+    var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"), stg = cb && cb.parentNode; if (stg) stg.removeChild(cb);
+      /* the familiar-face card held the stage; now show the opener caption it was covering */
+      var fg1 = state.fy && state.fy.fight, op = fg1 && !fg1.played && !$("sc-cap") && !$("sc-why") && LD.fightOpener ? LD.fightOpener(state, fg1) : "";
+      if (stg && op) { var w = document.createElement("div"); w.className = "sc-cap sc-why e" + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)); w.id = "sc-why"; w.setAttribute("role", "note"); w.innerHTML = "<span>" + LD.escapeHtml(op) + "</span>"; stg.appendChild(w); } });
     Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
       b.addEventListener("click", function () { playCard(+b.getAttribute("data-u")); });
     });

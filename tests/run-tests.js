@@ -233,6 +233,10 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     ["idle", "attack", "hit", "block", "defeated"].concat(O.paid ? ["paid"] : []).forEach((p) => { if (!fs.existsSync(path.join(ROOT, "assets/fight/opp-" + O.art + "-" + p + ".webp"))) ob.push(k + ": art " + p); });
     if (O.room && !fs.existsSync(path.join(ROOT, "assets/fight/room-" + O.room + ".webp"))) ob.push(k + ": room " + O.room);
   });
+  const miss = LD.ICON_ART.filter((k) => !fs.existsSync(path.join(ROOT, "assets/icons/" + k + ".webp")));
+  const noArt = [].concat(LD.FY_ASSETS, LD.ITEMS, LD.FIXERS, LD.CARDS.filter((c) => c.t === "Curse")).filter((x) => !LD.ICON_SET[x.id]).map((x) => x.id);
+  ok(!miss.length && !noArt.length, "painted icons for every Asset, item, fixer and curse (" + LD.ICON_ART.length + "): " + miss.concat(noArt).slice(0, 6).join(", "));
+  ok(/class="ia"/.test(LD.iconArt(LD.FY_ASSETS[0])) && LD.iconArt({ id: "nope", icon: "X" }) === "X", "icon helper paints known ids and falls back to the emoji");
   ok(!ob.length, "opponents complete: " + (ob.slice(0, 6).join("; ") || "all 30"));
   ok(Object.keys(LD.OPPONENTS).length >= 30, "30 faces at the door (got " + Object.keys(LD.OPPONENTS).length + ")");
   ok([1, 2, 3].every((a) => Object.values(LD.OPPONENTS).filter((o) => o.act === a && !o.boss).length >= 8), "8+ regular faces per era");

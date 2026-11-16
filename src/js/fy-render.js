@@ -2,6 +2,20 @@
 /* Last Dividend — Fiscal Year renderers: draft, Portfolio, boss cards, act chips. Pure string builders. Browser + Node. */
 (function (root) {
   var LD = root.LD || (root.LD = {});
+  /* Painted icons (assets/icons/*.webp) for Assets, briefcase items, fixers, curses, bosses, memos and encounters; the emoji stays as the fallback. */
+  var ICON_ART = ("shell lobby creative vertical regcap press thoughts astro philan narrative bulk prefab oncall redund easement plantmgr utility toll " +
+    "hedge chaser short offsets geo consult buyback loyalty toobig overtime penthouse surge influencer brine privgrid disfut futures rolodex chief soundproof holo " +
+    "doorman prblitz gala hotline contract rush cloud security liquidity hush pod c_class c_subpoena c_whistle c_leak c_crack c_stranded " +
+    "hollis chip pike ines tamsin bryce dex priya gus lorne margo").split(" ");
+  var ICON_SET = {}; ICON_ART.forEach(function (k) { ICON_SET[k] = 1; });
+  LD.ICON_ART = ICON_ART; LD.ICON_SET = ICON_SET;
+  function IA(o, kind, id) {
+    if (!o) return "";
+    var k = (kind ? kind + "-" : "") + (id || o.id), em = o.icon || "";
+    if (!ICON_SET[k]) return em;
+    return '<span class="ia"><img src="assets/icons/' + k + '.webp" alt="" draggable="false" onerror="this.parentNode.className+=\' ia-x\'"><i>' + em + "</i></span>";
+  }
+  LD.iconArt = IA;
   function esc(s) { return LD.escapeHtml(s); }
   function money(n) { return (n < 0 ? "−$" : "$") + Math.abs(n) + "M"; }
   var RCLS = { C: "r-c", U: "r-u", R: "r-r", L: "r-l" };
@@ -16,7 +30,7 @@
   function card(state, id, sel, rider, idx) {
     var c = LD.assetById(id);
     var h = '<button class="fy-card ' + RCLS[c.r] + (sel ? " sel" : "") + '" data-asset="' + id + '" aria-pressed="' + (sel ? "true" : "false") + '" style="--i:' + (idx | 0) + '">';
-    h += '<span class="fy-ico" aria-hidden="true">' + c.icon + '</span><span class="fy-txt"><b>' + esc(c.name) + "</b>";
+    h += '<span class="fy-ico" aria-hidden="true">' + IA(c) + '</span><span class="fy-txt"><b>' + esc(c.name) + "</b>";
     h += '<em><i class="fy-gem" aria-hidden="true"></i>' + esc(LD.RARITY[c.r].name) + " · " + esc(LD.ARCHETYPES[c.arch].name) + "</em>";
     h += '<span class="fy-eff">' + esc(c.text) + "</span>";
     var sl = setLine(state, c.arch, 1);
@@ -43,7 +57,7 @@
       f.hand.forEach(function (hd) {
         var c = LD.assetById(hd.id);
         if (!c || c.liability) return;
-        h += '<button class="fy-mini ' + RCLS[c.r] + '" data-replace="' + hd.id + '"><span aria-hidden="true">' + c.icon + "</span><b>" + esc(c.name) + "</b><em>" + esc(c.text) + "</em></button>";
+        h += '<button class="fy-mini ' + RCLS[c.r] + '" data-replace="' + hd.id + '"><span aria-hidden="true">' + IA(c) + "</span><b>" + esc(c.name) + "</b><em>" + esc(c.text) + "</em></button>";
       });
       h += "</div></div>";
       h += '<div class="fy-foot"><button class="btn btn-ghost" id="fy-back">Back</button></div>';
@@ -60,7 +74,7 @@
   }
 
   function itemTile(it, cls, attrs, inner) {
-    return '<button class="bc-tile ' + cls + '" ' + attrs + '><span class="bc-ico" aria-hidden="true">' + it.icon + '</span><span class="bc-nm">' + esc(it.name) + "</span>" + (inner || "") + "</button>";
+    return '<button class="bc-tile ' + cls + '" ' + attrs + '><span class="bc-ico" aria-hidden="true">' + IA(it) + '</span><span class="bc-nm">' + esc(it.name) + "</span>" + (inner || "") + "</button>";
   }
   /* The briefcase (Portfolio Assets + Liabilities) and the desk drawer (office items). ui.sel = selected id. */
   function renderPortfolio(state, ui) {
@@ -71,7 +85,7 @@
     var sel = ui.sel || (assets[0] && assets[0].id) || ((f.drawer || [])[0] && f.drawer[0].id) || null;
     var h = '<div class="fy-pfsheet bcase"><div class="fy-head"><div class="dz-k">Wall · ' + LD.fySlotsUsed(state) + "/" + f.cap + " · Briefcase " + (f.drawer || []).length + "/" + (f.dcap || 3) + "</div><h2>Trophy wall &amp; briefcase</h2></div>";
     var fc = LD.fyForecast(state);
-    h += '<p class="fy-fc"><b>At quarter close:</b> ' + (fc.items.length ? fc.items.map(function (it) { return it.icon + " " + esc(it.text); }).join(" · ") : "nothing automatic.") + "</p>";
+    h += '<p class="fy-fc"><b>At quarter close:</b> ' + (fc.items.length ? fc.items.map(function (it) { return IA(it) + " " + esc(it.text); }).join(" · ") : "nothing automatic.") + "</p>";
     h += '<div class="bc-grid" style="--n:' + f.cap + '">';
     for (var i = 0; i < f.cap; i++) {
       var hd = assets[i];
@@ -80,7 +94,7 @@
       h += itemTile(c, RCLS[c.r] + (sel === c.id ? " sel" : ""), 'data-bsel="' + c.id + '" aria-pressed="' + (sel === c.id) + '"');
     }
     h += "</div>";
-    if (liab.length) h += '<div class="bc-liabs">' + liab.map(function (hd) { var c = LD.assetById(hd.id); return '<button class="bc-liab' + (sel === c.id ? " sel" : "") + '" data-bsel="' + c.id + '">' + c.icon + " " + esc(c.name) + "</button>"; }).join("") + "</div>";
+    if (liab.length) h += '<div class="bc-liabs">' + liab.map(function (hd) { var c = LD.assetById(hd.id); return '<button class="bc-liab' + (sel === c.id ? " sel" : "") + '" data-bsel="' + c.id + '">' + IA(c) + " " + esc(c.name) + "</button>"; }).join("") + "</div>";
     var sets = [];
     Object.keys(LD.ARCHETYPES).forEach(function (k) {
       var A = LD.ARCHETYPES[k], n = LD.fyArchCount(state, k); if (!A.set || !n) return;
@@ -104,7 +118,7 @@
       var isItem = !!LD.itemById(sel) && !LD.assetById(sel);
       var w2 = isItem ? LD.itemBlock(state, sel) : null;
       var kind = isItem ? (dc.office ? "Office fixture" : dc.per === "act" ? "Active · once per act" : "Active · once per run") : dc.liability ? "Liability" : LD.RARITY[dc.r].name + " · " + LD.ARCHETYPES[dc.arch].name;
-      h += '<p class="bc-detail"><b>' + dc.icon + " " + esc(dc.name) + "</b> <em>" + esc(kind) + "</em> " + esc(dc.text) + (isItem && w2 && !dc.office ? ' <span class="bc-why">' + esc(w2) + "</span>" : "") + "</p>";
+      h += '<p class="bc-detail"><b>' + IA(dc) + " " + esc(dc.name) + "</b> <em>" + esc(kind) + "</em> " + esc(dc.text) + (isItem && w2 && !dc.office ? ' <span class="bc-why">' + esc(w2) + "</span>" : "") + "</p>";
     } else h += '<p class="bc-detail">Tap an Asset or item for details. Assets come from bosses, the Hearing, act openings and calls. Loot rides on fight rewards.</p>';
     return h + "</div>";
   }
@@ -116,10 +130,10 @@
     var it = LD.itemById(L.id), full = f.drawer.length >= f.dcap;
     var src = { boss: "Boss beaten", memo: "A board memo sweetener", deal: "A deal perk" }[L.src] || "Loot";
     var h = '<div class="loot ' + RCLS[it.r] + (ui.reveal ? " reveal" : "") + '"><div class="dz-k">Loot · ' + esc(src) + "</div>";
-    h += '<div class="loot-card"><div class="loot-rays" aria-hidden="true"></div><div class="loot-ico" aria-hidden="true">' + it.icon + "</div><b>" + esc(it.name) + '</b><em>' + esc(LD.RARITY[it.r].name) + " · " + (it.office ? "Office fixture" : it.per === "act" ? "Once per act" : "Once per run") + "</em><p>" + esc(it.text) + "</p></div>";
+    h += '<div class="loot-card"><div class="loot-rays" aria-hidden="true"></div><div class="loot-ico" aria-hidden="true">' + IA(it) + "</div><b>" + esc(it.name) + '</b><em>' + esc(LD.RARITY[it.r].name) + " · " + (it.office ? "Office fixture" : it.per === "act" ? "Once per act" : "Once per run") + "</em><p>" + esc(it.text) + "</p></div>";
     if (full) {
       h += '<p class="fy-rq">Drawer full (' + f.drawer.length + "/" + f.dcap + "). Swap one out (sold for cash), or sell the new item.</p><div class=\"loot-swap\">";
-      f.drawer.forEach(function (d) { var o = LD.itemById(d.id); h += '<button class="bc-tile ' + RCLS[o.r] + '" data-swap="' + o.id + '"><span class="bc-ico">' + o.icon + '</span><span class="bc-nm">Swap ' + esc(o.name) + " · +$" + LD.ITEM_SELL[o.r] + "M</span></button>"; });
+      f.drawer.forEach(function (d) { var o = LD.itemById(d.id); h += '<button class="bc-tile ' + RCLS[o.r] + '" data-swap="' + o.id + '"><span class="bc-ico">' + IA(o) + '</span><span class="bc-nm">Swap ' + esc(o.name) + " · +$" + LD.ITEM_SELL[o.r] + "M</span></button>"; });
       h += "</div>";
     }
     return h + "</div>";
@@ -151,7 +165,7 @@
     h += '<div class="pr-grid">';
     list.forEach(function (x) {
       var st = cx.found[x.id] ? "found" : cx.seen[x.id] ? "seen" : "unseen";
-      h += '<button class="pr-cell ' + st + " " + (x.r ? RCLS[x.r] : "liab") + (ui.sel === x.id ? " sel" : "") + '" data-psel="' + x.id + '" aria-label="' + esc(st === "unseen" ? "Unknown" : x.name) + '">' + (st === "unseen" ? "?" : x.icon) + "</button>";
+      h += '<button class="pr-cell ' + st + " " + (x.r ? RCLS[x.r] : "liab") + (ui.sel === x.id ? " sel" : "") + '" data-psel="' + x.id + '" aria-label="' + esc(st === "unseen" ? "Unknown" : x.name) + '">' + (st === "unseen" ? "?" : IA(x)) + "</button>";
     });
     h += "</div>";
     var dx = ui.sel && (LD.assetById(ui.sel) || LD.itemById(ui.sel) || curses.filter(function (c) { return c.id === ui.sel; })[0]);
@@ -169,7 +183,7 @@
   }
   function portfolioChip(state) {
     var f = state.fy; if (!f) return "";
-    var icons = f.hand.map(function (hd) { var c = LD.assetById(hd.id); return c ? '<i class="' + (c.liability ? "liab" : "") + '">' + c.icon + "</i>" : ""; }).join("");
+    var icons = f.hand.map(function (hd) { var c = LD.assetById(hd.id); return c ? '<i class="' + (c.liability ? "liab" : "") + '">' + IA(c) + "</i>" : ""; }).join("");
     var fc = LD.fyForecast(state), ft = fcText(fc);
     var rd = (f.drawer || []).filter(function (d) { return LD.itemReady(state, d); }).length;
     return '<button class="pf-chip" id="btn-portfolio" aria-label="Briefcase, ' + LD.fySlotsUsed(state) + " of " + f.cap + " slots" + (rd ? ", " + rd + " drawer item" + (rd > 1 ? "s" : "") + " ready" : "") + (ft ? ". At quarter close: " + ft : "") + '">💼 ' + LD.fySlotsUsed(state) + "/" + f.cap + (rd ? '<span class="pf-act">⚡' + rd + "</span>" : "") +
@@ -288,7 +302,7 @@
       (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</span></div>";
     h += '<div class="of-room mood-' + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
     h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';
-    if (f.hand) { h += '<div class="of-wallart" aria-hidden="true">'; for (var wi = 0; wi < (f.cap || 5); wi++) { var wa = f.hand[wi] && LD.assetById(f.hand[wi].id); h += wa ? "<i>" + wa.icon + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
+    if (f.hand) { h += '<div class="of-wallart" aria-hidden="true">'; for (var wi = 0; wi < (f.cap || 5); wi++) { var wa = f.hand[wi] && LD.assetById(f.hand[wi].id); h += wa ? "<i>" + IA(wa) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
     /* Window */
     h += '<div class="of-window" data-art="office-window"><div class="of-glass">' + citySvg(stage, decay, holo, ERA ? ERA.act : 3) + '</div>' +
       (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "") +
@@ -316,7 +330,7 @@
   function memoCard(state) {
     var f = state.fy, m = f && f.memo && LD.memoById(f.memo.id);
     if (!m) return "";
-    var h = '<div class="fy-boss fy-memo"><div class="fy-boss-ico" aria-hidden="true">' + m.icon + "</div>";
+    var h = '<div class="fy-boss fy-memo"><div class="fy-boss-ico" aria-hidden="true">' + IA(m, "memo") + "</div>";
     var ERA = LD.ERAS && LD.eraOf ? LD.ERAS[LD.eraOf(state)] : null;
     h += '<div class="dz-k">' + (ERA ? ERA.phoneIcon + " " + esc(ERA.phone) : m.call ? "Incoming call" : "Board call") + " · Q" + state.turn + "</div><h2>" + esc(m.title) + "</h2>";
     h += '<p class="fy-demand">' + esc(m.body) + "</p>";
@@ -324,12 +338,12 @@
     if (m.id === "headhunter" && mm.offer) {
       h += '<div class="fy-outs">';
       mm.offer.forEach(function (fid, i) { var x = LD.fixerById(fid); if (!x) return;
-        h += '<div class="fy-out good"><b>' + (i ? "Second" : "First") + ": " + x.icon + " " + esc(x.name) + "</b><span>" + esc(x.t + ", " + x.role + " · $" + x.pay + "M a quarter") + "</span><span>Cards: " + esc(x.cards.map(function (c) { return LD.cardDef(c).name; }).join(", ")) + "</span></div>"; });
+        h += '<div class="fy-out good"><b>' + (i ? "Second" : "First") + ": " + IA(x) + " " + esc(x.name) + "</b><span>" + esc(x.t + ", " + x.role + " · $" + x.pay + "M a quarter") + "</span><span>Cards: " + esc(x.cards.map(function (c) { return LD.cardDef(c).name; }).join(", ")) + "</span></div>"; });
       h += "</div>";
       if (f.fixers.length >= LD.DOOR.FIXER_CAP) h += '<p class="fy-note">Your roster is full (' + LD.DOOR.FIXER_CAP + "). Let someone go from the deck view first.</p>";
     }
-    if (m.id === "distressed" && mm.asset) { var da = LD.assetById(mm.asset); if (da) h += '<p class="fy-note">On offer: <b>' + da.icon + " " + esc(da.name) + "</b> · " + esc(da.text) + "</p>"; }
-    if (m.id === "oldfriend" && mm.card) { var dc0 = LD.cardDef(mm.card); if (dc0) h += '<p class="fy-note">The favour: <b>' + dc0.icon + " " + esc(dc0.name) + "</b> · " + esc(LD.cardText(mm.card, 0)) + "</p>"; }
+    if (m.id === "distressed" && mm.asset) { var da = LD.assetById(mm.asset); if (da) h += '<p class="fy-note">On offer: <b>' + IA(da) + " " + esc(da.name) + "</b> · " + esc(da.text) + "</p>"; }
+    if (m.id === "oldfriend" && mm.card) { var dc0 = LD.cardDef(mm.card); if (dc0) h += '<p class="fy-note">The favour: <b>' + (dc0.t === "Curse" ? IA(dc0) : dc0.icon) + " " + esc(dc0.name) + "</b> · " + esc(LD.cardText(mm.card, 0)) + "</p>"; }
     return h + "</div>";
   }
   function memoButtons(state) {
@@ -353,7 +367,7 @@
     var h = "";
     if (kind === "liabilities") {
       h += '<div class="fy-head"><div class="dz-k">Curses</div><h2>What clogs your deck</h2></div><ul class="fy-list ex-list">';
-      LD.CARDS.filter(function (c) { return c.t === "Curse"; }).forEach(function (l) { h += '<li class="liab"><span class="fy-ico" aria-hidden="true">' + l.icon + "</span><div><b>" + esc(l.name) + "</b><span>" + esc(LD.curseText(l.id)) + "</span></div></li>"; });
+      LD.CARDS.filter(function (c) { return c.t === "Curse"; }).forEach(function (l) { h += '<li class="liab"><span class="fy-ico" aria-hidden="true">' + IA(l) + "</span><div><b>" + esc(l.name) + "</b><span>" + esc(LD.curseText(l.id)) + "</span></div></li>"; });
       h += "</ul><p class=\"fy-note\">Curses come from audits, leaks, riders and calls. Shred them at a reward, or use Hush Money or Settle Quietly.</p>";
     } else if (kind === "ratings") {
       var cur = state && state.rating != null ? state.rating : null;
@@ -364,7 +378,7 @@
       h += '<div class="fy-head"><div class="dz-k">Boss quarters</div><h2>Who can show up</h2></div><ul class="fy-list ex-list">';
       [["earnings", "shortseller"], ["strike", "bid", "crash"], ["reckoning", "heatdome", "seawall"]].forEach(function (grp, ai) {
         grp.forEach(function (id) { var b = LD.BOSSES[id], bo = LD.bossOpp && state && state.fy ? LD.oppById(LD.bossOpp(state, id)) : null, bo0 = !bo && LD.oppById ? LD.oppById({ earnings: "ashby_b", shortseller: "sorel_b", strike: "varga_b", bid: "crowe_b", crash: "ticker_b" }[id]) : null; bo = bo || bo0;
-          h += '<li><span class="fy-ico" aria-hidden="true">' + b.icon + "</span><div><b>" + esc(b.name) + "</b> <em>Act " + LD.ACTS[ai].roman + " · " + esc(LD.ACTS[ai].year) + "</em>" + (bo ? "<span>" + esc(bo.who + " · " + bo.role) + "</span>" : "") + "</div></li>"; });
+          h += '<li><span class="fy-ico" aria-hidden="true">' + IA(b, "boss", id) + "</span><div><b>" + esc(b.name) + "</b> <em>Act " + LD.ACTS[ai].roman + " · " + esc(LD.ACTS[ai].year) + "</em>" + (bo ? "<span>" + esc(bo.who + " · " + bo.role) + "</span>" : "") + "</div></li>"; });
       });
       h += '</ul><p class="fy-note">Each act draws one boss from its row. The timeline shows yours from the start.</p>';
     }
@@ -375,7 +389,7 @@
   LD.renderCarried = function (state) {
     var list = LD.fyRunSummary ? LD.fyRunSummary(state).filter(function (x) { return x.score > 0; }).slice(0, 3) : [];
     if (!list.length) return "";
-    return '<div class="end-carried"><b>Carried by</b>' + list.map(function (x) { return '<span class="ec ' + RCLS[x.r] + '"><i aria-hidden="true">' + x.icon + "</i>" + esc(x.name) + "<small>" + esc(x.text) + "</small></span>"; }).join("") + "</div>";
+    return '<div class="end-carried"><b>Carried by</b>' + list.map(function (x) { return '<span class="ec ' + RCLS[x.r] + '"><i aria-hidden="true">' + IA(x) + "</i>" + esc(x.name) + "<small>" + esc(x.text) + "</small></span>"; }).join("") + "</div>";
   };
 
   function actChip(state) {
@@ -393,7 +407,7 @@
     var info = LD.bossInfo(state, q);
     if (!info) return "";
     var act = LD.ACTS[LD.actOf(q) - 1];
-    var h = '<div class="fy-boss b-' + info.id + '"><div class="fy-boss-ico" aria-hidden="true">' + info.icon + "</div>";
+    var h = '<div class="fy-boss b-' + info.id + '"><div class="fy-boss-ico" aria-hidden="true">' + IA(info, "boss") + "</div>";
     var bopp = LD.bossOpp && !info.final ? LD.oppById(LD.bossOpp(state, info.id)) : null;
     h += '<div class="dz-k">' + (mode === "confirm" ? "Boss quarter · Q" + q : "Act " + act.roman + " · " + esc(act.name) + " (" + esc(act.year) + ") · boss at Q" + q) + ' · <button class="link-btn fy-whoboss fy-explain" data-explain="bosses">ⓘ All bosses</button></div>';
     h += "<h2>" + esc(info.name) + "</h2>";
@@ -403,7 +417,7 @@
     if (mode === "confirm" && info.id === "strike") h += '<p class="fy-note">Unrest now ' + state.unrest + (state.unrest >= 40 ? " · the big hit applies" : " · under 40, the small hit applies") + ".</p>";
     if (mode === "confirm" && info.choice) h += '<p class="fy-note">Cash now ' + money(state.cash) + ". It resolves when you end the quarter.</p>";
     if (mode === "confirm" && info.id === "crash") h += '<p class="fy-note">Cash now ' + money(state.cash) + " · after the drop about " + money(state.cash - Math.round(state.cash * 0.3)) + (state.cash - Math.round(state.cash * 0.3) >= info.line ? " · you ride it out" : " · not enough to ride it out") + ".</p>";
-    if (mode === "confirm" && info.id === "shortseller" && state.fy.hand.length) { var nw = null; state.fy.hand.forEach(function (hd) { var c0 = LD.assetById(hd.id); if (c0 && !c0.liability) nw = c0; }); if (nw) h += '<p class="fy-note">Your newest Asset: ' + nw.icon + " " + esc(nw.name) + ".</p>"; }
+    if (mode === "confirm" && info.id === "shortseller" && state.fy.hand.length) { var nw = null; state.fy.hand.forEach(function (hd) { var c0 = LD.assetById(hd.id); if (c0 && !c0.liability) nw = c0; }); if (nw) h += '<p class="fy-note">Your newest Asset: ' + IA(nw) + " " + esc(nw.name) + ".</p>"; }
     if (mode === "confirm" && info.final) h += '<p class="fy-note">' + esc(LD.readinessSummary(state).tally) + ". " + (LD.readinessSummary(state).canWin ? "Your bunker would hold." : "Your bunker would not hold.") + "</p>";
     return h + "</div>";
   }
@@ -413,7 +427,7 @@
     var f = state.fy; if (!f) return "";
     var q = nextBossQ(state), info = q ? LD.bossInfo(state, q) : null;
     var h = '<div class="target fy-target"><span>⚑</span><b>Act ' + LD.ACTS[f.act - 1].roman + " · " + esc(LD.ACTS[f.act - 1].name) + " · " + esc(LD.ACTS[f.act - 1].year) + "</b> Q" + state.turn + " of " + f.rules.finalQ;
-    if (info) h += '<button class="fy-bosslink" data-boss-q="' + q + '">' + info.icon + " " + esc(info.name) + " · Q" + q + " ▸</button>";
+    if (info) h += '<button class="fy-bosslink" data-boss-q="' + q + '">' + IA(info, "boss") + " " + esc(info.name) + " · Q" + q + " ▸</button>";
     return h + "</div>";
   }
 
@@ -447,7 +461,7 @@
     return "<" + tag + ' class="' + cls + '"' + attrs + ' aria-label="' + esc(label) + '">' +
       '<span class="dc-cost' + (o.cash ? " cash" : "") + '"><em>' + esc(cost) + "</em></span>" +
       '<b class="dc-name">' + esc(d.name) + (up ? "<sup>+</sup>" : "") + "</b>" +
-      '<span class="dc-art"' + (art ? ' style="background-image:url(' + art + ')"' : "") + '><span class="dc-ico" aria-hidden="true">' + d.icon + "</span>" +
+      '<span class="dc-art"' + (art ? ' style="background-image:url(' + art + ')"' : "") + '><span class="dc-ico" aria-hidden="true">' + (d.t === "Curse" ? IA(d) : d.icon) + "</span>" +
       (stats ? '<span class="dc-stats">' + stats + "</span>" : "") + "</span>" +
       '<span class="dc-type">' + (pres && d.t !== "Curse" ? '<i class="dc-pres">' + esc(LD.PRESSURE_LABEL[pres]) + "</i> " : "") + esc(d.t === "Curse" ? "Curse" : d.t) + (d.r && d.r !== "X" ? " · " + (RAR_NAME[d.r] || "") : "") + "</span>" +
       '<span class="dc-txt">' + esc(LD.cardText(id, up)) + "</span>" +
@@ -678,10 +692,10 @@
     if (!r.itemDone && r.item) {
       var it = LD.itemById(r.item), full = f.drawer.length >= f.dcap;
       h += head + "<h2>Loot on the desk</h2></header>";
-      h += '<div class="rw-item r-' + String(it.r).toLowerCase() + '"><span class="rw-ico" aria-hidden="true">' + it.icon + "</span><b>" + esc(it.name) + "</b><span>" + esc(it.text || "") + "</span><em>Briefcase " + f.drawer.length + "/" + f.dcap + "</em></div>";
+      h += '<div class="rw-item r-' + String(it.r).toLowerCase() + '"><span class="rw-ico" aria-hidden="true">' + IA(it) + "</span><b>" + esc(it.name) + "</b><span>" + esc(it.text || "") + "</span><em>Briefcase " + f.drawer.length + "/" + f.dcap + "</em></div>";
       if (full && ui.replaceItem) {
         h += '<p class="rw-q">Briefcase full. Sell one to make room:</p><div class="rw-minis">';
-        f.drawer.forEach(function (d) { var x = LD.itemById(d.id); h += '<button class="fy-mini" data-isell="' + d.id + '"><span>' + x.icon + "</span><b>" + esc(x.name) + "</b><em>Sell $" + LD.ITEM_SELL[x.r] + "M</em></button>"; });
+        f.drawer.forEach(function (d) { var x = LD.itemById(d.id); h += '<button class="fy-mini" data-isell="' + d.id + '"><span>' + IA(x) + "</span><b>" + esc(x.name) + "</b><em>Sell $" + LD.ITEM_SELL[x.r] + "M</em></button>"; });
         h += "</div>";
         h += '<div class="rw-foot"><button class="btn" id="rw-back">Back</button></div>';
       } else h += '<div class="rw-foot"><button class="btn" id="rw-sell">Sell for $' + LD.ITEM_SELL[it.r] + 'M</button><button class="btn btn-coral" id="rw-keep">' + (full ? "Keep (swap one)" : "Into the briefcase") + "</button></div>";
@@ -692,13 +706,13 @@
       h += head + "<h2>" + (r.why === "boss" ? "Boss beaten: frame an Asset" : r.why === "elite" ? "The Hearing is over: frame an Asset" : lf.q === 1 ? "Your first trophy: frame an Asset" : "A new act: frame an Asset") + "</h2><p class=\"rw-sub\">Wall " + LD.fySlotsUsed(state) + "/" + f.cap + (wallFull ? " · full: pick one to take down (+$" + LD.FY.DIVEST_CASH + "M)" : "") + "</p></header>";
       if (ui.replaceFor) {
         h += '<div class="rw-minis">';
-        f.hand.forEach(function (c) { var a = LD.assetById(c.id); if (!a) return; h += '<button class="fy-mini" data-areplace="' + a.id + '"><span>' + a.icon + "</span><b>" + esc(a.name) + "</b><em>" + esc(a.text) + "</em></button>"; });
+        f.hand.forEach(function (c) { var a = LD.assetById(c.id); if (!a) return; h += '<button class="fy-mini" data-areplace="' + a.id + '"><span>' + IA(a) + "</span><b>" + esc(a.name) + "</b><em>" + esc(a.text) + "</em></button>"; });
         h += '</div><div class="rw-foot"><button class="btn" id="rw-back">Back</button></div>';
         return h + "</div>";
       }
       h += '<div class="rw-assets">';
       r.asset.forEach(function (id) { var a = LD.assetById(id); if (!a) return;
-        h += '<button class="fy-card rw-asset r-' + String(a.r).toLowerCase() + '" data-asset="' + id + '"><span class="fy-ico" aria-hidden="true">' + a.icon + '</span><span class="fy-txt"><b>' + esc(a.name) + "</b><em><i class=\"fy-gem\"></i>" + ({ C: "Common", U: "Uncommon", R: "Rare", L: "Legendary" })[a.r] + '</em><span class="fy-eff">' + esc(a.text) + "</span></span></button>"; });
+        h += '<button class="fy-card rw-asset r-' + String(a.r).toLowerCase() + '" data-asset="' + id + '"><span class="fy-ico" aria-hidden="true">' + IA(a) + '</span><span class="fy-txt"><b>' + esc(a.name) + "</b><em><i class=\"fy-gem\"></i>" + ({ C: "Common", U: "Uncommon", R: "Rare", L: "Legendary" })[a.r] + '</em><span class="fy-eff">' + esc(a.text) + "</span></span></button>"; });
       h += '</div><div class="rw-foot"><button class="btn" id="rw-apass">Pass</button></div>';
       return h + "</div>";
     }
@@ -734,7 +748,7 @@
     var h = '<div class="dk-in"><header class="rw-head"><small>Your deck · ' + f.deck.length + " cards" + (f.upTokens ? " · " + f.upTokens + " upgrade" + (f.upTokens > 1 ? "s" : "") : "") + (f.freeShreds ? " · " + f.freeShreds + " free shred" + (f.freeShreds > 1 ? "s" : "") : "") + "</small><h2>Deck and fixers</h2></header>";
     h += '<div class="dk-fixers">';
     f.fixers.forEach(function (r) { var x = LD.fixerById(r.id); if (!x) return;
-      h += '<div class="dk-fixer"><span class="dk-fi" aria-hidden="true">' + x.icon + "</span><div><b>" + esc(x.name) + "</b><em>" + esc(x.t + " · " + x.role + " · $" + x.pay + "M/Q") + '</em><span class="dk-heat">Heat ' + "🔥".repeat(r.heat || 0) + (r.heat ? "" : "0") + "/3" + (f.hearing === r.id ? " · Hearing due" : "") + "</span></div>" +
+      h += '<div class="dk-fixer"><span class="dk-fi" aria-hidden="true">' + IA(x) + "</span><div><b>" + esc(x.name) + "</b><em>" + esc(x.t + " · " + x.role + " · $" + x.pay + "M/Q") + '</em><span class="dk-heat">Heat ' + "🔥".repeat(r.heat || 0) + (r.heat ? "" : "0") + "/3" + (f.hearing === r.id ? " · Hearing due" : "") + "</span></div>" +
         (f.fixers.length > 1 ? '<button class="btn dk-fire" data-fire="' + r.id + '">Let go</button>' : "") + "</div>"; });
     h += "</div>";
     var mode = ui.mode || "";

@@ -418,14 +418,16 @@
   }
 
   /* ---------- Drop 1: the door fight, the reward, the deck (pure string builders) ---------- */
-  var TYPE_CLS = { Shared: "t-shared", Lobbyist: "t-lob", Lawyer: "t-law", PR: "t-pr", Fellow: "t-fel", Curse: "t-curse", Room: "t-room", Private: "t-priv" };
+  var TYPE_CLS = { Shared: "t-shared", Silent: "t-silent", Lobbyist: "t-lob", Lawyer: "t-law", PR: "t-pr", Fellow: "t-fel", Curse: "t-curse", Room: "t-room", Private: "t-priv" };
   var METER_ICO = { cash: "$", unrest: "✊", collapse: "☢", heat: "🔥" };
   var METER_NAME = { cash: "Cash", unrest: "Unrest", collapse: "Collapse", heat: "Heat" };
   var CARD_ART = {};
   ["talking","nocomment","externalize","codb","synergy","golden","presence","backup","cutcorners","privsec","carveout","campaign",
    "zoning","stall","whisper","fasttrack","revolving","darkmoney","objection","buryit","billable","nda","discovery","injunction",
    "settle","countersue","astro","oped","spin","tnp","photoop","crisiscomms","study","funded","unsettled","longterm",
-   "c_class","c_subpoena","c_whistle","c_leak","c_crack","c_stranded"].forEach(function (k) { CARD_ART[k] = "assets/cardart/card-" + k + ".webp"; });
+   "c_class","c_subpoena","c_whistle","c_leak","c_crack","c_stranded",
+   "glance","pause","smirk","watch","chair","handshake","envelope","played","stoop","chainmail","deepfake","dossier","poll","ratio","frontpage",
+   "perpwalk","lunch","mortgage","marker","margincall","consent","arbitration","layoff","eviction","gig","boardseat","bothstages","turnwitness","littleleague","botswarm"].forEach(function (k) { CARD_ART[k] = "assets/cardart/card-" + k + ".webp"; });
   LD.CARD_ART = CARD_ART;
   var RAR_NAME = { S: "Starter", C: "Common", U: "Uncommon", R: "Rare", M: "Fixture", X: "Curse" };
   function cardFace(id, up, opts) {
@@ -433,7 +435,8 @@
     var o = LD.cardValues(id, up), d = LD.cardDef(id); if (!o || !d) return "";
     var tag = opts.tag || "button";
     var rr = String(d.r || "C").toLowerCase();
-    var cls = "dc " + (TYPE_CLS[d.t] || "t-shared") + " r-" + rr + (up ? " up" : "") + (opts.cls ? " " + opts.cls : "") + (opts.why ? " no" : "");
+    var pres = LD.cardPressure ? LD.cardPressure(id) : null, tg = d.tags || {};
+    var cls = "dc " + (TYPE_CLS[d.t] || "t-shared") + " r-" + rr + (up ? " up" : "") + (pres ? " pr-" + pres : "") + (/^silent:/.test(tg.voice || "") ? " is-silent" : "") + (opts.cls ? " " + opts.cls : "") + (opts.why ? " no" : "");
     var attrs = (opts.attrs || "") + (tag === "button" ? ' type="button"' : "") + (opts.why && tag === "button" ? ' aria-disabled="true"' : "");
     var cost = o.unplay ? "—" : (o.cash ? "$" + o.cash + "M" + (opts.cost ? "+" + opts.cost + "◆" : "") : (opts.cost != null ? opts.cost : o.cost || 0) + "◆");
     var stats = "";
@@ -446,7 +449,7 @@
       '<b class="dc-name">' + esc(d.name) + (up ? "<sup>+</sup>" : "") + "</b>" +
       '<span class="dc-art"' + (art ? ' style="background-image:url(' + art + ')"' : "") + '><span class="dc-ico" aria-hidden="true">' + d.icon + "</span>" +
       (stats ? '<span class="dc-stats">' + stats + "</span>" : "") + "</span>" +
-      '<span class="dc-type">' + esc(d.t === "Curse" ? "Curse" : d.t) + (d.r && d.r !== "X" ? " · " + (RAR_NAME[d.r] || "") : "") + "</span>" +
+      '<span class="dc-type">' + (pres && d.t !== "Curse" ? '<i class="dc-pres">' + esc(LD.PRESSURE_LABEL[pres]) + "</i> " : "") + esc(d.t === "Curse" ? "Curse" : d.t) + (d.r && d.r !== "X" ? " · " + (RAR_NAME[d.r] || "") : "") + "</span>" +
       '<span class="dc-txt">' + esc(LD.cardText(id, up)) + "</span>" +
       (opts.why ? '<span class="dc-why">' + esc(opts.why) + "</span>" : "") +
       "</" + tag + ">";
@@ -495,14 +498,15 @@
     var room = venue === "home" ? homeRoom(fg) : F.room;
     var stage = LD.cityStage ? LD.cityStage(state) : 0;
     var how = fg.done ? fg.done.how || (fg.done.win ? "crushed" : fg.done.settled ? "paid" : "walked") : null;
-    var base = !fg.done ? "idle" : how === "crushed" ? "defeated" : how === "paid" ? (F.paid ? "paid" : "idle") : "attack";
+    var out = fg.done ? fg.done.out : null;
+    var base = !fg.done ? "idle" : out === "martyred" || how === "walked" ? "attack" : out === "bought" || out === "converted" || out === "deal" || how === "paid" ? (F.paid ? "paid" : "idle") : "defeated";
     var ex = execArt(state.executiveId);
     var h = '<div class="df-stage sc v-' + venue + " room-" + room + (ui.enter ? " enter" : "") + '" data-room="' + room + '" data-venue="' + venue + '" data-city="' + stage + '">';
     h += '<div class="sc-room" aria-hidden="true" style="background-image:url(assets/fight/room-' + room + '.webp)"></div><div class="sc-haze" aria-hidden="true"></div>';
     h += '<div class="sc-opp" id="sc-opp" data-base="' + base + '" data-pose="' + base + '" style="--ar:' + (F.ar || ART_AR[F.art] || 0.6) + '" aria-hidden="true">';
     POSES.concat(F.paid ? ["paid"] : []).forEach(function (p) { h += '<img class="p-' + p + '" src="assets/fight/opp-' + F.art + "-" + p + '.webp" alt="" draggable="false">'; });
     h += "</div>";
-    var bt = F.opp ? bubbleText(state, fg, ui) : null;
+    var bt = F.opp && !(ui.cap && ui.cap.t && !fg.done) ? bubbleText(state, fg, ui) : null;
     if (bt && bt.t) h += '<div class="sc-bubble k-' + bt.k + '" id="sc-bubble" role="status" aria-live="polite"><b>' + esc(F.short) + "</b>" + esc(bt.t) + "</div>";
     if (fg.cb && !fg.done && fg.round === 1 && !fg.played && !ui.cbHide) {
       var cb = fg.cb, img = cb.art ? "assets/fight/" + cb.art + ".webp" : "";
@@ -510,8 +514,9 @@
         (img ? '<img src="' + img + '" alt="" draggable="false">' : "") + '<div class="sc-cb-t"><b>' + esc(cb.who) + '</b><q>' + esc(cb.line) + "</q><em>" + esc(cb.effect) + '</em></div><button class="sc-cb-ok" id="sc-cb-ok">Face them ▸</button></div>';
     }
     h += '<div class="sc-you" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
+    if (ui.cap && ui.cap.t && !fg.done) h += '<div class="sc-cap e' + ui.cap.era + (ui.cap.w4 ? " w4" : "") + '" id="sc-cap" role="note"><span>' + esc(ui.cap.t) + "</span></div>";
     h += '<div class="sc-place" aria-hidden="true">' + (venue === "home" ? "🚪 Your office · they came to you" : venue === "lobby" ? "🏢 Your lobby · through the glass" : "↩ Out the back door · " + esc(F.place)) + "</div>";
-    if (fg.done) h += '<div class="sc-stamp ' + (how || "lost") + '" aria-hidden="true">' + (F.opp && LD.HOW_LABEL[how] ? LD.HOW_LABEL[how] : fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
+    if (fg.done) h += '<div class="sc-stamp ' + (how || "lost") + (out ? " o-" + out : "") + '" aria-hidden="true">' + (F.opp && out && LD.OUT_LABEL && LD.OUT_LABEL[out] ? LD.OUT_LABEL[out] : F.opp && LD.HOW_LABEL[how] ? LD.HOW_LABEL[how] : fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
     return h;
   }
   /* ---------- Fight intro: a 2-3 s comic beat before the fight screen ----------
@@ -533,7 +538,7 @@
     var ex = execArt(state.executiveId), exAr = ART_AR["back-" + ex] || 0.8;
     var kind = fg.boss ? "Boss" : fg.elite ? "Elite" : venue === "home" ? "Home turf" : venue === "lobby" ? "At the glass" : "Away";
     var place = venue === "home" ? "Your office" : venue === "lobby" ? "Your lobby" : (F.place || "Their turf");
-    var line = (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
+    var line = (F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
     var opp = "assets/fight/opp-" + F.art + "-idle.webp", oppAr = F.ar || ART_AR[F.art] || 0.6;
     var mode = venue === "away" ? "away" : "visit";
     var h = '<div class="fi fi-' + mode + " fi-v-" + venue + " fi-e" + era + (opts.reduced ? " fi-rm" : "") + (opts.short ? " fi-short" : "") + '" role="dialog" aria-live="polite" aria-label="' + esc(F.who + " — " + kind) + '">';
@@ -571,7 +576,7 @@
   };
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
      and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */
-  var OFX_FAR = { senate: 1, crash: 1 };
+  var OFX_FAR = { senate: 1, crash: 1, keys: 1 };
   var OFX_VEH = {
     car: [
       /* 1978 Checker-style cab */
@@ -597,6 +602,13 @@
     return { away: away, air: air, era: era, who: F.who, place: F.place || "", opp: "assets/fight/opp-" + F.art + "-idle.webp", ar: F.ar || ART_AR[F.art] || 0.6,
       veh: away ? OFX_VEH[air ? "air" : "car"][era - 1] : "" };
   };
+  /* The Gallery: a 7-notch crowd meter between you and them. */
+  function galHtml(fg) {
+    var g = Math.max(-3, Math.min(3, fg.gal | 0)), h = '<div class="df-gal g' + (g > 0 ? "p" : g < 0 ? "n" : "0") + '" role="meter" aria-label="Gallery ' + (g > 0 ? "+" : "") + g + '" aria-valuemin="-3" aria-valuemax="3" aria-valuenow="' + g + '"><small>Them</small><span class="dg-row">';
+    for (var i = -3; i <= 3; i++) h += '<i class="' + (i === 0 ? "mid " : "") + (i === g ? "on" : (i < 0 && g <= i) || (i > 0 && g >= i) ? "lit" : "") + '"></i>';
+    return h + '</span><small>You</small><b>' + (g >= 2 ? "The room is with you" : g <= -2 ? "The room is with them" : g > 0 ? "Gallery leans your way" : g < 0 ? "Gallery leans their way" : "Gallery: undecided") + "</b></div>";
+  }
+  LD.galHtml = galHtml;
   LD.renderFight = function (state, ui) {
     ui = ui || {};
     var f = state.fy, fg = f.fight; if (!fg) return "";
@@ -610,14 +622,15 @@
       '<button class="icon-btn df-help" id="df-help" aria-label="How fights work">?</button></header>';
     h += sceneHtml(state, fg, ui);
     h += '<div class="df-scrut lvl-' + (LD.resLevel ? LD.resLevel("scrutiny", fg.max ? Math.max(0, fg.scrut) / fg.max : 0) : "ok") + '"><div class="df-k">' + (LD.tok ? LD.tok("scrutiny") : "") + 'Scrutiny <b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
-      '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div></div>";
+      '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div>" + galHtml(fg) + "</div>";
     if (it) {
       var thr = it.through, ico = METER_ICO[it.meter] || "!";
       h += '<div class="df-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><div class="df-k">Next, ' + esc(F.short) + " will</div>" +
-        '<div class="di-main"><span class="di-ico" aria-hidden="true">' + ico + '</span><b>' + esc(it.label) + " " + it.n + "</b></div>" +
+        '<div class="di-main"><span class="di-ico" aria-hidden="true">' + ico + '</span><b>' + esc(it.label) + " " + it.n + "</b>" + (F.opp && F.opp.sig === it.k ? '<i class="di-sig" title="Signature move">★</i>' : "") + "</div>" +
         '<div class="di-math">Block <b>' + it.block + "</b> · through <b>" + thr + "</b> → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " (×½)" : "") + "</div>" +
         (it.rtext ? '<div class="di-rider' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</div>" : "") +
-        (it.notes.length ? '<div class="di-notes">' + esc(it.notes.join(" · ")) + "</div>" : "") + "</div>";
+        (it.notes.length ? '<div class="di-notes">' + esc(it.notes.join(" · ")) + "</div>" : "") +
+        (LD.fightPeek && LD.fightPeek(state) ? '<div class="di-peek">Then: ' + esc(LD.fightPeek(state).label) + " " + LD.fightPeek(state).n + "</div>" : "") + "</div>";
     }
     h += "</div>";
     if (fg.done) {
@@ -625,8 +638,10 @@
       if (L.cash) bits.push("−$" + L.cash + "M"); if (L.unrest) bits.push("unrest +" + L.unrest); if (L.collapse) bits.push("collapse +" + L.collapse); if (L.heat) bits.push("Heat +" + L.heat);
       var bye = venue === "home" || venue === "lobby" ? "Show them out ▸" : "Back to the office ▸";
       var how2 = d.how, O2 = F.opp, remember = O2 && !O2.boss && O2.act < 3 && how2 !== "walked";
-      var endLine = O2 ? '<div class="sc-ending h-' + how2 + '"><i class="sc-end-stamp">' + esc(LD.HOW_LABEL[how2] || "") + "</i>" +
-        (remember ? "<em>They'll remember this.</em>" : how2 === "walked" ? "<em>" + esc(F.short) + " walks out with what they came for.</em>" : "") + "</div>" : "";
+      var out2 = d.out, aside = LD.execAside ? LD.execAside(state) : null;
+      var endLine = O2 ? '<div class="sc-ending h-' + how2 + (out2 ? " o-" + out2 : "") + '"><i class="sc-end-stamp">' + esc((out2 && LD.OUT_LABEL && LD.OUT_LABEL[out2]) || LD.HOW_LABEL[how2] || "") + "</i>" +
+        (out2 && LD.OUT_NOTE && LD.OUT_NOTE[out2] ? "<em>" + esc(LD.OUT_NOTE[out2]) + (remember ? " They'll remember this." : "") + "</em>" : remember ? "<em>They'll remember this.</em>" : how2 === "walked" ? "<em>" + esc(F.short) + " walks out with what they came for.</em>" : "") +
+        (aside ? '<q class="sc-aside">' + esc(aside.t) + "</q>" : "") + "</div>" : "";
       h += '<div class="df-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status">' + endLine + '<b>' + (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + "</b>" +
         "<span>" + esc(d.win ? (d.notes.join(" · ") || "The deal closes.") : d.settled ? "No bonus, no more damage. " + (d.notes.join(" · ")) : "The deal still signs. " + (d.notes.join(" · ") || "")) + "</span>" +
         (bits.length ? '<span class="df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") +
@@ -733,8 +748,12 @@
     h += "</div></div>";
     return h;
   };
-  LD.fightHelpHtml = function () {
+  LD.fightHelpHtml = function (state) {
+    var T = state && LD.execTraits ? LD.execTraits(state.executiveId) : null;
     return '<div class="fy-explain"><h2>Door fights</h2><ul class="fy-list">' +
+      '<li><span class="fy-ico">👥</span><div><b>The Gallery</b><span>The crowd meter under Scrutiny. Shame, Rumour, Crowd and Favour cards win it; Debt and Precarity lose it, and so do hard hits that get through. With the room at +2 their moves land 2 softer; against you, 2 harder.</span></div></li>' +
+      '<li><span class="fy-ico">🎭</span><div><b>How you win matters</b><span>The pressure that did most of the work picks the ending: Debt buys them, Legal breaks them, Shame with the room on your side exposes them. Win with the room against you and you make a martyr.</span></div></li>' +
+      (T ? '<li><span class="fy-ico">🪞</span><div><b>' + esc(T.good.name) + " · " + esc(T.bad.name) + "</b><span>" + esc(T.good.text) + " " + esc(T.bad.text) + "</span></div></li>" : "") +
       '<li><span class="fy-ico">🎯</span><div><b>Win: Scrutiny to 0</b><span>Pressure cards lower Scrutiny. Hit 0 and they leave. Each encounter pays a bonus.</span></div></li>' +
       '<li><span class="fy-ico">🛡️</span><div><b>Block the intent</b><span>The badge shows what lands when you end the round, and on which meter. Deniability blocks it point for point.</span></div></li>' +
       '<li><span class="fy-ico">◆</span><div><b>3 Influence a round</b><span>Cards cost ◆ (some cost cash). 5 cards a round. Unplayed cards go to the discard.</span></div></li>' +

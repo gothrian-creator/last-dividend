@@ -30,6 +30,7 @@ JS_NAMES = [
     "rivals.js",
     "fy.js",
     "eras.js",
+    "lore.js",
     "worldmap-data.js",
     "assets.js",
     "render.js",

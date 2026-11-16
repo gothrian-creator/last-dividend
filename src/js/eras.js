@@ -384,7 +384,7 @@
   LD.fightHow = function (fg) {
     if (!fg || !fg.done) return null;
     if (fg.done.settled) return "paid";
-    if (fg.done.win) return (fg.bribes | 0) > 0 ? "paid" : "crushed";
+    if (fg.done.win) return (fg.bribes | 0) > 0 || fg.done.out === "bought" || fg.done.out === "converted" ? "paid" : "crushed";
     return "walked";
   };
   LD.HOW_LABEL = { paid: "PAID OFF", crushed: "CRUSHED", walked: "THEY WALKED" };

@@ -922,7 +922,7 @@
     INTENT: [0, 4, 7, 10],       /* per act; +1 in later rounds */
     ONE_ROUND: false             /* the "quarter takes too long" lever */
   };
-  LD.CARD_TYPES = { Shared: "Shared", Lobbyist: "Lobbyist", Lawyer: "Lawyer", PR: "PR flack", Fellow: "Fellow", Curse: "Curse", Room: "Bunker room", Private: "Go private" };
+  LD.CARD_TYPES = { Shared: "Shared", Silent: "Silent", Lobbyist: "Lobbyist", Lawyer: "Lawyer", PR: "PR flack", Fellow: "Fellow", Curse: "Curse", Room: "Bunker room", Private: "Go private" };
   LD.CARD_RARITY = { S: "Starter", C: "Common", U: "Uncommon", R: "Rare", M: "Special", X: "Curse" };
   LD.CARDS = [
     { id: "talking", t: "Shared", r: "S", icon: "🗣️", name: "Talking Points", cost: 1, p: 4, up: { p: 6 } },
@@ -961,6 +961,38 @@
     { id: "funded", t: "Fellow", r: "C", icon: "📊", name: "Industry-Funded Study", cost: 1, p: 5, win: "cool", up: { p: 7 } },
     { id: "unsettled", t: "Fellow", r: "U", icon: "❓", name: "Unsettled Science", cost: 1, d: 3, sp: "halfcol", up: { d: 6 } },
     { id: "longterm", t: "Fellow", r: "R", icon: "🔭", name: "Long-Term Outlook", cost: 1, sp: "cut30", ex: true, up: { cost: 0 } },
+    /* ---- Silent cards: no speech bubble; the narrator's yellow caption box speaks instead (captions per era in lore.js). ---- */
+    { id: "glance", t: "Silent", r: "C", icon: "👁️", name: "The Glance", cost: 0, down: 2, peek: true, silent: true, up: { down: 4 } },
+    { id: "pause", t: "Silent", r: "C", icon: "🕰️", name: "The Long Pause", cost: 1, d: 6, ghold: true, silent: true, up: { d: 9 } },
+    { id: "smirk", t: "Silent", r: "U", icon: "😏", name: "The Smirk", cost: 1, p: 3, gb: 3, silent: true, up: { p: 4, gb: 4 } },
+    { id: "watch", t: "Silent", r: "C", icon: "⌚", name: "Checking Your Watch", cost: 1, p: 4, next: 2, silent: true, up: { p: 6 } },
+    { id: "chair", t: "Silent", r: "U", icon: "🪑", name: "Leaving the Chair Empty", cost: 1, d: 3, norider: true, silent: true, up: { d: 6 } },
+    { id: "handshake", t: "Silent", r: "U", icon: "🤝", name: "The Handshake Held Too Long", cost: 1, p: 5, next: 3, g: 0, silent: true, up: { p: 7 } },
+    { id: "envelope", t: "Silent", r: "U", icon: "✉️", name: "Sliding the Envelope", cost: 0, cash: 3, p: 9, silent: true, up: { p: 12 } },
+    { id: "played", t: "Silent", r: "R", icon: "🔁", name: "You've Played This Before", cost: 2, p: 4, draw: 2, peek: true, w4: true, silent: true, up: { cost: 1 } },
+    /* ---- Pressure, information and favours, era-flavoured (era: the only act whose rewards offer it). ---- */
+    { id: "stoop", t: "PR", r: "C", era: 1, icon: "🗣️", name: "Word on the Stoop", cost: 1, p: 2, rum: 5, up: { rum: 7 } },
+    { id: "chainmail", t: "PR", r: "C", era: 2, icon: "📧", name: "Chain Email", cost: 1, p: 2, rum: 5, up: { rum: 7 } },
+    { id: "deepfake", t: "PR", r: "U", era: 3, icon: "🎭", name: "Deepfake", cost: 1, p: 3, rum: 7, expose: 20, up: { rum: 10 } },
+    { id: "dossier", t: "Fellow", r: "U", icon: "🗂️", name: "Dossier", cost: 1, p: 4, down: 2, up: { p: 6 } },
+    { id: "poll", t: "Fellow", r: "C", icon: "📋", name: "Poll", cost: 0, g: 1, draw: 1, up: { draw: 2 } },
+    { id: "ratio", t: "PR", r: "C", era: 3, icon: "💬", name: "Ratio", cost: 1, p: 2, gb: 4, up: { gb: 6 } },
+    { id: "frontpage", t: "PR", r: "U", era: 1, icon: "📸", name: "Front-Page Photo", cost: 2, p: 7, up: { p: 10 } },
+    { id: "perpwalk", t: "PR", r: "R", era: 2, icon: "🚓", name: "Perp Walk", cost: 2, p: 9, expose: 15, up: { p: 12 } },
+    { id: "lunch", t: "Lobbyist", r: "C", icon: "🍽️", name: "Lunch Invitation", cost: 0, p: 3, next: 2, g: 0, up: { p: 5 } },
+    { id: "mortgage", t: "Lobbyist", r: "U", era: 2, icon: "🏠", name: "Buy Their Mortgage", cost: 0, cash: 4, p: 11, up: { p: 14 } },
+    { id: "marker", t: "Lobbyist", r: "U", era: 1, icon: "🎰", name: "Call In a Marker", cost: 1, p: 7, ex: true, up: { p: 10 } },
+    { id: "margincall", t: "Lobbyist", r: "R", icon: "☎️", name: "Margin Call", cost: 2, p: 4, per: 2, up: { per: 3 } },
+    { id: "consent", t: "Lawyer", r: "U", era: 2, icon: "📕", name: "Consent Decree", cost: 2, d: 10, sp: "nextinf", up: { d: 13 } },
+    { id: "arbitration", t: "Lawyer", r: "U", era: 3, icon: "🚪", name: "Forced Arbitration", cost: 1, cap: 6, up: { cap: 4 } },
+    { id: "layoff", t: "Shared", r: "C", icon: "📦", name: "Restructuring Memo", cost: 0, p: 6, un: 2, up: { p: 8 } },
+    { id: "eviction", t: "Lawyer", r: "C", era: 1, icon: "🛏️", name: "Eviction Notice", cost: 1, p: 7, un: 1, up: { p: 9 } },
+    { id: "gig", t: "Lawyer", r: "C", era: 3, icon: "🛵", name: "Reclassify as Contractors", cost: 1, p: 5, draw: 1, up: { p: 7 } },
+    { id: "boardseat", t: "Lobbyist", r: "R", icon: "🪑", name: "Board Seat", cost: 2, p: 6, solo: 6, up: { solo: 9 } },
+    { id: "bothstages", t: "Lobbyist", r: "R", era: 2, icon: "🎤", name: "Both Stages", cost: 2, p: 5, gfloor: true, up: { p: 8 } },
+    { id: "turnwitness", t: "Lawyer", r: "R", icon: "🕵️", name: "Turn Their Witness", cost: 2, p: 3, sp: "cancel", ex: true, up: { p: 6 } },
+    { id: "littleleague", t: "PR", r: "C", era: 1, icon: "⚾", name: "Sponsor the Little League", cost: 0, cash: 2, p: 6, up: { p: 8 } },
+    { id: "botswarm", t: "PR", r: "U", era: 3, icon: "🤖", name: "Bot Swarm", cost: 1, p: 6, sp: "vsprotest", expose: 25, up: { p: 8 } },
     { id: "c_class", t: "Curse", r: "X", icon: "⚖️", name: "Class Action", unplay: true, sp: "classaction" },
     { id: "c_subpoena", t: "Curse", r: "X", icon: "📜", name: "Subpoena", cost: 1, sp: "discardpay" },
     { id: "c_whistle", t: "Curse", r: "X", icon: "📯", name: "Whistleblower", unplay: true, sp: "drawheat" },
@@ -970,6 +1002,103 @@
   ];
   var CARD_BY = {}; LD.CARDS.forEach(function (c) { CARD_BY[c.id] = c; });
   LD.cardDef = function (id) { return CARD_BY[id] || null; };
+  /* ---------- Dormant card tags (schema v1, see the universe bible: "Future-proof card schema") ----------
+     Every card carries all 12 tags. Most do nothing in the base game; each one switches on when the add-on that reads it ships.
+     Base game reads: pressure (picks the ending, moves the Gallery), temper (moves the hidden marker), voice (silent cards show
+     the narrator's caption), side (frame colour), era (reward pool), fates (which endings a card feeds).
+     Order: pressure | temper | side | trait | psych | voice | era | pvp | room | readings | fates   (v is added as 1).
+     'none: <reason>' is the only allowed empty value; the reason is the comment. tests/run-tests.js fails any card without all tags. */
+  LD.CARD_TAG_FIELDS = ["pressure", "temper", "side", "trait", "psych", "voice", "era", "pvp", "room", "readings", "fates", "v"];
+  LD.PRESSURES = ["shame", "obligation", "kinship", "rumour", "legal", "solidarity", "status", "precarity", "patronage", "info"];
+  LD.OUTCOMES = ["bought", "converted", "broken", "exposed", "ignored", "martyred", "pyrrhic", "deal", "walked", "reconciled"];
+  var TAGS = {
+    talking: "info | S+ | dark | coldcontrol | persona | verbal | any | aggro/hero | single | light: Say It Plainly | exposed,broken",
+    nocomment: "status | S+ | dark | stonewalling | denial | verbal | any | control/self | single | light: Hold Your Tongue | ignored,walked",
+    externalize: "precarity | W- | dark | coldcontrol | displacement | verbal | any | aggro/room | group | light: Clean It Up | broken,pyrrhic",
+    codb: "obligation | W- | dark | withholding | rationalisation | verbal | any | tech/self | single | light: Pay What You Owe | bought,deal",
+    synergy: "info | none: an internal memo has no temper | grey | none: a memo has no personality | jargon | verbal | any | engine/self | single | none: no Light mirror for corporate memos | exposed",
+    golden: "obligation | W- | dark | withholding | reciprocity | verbal | any | control/hero | single | light: Fair Severance | bought",
+    presence: "status | S+ | dark | vanity | authority | verbal | any | aggro/hero | single | light: Show Up | ignored",
+    backup: "none: a bunker fixture, defence only | S+ | dark | duty | none: a generator has no psyche | verbal | any | control/self | single | light: Share the Power | walked",
+    cutcorners: "none: a bunker fixture, defence only | W- | dark | coldcontrol | sunk-cost | verbal | any | tech/self | single | light: Do It Right | pyrrhic",
+    privsec: "none: a guard detail removes no Scrutiny | S- | dark | coldcontrol | authority | verbal | any | control/room | group | light: Neighbourhood Watch | martyred",
+    carveout: "patronage | W- | dark | envy | foot-in-door | verbal | any | engine/ally | single | light: Fair Share | converted",
+    campaign: "patronage | W- | grey | peoplepleasing | reciprocity | verbal | any | aggro/ally | single | light: Small Donors | converted,bought",
+    zoning: "legal | S+ | grey | coldcontrol | anchoring | verbal | any | control/room | single | light: Community Plan | broken",
+    stall: "legal | S+ | dark | stonewalling | sunk-cost | verbal | any | control/hero | single | light: Hold the Line | walked",
+    whisper: "info | S+ | grey | withholding | authority | verbal | any | control/hero | single | light: Plain Guidance | exposed",
+    fasttrack: "patronage | W- | grey | envy | foot-in-door | verbal | any | tempo/room | single | light: Permit Clinic | converted",
+    revolving: "patronage | W- | grey | coldcontrol | cognitive-dissonance | silent:revolving | any | control/ally | group | light: Whistle Through the Door | converted",
+    darkmoney: "obligation | W- | dark | withholding | reciprocity | verbal | any | aggro/hero | group | light: Mutual Aid Fund | bought",
+    objection: "legal | S+ | grey | stonewalling | intellectualisation | verbal | any | control/self | single | light: Point of Order | walked",
+    buryit: "legal | S+ | dark | withholding | repression | verbal | any | control/self | single | light: Open the File | broken",
+    billable: "legal | S+ | grey | coldcontrol | sunk-cost | verbal | any | engine/self | single | none: billing has no Light mirror | broken,pyrrhic",
+    nda: "legal | S+ | dark | withholding | repression | verbal | any | control/hero | single | light: Speak Freely | broken,bought",
+    discovery: "legal | S+ | grey | stonewalling | denial | verbal | any | tempo/self | single | light: Open Records | walked",
+    injunction: "legal | S+ | dark | coldcontrol | authority | verbal | any | control/room | group | light: Stay of Eviction | broken,martyred",
+    settle: "obligation | S+ | dark | withholding | repression | silent:settle | any | tech/self | single | light: Make It Right | bought,deal",
+    countersue: "legal | S- | dark | grudge | projection | verbal | any | control/hero | single | light: Defend the Block | broken",
+    astro: "solidarity | S- | dark | vanity | social-proof | verbal | any | aggro/gallery | group | light: Block Party | exposed,martyred",
+    oped: "info | S+ | grey | condescension | rationalisation | verbal | any | aggro/gallery | single | light: Letter to the Editor | exposed",
+    spin: "rumour | S- | dark | vanity | reframing | verbal | any | tempo/gallery | single | light: Set the Record Straight | exposed",
+    tnp: "status | W- | dark | vanity | persona | verbal | any | control/gallery | group | light: Show Up With Soup | martyred,ignored",
+    photoop: "status | S- | dark | vanity | persona | verbal | any | aggro/gallery | group | light: Ribbon for the Block | ignored",
+    crisiscomms: "rumour | S+ | dark | coldcontrol | reframing | verbal | any | aggro/gallery | group | light: Town Hall | exposed",
+    study: "info | S+ | grey | discipline | authority | verbal | any | engine/self | single | light: Night Class | exposed",
+    funded: "info | S+ | dark | condescension | authority | verbal | any | aggro/gallery | single | light: Peer Review | exposed,broken",
+    unsettled: "rumour | S+ | dark | cynicism | manufactured-doubt | verbal | any | control/gallery | group | light: Fact Sheet | broken",
+    longterm: "info | S+ | grey | equanimity | intellectualisation | verbal | any | control/hero | single | light: Plan for the Flats | ignored",
+    glance: "info | S+ | grey | discipline | attention | silent:glance | any | tech/hero | single | light: The Kind Look | exposed",
+    pause: "status | S+ | grey | equanimity | silence | silent:pause | any | control/gallery | single | light: Let Them Finish | ignored",
+    smirk: "shame | S- | dark | vanity | contempt | silent:smirk | any | aggro/hero | single | light: The Wink | exposed",
+    watch: "status | S+ | dark | coldcontrol | status-signal | silent:watch | any | tempo/hero | single | light: Make Time | ignored",
+    chair: "status | S+ | dark | withholding | ostracism | silent:chair | any | control/ally | group | light: Pull Up a Chair | ignored",
+    handshake: "obligation | W- | dark | coldcontrol | reciprocity | silent:handshake | any | control/hero | single | light: A Firm Promise | bought",
+    envelope: "obligation | W- | dark | withholding | repression | silent:envelope | any | tech/hero | single | light: Pay It Forward | bought",
+    played: "info | none: the fourth wall sits outside the compass | grey | none: the narrator has no trait | metacognition | silent:played | any | tech/hero | single | light: We've Been Here Before | exposed",
+    stoop: "rumour | S- | dark | envy | gossip | verbal | 1978 | tempo/gallery | group | light: Word of Mouth | exposed",
+    chainmail: "rumour | S- | dark | envy | gossip | verbal | 2008 | tempo/gallery | group | light: The Group Email | exposed",
+    deepfake: "rumour | W- | dark | vanity | gaslighting | verbal | now | tempo/gallery | group | light: Fact-check | exposed",
+    dossier: "info | S+ | dark | coldcontrol | surveillance | verbal | any | control/hero | single | light: Public Record | exposed",
+    poll: "info | S+ | grey | discipline | social-proof | verbal | any | engine/gallery | group | light: Ask the Block | exposed",
+    ratio: "shame | S- | dark | vanity | pile-on | verbal | now | aggro/gallery | group | light: Signal Boost | exposed",
+    frontpage: "shame | S- | dark | grudge | public-shaming | verbal | 1978 | aggro/gallery | group | light: Front-Page Thanks | exposed",
+    perpwalk: "shame | S- | dark | grudge | public-shaming | verbal | 2008 | aggro/gallery | group | light: Walk Them Home | exposed",
+    lunch: "obligation | W- | dark | withholding | reciprocity | verbal | any | control/hero | single | light: Potluck | bought,deal",
+    mortgage: "obligation | W- | dark | coldcontrol | debt-bondage | verbal | 2008 | aggro/hero | single | light: Refinance the Block | bought",
+    marker: "obligation | W- | grey | grudge | reciprocity | verbal | 1978 | aggro/hero | single | light: Call In a Favour | bought",
+    margincall: "obligation | S+ | dark | coldcontrol | scarcity | verbal | any | aggro/hero | single | light: Forgive the Tab | bought,broken",
+    consent: "legal | S+ | grey | discipline | authority | verbal | 2008 | control/self | single | light: Consent of the Governed | broken,deal",
+    arbitration: "legal | S+ | dark | coldcontrol | learned-helplessness | verbal | now | control/hero | single | light: Day in Court | broken",
+    layoff: "precarity | W- | dark | coldcontrol | displacement | verbal | any | aggro/room | group | light: Keep Everyone On | broken,pyrrhic",
+    eviction: "precarity | W- | dark | coldcontrol | dehumanisation | verbal | 1978 | aggro/room | group | light: Rent Strike | broken,martyred",
+    gig: "precarity | W- | dark | coldcontrol | rationalisation | verbal | now | tempo/room | group | light: Union Card | broken",
+    boardseat: "status | S+ | dark | equanimity | entitlement | verbal | any | engine/self | single | light: A Seat at the Table | ignored",
+    bothstages: "patronage | none: the Machine has no temper, only allies | grey | peoplepleasing | splitting | verbal | 2008 | control/gallery | group | light: One Stage | converted",
+    turnwitness: "patronage | W- | dark | envy | cognitive-dissonance | verbal | any | control/ally | single | light: Protect the Witness | converted",
+    littleleague: "kinship | W+ | dark | vanity | halo-effect | verbal | 1978 | aggro/gallery | group | light: Coach the Team | reconciled,deal",
+    botswarm: "solidarity | S- | dark | vanity | social-proof | verbal | now | aggro/gallery | group | light: Real Neighbours | exposed,martyred",
+    c_class: "none: a curse is never played as pressure | none: curses carry no temper | neutral | none: a curse has no owner | guilt | verbal | any | none: curses are inert in PvP | single | none: curses have no Light reading | pyrrhic",
+    c_subpoena: "legal | none: curses carry no temper | neutral | none: a curse has no owner | authority | verbal | any | none: curses are inert in PvP | single | none: curses have no Light reading | broken",
+    c_whistle: "none: a curse is never played as pressure | none: curses carry no temper | light | none: a curse has no owner | conscience | verbal | any | none: curses are inert in PvP | single | none: curses have no Light reading | exposed",
+    c_leak: "none: a curse is never played as pressure | none: curses carry no temper | neutral | none: a curse has no owner | exposure | verbal | any | none: curses are inert in PvP | single | none: curses have no Light reading | exposed",
+    c_crack: "none: a curse is never played as pressure | none: curses carry no temper | neutral | none: a curse has no owner | sunk-cost | verbal | any | none: curses are inert in PvP | single | none: curses have no Light reading | pyrrhic",
+    c_stranded: "none: a curse is never played as pressure | none: curses carry no temper | neutral | none: a curse has no owner | sunk-cost | verbal | any | none: curses are inert in PvP | single | none: curses have no Light reading | pyrrhic"
+  };
+  LD.CARD_TAGS_RAW = TAGS;
+  LD.CARDS.forEach(function (c) {
+    var raw = TAGS[c.id]; if (!raw) return;
+    var parts = raw.split(" | "), t = { v: 1 };
+    LD.CARD_TAG_FIELDS.forEach(function (k, i) { if (k !== "v") t[k] = (parts[i] || "").trim(); });
+    c.tags = t;
+  });
+  LD.cardTags = function (id) { var c = CARD_BY[id]; return c && c.tags ? c.tags : null; };
+  /* The pressure family a card pushes (or null for 'none'). */
+  function presOf(id) { var t = LD.cardTags(id); return t && LD.PRESSURES.indexOf(t.pressure) !== -1 ? t.pressure : null; }
+  LD.cardPressure = presOf;
+  LD.PRESSURE_LABEL = { shame: "Shame", obligation: "Debt", kinship: "Favour", rumour: "Rumour", legal: "Legal", solidarity: "Crowd", status: "Snub", precarity: "Precarity", patronage: "Patronage", info: "Info" };
+  /* How a played card tilts the Gallery by default (a card's own g overrides). */
+  var G_BY_P = { shame: 1, rumour: 1, solidarity: 1, kinship: 1, info: 1, obligation: -1, precarity: -1 };
   /* A card's numbers after its one upgrade. */
   function cv(id, up) {
     var c = CARD_BY[id]; if (!c) return null;
@@ -1016,8 +1145,23 @@
     if (o.ex) s += " Exhausts.";
     if (o.expose) s += " Exposure " + o.expose + "%.";
     if (o.win) s += " " + WIN_TEXT[o.win];
+    if (o.gb) s += " +" + o.gb + " if the Gallery is with you.";
+    if (o.per) s += " +" + o.per + " per other card played this round.";
+    if (o.solo) s += " +" + o.solo + " if it's your first card this round.";
+    if (o.rum) s += " Rumour: +" + o.rum + " Pressure when next round starts.";
+    if (o.down) s += " Their move −" + o.down + " this round.";
+    if (o.next) s += " Their next move −" + o.next + ".";
+    if (o.cap) s += " Their move this round can't exceed " + o.cap + ".";
+    if (o.norider) s += " Their move's rider can't trigger this round.";
+    if (o.peek) s += " See their next move.";
+    if (o.ghold) s += " The Gallery can't turn on you this round.";
+    if (o.gfloor) s += " The Gallery can't drop below even this fight.";
+    var gt = galOf(id, o); if (gt && !o.gfloor) s += " Gallery " + (gt > 0 ? "+" : "−") + Math.abs(gt) + ".";
+    if (o.w4) s += " Fourth wall: once per fight.";
     return s.trim();
   };
+  function galOf(id, o) { o = o || cv(id); if (!o) return 0; if (o.g !== undefined) return o.g; return G_BY_P[presOf(id)] || 0; }
+  LD.cardGallery = galOf;
   LD.cardCostText = function (id, up) {
     var o = cv(id, up); if (!o) return "";
     if (o.unplay) return "—";
@@ -1218,12 +1362,23 @@
     if (I.bribeUp && fg.bribes) { n += I.bribeUp * fg.bribes; notes.push("+" + I.bribeUp * fg.bribes + " for your bribes"); }
     if (I.lobbyDown && fg.lobby) { var ld = Math.min(n, I.lobbyDown * fg.lobby); n -= ld; notes.push("captured −" + ld); }
     if (fg.flags.whisper) { n = Math.round(n * 0.7); notes.push("whispered −30%"); }
+    if ((fg.gal | 0) <= -2) { n += 2; notes.push("the room is with them +2"); }
+    else if ((fg.gal | 0) >= 2) { var gv = Math.min(2, Math.max(0, n - 1)); if (gv) { n -= gv; notes.push("the room is with you −" + gv); } }
+    if (fg.enc === "rival" && trait(state, "envy")) { n += 1; notes.push("envy +1"); }
+    if (fg.flags.down) { var dn = Math.min(fg.flags.down, Math.max(0, n - 1)); if (dn) { n -= dn; notes.push("rattled −" + dn); } }
+    if (fg.flags.cap && n > fg.flags.cap) { notes.push("arbitrated to " + fg.flags.cap); n = fg.flags.cap; }
     if (it.meter === "collapse" && fg.flags.halfcol) { n = Math.round(n / 2); notes.push("halved"); }
     if (fg.flags.cancel) { n = 0; notes.push("cancelled"); }
     var through = Math.max(0, n - fg.block);
-    var noR = !!(fg.cb && fg.cb.mod && fg.cb.mod.noRider);
-    return { k: it.k, label: it.label, meter: it.meter, n: n, block: fg.block, through: through, notes: notes, rider: noR ? null : I.rider, at: I.at, rtext: noR ? (I.rider ? "rider buried by a friend" : I.rtext) : I.rtext, oath: !!I.oath, say: I.say || "", halfDeny: !!I.halfDeny, cashTax: I.cashTax || 0 };
+    if (through && !fg.hits && trait(state, "humour")) { var hm = Math.min(2, through); through -= hm; notes.push("laughed off −" + hm); }
+    var noR = !!(fg.cb && fg.cb.mod && fg.cb.mod.noRider) || !!fg.flags.norider;
+    return { k: it.k, label: it.label, meter: it.meter, n: n, block: fg.block, through: through, notes: notes, rider: noR ? null : I.rider, at: I.at, rtext: noR ? (I.rider ? (fg.flags.norider ? "rider can't trigger this round" : "rider buried by a friend") : I.rtext) : I.rtext, oath: !!I.oath, say: I.say || "", halfDeny: !!I.halfDeny, cashTax: I.cashTax || 0 };
   }
+  /* The Glance / You've Played This Before: what they'll do next round. */
+  LD.fightPeek = function (state) {
+    var fg = fy(state) && fy(state).fight; if (!fg || fg.done || !fg.flags.peek || fg.round >= fg.rounds) return null;
+    return intentFor(state, fg, fg.round + 1);
+  };
   LD.fightIntent = function (state) { var fg = fy(state) && fy(state).fight; return fg && !fg.done ? intentNow(state, fg) : null; };
   function frng(fg) { var r = LD.createRng(fg.rs); return r; }
   function drawN(state, fg, n) {
@@ -1237,11 +1392,50 @@
     fg.rs = r.state();
     return drawn;
   }
+  /* ---------- Social pressure helpers ---------- */
+  /* Light executive traits (lore.js): one wholesome and one toxic trait per executive, each a small fight rule. */
+  function trait(state, id) { var T = LD.execTraits ? LD.execTraits(state.executiveId) : null; return !!(T && (T.good.id === id || T.bad.id === id)); }
+  LD.fyTrait = trait;
+  function tally(fg, p, n) { if (!n || n <= 0) return; fg.pr = fg.pr || {}; fg.pr[p || "none"] = (fg.pr[p || "none"] || 0) + n; }
+  /* Tilt the Gallery. Returns the real change. */
+  function galMove(state, fg, n) {
+    if (!n) return 0;
+    if (n < 0 && fg.flags.ghold) return 0;
+    var hi = 3; if (trait(state, "withholding")) hi = 2; if (trait(state, "coldcontrol")) hi = 1;
+    var lo = fg.gfloor ? 0 : -3, g0 = fg.gal | 0, g = g0 + n;
+    if (n > 0) g = Math.min(g, Math.max(hi, g0));
+    fg.gal = Math.max(lo, Math.min(3, g));
+    return fg.gal - g0;
+  }
+  LD.fyGalMove = galMove;
+  /* The hidden Temper marker (executives only): Stoic (s) and Wholesome (w), -5..+5. Not shown in the HUD. */
+  function temper(state) {
+    var f = fy(state);
+    if (!f.temper) { var h = LD.TEMPER_HOME && LD.TEMPER_HOME[state.executiveId] || { s: 0, w: 0 }; f.temper = { s: h.s, w: h.w, q: null }; }
+    return f.temper;
+  }
+  LD.fyTemper = temper;
+  function temperStep(state, fg, tag, free) {
+    var m = /^([SW])([+-])$/.exec(tag || ""); if (!m) return;
+    var ax = m[1] === "S" ? "s" : "w", d = m[2] === "+" ? 1 : -1, T = temper(state);
+    if (!free) { fg.tm = fg.tm || { s: 0, w: 0 }; if (Math.abs(fg.tm[ax] + d) > 2) return; fg.tm[ax] += d; }
+    T[ax] = Math.max(-5, Math.min(5, T[ax] + d));
+    if (state.executiveId === "cassius") T.s = Math.max(2, T.s);
+    if (state.executiveId === "soren") T.w = Math.min(2, T.w);
+    T.q = LD.temperQuad ? LD.temperQuad(T) : null;
+  }
   function handSize(state) { return LD.DOOR.HAND + (has(state, "rolodex") ? 1 : 0); }
   function startRound(state, fg) {
     fg.block = 0;
-    fg.inf = LD.DOOR.INF + (fg.flags.nextInf || 0) + (fg.round === 1 && has(state, "chief") ? 1 : 0);
+    var carry = fg.round > 1 && trait(state, "patience") && fg.inf > 0 ? 1 : 0;
+    fg.inf = LD.DOOR.INF + carry + (fg.flags.nextInf || 0) + (fg.round === 1 && has(state, "chief") ? 1 : 0);
     fg.flags.nextInf = 0; fg.flags.cancel = false; fg.flags.whisper = false; fg.flags.defer = false; fg.flags.payCash = 0;
+    fg.rp = 0; fg.flags.down = fg.flags.nextDown || 0; fg.flags.nextDown = 0; fg.flags.cap = 0; fg.flags.norider = false; fg.flags.ghold = false; fg.flags.rumLanded = 0;
+    fg.flags.peek = false;
+    if (fg.round > 1 && fg.rumour > 0 && fg.scrut > 0) {
+      /* A rumour planted last round turns real. */
+      var rb = fg.scrut; fg.scrut = Math.max(0, fg.scrut - fg.rumour); tally(fg, "rumour", rb - fg.scrut); fg.flags.rumLanded = rb - fg.scrut; fg.rumour = 0;
+    }
     fg.intent = intentFor(state, fg, fg.round);
     fg.flags.oath = !!LD.INTENTS[fg.intent.k].oath;
     drawN(state, fg, handSize(state));
@@ -1270,7 +1464,12 @@
       if (fg.cb) { f.cbDone = f.cbDone || {}; f.cbDone[fg.cb.id] = state.turn; f.cbSeen = (f.cbSeen || []).concat([fg.cb.id]); }
     }
     fg.ramp = 0; fg.bribes = 0; fg.lobby = 0; fg.cbAdd = fg.cb && fg.cb.mod.add ? fg.cb.mod.add : 0;
+    /* Social pressure (base game): the Gallery (-3..+3, + = the room is with you), damage by pressure type, the hidden temper steps. */
+    fg.gal = 0; fg.pr = {}; fg.tm = { s: 0, w: 0 }; fg.rp = 0; fg.rumour = 0; fg.w4 = false; fg.hits = 0;
     fg.venue = LD.fightVenue(fg);
+    if (O && O.gal) fg.gal = O.gal;
+    if (trait(state, "stonewalling") && (fg.venue === "lobby" || enc === "protest")) fg.gal -= 1;
+    fg.gal = Math.max(-3, Math.min(3, fg.gal));
     if (enc === "protest" && (state.rating | 0) >= 5) fg.swell = 0;
     fg.scrut = fg.max = scrutinyFor(state, enc);
     if (fg.cb && fg.cb.mod.scrutMult) fg.scrut = fg.max = Math.max(4, Math.round(fg.max * fg.cb.mod.scrutMult));
@@ -1306,9 +1505,19 @@
     else if (cashNow && state.cash < cashNow) why = "Needs $" + cashNow + "M.";
     else if (cost > fg.inf) why = "Needs " + cost + "◆.";
     else if (o.sp === "purge" && !f.deck.some(function (d) { return isCurse(d.id); })) why = "No curse to remove.";
+    else if (o.w4 && fg.w4) why = "The narrator only breaks the fourth wall once a fight.";
     var vsP = fg.enc === "protest" || LD.INTENTS[fg.intent.k].protest;
     var dd = (o.d || 0) * (o.sp === "vsprotestd" && vsP ? 2 : 1); if (dd && I0 && I0.halfDeny) dd = Math.ceil(dd / 2);
-    return { u: u, id: c.id, up: c.up, o: o, cost: cost, why: why, cash: cashNow, p: (o.p || 0) * (o.sp === "vsprotest" && vsP ? 2 : 1), d: dd };
+    var pres = presOf(c.id), O = fg.opp && LD.oppById ? LD.oppById(fg.opp) : null;
+    if (dd && pres === "legal" && !fg.flags.legalUsed && trait(state, "boundaries")) dd += 2;
+    if (dd && fg.round === 1 && trait(state, "duty")) dd += 1;
+    var pp = (o.p || 0) * (o.sp === "vsprotest" && vsP ? 2 : 1);
+    if (o.gb && (fg.gal | 0) >= 1) pp += o.gb;
+    if (o.per) pp += o.per * (fg.rp || 0);
+    if (o.solo && !fg.rp) pp += o.solo;
+    if (pp && (pres === "shame" || pres === "rumour") && trait(state, "passion")) pp += 1;
+    if (pp && pres === "shame" && O && O.shameless) pp = Math.ceil(pp / 2);
+    return { u: u, id: c.id, up: c.up, o: o, cost: cost, why: why, cash: cashNow, p: pp, d: dd, pres: pres, g: galOf(c.id, o) };
   };
   function fightCheck(state) {
     var f = fy(state); if (!f) return "No fight.";
@@ -1334,13 +1543,31 @@
     if (info.cash || o.sp === "codb") fg.bribes = (fg.bribes || 0) + 1;
     if (c && CARD_BY[c.id] && CARD_BY[c.id].t === "Lobbyist") fg.lobby = (fg.lobby || 0) + 1;
     fg.hand.splice(ix, 1);
-    fg.played += 1;
+    fg.played += 1; fg.rp = (fg.rp || 0) + 1;
     var before = fg.scrut;
     if (info.p) { fg.scrut = Math.max(0, fg.scrut - info.p); }
     if (o.sp === "cut40") fg.scrut = Math.max(0, fg.scrut - Math.round(fg.scrut * 0.4));
     if (o.sp === "cut30") fg.scrut = Math.max(0, fg.scrut - Math.round(fg.scrut * 0.3));
     if (fg.scrut < before) fx.push({ k: "pressure", n: before - fg.scrut });
+    tally(fg, info.pres, before - fg.scrut);
     if (info.d) { fg.block += info.d; fx.push({ k: "deny", n: info.d }); }
+    if (info.d && info.pres === "legal") fg.flags.legalUsed = true;
+    /* Social pressure: card flags, the Gallery, the hidden marker. */
+    if (o.gfloor) { fg.gfloor = true; if (fg.gal < 0) fg.gal = 0; }
+    if (o.ghold) fg.flags.ghold = true;
+    if (o.down) fg.flags.down = (fg.flags.down || 0) + o.down;
+    if (o.next) fg.flags.nextDown = (fg.flags.nextDown || 0) + o.next;
+    if (o.cap) fg.flags.cap = fg.flags.cap ? Math.min(fg.flags.cap, o.cap) : o.cap;
+    if (o.norider) fg.flags.norider = true;
+    if (o.peek) fg.flags.peek = true;
+    if (o.rum) fg.rumour = (fg.rumour || 0) + o.rum;
+    if (o.w4) fg.w4 = true;
+    var gm = info.g + (info.pres === "obligation" && trait(state, "smothering") ? -1 : 0);
+    /* Behind your own office door, facts have no audience: plain information doesn't sway the Gallery. */
+    if (info.pres === "info" && o.g === undefined && LD.fightVenue(fg) === "home") gm = 0;
+    var gd = galMove(state, fg, gm); if (gd) fx.push({ k: "gallery", n: gd });
+    var tg = CARD_BY[c.id] && CARD_BY[c.id].tags; if (tg) temperStep(state, fg, tg.temper);
+    var vtag = tg && /^silent:/.test(tg.voice) ? tg.voice.slice(7) : null;
     if (o.col) { state.collapse = clamp(state.collapse + o.col, 0, LD.MAX_COLLAPSE); cityAdd(state, 2); fx.push({ k: "collapse", n: o.col }); }
     if (o.un) { state.unrest = clamp(state.unrest + o.un, 0, LD.MAX_UNREST); fx.push({ k: "unrest", n: o.un }); }
     if (o.bill) { f.bill = (f.bill || 0) + o.bill; fx.push({ k: "bill", n: o.bill }); }
@@ -1365,12 +1592,13 @@
     }
     if (o.expose) {
       var er = fyRng(state, "expose:" + state.turn + ":" + u + ":" + fg.played)();
-      if (er < o.expose / 100) { addCurse(state, "c_leak", o.name + " was exposed"); heatUp(state, c.fx, 1, o.name + " exposed"); fx.push({ k: "exposed", text: o.name + " was exposed: a Leak, Heat +1." }); }
+      if (er < o.expose / 100) { addCurse(state, "c_leak", o.name + " was exposed"); heatUp(state, c.fx, 1, o.name + " exposed"); fx.push({ k: "exposed", text: o.name + " was exposed: a Leak, Heat +1." });
+        fg.flags.ghold = false; var ge = galMove(state, fg, -2 - (trait(state, "vanity") ? 1 : 0)); if (ge) fx.push({ k: "gallery", n: ge }); }
     }
     if (o.draw) drawN(state, fg, o.draw);
     if (o.win) fg.wins.push(o.win);
     if (o.ex) fg.exh.push(u); else fg.disc.push(u);
-    var res = { ok: true, state: state, fx: fx, card: o };
+    var res = { ok: true, state: state, fx: fx, card: o, silent: vtag, pres: info.pres, gal: gd };
     if (fg.scrut <= 0) { resolve(state, true, false); res.ended = fg.done; }
     return res;
   };
@@ -1403,7 +1631,7 @@
       out.text = it.label + ": Heat +" + h + (hu ? ", unrest +" + hu : "") + ".";
     }
     var I = LD.INTENTS[it.k];
-    if (I.rider && t >= I.at && !(fg.cb && fg.cb.mod && fg.cb.mod.noRider)) {
+    if (I.rider && t >= I.at && !(fg.cb && fg.cb.mod && fg.cb.mod.noRider) && !fg.flags.norider) {
       if (I.rider === "subpoena") { addCurse(state, "c_subpoena", "the audit"); out.riders.push("A Subpoena joins your deck."); }
       if (I.rider === "leak") { addCurse(state, "c_leak", "the story ran"); out.riders.push("A Leak joins your deck."); }
       if (I.rider === "claim" && fg.claimed && fg.region && state.world.regions[fg.region]) { state.world.regions[fg.region].owned = false; fg.claimed = false; out.riders.push("Outbid: you lose the claim on " + LD.REGION_NAMES[fg.region] + "."); }
@@ -1420,6 +1648,7 @@
     var why = fightCheck(state); if (why) return { ok: false, error: why, state: state };
     var f = fy(state), fg = f.fight, it = intentNow(state, fg);
     var hit = applyThrough(state, fg, it), I1 = LD.INTENTS[it.k];
+    if (it.through > 0) { fg.hits = (fg.hits || 0) + 1; if (it.through >= 4 && !trait(state, "equanimity")) hit.gal = galMove(state, fg, -1); } /* a hit the room can see */
     if (I1.ramp && it.through) { fg.ramp = (fg.ramp || 0) + I1.ramp; hit.ramp = I1.ramp; }
     if (I1.heal && it.n > 0 && fg.scrut > 0) { var hb = fg.scrut; fg.scrut = Math.min(fg.max, fg.scrut + I1.heal); hit.heal = fg.scrut - hb; if (hit.heal) hit.text += " They win back " + hit.heal + " Scrutiny."; }
     fg.log.push({ round: fg.round, intent: it.label, n: it.n, block: it.block, through: it.through, text: hit.text, riders: hit.riders });
@@ -1430,6 +1659,8 @@
     if (fg.round >= fg.rounds) { resolve(state, false, false); res.ended = fg.done; return res; }
     fg.round += 1;
     startRound(state, fg);
+    if (fg.flags.rumLanded) res.rumour = fg.flags.rumLanded;
+    if (fg.scrut <= 0) { resolve(state, true, false); res.ended = fg.done; }
     return res;
   };
   LD.fightSettleCost = function (state) { var fg = fy(state) && fy(state).fight; return fg && !fg.done ? Math.max(1, Math.ceil(fg.scrut * LD.DOOR.SETTLE)) : 0; };
@@ -1443,6 +1674,29 @@
     resolve(state, false, true, cost);
     return { ok: true, state: state, cost: cost };
   };
+  /* ---------- Outcomes: the ending is chosen from HOW you won (dominant pressure, the Gallery, the cost) ----------
+     The mechanical result (paid / crushed / walked, see LD.fightHow) is unchanged; callbacks and the recap still key on it. */
+  var OUT_TEMPER = { bought: "W-", reconciled: "W+", martyred: "S-", exposed: "S-", ignored: "S+" };
+  function outcomeFor(state, fg, win, settled) {
+    var pr = fg.pr || {}, tot = 0, dom = null, best = 0;
+    Object.keys(pr).forEach(function (k) { tot += pr[k]; if (k !== "none" && pr[k] > best) { best = pr[k]; dom = k; } });
+    var mixed = !dom || best < 0.4 * tot; /* no pressure type carried 40% of the damage */
+    var g = fg.gal | 0, L = fg.leaks || {}, cost = (L.unrest || 0) + Math.round((L.cash || 0) / 2) + 2 * (L.collapse || 0) + 3 * (L.heat || 0);
+    if (settled) return { out: "deal", dom: dom };
+    if (!win) return { out: "walked", dom: dom };
+    if (g <= -2) return { out: "martyred", dom: dom };
+    if (cost >= 12) return { out: "pyrrhic", dom: dom };
+    var o = "broken";
+    if (mixed) o = g >= 1 ? "exposed" : (fg.bribes | 0) > 0 ? "bought" : "broken";
+    else if (dom === "obligation") o = "bought";
+    else if (dom === "patronage") o = "converted";
+    else if (dom === "kinship") o = "reconciled";
+    else if (dom === "status") o = g >= 2 ? "exposed" : "ignored"; /* a snub only empties a room that wasn't watching */
+    else if (dom === "shame" || dom === "info" || dom === "rumour" || dom === "solidarity") o = g >= 1 ? "exposed" : dom === "solidarity" ? "ignored" : "broken";
+    else if ((fg.bribes | 0) > 0) o = "bought";
+    return { out: o, dom: dom };
+  }
+  LD.fightOutcomeFor = outcomeFor;
   /* Win, loss or settle: bonuses, penalties, region stress, bosses, the Hearing. */
   function resolve(state, win, settled, cost) {
     var f = fy(state), fg = f.fight, E = LD.ENCOUNTERS[fg.enc], notes = [], t = state.turn;
@@ -1474,13 +1728,18 @@
       f.bossLog.push({ id: fg.boss, q: t, beaten: !!win });
     }
     fg.done = { win: !!win, settled: !!settled, cost: cost || 0, notes: notes, leaks: clone(fg.leaks) };
+    var out = outcomeFor(state, fg, win, settled);
+    fg.done.out = out.out; fg.done.dom = out.dom; fg.done.gal = fg.gal | 0;
     var how = LD.fightHow ? LD.fightHow(fg) : null;
+    temperStep(state, fg, OUT_TEMPER[out.out], true);
+    if (out.out === "martyred") temperStep(state, fg, "W+", true);
+    f.outcomes = f.outcomes || {}; f.outcomes[out.out] = (f.outcomes[out.out] || 0) + 1;
     if (fg.opp && how) {
       fg.done.how = how;
-      f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, q: t, act: actOf(t), who: fg.name };
+      f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, out: out.out, q: t, act: actOf(t), who: fg.name };
       if (fg.opp === "june" && how === "crushed" && f.bossII !== "strike" && t < 8) { f.bossII = "strike"; f.strikeSwap = t; notes.push("June Park will lead a general strike at Q8"); }
     }
-    f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite, opp: fg.opp || null, how: how };
+    f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite, opp: fg.opp || null, how: how, out: out.out };
     f.fights = f.fights || { won: 0, lost: 0, settled: 0 };
     f.fights[win ? "won" : settled ? "settled" : "lost"] += 1;
     state.log.unshift({ turn: t, text: fg.name + ": " + (win ? "you win" : settled ? "settled for $" + cost + "M" : "they got through") + (notes.length ? " (" + notes.join(", ") + ")" : "") + "." });
@@ -1502,9 +1761,9 @@
 
   /* ---------- Rewards: 1 of 3 cards, shred, or skip; Assets after bosses and the Hearing ---------- */
   function rewardPool(state) {
-    var f = fy(state), types = { Shared: 1 };
+    var f = fy(state), types = { Shared: 1, Silent: 1 }, act = actOf(state.turn);
     f.fixers.forEach(function (r) { var x = FIXER_BY[r.id]; if (x) types[x.t] = 1; });
-    return LD.CARDS.filter(function (c) { return types[c.t] && (c.r === "C" || c.r === "U" || c.r === "R"); });
+    return LD.CARDS.filter(function (c) { return types[c.t] && (c.r === "C" || c.r === "U" || c.r === "R") && (!c.era || c.era === act); });
   }
   function rollCards(state, n, rare, rng) {
     var act = actOf(state.turn), W = [null, { C: 60, U: 32, R: 8 }, { C: 50, U: 38, R: 12 }, { C: 40, U: 42, R: 18 }][act];

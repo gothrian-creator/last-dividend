@@ -78,7 +78,7 @@ function runOne(seed, exec, style) {
   LD.applyEra(0);
   return state;
 }
-const tally = {}, cbs = {}, hows = {};
+const tally = {}, cbs = {}, hows = {}, outs = {}, gals = {}, styleWin = {};
 const EXECS = ["mara", "reid", "imani", "julian", "soren", "cassius"];
 for (let i = 0; i < 36; i++) {
   const style = ["bribe", "crush", "any"][i % 3];
@@ -86,11 +86,18 @@ for (let i = 0; i < 36; i++) {
   const f = s.fy || {};
   Object.keys(f.met || {}).forEach((k) => (tally[k] = (tally[k] || 0) + 1));
   (f.cbSeen || []).forEach((k) => (cbs[k] = (cbs[k] || 0) + 1));
-  Object.values(f.fates || {}).forEach((x) => (hows[x.how] = (hows[x.how] || 0) + 1));
+  Object.values(f.fates || {}).forEach((x) => { hows[x.how] = (hows[x.how] || 0) + 1; if (x.out) outs[x.out] = (outs[x.out] || 0) + 1; const w = styleWin[style] = styleWin[style] || { n: 0, lost: 0 }; w.n++; if (x.how === "walked") w.lost++; });
+  ok(s.fy && s.fy.temper && typeof s.fy.temper.s === "number" && Math.abs(s.fy.temper.s) <= 12 && Math.abs(s.fy.temper.w) <= 12, "temper marker stays in range");
 }
 console.log("MET", JSON.stringify(tally));
 console.log("CALLBACKS", JSON.stringify(cbs));
 console.log("ENDINGS", JSON.stringify(hows));
+console.log("OUTCOMES", JSON.stringify(outs));
+console.log("WALKED BY STYLE", JSON.stringify(styleWin));
+Object.keys(LD.OPPONENTS).forEach((k) => ok(tally[k] > 0, "every face shows up in 36 runs: " + k));
+ok(Object.keys(outs).length >= 5, "at least 5 distinct narrative outcomes");
+Object.keys(styleWin).forEach((k) => { const w = styleWin[k], r = w.lost / w.n; ok(r < 0.45, "balance: " + k + " loses " + Math.round(100 * r) + "% of door fights"); });
+{ const all = Object.values(styleWin).reduce((a, w) => ({ n: a.n + w.n, lost: a.lost + w.lost }), { n: 0, lost: 0 }), r = all.lost / all.n; ok(r > 0.08 && r < 0.3, "balance: door fights lost overall " + Math.round(100 * r) + "% (aim 8-30%)"); }
 ["dunn", "moretti", "june", "mickey", "odell", "delacroix", "okafor", "hale", "harrow", "gray", "rosa", "brennan"].forEach((k) => ok(tally[k] > 0, "met " + k + " at least once"));
 ok(Object.keys(cbs).length >= 3, "at least 3 distinct callbacks fired");
 ok(hows.paid && hows.crushed && hows.walked, "all three endings happen");

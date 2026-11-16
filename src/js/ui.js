@@ -1867,14 +1867,14 @@
     if (!state || !state.fy || !state.fy.fight || FI.on) return;
     hideOverlay();
     if (!DF.start) DF.start = state;
-    DF.busy = false; DF.arm = 0; DF.say = null; DF.cbHide = false;
+    DF.busy = false; DF.arm = 0; DF.say = null; DF.cbHide = false; DF.cap = null; DF.reacted = {};
     paintFight(null, true);
     SFX.play("knock", Math.max(1, LD.doorLevel(state)));
     if (!state.fy.fight.done) setTimeout(function () { if (doorOpen() && PN.mode !== "tour") pennyTip("fight"); }, 700);
   }
   function paintFight(flashU, enter) {
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
-    showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide }), "df-mode");
+    showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap }), "df-mode");
     var root = doorEl();
     var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"); if (cb && cb.parentNode) cb.parentNode.removeChild(cb); });
     Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
@@ -1883,7 +1883,7 @@
     var e = $("df-end"); if (e) e.addEventListener("click", function () { tick(); endRound(); });
     var s = $("df-settle"); if (s) s.addEventListener("click", function () { tick(); settleFight(); });
     var c = $("df-close"); if (c) { c.addEventListener("click", function () { tick(); closeFight(); }); try { c.focus({ preventScroll: true }); } catch (x) {} }
-    var hp = $("df-help"); if (hp) hp.addEventListener("click", function () { tick(); showFy(LD.fightHelpHtml(), '<button class="btn btn-coral" id="fy-ex-back">Back to the door</button>', function () { $("fy-ex-back").addEventListener("click", function () { tick(); hideOverlay(); }); }, true); });
+    var hp = $("df-help"); if (hp) hp.addEventListener("click", function () { tick(); showFy(LD.fightHelpHtml(state), '<button class="btn btn-coral" id="fy-ex-back">Back to the door</button>', function () { $("fy-ex-back").addEventListener("click", function () { tick(); hideOverlay(); }); }, true); });
     var dk = $("df-deck"); if (dk) dk.addEventListener("click", function () { tick(); openDeck(); });
   }
   function playCard(u) {
@@ -1904,8 +1904,14 @@
     var fg = state.fy.fight;
     var dS = s0 - Math.max(0, fg.scrut), dB = fg.block - b0;
     DF.cbHide = true;
-    DF.say = fg.done || !LD.oppLine ? null : dS > 0 ? { t: LD.oppLine(fg, "hit", fg.played), k: "hit" } : dB > 0 ? { t: LD.oppLine(fg, "block", fg.played), k: "block" } : DF.say;
+    /* Silent cards: no speech, a narrator caption and a small reaction from the face. Others: a line that answers the kind of pressure. */
+    DF.cap = res.silent && LD.silentFor ? LD.silentFor(state, res.silent) : null;
+    var fam = res.pres && LD.PRESSURE_FAMILY ? LD.PRESSURE_FAMILY[res.pres] : null, react = !DF.cap && fam && !(DF.reacted || {})[fam] && LD.oppReact ? LD.oppReact(fg, res.pres) : null;
+    if (react) (DF.reacted = DF.reacted || {})[fam] = 1;
+    DF.say = fg.done || !LD.oppLine || DF.cap ? null : react && (dS > 0 || dB > 0) ? { t: react, k: "hit" } : dS > 0 ? { t: LD.oppLine(fg, "hit", fg.played), k: "hit" } : dB > 0 ? { t: LD.oppLine(fg, "block", fg.played), k: "block" } : DF.say;
     paintFight();
+    if (DF.cap && !reduced()) { var so = $("sc-opp"); if (so) { so.classList.remove("sfx-" + DF.cap.fx); void so.offsetWidth; so.classList.add("sfx-" + DF.cap.fx); } var st = document.querySelector(".df-stage"); if (st) st.classList.add("sfx-st-" + DF.cap.fx); }
+    if (res.gal) dfFloat("Gallery " + (res.gal > 0 ? "+" : "−") + Math.abs(res.gal), res.gal > 0 ? "good" : "bad", ".df-gal", 200);
     scPlayAnim(cardHtml, cardRect, dS, dB);
     if (dS > 0) dfFloat("−" + dS + " Scrutiny", "good big", ".df-scrut");
     if (dB > 0) dfFloat("Block +" + dB, "good", "#df-intent");
@@ -1924,7 +1930,8 @@
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
     var bub = $("sc-bubble"), I0 = res.intent && LD.INTENTS[res.intent.k];
     if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(I0.say || ""); }
-    DF.say = null;
+    DF.say = null; DF.cap = null;
+    var cp = $("sc-cap"); if (cp && cp.parentNode) cp.parentNode.removeChild(cp);
     scAttackAnim(res.hit && res.hit.n);
     SFX.play(res.hit.n ? "bad" : "tick");
     setTimeout(function () {
@@ -1938,6 +1945,7 @@
       if (state.collapse !== prev.collapse) d.push("Collapse " + signed(state.collapse - prev.collapse));
       d.forEach(function (t, i) { dfFloat(t, "bad", state.fy.fight.done ? ".df-result" : ".df-meters", i * 160); });
       if (!d.length && !res.hit.n) dfFloat("Blocked!", "good big", ".df-stage");
+      if (res.rumour) dfFloat("The rumour lands: Scrutiny −" + res.rumour, "good big", ".df-scrut", 300);
       if (state.fy.fight.done) fightOver();
     }, reduced() ? 60 : 420);
   }

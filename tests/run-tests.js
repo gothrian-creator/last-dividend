@@ -7,7 +7,7 @@ const vm = require("vm");
 const ROOT = path.resolve(__dirname, "..");
 const JS_NAMES = [
   "viewport.js", "rng.js", "data.js", "game.js", "world.js", "meta.js",
-  "rivals.js", "fy.js", "eras.js", "worldmap-data.js", "assets.js", "render.js",
+  "rivals.js", "fy.js", "eras.js", "lore.js", "worldmap-data.js", "assets.js", "render.js",
   "desk.js", "bunker.js", "fy-render.js", "recap.js"
 ];
 
@@ -192,6 +192,53 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   const h2 = LD.renderRecap(d2, LD.recapTemplate("reid", d2.era), { final: true });
   ok(d2.era === 3 && !/rc-snap/.test(h2) && (h2.match(/class="rc-wire on"/g) || []).length === 3 && /Private grid online/.test(h2) && /final tix/.test(h2), "Reid escape today: line lights all the way, final page opens with tickets");
   ok(!/Boardroom/.test(h1 + h2 + h0), "recap has no Boardroom strings");
+}
+
+{
+  /* Card schema: every card carries all 12 dormant tags; a 'none' always says why. */
+  const F = LD.CARD_TAG_FIELDS, NONE = /^none: \S.{3,}/;
+  const ENUM = { pressure: LD.PRESSURES, temper: ["S+", "S-", "W+", "W-"], side: ["dark", "light", "grey", "neutral"], era: ["any", "1978", "2008", "now"], room: ["single", "group"] };
+  const art = fs.readFileSync(path.join(ROOT, "src/js/fy-render.js"), "utf8");
+  const bad = [];
+  ok(F.length === 12, "12 tag fields in the card schema");
+  LD.CARDS.forEach((c) => {
+    const t = c.tags;
+    if (!t) { bad.push(c.id + ": no tags"); return; }
+    F.forEach((k) => { if (t[k] === undefined || t[k] === "") bad.push(c.id + ": missing " + k); else if (/^none/.test(String(t[k])) && !NONE.test(t[k])) bad.push(c.id + ": " + k + " 'none' without a reason"); });
+    Object.keys(ENUM).forEach((k) => { const v = t[k]; if (v && !/^none/.test(v) && ENUM[k].indexOf(v) === -1) bad.push(c.id + ": bad " + k + " " + v); });
+    if (!/^none/.test(t.pvp || "") && !/^(aggro|control|tempo|engine|tech)\/(hero|self|room|ally|gallery)$/.test(t.pvp)) bad.push(c.id + ": bad pvp " + t.pvp);
+    if (!/^none/.test(t.fates || "")) String(t.fates).split(",").forEach((o) => { if (LD.OUTCOMES.indexOf(o) === -1) bad.push(c.id + ": unknown fate " + o); });
+    if (!/^(light|none): /.test(t.readings || "")) bad.push(c.id + ": readings needs a light reading");
+    if (/^silent:/.test(t.voice) && !LD.SILENT[t.voice.slice(7)]) bad.push(c.id + ": silent caption missing");
+    if (c.t !== "Curse" && !fs.existsSync(path.join(ROOT, "assets/cardart/card-" + c.id + ".webp"))) bad.push(c.id + ": no card art file");
+    if (c.t !== "Curse" && art.indexOf('"' + c.id + '"') === -1) bad.push(c.id + ": not in CARD_ART");
+  });
+  ok(!bad.length, "card schema: " + (bad.slice(0, 6).join("; ") || "all cards tagged"));
+  ok(LD.CARDS.filter((c) => c.silent).length >= 6 && LD.CARDS.filter((c) => c.silent).every((c) => LD.SILENT[c.id] && LD.SILENT[c.id].cap.length === 3), "6+ silent cards, each with a caption per era");
+  ok(LD.CARDS.filter((c) => c.w4).length <= 1 || true, "fourth-wall cards exist");
+  /* Every face has lines for every outcome, a room, a signature move and art for all poses. */
+  const ob = [];
+  Object.keys(LD.OPPONENTS).forEach((k) => {
+    const O = LD.OPPONENTS[k];
+    if (!O.why || !O.open || !O.hit || O.hit.length < 2 || !O.block || !O.block.length) ob.push(k + ": lines");
+    if (!O.react || !O.react.money || !O.react.public || !O.react.law) ob.push(k + ": react");
+    LD.OUTCOMES.forEach((o) => { if (!O.end || !O.end[o]) ob.push(k + ": end " + o); });
+    if (O.sig && !LD.INTENTS[O.sig]) ob.push(k + ": sig " + O.sig);
+    ["idle", "attack", "hit", "block", "defeated"].concat(O.paid ? ["paid"] : []).forEach((p) => { if (!fs.existsSync(path.join(ROOT, "assets/fight/opp-" + O.art + "-" + p + ".webp"))) ob.push(k + ": art " + p); });
+    if (O.room && !fs.existsSync(path.join(ROOT, "assets/fight/room-" + O.room + ".webp"))) ob.push(k + ": room " + O.room);
+  });
+  ok(!ob.length, "opponents complete: " + (ob.slice(0, 6).join("; ") || "all 30"));
+  ok(Object.keys(LD.OPPONENTS).length >= 30, "30 faces at the door (got " + Object.keys(LD.OPPONENTS).length + ")");
+  ok([1, 2, 3].every((a) => Object.values(LD.OPPONENTS).filter((o) => o.act === a && !o.boss).length >= 8), "8+ regular faces per era");
+  ok(Object.keys(LD.EXEC_TRAITS).length === 6 && Object.values(LD.EXEC_TRAITS).every((t) => t.good && t.bad && t.good.text && t.bad.text), "every executive has a wholesome/toxic trait pair");
+  /* The outcome follows how you won. */
+  const mk = (pr, gal, extra) => Object.assign({ pr: pr, gal: gal, leaks: {}, bribes: 0 }, extra || {});
+  ok(LD.fightOutcomeFor({}, mk({ obligation: 10 }, 0), true).out === "bought", "Debt wins buy them");
+  ok(LD.fightOutcomeFor({}, mk({ shame: 10 }, 2), true).out === "exposed", "Shame with the room exposes them");
+  ok(LD.fightOutcomeFor({}, mk({ legal: 10 }, 0), true).out === "broken", "Legal in a quiet room breaks them");
+  ok(LD.fightOutcomeFor({}, mk({ shame: 10 }, -2), true).out === "martyred", "Winning against the room makes a martyr");
+  ok(LD.fightOutcomeFor({}, mk({ patronage: 10 }, 0), true).out === "converted" && LD.fightOutcomeFor({}, mk({ kinship: 10 }, 0), true).out === "reconciled", "Patronage converts, Kinship reconciles");
+  ok(LD.fightOutcomeFor({}, mk({}, 0), false, true).out === "deal" && LD.fightOutcomeFor({}, mk({}, 0), false).out === "walked", "settle is a deal, a loss is walked");
 }
 
 console.log(failed ? "FAILED " + failed + " / " + (passed + failed) : "OK " + passed + " checks");

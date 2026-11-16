@@ -4804,7 +4804,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .fi-wall { position: absolute; left: 0; right: 0; top: 0; height: var(--fl); background: var(--wallc); }
 .fi-wall::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22%; background: var(--wain); border-top: 3px solid var(--ink); background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--dw) * 0.6), rgba(20, 30, 31, 0.28) calc(var(--dw) * 0.6) calc(var(--dw) * 0.6 + 2px)); }
 .fi-rail { position: absolute; left: 0; right: 0; top: 11vh; height: 0; border-top: 3px solid var(--ink); opacity: 0.55; }
-.fi-frame { position: absolute; top: 22vh; left: calc(50% - var(--dw) * 0.5 - min(30vw, var(--dw) * 0.85)); width: min(22vw, var(--dw) * 0.62); aspect-ratio: 3 / 2; background: var(--paper); border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(20, 32, 33, 0.4), inset 0 0 0 5px var(--ochre); color: var(--terra-d); padding: 9%; box-sizing: border-box; }
+.fi-frame { position: absolute; top: 22vh; left: max(4vw, calc(50% - var(--dw) * 0.5 - min(30vw, var(--dw) * 0.85))); width: min(22vw, var(--dw) * 0.62, calc(50vw - var(--dw) * 0.5 - 9vw)); aspect-ratio: 3 / 2; background: var(--paper); border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(20, 32, 33, 0.4), inset 0 0 0 5px var(--ochre); color: var(--terra-d); padding: 9%; box-sizing: border-box; }
 .fi-frame svg { width: 100%; height: 100%; display: block; }
 .fi-floor { position: absolute; left: 0; right: 0; top: var(--fl); bottom: 0; background: var(--floor); border-top: 3px solid var(--ink);
   background-image: repeating-linear-gradient(180deg, transparent 0 3.2vh, var(--floor2) 3.2vh calc(3.2vh + 2px)), linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 60%); }
@@ -4841,7 +4841,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .fi-you { position: absolute; z-index: 6; left: -4%; bottom: -3%; height: 40vh; max-width: 52vw; aspect-ratio: var(--ar, 0.8); opacity: 0; transform: translateY(12%); }
 .fi-you img, .fi-walker img, .fi-sil img { width: 100%; height: 100%; object-fit: contain; object-position: 0 100%; display: block; filter: drop-shadow(-2px -2px 0 rgba(20, 32, 33, 0.25)); }
 /* visitor timeline (2.9 s) */
-.fi-visit.go .fi-knock { animation: fiKnock 0.5s steps(3) 0.02s 1 both; }
+.fi-visit.go .fi-knock { animation: fiKnock 1.05s steps(6) 0.02s 1 both; }
 .fi-visit.go .fi-leaf { animation: fiSwing 0.62s cubic-bezier(0.3, 0.1, 0.2, 1) 0.48s both; }
 .fi-visit.go .fi-light { animation: fiSpill 0.5s ease-out 0.54s both; }
 .fi-visit.go .fi-shade { animation: fiShade 0.8s ease-out 0.78s both; }
@@ -4850,7 +4850,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .fi-visit.go .fi-you { animation: fiYou 0.45s ease-out 1.2s both; }
 .fi-visit.go .fi-scene { animation: fiPush 3s ease-in-out both; }
 @keyframes fiIn { to { opacity: 1; } }
-@keyframes fiKnock { 0% { opacity: 1; transform: translateX(-50%) rotate(-6deg); } 50% { opacity: 1; transform: translateX(-53%) rotate(-3deg) scale(1.06); } 85% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) rotate(-6deg); } }
+@keyframes fiKnock { 0% { opacity: 1; transform: translateX(-50%) rotate(-6deg); } 25%, 65% { opacity: 1; transform: translateX(-53%) rotate(-3deg) scale(1.06); } 45% { opacity: 1; transform: translateX(-50%) rotate(-6deg); } 88% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) rotate(-6deg); } }
 @keyframes fiSwing { from { transform: rotateY(0); } to { transform: rotateY(-96deg); } }
 @keyframes fiSpill { from { transform: translateX(-50%) scaleY(0); } to { transform: translateX(-50%) scaleY(1); } }
 @keyframes fiShade { from { transform: translateX(-50%) scaleY(0); } to { transform: translateX(-50%) scaleY(1); } }
@@ -4936,6 +4936,69 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .fi-rm .fi-plate { transform: none; } .fi-rm .fi-cap { opacity: 1; transform: none; } .fi-rm .fi-skip { opacity: 1; }
 .fi-rm *, .fi-rm.go * { animation: none !important; }
 @media (orientation: portrait) { .fi-sil { height: 21vh; } }
+
+/* ---------- Hub office strip entrance (visitor walks in / exec leaves, vehicle in the window) ---------- */
+#ofx-shield { position: fixed; inset: 0; z-index: 8450; cursor: pointer; background: transparent; -webkit-tap-highlight-color: transparent; }
+#ofx-shield .ofx-skip { opacity: 0; animation: fiFade 0.3s ease-out 0.4s both; position: fixed; right: 12px; top: 10px; font: 700 12px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: #f8eedb; background: rgba(23, 35, 58, 0.82); padding: 6px 9px; border-radius: 3px; }
+.desk .office.ofx-focus { position: relative; z-index: 8401; transform: scale(var(--ofx-s, 1)); transition: transform 0.22s ease-out; box-shadow: 0 0 0 3px #1f2e2f, 0 0 0 6px #c9942a, 5px 7px 0 6px rgba(20, 32, 33, 0.45); border-radius: 12px; }
+.of-room.ofx .of-knock { z-index: 6; }
+/* the door swings open onto a lit hall */
+.of-room.ofx-visit .of-doorsvg .dleaf { transform-box: fill-box; transform-origin: 0 50%; }
+.of-room.ofx-visit.ofx-go .of-doorsvg .dleaf { animation: ofxDoor 2.2s cubic-bezier(0.3, 0.1, 0.2, 1) both; }
+.of-room.ofx-visit.ofx-go .of-doorsvg .dframe { animation: ofxHall 2.2s linear both; }
+.of-room.ofx-visit.ofx-go .of-door .of-knock { animation: ofxKnock 0.9s steps(4) both; }
+@keyframes ofxDoor { 0%, 20% { transform: scaleX(1); } 40%, 100% { transform: scaleX(0.14); } }
+@keyframes ofxHall { 0%, 22% { fill: #2a1a0c; } 30%, 100% { fill: #f3e6c8; } }
+@keyframes ofxKnock { 0% { opacity: 1; transform: translateX(-50%) rotate(-4deg); } 50% { opacity: 1; transform: translateX(-54%) rotate(3deg) scale(1.08); } 85% { opacity: 1; } 100% { opacity: 0; } }
+/* the opponent: their own fight art */
+.ofx-visitor { position: absolute; z-index: 5; bottom: 2px; left: 0; transform: translateX(var(--x0)); opacity: 0; pointer-events: none; }
+.ofx-visitor img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: block; filter: drop-shadow(2px 0 0 rgba(20, 32, 33, 0.45)); }
+.ofx-visitor::before { content: ""; position: absolute; left: -20%; right: -20%; bottom: -2px; height: 10%; background: rgba(23, 35, 58, 0.45); border-radius: 50%; }
+.ofx-tag { position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, 4px); white-space: nowrap; padding: 2px 7px; background: #f8eedb; color: #1f2e2f; border: 2px solid #1f2e2f; box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.5); font: 700 11px/1.2 var(--font-serif); opacity: 0; }
+.of-room.ofx-visit.ofx-go .ofx-visitor { animation: ofxWalkIn 2.2s cubic-bezier(0.35, 0.1, 0.3, 1) both; }
+.of-room.ofx-visit.ofx-go .ofx-visitor img { animation: ofxBob 0.26s steps(2) 0.75s 4; }
+.of-room.ofx-visit.ofx-go .ofx-tag { animation: ofxTag 2.2s ease-out both; }
+@keyframes ofxWalkIn { 0%, 24% { opacity: 0; transform: translateX(var(--x0)) scale(0.9); } 32% { opacity: 1; transform: translateX(var(--x0)) scale(0.92); } 75%, 100% { opacity: 1; transform: translateX(var(--x1)) scale(1); } }
+@keyframes ofxBob { 50% { transform: translateY(-3%); } }
+@keyframes ofxTag { 0%, 62% { opacity: 0; transform: translate(-50%, 8px); } 72%, 100% { opacity: 1; transform: translate(-50%, 4px); } }
+/* away: the back door, the exec leaves, a vehicle pulls out */
+.ofx-back { position: absolute; z-index: 2; top: 10%; bottom: 0; background: #0e1626; border: 2px solid #1f2e2f; border-bottom: 0; box-shadow: inset 0 0 0 2px #6f8384; opacity: 0; }
+.ofx-bleaf { position: absolute; inset: 2px; background: #5d6f63; box-shadow: inset 0 0 0 1.5px #1f2e2f; transform-origin: 0 50%; }
+.ofx-back b { position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, -2px); padding: 0 3px; background: #b8553a; color: #f8eedb; border: 1.5px solid #1f2e2f; font: 800 8px/1.3 var(--font-sans); letter-spacing: 0.08em; }
+.of-room.ofx-away.ofx-go .ofx-back { animation: ofxFadeIn 0.25s ease-out both; }
+.of-room.ofx-away.ofx-go .ofx-bleaf { animation: ofxBackDoor 2.3s ease-in-out both; }
+.of-room.ofx-away.ofx-go .of-exec .of-portrait { animation: ofxLeave 2.3s ease-in both; }
+@keyframes ofxFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ofxBackDoor { 0%, 10% { transform: scaleX(1); } 22%, 46% { transform: scaleX(0.12); } 56%, 100% { transform: scaleX(1); } }
+@keyframes ofxLeave { 0%, 8% { transform: none; opacity: 1; } 16% { transform: translateY(-6%); } 40% { transform: translateX(var(--ofx-dx)) translateY(-6%) scale(0.9); opacity: 1; } 47%, 100% { transform: translateX(var(--ofx-dx)) translateY(-6%) scale(0.82); opacity: 0; } }
+.ofx-veh { position: absolute; z-index: 4; display: block; pointer-events: none; opacity: 0; }
+.ofx-veh svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.ofx-car { bottom: 5%; left: 40%; height: 34%; aspect-ratio: 64 / 26; }
+.ofx-air { bottom: 12%; left: 34%; height: 30%; aspect-ratio: 80 / 28; }
+.of-room.ofx-away.ofx-go .ofx-car { animation: ofxDrive 2.3s cubic-bezier(0.5, 0, 0.8, 0.6) both; }
+.of-room.ofx-away.ofx-go .ofx-air { animation: ofxFly 2.3s cubic-bezier(0.45, 0, 0.75, 0.6) both; }
+@keyframes ofxDrive { 0%, 6% { opacity: 0; transform: none; } 14%, 46% { opacity: 1; transform: none; } 49% { transform: translateY(-5%); } 52% { transform: none; } 100% { opacity: 1; transform: translateX(calc(var(--ww, 300px) * 0.62 + 10%)); } }
+@keyframes ofxFly { 0%, 6% { opacity: 0; transform: none; } 14%, 48% { opacity: 1; transform: none; } 62% { transform: translate(20%, -10%) rotate(-6deg); } 100% { opacity: 1; transform: translate(calc(var(--ww, 300px) * 0.66 + 10%), -230%) rotate(-12deg) scale(0.72); } }
+.ofx-dest { position: absolute; z-index: 5; left: 4px; top: 4px; max-width: calc(100% - 8px); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; padding: 2px 7px; background: #e9c35a; color: #1f2e2f; border: 2px solid #1f2e2f; box-shadow: 2px 2px 0 rgba(20, 32, 33, 0.5); font: 700 11px/1.25 var(--font-sans); opacity: 0; }
+.of-room.ofx-away.ofx-go .ofx-dest { animation: ofxTag 2.3s ease-out both; animation-name: ofxDest; }
+@keyframes ofxDest { 0%, 44% { opacity: 0; transform: translateY(-4px); } 52%, 100% { opacity: 1; transform: none; } }
+/* short full-screen card after the strip: arrival frame, plate and line, then the fight */
+.fi-short .fi-leaf { transform: rotateY(-96deg); }
+.fi-short .fi-light, .fi-short .fi-shade { transform: translateX(-50%) scaleY(1); }
+.fi-short.fi-visit .fi-opp { opacity: 1; transform: translateX(-38%) translateY(calc(100vh - var(--fl) - 1vh)) scale(1.22); }
+.fi-short .fi-silo { opacity: 0; }
+.fi-short .fi-you { opacity: 1; transform: none; }
+.fi-short .fi-strip { transform: translateX(-200vw); }
+.fi-short.go * { animation: none !important; }
+.fi-short.go .fi-plate { animation: fiPlate 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.1) 0.04s both !important; }
+.fi-short.go .fi-cap { animation: fiCap 0.22s ease-out 0.18s both !important; }
+.fi-short.go .fi-skip { animation: fiFade 0.2s ease-out 0.2s both !important; }
+.fi-short.go .fi-scene, .fi-short.go .fi-p3 { animation: fiPush 1.1s ease-out both !important; }
+
+.of-room.ofx .ld-act, .desk .office.ofx-focus .ld-act { outline: none !important; animation-name: none !important; }
+.of-room.ofx-away .of-exec .of-mood { opacity: 0; }
+.of-room.ofx .meter { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
+@media (max-width: 520px) { .ofx-dest { font-size: 9.5px; padding: 1px 4px; } .ofx-tag { font-size: 9.5px; padding: 1px 4px; } .ofx-back b { font-size: 6.5px; } }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -12695,7 +12758,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var line = (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
     var opp = "assets/fight/opp-" + F.art + "-idle.webp", oppAr = F.ar || ART_AR[F.art] || 0.6;
     var mode = venue === "away" ? "away" : "visit";
-    var h = '<div class="fi fi-' + mode + " fi-v-" + venue + " fi-e" + era + (opts.reduced ? " fi-rm" : "") + '" role="dialog" aria-live="polite" aria-label="' + esc(F.who + " — " + kind) + '">';
+    var h = '<div class="fi fi-' + mode + " fi-v-" + venue + " fi-e" + era + (opts.reduced ? " fi-rm" : "") + (opts.short ? " fi-short" : "") + '" role="dialog" aria-live="polite" aria-label="' + esc(F.who + " — " + kind) + '">';
     function wall(cls) { return '<div class="fi-wall ' + (cls || "") + '"><span class="fi-rail"></span><span class="fi-frame" aria-hidden="true"><svg viewBox="0 0 60 40" preserveAspectRatio="none"><polyline points="4,32 14,26 22,29 32,15 42,19 56,6" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg></span></div><div class="fi-floor"></div>'; }
     var you = '<div class="fi-you" style="--ar:' + exAr + '"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
     function silo(src) { return '<span class="fi-silo" style="-webkit-mask-image:url(' + src + ');mask-image:url(' + src + ')"></span>'; }
@@ -12727,6 +12790,34 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var F = LD.fightFace(fg), ex = execArt(state.executiveId), a = ["assets/fight/opp-" + F.art + "-idle.webp", "assets/fight/back-" + ex + ".webp"];
     if (LD.fightVenue(fg) === "away") a.push("assets/fight/room-" + F.room + ".webp");
     return a;
+  };
+  /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
+     and a car / plane pulls away in the window. Pure DOM sprites over the existing strip; CSS does the motion. ---------- */
+  var OFX_FAR = { senate: 1, crash: 1 };
+  var OFX_VEH = {
+    car: [
+      /* 1978 Checker-style cab */
+      '<svg viewBox="0 0 64 26"><path d="M4 18 L6 11 L16 10 L22 3 H42 L49 10 L60 12 L61 19 Z" fill="#c9942a" stroke="#1f2e2f" stroke-width="1.6" stroke-linejoin="round"/><rect x="21" y="11" width="22" height="3" fill="#1f2e2f"/><path d="M24 5 H33 V10 H20 Z M35 5 H41 L46 10 H35 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.2"/><rect x="28" y="0.5" width="8" height="2.6" fill="#f8eedb" stroke="#1f2e2f" stroke-width="1"/><circle cx="16" cy="19" r="4.6" fill="#17233a" stroke="#1f2e2f" stroke-width="1.4"/><circle cx="49" cy="19" r="4.6" fill="#17233a" stroke="#1f2e2f" stroke-width="1.4"/><circle cx="16" cy="19" r="1.6" fill="#c9b07a"/><circle cx="49" cy="19" r="1.6" fill="#c9b07a"/></svg>',
+      /* 2008 black town car */
+      '<svg viewBox="0 0 70 24"><path d="M3 17 L5 11 L18 9 L25 3 H46 L54 9 L67 11 L68 18 Z" fill="#1f2e2f" stroke="#0e1626" stroke-width="1.6" stroke-linejoin="round"/><path d="M27 5 H36 V9 H22 Z M38 5 H45 L51 9 H38 Z" fill="#8fa3a4" stroke="#0e1626" stroke-width="1.1"/><path d="M6 13 H66" stroke="#c8cfcc" stroke-width="1"/><circle cx="17" cy="18" r="4.4" fill="#0e1626" stroke="#c8cfcc" stroke-width="1.2"/><circle cx="54" cy="18" r="4.4" fill="#0e1626" stroke="#c8cfcc" stroke-width="1.2"/></svg>',
+      /* Today: matte electric coupe */
+      '<svg viewBox="0 0 66 24"><path d="M3 18 C3 12 10 11 18 10 C24 4 40 3 48 9 C58 10 63 12 63 18 Z" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.6" stroke-linejoin="round"/><path d="M22 9.5 C27 5 39 5 45 9.5 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.1"/><path d="M58 13 h4" stroke="#f3e6c8" stroke-width="1.6"/><circle cx="17" cy="18.5" r="4.4" fill="#17233a" stroke="#1f2e2f" stroke-width="1.3"/><circle cx="50" cy="18.5" r="4.4" fill="#17233a" stroke="#1f2e2f" stroke-width="1.3"/></svg>'
+    ],
+    air: [
+      /* 1978 airship */
+      '<svg viewBox="0 0 80 30"><ellipse cx="38" cy="12" rx="32" ry="10" fill="#e3d2a6" stroke="#1f2e2f" stroke-width="1.6"/><path d="M14 12 H64 M38 2.5 V21.5" stroke="#b8553a" stroke-width="1.2" opacity=".8"/><path d="M5 12 L-1 5 L1 12 L-1 19 Z" fill="#b8553a" stroke="#1f2e2f" stroke-width="1.2"/><rect x="30" y="21" width="15" height="6" rx="1.5" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.2"/></svg>',
+      /* 2008 airliner */
+      '<svg viewBox="0 0 80 26"><path d="M4 13 C4 10 10 9 18 9 H66 C72 9 77 11 77 13 C77 15 72 16 66 16 H18 C10 16 4 15 4 13 Z" fill="#f3e6c8" stroke="#1f2e2f" stroke-width="1.5"/><path d="M8 9 L4 2 H11 L19 9 Z" fill="#1f5a5c" stroke="#1f2e2f" stroke-width="1.2"/><path d="M34 15 L46 25 H52 L46 15 Z" fill="#cfd8c8" stroke="#1f2e2f" stroke-width="1.2"/><path d="M20 12.5 H62" stroke="#1f5a5c" stroke-width="1.6" stroke-dasharray="2 2"/></svg>',
+      /* Today private jet */
+      '<svg viewBox="0 0 72 24"><path d="M6 13 C6 10 14 9.5 24 9.5 H58 C66 9.5 70 11.5 70 13 C70 14.5 66 15.5 58 15.5 H24 C14 15.5 6 15 6 13 Z" fill="#f8eedb" stroke="#1f2e2f" stroke-width="1.5"/><path d="M8 10 L5 3 H10 L18 10 Z" fill="#17233a" stroke="#1f2e2f" stroke-width="1.2"/><rect x="14" y="7" width="7" height="3.4" rx="1.5" fill="#17233a"/><path d="M32 15 L42 22 H47 L42 15 Z" fill="#c9942a" stroke="#1f2e2f" stroke-width="1.1"/><path d="M28 12 H56" stroke="#1f2e2f" stroke-width="1.4" stroke-dasharray="1.6 2.4"/></svg>'
+    ]
+  };
+  LD.officeEntrance = function (state) {
+    var fg = state && state.fy && state.fy.fight; if (!fg) return null;
+    var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
+    var away = venue === "away", air = away && !!OFX_FAR[F.room];
+    return { away: away, air: air, era: era, who: F.who, place: F.place || "", opp: "assets/fight/opp-" + F.art + "-idle.webp", ar: F.ar || ART_AR[F.art] || 0.6,
+      veh: away ? OFX_VEH[air ? "air" : "car"][era - 1] : "" };
   };
   LD.renderFight = function (state, ui) {
     ui = ui || {};
@@ -14616,7 +14707,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     pennyEmit("signed");
     var dcash = state.cash - prev.cash, dun = state.unrest - prev.unrest, dco = state.collapse - prev.collapse;
     if (dcash >= 15) officeReact("glee"); else if (dun >= 8 || dco >= 5) officeReact("shock");
-    if (state.fy && state.fy.fight) { DF.start = prev; setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight && !doorOpen() && !FI.on) { if (LD.fightVenue(state.fy.fight) !== "away") knockNow(); setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight) startFight(); }, reduced() ? 120 : 450); } }, reduced() ? 200 : 700); }
+    if (state.fy && state.fy.fight) { DF.start = prev; setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight && !doorOpen() && !FI.on) { setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight) startFight(); }, reduced() ? 120 : 200); } }, reduced() ? 200 : 450); }
     var rid = res.region ? res.region.regionId : (prev.world && prev.world.pins[id]);
     if (rid) {
       var dc = state.cash - prev.cash;
@@ -15209,20 +15300,84 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (FI.on) return;
     var want = false; try { want = fightIntroWanted(); } catch (e) { want = false; }
     if (!want) { openFight(); return; }
-    try { playFightIntro(openFight); } catch (e) {
+    try {
+      if (reduced() || screen !== "desk") playFightIntro(openFight);
+      else { FI.on = true; playOfficeEntrance(function (ran, skipped) { FI.on = false; if (skipped) { FI.key = LD.fightIntroKey(state); openFight(); return; } playFightIntro(openFight, { short: ran }); }); }
+    } catch (e) {
       if (window.console) console.error(e);
       FI.on = false; var x = document.getElementById("fi"); if (x && x.parentNode) x.parentNode.removeChild(x); openFight();
     }
   }
-  function playFightIntro(cb) {
+  /* Hub office strip: the actual opponent walks in through the strip door to your desk, or you leave by the back
+     door and a car / plane pulls away in the window. ~2 s, tap anywhere to skip; then a short full-screen card. */
+  function playOfficeEntrance(done) {
+    var room = document.querySelector(".desk .office .of-room");
+    var E = LD.officeEntrance ? LD.officeEntrance(state) : null;
+    if (!room || !E || screen !== "desk") { done(false); return; }
+    var office = room.closest(".office"), rb = room.getBoundingClientRect();
+    if (rb.width < 120 || rb.height < 40) { done(false); return; }
+    try { room.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch (e) {}
+    rb = room.getBoundingClientRect();
+    var ex = room.querySelector(".of-exec .of-portrait") || room.querySelector(".of-exec"), dr = room.querySelector(".of-door .of-doorsvg") || room.querySelector(".of-door");
+    var eb = ex.getBoundingClientRect(), db = dr.getBoundingClientRect();
+    var added = [], ended = false, timers = [];
+    function add(parent, html) { var t = document.createElement("div"); t.innerHTML = html; var n = t.firstChild; parent.appendChild(n); added.push(n); return n; }
+    var shield = add(document.body, '<div id="ofx-shield" role="button" aria-label="Skip"><span class="fi-skip ofx-skip">Tap to skip</span></div>');
+    var cls = E.away ? "ofx-away" : "ofx-visit";
+    if (office) { var ob = office.getBoundingClientRect(), vw0 = window.innerWidth, vh0 = window.innerHeight;
+      var sc = rb.height >= 110 ? 1 : Math.max(1, Math.min(1.45, (vw0 - 12) / ob.width, (vh0 - 12) / ob.height));
+      /* keep the scaled strip on screen: shift the origin toward the nearest edge */
+      office.style.setProperty("--ofx-s", sc.toFixed(3));
+      var ox = Math.max(0, Math.min(100, ((ob.left + ob.width / 2) - vw0 / 2) / Math.max(1, vw0 - ob.width) * 100 + 50));
+      var oy = ob.top + ob.height * sc > vh0 - 6 ? 100 : ob.top - ob.height * (sc - 1) / 2 < 6 ? 0 : 50;
+      office.style.transformOrigin = ox.toFixed(0) + "% " + oy + "%"; }
+    room.classList.add("ofx", cls, "ofx-e" + E.era); if (office) office.classList.add("ofx-focus");
+    var h = rb.height;
+    if (!E.away) {
+      /* visitor sprite: their own fight art, scaled to the strip, walking from the door to the desk */
+      var vh = Math.round(h * 0.8), vw = Math.round(vh * E.ar);
+      var x0 = Math.round(db.left + db.width / 2 - rb.left - vw / 2), x1 = Math.round(eb.right - rb.left + 4);
+      if (x1 > x0) x1 = x0;
+      add(room, '<span class="ofx-visitor" style="--x0:' + x0 + "px;--x1:" + x1 + "px;height:" + vh + "px;width:" + vw + 'px"><img src="' + E.opp + '" alt="" draggable="false"><b class="ofx-tag">' + LD.escapeHtml(E.who) + "</b></span>");
+    } else {
+      /* back door at the left of the exec's wall; the exec walks to it; a vehicle leaves in the window */
+      var bw = Math.max(18, Math.round(h * 0.34)), bx = Math.round(eb.left - rb.left - bw - 10);
+      var win = room.querySelector(".of-window .of-glass") || room.querySelector(".of-window");
+      var wb = win.getBoundingClientRect(); win.style.setProperty("--ww", Math.round(wb.width) + "px");
+      if (bx < wb.right - rb.left + 2) bx = Math.round(wb.right - rb.left + 4);
+      add(room, '<span class="ofx-back" style="left:' + bx + "px;width:" + bw + 'px"><i class="ofx-bleaf"></i><b>EXIT</b></span>');
+      var dx = Math.round(bx + bw / 2 - (eb.left + eb.width / 2 - rb.left));
+      room.style.setProperty("--ofx-dx", dx + "px");
+      add(win, '<span class="ofx-veh ' + (E.air ? "ofx-air" : "ofx-car") + '">' + E.veh + "</span>");
+      add(win, '<b class="ofx-dest">→ ' + LD.escapeHtml(E.place) + "</b>");
+    }
+    function finish(skipped) {
+      if (ended) return; ended = true; timers.forEach(clearTimeout);
+      shield.removeEventListener("pointerdown", onSkip); document.removeEventListener("keydown", onKey, true);
+      added.forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+      room.classList.remove("ofx", "ofx-go", cls, "ofx-e" + E.era); room.style.removeProperty("--ofx-dx"); if (office) { office.classList.remove("ofx-focus"); office.style.removeProperty("--ofx-s"); office.style.transformOrigin = ""; }
+      done(true, skipped);
+    }
+    function onSkip(e) { if (e) { e.preventDefault(); e.stopPropagation(); } finish(true); }
+    function onKey(e) { if (e.key === "Escape" || e.key === " " || e.key === "Enter") onSkip(e); }
+    shield.addEventListener("pointerdown", onSkip); document.addEventListener("keydown", onKey, true);
+    void room.offsetWidth; room.classList.add("ofx-go");
+    if (!E.away) { knockNow(); timers.push(setTimeout(function () { SFX.play("flip"); officeReact("shock"); }, 450)); }
+    else timers.push(setTimeout(function () { SFX.play("pick"); }, 900));
+    timers.push(setTimeout(function () { finish(false); }, E.away ? 2300 : 2150));
+    timers.push(setTimeout(function () { finish(false); }, 5000));
+  }
+  function playFightIntro(cb, o) {
     if (FI.on) return;
-    var html = LD.renderFightIntro(state, { reduced: reduced() });
+    o = o || {};
+    var short = !!o.short && !reduced();
+    var html = LD.renderFightIntro(state, { reduced: reduced(), short: short });
     if (!html) { cb(); return; }
     FI.on = true; FI.key = LD.fightIntroKey(state);
     var host = document.createElement("div"); host.id = "fi"; host.innerHTML = html;
     document.body.appendChild(host);
     var root = host.firstChild, away = root.classList.contains("fi-away"), rm = reduced();
-    var total = rm ? 1000 : 3000, ended = false;
+    var total = rm ? 1000 : short ? 1050 : 3000, ended = false;
     function clear() { FI.timers.forEach(clearTimeout); FI.timers = []; }
     function end() {
       if (ended) return; ended = true; clear();
@@ -15242,7 +15397,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     function begin() {
       if (go || ended) return; go = true;
       root.classList.add("go");
-      if (!rm) {
+      if (!rm && !short) {
         if (!away) FI.timers.push(setTimeout(function () { SFX.play("knock", Math.max(1, LD.doorLevel(state))); }, 60));
         FI.timers.push(setTimeout(function () { SFX.play(away ? "pick" : "flip"); }, away ? 120 : 380));
       }

@@ -12174,7 +12174,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       if (q === breach) marks.push('<em class="rm breach">Breach ~</em>');
       var bq = LD.bossInfo && (i < cols - 1 || q === state.turn + cols - 1) ? LD.bossInfo(state, q) : null;
       if (!bq && i === cols - 1 && LD.nextBossQ) { var nb = LD.nextBossQ(state); if (nb && nb > q) bq = LD.bossInfo(state, nb); }
-      if (bq) marks.push('<button class="rm boss" data-boss-q="' + bq.q + '">' + bq.icon + " " + esc(bq.name.replace(/^The /, "")) + (bq.q !== q ? " Q" + bq.q : "") + "</button>");
+      if (bq) marks.push('<button class="rm boss" data-boss-q="' + bq.q + '">' + LD.iconArt(bq, "boss") + " " + esc(bq.name.replace(/^The /, "")) + (bq.q !== q ? " Q" + bq.q : "") + "</button>");
       var rv = (state.rivals || []).filter(function (r) { return !r.sealed && r.sealTurn === q; });
       rv.forEach(function (r) { marks.push('<em class="rm rival">' + esc(r.firm.split(" ")[0]) + " seals?</em>"); });
       h += '<div class="rq' + (i === 0 ? " now" : "") + (bq && bq.q === q ? " boss-q" : "") + '"><div class="rq-h">Q' + q + (i === 0 ? " <small>at close</small>" : i === cols - 1 ? "+" : "") + "</div>" + marks.join("");
@@ -12232,7 +12232,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     h += '<main class="board">' + lensBar(ui) + networkStrip(state, ui);
     h += '<div class="board-tilt"><div class="board-slab"><div class="map-zoom" id="map-zoom">' + renderMap(state, ui) + "</div></div>" + (ui.globe ? '<div class="pedestal" aria-hidden="true"><i></i><i></i><i></i></div>' : "") + "</div>";
     var bossNow = LD.bossInfo ? LD.bossInfo(state, state.turn) : null;
-    h += '<div class="phase-pill' + (bossNow && !ui.hidePins ? " boss" : "") + '">' + (bossNow && !ui.hidePins ? bossNow.icon + " Boss quarter · " + bossNow.name + " · " : "") + (ui.hidePins ? "The world reacts…" : dealPhase ? "Pick 1 of " + state.offered.length + " deals on the map" : (state.bunkerActedThisTurn ? "Ready to end the quarter" : "Deal signed · upgrade the bunker or end the quarter")) + "</div>";
+    h += '<div class="phase-pill' + (bossNow && !ui.hidePins ? " boss" : "") + '">' + (bossNow && !ui.hidePins ? LD.iconArt(bossNow, "boss") + " Boss quarter · " + bossNow.name + " · " : "") + (ui.hidePins ? "The world reacts…" : dealPhase ? "Pick 1 of " + state.offered.length + " deals on the map" : (state.bunkerActedThisTurn ? "Ready to end the quarter" : "Deal signed · upgrade the bunker or end the quarter")) + "</div>";
     h += '<div id="rail-wrap">' + renderRail(state, ui.selDeal, null) + "</div>";
     if (ui.coach === "pin" && ui.coachText) h += '<div class="coach-bubble c-pin">' + esc(ui.coachText) + "</div>";
     if (dealPhase && !ui.hidePins) {
@@ -12359,7 +12359,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     h += '<p class="dz-body">' + esc(d.body) + "</p>";
     if (state.fy && state.fy.deck && LD.encounterFor) {
       var en = LD.encounterFor(state, dealId), EN = LD.ENCOUNTERS[en];
-      if (EN) h += '<div class="dz-enc"><span class="ic" aria-hidden="true">' + EN.icon + "</span><span>Signing brings <b>" + esc(EN.name) + "</b> to your door · win: " + esc(EN.win) + "</span></div>";
+      if (EN) h += '<div class="dz-enc"><span class="ic" aria-hidden="true">' + LD.encArt(EN, en) + "</span><span>Signing brings <b>" + esc(EN.name) + "</b> to your door · win: " + esc(EN.win) + "</span></div>";
     }
     if (d.choices) {
       h += '<div class="dz-choices">';
@@ -13026,6 +13026,9 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     "hedge chaser short offsets geo consult buyback loyalty toobig overtime penthouse surge influencer brine privgrid disfut futures rolodex chief soundproof holo " +
     "doorman prblitz gala hotline contract rush cloud security liquidity hush pod c_class c_subpoena c_whistle c_leak c_crack c_stranded " +
     "hollis chip pike ines tamsin bryce dex priya gus lorne margo").split(" ");
+  ICON_ART = ICON_ART.concat("boss-earnings boss-shortseller boss-strike boss-bid boss-crash boss-reckoning boss-heatdome boss-seawall".split(" "),
+    "memo-leak memo-celebrity memo-troll memo-wedding memo-summit memo-union memo-activist memo-space memo-collab memo-taxholiday memo-pension memo-drought memo-headhunter memo-distressed memo-oldfriend".split(" "),
+    "enc-regulator enc-rival enc-protest enc-journalist enc-hearing".split(" "));
   var ICON_SET = {}; ICON_ART.forEach(function (k) { ICON_SET[k] = 1; });
   LD.ICON_ART = ICON_ART; LD.ICON_SET = ICON_SET;
   function IA(o, kind, id) {
@@ -13035,6 +13038,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     return '<span class="ia"><img src="assets/icons/' + k + '.webp" alt="" draggable="false" onerror="this.parentNode.className+=\' ia-x\'"><i>' + em + "</i></span>";
   }
   LD.iconArt = IA;
+  /* Encounters that are also bosses share the boss painting */
+  LD.encArt = function (E, id) { if (!E) return ""; return ICON_SET["boss-" + id] ? IA(E, "boss", id) : IA(E, "enc", id); };
   function esc(s) { return LD.escapeHtml(s); }
   function money(n) { return (n < 0 ? "−$" : "$") + Math.abs(n) + "M"; }
   var RCLS = { C: "r-c", U: "r-u", R: "r-r", L: "r-l" };
@@ -15899,7 +15904,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var b = document.createElement("div");
     b.className = "boss-banner b-" + info.id;
     b.setAttribute("role", "status");
-    b.innerHTML = '<div class="bb-in"><span class="bb-ico" aria-hidden="true">' + info.icon + '</span><div><small>Boss quarter · Q' + info.q + (info.fight ? " · knocks when you sign" : "") + "</small><b>" + LD.escapeHtml(info.name) + "</b><em>" + LD.escapeHtml(info.demand) + "</em></div></div>";
+    b.innerHTML = '<div class="bb-in"><span class="bb-ico" aria-hidden="true">' + LD.iconArt(info, "boss") + '</span><div><small>Boss quarter · Q' + info.q + (info.fight ? " · knocks when you sign" : "") + "</small><b>" + LD.escapeHtml(info.name) + "</b><em>" + LD.escapeHtml(info.demand) + "</em></div></div>";
     document.body.appendChild(b);
     SFX.play("boss");
     var sl = document.querySelector(".desk .board-slab"); if (sl) { sl.classList.remove("boss-shake"); void sl.offsetWidth; sl.classList.add("boss-shake"); }

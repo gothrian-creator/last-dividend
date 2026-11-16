@@ -1,0 +1,100 @@
+#!/usr/bin/env node
+"use strict";
+/* Headless runs through all three eras: every fight has a face, named moves, an ending and (sometimes) a callback. */
+const fs = require("fs"), path = require("path"), vm = require("vm");
+const ROOT = path.resolve(__dirname, "..");
+const src = fs.readFileSync(path.join(ROOT, "tests/run-tests.js"), "utf8");
+const JS_NAMES = JSON.parse(src.match(/const JS_NAMES = (\[[\s\S]*?\]);/)[1].replace(/'/g, '"'));
+const styleStub = { setProperty() {}, getPropertyValue() { return ""; } };
+const elStub = { style: styleStub, setAttribute() {}, classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } }, getBoundingClientRect() { return { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 }; } };
+const ctx = { console, setTimeout, clearTimeout, module: { exports: {} }, exports: {}, addEventListener() {}, removeEventListener() {}, requestAnimationFrame(fn) { return setTimeout(fn, 0); },
+  innerWidth: 1280, innerHeight: 800, visualViewport: { height: 800, width: 1280, addEventListener() {} }, matchMedia() { return { matches: false, addEventListener() {}, addListener() {} }; },
+  localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} } };
+ctx.globalThis = ctx; ctx.window = ctx;
+ctx.document = { documentElement: elStub, body: elStub, getElementById: () => elStub, querySelector: () => elStub, querySelectorAll: () => [], createElement: () => elStub, addEventListener() {} };
+vm.createContext(ctx);
+for (const n of JS_NAMES) vm.runInContext(fs.readFileSync(path.join(ROOT, "src/js", n), "utf8"), ctx, { filename: n });
+const LD = ctx.LD;
+let failed = 0, passed = 0;
+function ok(c, m) { if (c) passed++; else { failed++; console.error("FAIL", m); } }
+
+function fightLoop(state, style, seen) {
+  let guard = 0;
+  while (state.fy.fight && !state.fy.fight.done && guard++ < 60) {
+    const fg = state.fy.fight;
+    ok(fg.opp && LD.oppById(fg.opp), "fight has an opponent at Q" + state.turn + " (" + fg.enc + ")");
+    const O = LD.oppById(fg.opp);
+    if (O && !seen.has(fg.opp + ":" + state.turn)) {
+      seen.add(fg.opp + ":" + state.turn);
+      ok(O.act === LD.actOf(state.turn) || O.boss || fg.opp === "brennan", "opponent " + fg.opp + " belongs to act " + LD.actOf(state.turn));
+      ok(LD.INTENTS[fg.intent.k] && LD.INTENTS[fg.intent.k].say, "named move with a line: " + fg.intent.k);
+      ok(O.open && O.hit.length && O.block.length && O.end.paid && O.end.crushed && O.end.walked, "lines for " + fg.opp);
+      for (const html of [LD.renderFight(state, {})]) ok(/sc-bubble/.test(html) && /opp-/.test(html), "fight render has bubble + art for " + fg.opp);
+    }
+    const infos = fg.hand.map((u) => LD.fightCardInfo(state, u)).filter((i) => i && !i.why && i.id !== "c_subpoena");
+    let pick = null;
+    if (style === "bribe") pick = infos.find((i) => i.cash || i.o.sp === "codb") || infos.find((i) => i.p) || infos[0];
+    else if (style === "crush") pick = infos.find((i) => i.p && !i.cash) || infos.find((i) => i.d && !i.cash) || infos.find((i) => !i.cash && i.o.sp !== "codb");
+    else pick = infos[0];
+    if (pick) { const r = LD.fightPlay(state, pick.u); if (r.ok) { state = r.state; continue; } }
+    if (style === "bribe" && LD.fightSettleCost(state) <= state.cash && fg.round >= fg.rounds) { const r = LD.fightSettle(state); if (r.ok) { state = r.state; continue; } }
+    const r = LD.fightEndRound(state); ok(r.ok, "end round " + (r.error || "")); state = r.state;
+  }
+  if (state.fy.fight && state.fy.fight.done) {
+    const fg = state.fy.fight;
+    ok(fg.done.how, "fight has an ending: " + fg.opp);
+    const html = LD.renderFight(state, {});
+    ok(/sc-ending/.test(html), "ending panel renders for " + fg.opp);
+    const r = LD.fightClose(state); ok(r.ok, "close"); state = r.state;
+  }
+  return state;
+}
+function runOne(seed, exec, style) {
+  let state = LD.createRun({ seed, executiveId: exec, rating: 0, perks: [], packs: [], level: 1 });
+  const seen = new Set(); let guard = 0;
+  while (!state.ended && guard++ < 400) {
+    LD.applyEra(LD.actOf(Math.min(12, state.turn)));
+    const f = state.fy;
+    if (f && f.fight) { state = fightLoop(state, style, seen); continue; }
+    if (f && f.reward) {
+      const rw = f.reward;
+      if (!rw.cardDone) { state = LD.fyReward(state, { kind: "skip" }).state; continue; }
+      if (!rw.assetDone) { state = LD.fyReward(state, { kind: "assetPass" }).state; continue; }
+      if (!rw.itemDone) { state = LD.fyReward(state, { kind: "item", keep: false }).state; continue; }
+    }
+    if (f && f.memo) { let r = LD.fyMemo(state, "b"); if (!r.ok) r = LD.fyMemo(state, "a"); state = r.state; continue; }
+    if (f && f.draft) { state = LD.fyPick(state, null).state; continue; }
+    if (f && f.loot) { const r = LD.fyTakeLoot(state, false); if (r.ok) { state = r.state; continue; } }
+    if (state.phase === "deal") {
+      let done = false;
+      for (const id of state.offered) { const d = LD.dealById(id); for (const c of (d.choices || [{ id: null }])) { const r = LD.selectDeal(state, id, c.id); if (r.ok) { state = r.state; done = true; break; } } if (done) break; }
+      if (!done) { console.error("no deal possible Q" + state.turn); break; } continue;
+    }
+    const b = LD.bossInfo(state, state.turn);
+    const r = LD.closeQuarter(state, { bossChoice: b && b.choice ? "pay" : undefined });
+    if (!r.ok) { console.error("close fail Q" + state.turn, r.error); break; }
+    state = r.state;
+  }
+  LD.applyEra(0);
+  return state;
+}
+const tally = {}, cbs = {}, hows = {};
+const EXECS = ["mara", "reid", "imani", "julian", "soren", "cassius"];
+for (let i = 0; i < 36; i++) {
+  const style = ["bribe", "crush", "any"][i % 3];
+  const s = runOne("era-sim-" + i, EXECS[i % 6], style);
+  const f = s.fy || {};
+  Object.keys(f.met || {}).forEach((k) => (tally[k] = (tally[k] || 0) + 1));
+  (f.cbSeen || []).forEach((k) => (cbs[k] = (cbs[k] || 0) + 1));
+  Object.values(f.fates || {}).forEach((x) => (hows[x.how] = (hows[x.how] || 0) + 1));
+}
+console.log("MET", JSON.stringify(tally));
+console.log("CALLBACKS", JSON.stringify(cbs));
+console.log("ENDINGS", JSON.stringify(hows));
+["dunn", "moretti", "june", "mickey", "odell", "delacroix", "okafor", "hale", "harrow", "gray", "rosa", "brennan"].forEach((k) => ok(tally[k] > 0, "met " + k + " at least once"));
+ok(Object.keys(cbs).length >= 3, "at least 3 distinct callbacks fired");
+ok(hows.paid && hows.crushed && hows.walked, "all three endings happen");
+ok(LD.ACTS[0].name === "The Street" && LD.ACTS[2].name === "The Top", "acts renamed");
+LD.applyEra(1); ok(LD.cardDef("darkmoney").name === "Bag Money", "era names apply"); LD.applyEra(0); ok(LD.cardDef("darkmoney").name === "Dark Money", "era names restore");
+console.log(failed ? "FAILED " + failed + " / " + (passed + failed) : "SIM OK " + passed + " checks");
+process.exit(failed ? 1 : 0);

@@ -5082,6 +5082,13 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
 .door-in { grid-template-columns: minmax(0, 1fr); } .door-in > * { min-width: 0; }
 .fight2 .di-main b { overflow-wrap: anywhere; }
 @media (max-width: 400px) { .df-gal small { display: none; } .fight2 .df-inf b { display: none; } .df-hud { gap: 5px; } .fight2 .df-inf i { width: 10px; height: 10px; } .fight2 .df-inf small { display: none; } .df-pile { padding-left: 7px; padding-right: 7px; } }
+.rc-stamp.teal { color: var(--teal); } .rc-stamp.green { color: #2f6b4f; }
+.rc-door-tally { margin: 6px 0 0; font: 700 11px/1.3 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal); text-align: center; }
+/* Narrow phones: card names wrap to two lines instead of cutting off ("Word on the…"). */
+@media (max-width: 420px) {
+  .dc:not(.chip) .dc-name { white-space: normal; text-overflow: clip; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 11px; line-height: 1.08; min-height: calc(2.16em + 4px); padding: 2px 4px 2px 25px; overflow-wrap: anywhere; }
+  .fight2 .di-main b { font-size: 15px; line-height: 1.1; } .fight2 .df-k b { font-size: 16px; }
+}
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -8853,6 +8860,11 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     { id: "turnwitness", t: "Lawyer", r: "R", icon: "🕵️", name: "Turn Their Witness", cost: 2, p: 3, sp: "cancel", ex: true, up: { p: 6 } },
     { id: "littleleague", t: "PR", r: "C", era: 1, icon: "⚾", name: "Sponsor the Little League", cost: 0, cash: 2, p: 6, up: { p: 8 } },
     { id: "botswarm", t: "PR", r: "U", era: 3, icon: "🤖", name: "Bot Swarm", cost: 1, p: 6, sp: "vsprotest", expose: 25, up: { p: 8 } },
+    /* Favour: kinship cards. Win mostly with these and they come round: Reconciled. */
+    { id: "tab", t: "Shared", r: "C", icon: "📒", name: "Put It On My Tab", cost: 1, p: 3, d: 3, next: 2, up: { p: 5, d: 4 } },
+    { id: "sunday", t: "Shared", r: "U", icon: "🍰", name: "Sunday Visit", cost: 1, p: 5, draw: 1, up: { p: 7 } },
+    { id: "grandmas", t: "Shared", r: "R", icon: "👵", name: "Both Grandmothers Are Coming", cost: 2, p: 8, ghold: true, up: { p: 11 } },
+    { id: "godparent", t: "Lobbyist", r: "U", icon: "🕊️", name: "Godparent to Their Kid", cost: 1, cash: 2, p: 7, up: { p: 9 } },
     { id: "c_class", t: "Curse", r: "X", icon: "⚖️", name: "Class Action", unplay: true, sp: "classaction" },
     { id: "c_subpoena", t: "Curse", r: "X", icon: "📜", name: "Subpoena", cost: 1, sp: "discardpay" },
     { id: "c_whistle", t: "Curse", r: "X", icon: "📯", name: "Whistleblower", unplay: true, sp: "drawheat" },
@@ -8936,6 +8948,10 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     boardseat: "status | S+ | dark | equanimity | entitlement | verbal | any | engine/self | single | light: A Seat at the Table | ignored",
     bothstages: "patronage | none: the Machine has no temper, only allies | grey | peoplepleasing | splitting | verbal | 2008 | control/gallery | group | light: One Stage | converted",
     turnwitness: "patronage | W- | dark | envy | cognitive-dissonance | verbal | any | control/ally | single | light: Protect the Witness | converted",
+    tab: "kinship | W+ | light | patience | reciprocity | verbal | any | control/hero | single | light: Pay Me When You Can | reconciled,deal",
+    sunday: "kinship | W+ | light | duty | attachment | verbal | any | engine/ally | single | light: Same Story, Same Laugh | reconciled",
+    grandmas: "kinship | W+ | light | passion | belonging | verbal | any | control/gallery | group | light: Two Chairs at the Table | reconciled,deal",
+    godparent: "kinship | W- | dark | smothering | ingratiation | verbal | any | aggro/hero | group | light: Stand Up at the Christening | reconciled,bought",
     littleleague: "kinship | W+ | dark | vanity | halo-effect | verbal | 1978 | aggro/gallery | group | light: Coach the Team | reconciled,deal",
     botswarm: "solidarity | S- | dark | vanity | social-proof | verbal | now | aggro/gallery | group | light: Real Neighbours | exposed,martyred",
     c_class: "none: a curse is never played as pressure | none: curses carry no temper | neutral | none: a curse has no owner | guilt | verbal | any | none: curses are inert in PvP | single | none: curses have no Light reading | pyrrhic",
@@ -9154,6 +9170,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (bossAt(state, state.turn) && !LD.BOSSES[bossAt(state, state.turn)].final) return bossAt(state, state.turn);
     if (f.hearing) return "hearing";
     if (LD.dunnHearingDue && LD.dunnHearingDue(state)) return "hearing";
+    /* Today, a fixer who has run warm all game gets you called to the Senate once, even short of Heat 3. */
+    if (actOf(state.turn) === 3 && state.turn >= 10 && !(f.met && f.met.brennan) && f.fixers.some(function (r) { return r.heat >= 2; })) return "hearing";
     var kind = LD.dealKind ? LD.dealKind(deal) : "neutral";
     if (LD.doorLevel(state) >= 3) return "protest";
     if (kind === "claim") return "rival";
@@ -9597,7 +9615,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     if (fg.opp && how) {
       fg.done.how = how;
       f.fates = f.fates || {}; f.fates[fg.opp] = { how: how, out: out.out, q: t, act: actOf(t), who: fg.name };
-      if (fg.opp === "june" && how === "crushed" && f.bossII !== "strike" && t < 8) { f.bossII = "strike"; f.strikeSwap = t; notes.push("June Park will lead a general strike at Q8"); }
+      if ((fg.opp === "june" || fg.opp === "pops") && how === "crushed" && f.bossII !== "strike" && t < 8) { f.bossII = "strike"; f.strikeSwap = t; notes.push(LD.oppFate && LD.oppFate(state, "june") && LD.oppFate(state, "june").how === "crushed" ? "June Park will lead a general strike at Q8" : "The picket line remembers Pops: a general strike at Q8"); }
     }
     f.lastFight = { q: t, enc: fg.enc, win: !!win, settled: !!settled, boss: fg.boss, elite: fg.elite, opp: fg.opp || null, how: how, out: out.out };
     f.fights = f.fights || { won: 0, lost: 0, settled: 0 };
@@ -10174,6 +10192,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       if (id === "delacroix" && fate(state, "moretti")) x *= 2;
       if (id === "june" && f.bossII === "strike") x *= 2;
       if (id === "dunn" && state.turn <= 2) x *= 2;
+      if (id === "pops") x *= enc === "protest" ? 3 : 2; /* the picket captain turns up at every 1978 door with a labour angle; June runs the hall */
+      if (id === "pops" && fate(state, "june")) x *= 2;
       return x;
     });
     var tot = w.reduce(function (a, b) { return a + b; }, 0), r = (rng ? rng() : Math.random()) * tot;
@@ -10571,6 +10591,40 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       end: { bought: "▲ BAILED OUT. CONGRATULATIONS.", broken: "▲ RECOVERY (FOR SOME)", exposed: "▲ RESTATED. ▼ TRUST", ignored: "— FLAT —", martyred: "▼ CONTAGION", pyrrhic: "▲ GREEN. ▼ EVERYTHING ELSE",
         deal: "▲ STABILITY FUND", walked: "▼ MARGIN CALLED" } }
   };
+  /* Converted (you took their people: they work for you now) and Reconciled (a favour returned: a seat at the table, maybe). */
+  var CR = {
+    dunn: ["Precinct's got a new friend. Don't make me say it twice, and don't make me say it in court.", "You sent flowers when my old man passed. Okay. The precinct can forget a few things."],
+    moretti: ["My super works for you now. So do my lawyers. I'll keep the name on the door.", "You came to my mother's wake. Fourteen buildings don't make a man forget that."],
+    june: ["Half my shop floor already signed your card. I'll go where my people go.", "You paid for my father's headstone. Nobody asked you to. Sit down. Have a coffee."],
+    mickey: ["The boys like your money better. Fine. Mickey goes where the boys go.", "You kept my nephew out of it. That's a debt. I pay my debts."],
+    odell: ["The block voted. They're with you. God help them. I'll keep an eye on you from inside.", "You fixed Mrs. Pruitt's stairs yourself. Come Sunday. Bring nothing. I mean it."],
+    delacroix: ["My whole ward office is on your payroll. I suppose that makes me staff.", "You remembered my daughter's name. In this town, that's a coalition."],
+    okafor: ["My editor took your job offer. So did my sources. I suppose I'm next.", "You kept the Harbor branch open. Mom would want me to say thank you. So, thank you."],
+    hale: ["Three of my board members now consult for you. I'll be the fourth. Quietly.", "You returned the files I needed. Unredacted. I'll note it in the record."],
+    harrow: ["My partners defected. Splendid. I'll defect with them and call it strategy.", "You held the door for me at the gala, once, when no one else did. Very well. Lunch."],
+    gray: ["The union reps are yours. The squad cars follow the union. So do I.", "You paid for Officer Diaz's funeral. The square can wait a day."],
+    crowe: ["My board voted with you. I always said loyalty was a pricing problem.", "You called Mother on her birthday. I didn't. Fine. One dinner. Not a truce."],
+    rosa: ["Half my volunteers took your jobs. I can't blame them. I'll take one too, and watch.", "Gran says you kept her heating on in '09. Fine. You can sit at our table. Once."],
+    sorel: ["My analysts went long on you. Traitors. Fine. I'm long on you too.", "You covered my margin in the crash and never said a word. I don't forget a hedge."],
+    ashby: ["My whole desk moved to your bank. I'll move my coverage with them.", "You took my call when the desk was laughing at me. Upgraded. Personally."],
+    brennan: ["My staffers took your offers. My donors too. The committee recognises… the reality.", "You came to the VFW fish fry. Nobody from your world ever comes. The chair yields."],
+    ashby_b: ["My juniors are on your deal team now. Consider me covered.", "You sent my mother a card. She framed it. Rating: buy, and dinner."],
+    sorel_b: ["My research staff went to work for you. Chapter four is your chapter now.", "You returned my call when nobody would. I'm closing the short. Call it even."],
+    varga_b: ["The local voted. They're with you. I go where the local goes.", "You stood on the line with us in the snow, once. One meeting. No cameras."],
+    june_b: ["The young ones signed your cards. I won't leave them alone with you.", "You kept the steelworks widows' pensions whole. My mother's too. I remember. Sit down."],
+    crowe_b: ["My board defected. Fine. I'll chair your committee.", "You visited Mother in the hospital. I didn't. One dinner."],
+    ticker_b: ["▲ ACQUIRED: ALL OF IT", "▲ RECOVERY · ▲ CONFIDENCE · ▲ FAMILY OFFICE"],
+    benny: ["Half the street works your dock now. Fine. I'll stock your canteen.", "You paid the tab when my daughter was sick. Sit. Coffee's on the house. Really this time."],
+    grace: ["My volunteers took your jobs. The night classes will meet in your lobby, then.", "You returned every overdue book from your office. With a donation. Fine. You may have a card."],
+    pops: ["The picket's breaking for your shift money. I'm too old to stand out here alone.", "You brought soup to the line in week four. Didn't say a word. That's a man I'll talk to."],
+    gil: ["The board switched sides. I'll draft the newsletter. For you.", "You fixed the cul-de-sac light yourself. On a Saturday. Barbecue's at six."],
+    pip: ["The other eleven voted with you. I'll be twelve. I'll take the minutes.", "You remembered my mum's name at the AGM. I'll vote yes. On the record."],
+    dana: ["The other nurses took your clinic jobs. I need the hours. Don't smile.", "You modified the loan before I asked. The kids want to meet you. I don't. But okay."],
+    mina: ["Half the riders logged into your app. I'm logging in too. Not a vibe.", "You tipped the whole kitchen and didn't post it. Okay. One coffee. You're paying."],
+    honoria: ["The trustees voted. The family office is yours. How vulgar. Do carry on.", "You remembered Grandfather's tide tables. Sit. The good chair. Just this once."],
+    theo: ["The volunteers took your jobs on the wall. Fine. I'll supervise the wall.", "Gran says you kept her heat on. Dinner's Sunday. Bring nothing. She means it."]
+  };
+  Object.keys(CR).forEach(function (id) { if (LINES[id]) { LINES[id].end.converted = CR[id][0]; LINES[id].end.reconciled = CR[id][1]; } });
   LD.OPP_LINES = LINES;
   var FAM = { obligation: "money", patronage: "money", kinship: "money", shame: "public", rumour: "public", info: "public", solidarity: "public", status: "public", legal: "law", precarity: "law" };
   LD.PRESSURE_FAMILY = FAM;
@@ -13386,7 +13440,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
    "settle","countersue","astro","oped","spin","tnp","photoop","crisiscomms","study","funded","unsettled","longterm",
    "c_class","c_subpoena","c_whistle","c_leak","c_crack","c_stranded",
    "glance","pause","smirk","watch","chair","handshake","envelope","played","stoop","chainmail","deepfake","dossier","poll","ratio","frontpage",
-   "perpwalk","lunch","mortgage","marker","margincall","consent","arbitration","layoff","eviction","gig","boardseat","bothstages","turnwitness","littleleague","botswarm"].forEach(function (k) { CARD_ART[k] = "assets/cardart/card-" + k + ".webp"; });
+   "perpwalk","lunch","mortgage","marker","margincall","consent","arbitration","layoff","eviction","gig","boardseat","bothstages","turnwitness","littleleague","botswarm","tab","sunday","grandmas","godparent"].forEach(function (k) { CARD_ART[k] = "assets/cardart/card-" + k + ".webp"; });
   LD.CARD_ART = CARD_ART;
   var RAR_NAME = { S: "Starter", C: "Common", U: "Uncommon", R: "Rare", M: "Fixture", X: "Curse" };
   function cardFace(id, up, opts) {
@@ -13833,11 +13887,15 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var fates = (state.fy && state.fy.fates) || {};
     var fights = Object.keys(fates).map(function (id) {
       var f = fates[id] || {}, o = (LD.OPPONENTS && LD.OPPONENTS[id]) || {};
-      var how = f.how || "walked";
-      var pose = how === "paid" ? (o.paid ? "paid" : "idle") : how === "crushed" ? "defeated" : "idle";
-      return { id: id, who: o.who || f.who || id, short: id.charAt(0).toUpperCase() + id.slice(1), role: o.role || "",
-        how: how, q: f.q || 0, art: o.art ? "assets/fight/opp-" + o.art + "-" + pose + ".webp" : "", quote: (o.end || {})[how] || "" };
+      var how = f.how || "walked", out = f.out && LD.OUT_LABEL && LD.OUT_LABEL[f.out] ? f.out : null;
+      var pose = out === "martyred" ? "attack" : out === "bought" || out === "converted" || out === "deal" || (!out && how === "paid") ? (o.paid ? "paid" : "idle") : out ? (out === "walked" ? "idle" : "defeated") : how === "crushed" ? "defeated" : "idle";
+      var label = out ? LD.OUT_LABEL[out] : LD.HOW_LABEL ? LD.HOW_LABEL[how] : how;
+      return { id: id, who: o.who || f.who || id, short: o.short || id.split("_")[0].charAt(0).toUpperCase() + id.split("_")[0].slice(1), role: o.role || "",
+        how: how, out: out, label: label, tone: OUT_TONE[out || how] || "", q: f.q || 0, art: o.art ? "assets/fight/opp-" + o.art + "-" + pose + ".webp" : "", quote: (o.end || {})[out || how] || (o.end || {})[how] || "" };
     }).sort(function (a, b) { return a.q - b.q; });
+    var tally = {};
+    fights.forEach(function (f) { var k = f.label; tally[k] = (tally[k] || 0) + 1; });
+    var doorTally = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; }).map(function (k) { return tally[k] + " " + k.charAt(0) + k.slice(1).toLowerCase(); });
     var moreFights = 0;
     if (fights.length > 4) { moreFights = fights.length - 4; fights = fights.slice(-4); }
     var rooms = (LD.SYSTEMS || []).map(function (s) {
@@ -13856,7 +13914,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       exec: exec, execId: exec.id, era: era, kind: win ? "win" : "lose", win: win, reason: e.reason || (win ? "evacuated" : "unrest"), cause: cause,
       title: e.title || "", body: e.body || "", turn: state.turn | 0, seed: state.seedLabel != null ? String(state.seedLabel) : String(state.seed || ""),
       rating: LD.ratingName ? LD.ratingName(state.rating | 0) : "AAA", cash: state.cash | 0, unrest: state.unrest | 0, collapse: state.collapse | 0,
-      stops: stops, fights: fights, moreFights: moreFights, rooms: rooms, ready: ready, roomsTotal: rooms.length || 4,
+      stops: stops, fights: fights, doorTally: doorTally, moreFights: moreFights, rooms: rooms, ready: ready, roomsTotal: rooms.length || 4,
       ledger: lines, total: pay.total | 0, balance: meta.dividends != null ? meta.dividends | 0 : null,
       xp: info.xp || null, unlocks: info.unlocks || [], newRating: info.newRating != null ? info.newRating : null,
       bigDeal: big, peak: peak, deals: deals.length, partial: !state.track
@@ -13938,6 +13996,15 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     },
     fight: { paid: "Paid off", crushed: "Crushed", walked: "They walked" }
   };
+  /* The ending a face got, in the template's voice: fax caps in 1978, minutes in 2008, a feed line Today. */
+  var OUT_TONE = { crushed: "red", walked: "ink", exposed: "red", martyred: "red", broken: "teal", ignored: "ink", pyrrhic: "", bought: "", converted: "", deal: "", reconciled: "green" };
+  var OUT_WORD = { bought: "bought", converted: "came over to us", broken: "broken", exposed: "exposed", ignored: "ignored", martyred: "made a martyr", pyrrhic: "won, at a cost", deal: "settled", walked: "walked out", reconciled: "reconciled" };
+  function outPhrase(tpl, f) {
+    if (tpl.era === 1) return "{N} " + LD.OUT_LABEL[f.out] + " STOP";
+    if (tpl.era === 2) return "Q{Q} \u2014 {W}: " + OUT_WORD[f.out];
+    return "{W} \u00b7 " + OUT_WORD[f.out];
+  }
+  function doorTally(d) { return d.doorTally && d.doorTally.length ? '<p class="rc-door-tally">At the door: ' + esc(d.doorTally.join(" \u00b7 ")) + "</p>" : ""; }
   function fill(s, d, f) {
     return String(s || "").replace(/\{R\}/g, d.ready).replace(/\{P\}/g, Math.round(100 * d.ready / (d.roomsTotal || 4)))
       .replace(/\{N\}/g, f ? cap(f.short) : "").replace(/\{W\}/g, f ? f.who : "").replace(/\{Q\}/g, f ? f.q : "");
@@ -14044,7 +14111,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     var coins = "";
     for (var c = 0; c < 9; c++) coins += '<i class="rc-coin" style="--cd:' + (200 + c * 170) + "ms;--cx:" + ((c * 37) % 60 - 30) + 'px">' + tok("div") + "</i>";
     h += '<div class="rc-total"><span class="rc-coins" aria-hidden="true">' + coins + '</span><small>' + esc(opts.totalLabel || "Total") + '</small><b>' + tok("div") + '<span class="rc-count" data-to="' + d.total + '">' + d.total + "</span></b>" +
-      (d.balance != null ? '<em>Balance \u25c8 ' + d.balance + "</em>" : "") + "</div></div>";
+      (d.balance != null ? '<em>Balance \u25c8 ' + d.balance + "</em>" : "") + "</div>" + doorTally(d) + "</div>";
     return h;
   }
   function xpBar(d) {
@@ -14106,8 +14173,8 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       door += '<ul class="rc-calls">';
       d.fights.forEach(function (f, i) {
         var t0 = 250 + i * 520;
-        door += '<li class="rc-call how-' + f.how + '" style="--cd:' + t0 + 'ms">' + portrait(f) + '<span class="rc-call-t">' + typed(fill(C.fight[f.how], d, f), "", t0 + 120, tpl.era === 3 ? 16 : 22) +
-          (f.quote ? "<small>\u201c" + esc(f.quote) + "\u201d</small>" : "") + "</span>" + stamp(LD.HOW_LABEL ? LD.HOW_LABEL[f.how] : f.how, f.how === "crushed" ? "red" : f.how === "walked" ? "ink" : "", t0 + 380) + "</li>";
+        door += '<li class="rc-call how-' + f.how + '" style="--cd:' + t0 + 'ms">' + portrait(f) + '<span class="rc-call-t">' + typed(fill(f.out ? outPhrase(tpl, f) : C.fight[f.how], d, f), "", t0 + 120, tpl.era === 3 ? 16 : 22) +
+          (f.quote ? "<small>\u201c" + esc(f.quote) + "\u201d</small>" : "") + "</span>" + stamp(f.label, f.tone, t0 + 380) + "</li>";
       });
       door += "</ul>" + (d.moreFights ? '<p class="rc-more">+' + d.moreFights + " earlier</p>" : "");
     }
@@ -14138,7 +14205,7 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
       door += '<ul class="rc-visas">';
       d.fights.forEach(function (f, i) {
         var t0 = 250 + i * 520;
-        door += '<li class="how-' + f.how + '" style="--cd:' + t0 + 'ms">' + portrait(f) + "<b>" + esc(f.who) + "</b><small>Q" + f.q + "</small>" + stamp(LD.HOW_LABEL ? LD.HOW_LABEL[f.how] : f.how, f.how === "crushed" ? "red" : f.how === "walked" ? "ink" : "", t0 + 300) + "</li>";
+        door += '<li class="how-' + f.how + '" style="--cd:' + t0 + 'ms">' + portrait(f) + "<b>" + esc(f.who) + "</b><small>Q" + f.q + "</small>" + stamp(f.label, f.tone, t0 + 300) + "</li>";
       });
       door += "</ul>" + (d.moreFights ? '<p class="rc-more">+' + d.moreFights + " earlier</p>" : "");
     }
@@ -16639,9 +16706,9 @@ body:has(#screen-end.rc-host.on) .shell { width: 100% !important; max-width: non
     for (var t = 1; t <= turn; t++) st.track.q.push({ t: t, cash: 30 + t * 4, unrest: Math.min(100, 14 + t * (win ? 6 : 14)), collapse: 20 + t * 7 });
     st.track.deals = [{ q: 1, id: "demo1", title: "Blackout Insurance", cash: 18 }, { q: 2, id: "demo2", title: "Divert the Filters", cash: 26 }, { q: Math.min(turn, 4), id: "demo3", title: "Sell the Reserves", cash: 12 }];
     var F = st.fy || (st.fy = {});
-    F.fates = { dunn: { how: "paid", q: 1, act: 1 }, mickey: { how: "crushed", q: 2, act: 1 }, june: { how: "walked", q: 3, act: 1 } };
+    F.fates = { dunn: { how: "paid", out: "bought", q: 1, act: 1 }, mickey: { how: "crushed", out: "exposed", q: 2, act: 1 }, june: { how: "walked", out: "walked", q: 3, act: 1 } };
     if (era === 2) { F.fates.dunn.q = 2; F.fates.mickey.q = 3; F.fates.june.q = 4; }
-    if (era === 3) { F.fates.dunn.q = 2; F.fates.mickey.q = 3; F.fates.june.q = 4; F.fates.delacroix = { how: "paid", q: 7, act: 2 }; }
+    if (era === 3) { F.fates.dunn.q = 2; F.fates.mickey.q = 3; F.fates.june.q = 4; F.fates.delacroix = { how: "paid", out: "reconciled", q: 7, act: 2 }; }
     F.bosses = era >= 2 ? 1 : 0;
     LD.SYSTEMS.forEach(function (s, i) { st.bunker[s.id].level = win ? 2 : i < 2 ? 2 : i === 2 ? 1 : 0; st.bunker[s.id].quality = "sound"; });
     if (!win && reason === "failed-systems") LD.SYSTEMS.forEach(function (s) { st.bunker[s.id].level = 2; st.bunker[s.id].quality = "cheap"; });

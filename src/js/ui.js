@@ -591,7 +591,17 @@
       btn.addEventListener("click", function () { tick(); selectedRating = +btn.getAttribute("data-rating"); renderExecSide(); });
     });
     Array.prototype.forEach.call(document.querySelectorAll(".cx-tag"), function (btn) {
-      btn.addEventListener("click", function () { tick(); var id = btn.getAttribute("data-perk-tag"); perkFocus = perkFocus === id ? null : id; renderExecSide(); });
+      btn.addEventListener("click", function () {
+        tick(); var id = btn.getAttribute("data-perk-tag"), m = loadMeta();
+        /* One tap: an owned perk equips (or unequips) straight away, and its tip opens so you see what it does. Locked perks just show the tip. */
+        if (m.owned.indexOf("perk:" + id) !== -1) {
+          var i = m.equipped.indexOf(id);
+          if (i !== -1) m.equipped.splice(i, 1);
+          else { m.equipped.push(id); var slots = LD.perkSlots(m, currentRating(m)); if (m.equipped.length > slots) m.equipped = m.equipped.slice(-slots); }
+          saveMeta(m); perkFocus = id;
+        } else perkFocus = perkFocus === id ? null : id;
+        renderExecSide();
+      });
     });
     var tx = $("cx-tip-x"); if (tx) tx.addEventListener("click", function () { tick(); perkFocus = null; renderExecSide(); });
     bindLoadoutChips($("cx-side"), false);
@@ -2240,6 +2250,7 @@
     var host = $("screen-end");
     host.classList.add("rc-host");
     host.innerHTML = LD.renderRecap(d, tpl, { final: mode === "final" });
+    if (LD.recapScrollCue) LD.recapScrollCue(host);
     if (info && !info.soundDone && mode === "final") { info.soundDone = true; SFX.play(d.win ? "win" : "lose"); }
     var fontsReady = LD.recapLoadFonts(tpl);
     bindEndButtons();

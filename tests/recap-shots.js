@@ -63,7 +63,7 @@ const MID = [[900, "a-headline"], [3200, "b-climb"], [5300, "c-door"], [7200, "d
       if (info.overflowX) errors.push(vp + " " + c.id + " horizontal overflow");
       console.log(vp, c.id, JSON.stringify(info));
       await shot(vp + "-" + c.id + "-final");
-      if (info.inner > 4 && vw < 900) { await page.evaluate(() => { const s = document.getElementById("rc-scroll"); s.style.scrollBehavior = "auto"; s.scrollTop = 99999; }); await sleep(150); await shot(vp + "-" + c.id + "-final-bottom"); }
+      if (info.inner > 4) { await page.evaluate(() => { const s = document.getElementById("rc-scroll"); s.style.scrollBehavior = "auto"; s.scrollTop = 99999; }); await sleep(150); await shot(vp + "-" + c.id + "-final-bottom"); }
     }
   }
   /* Behaviour: tap hurries, Skip jumps to the end, seen runs open on the final page. */

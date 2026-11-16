@@ -30,7 +30,7 @@ const ONLY = process.env.ONLY || "";
   const hidePenny = () => page.evaluate(() => { const p = document.getElementById("penny"); if (p) p.hidden = true; });
   const META = { penny: { offered: true, done: true, tipsOff: true, tips: {} }, audioOff: true, seenTutorial: true, dividends: 240, finished: 3, wins: 1,
     owned: ["perk:golden", "cos:light:golden", "pack:esg"], equipped: ["golden"], cosmetics: { light: "golden" }, lifetime: { dividends: 420, runs: 3, wins: 1, quarters: 21 }, history: [] };
-  for (const [vw, vh] of [[800, 1280], [1280, 800], [390, 844]]) {
+  for (const [vw, vh] of (process.env.VPS || "360x800,412x915,800x1280,1280x800").split(",").map((s) => s.split("x").map(Number))) {
     const vp = vw + "x" + vh;
     if (ONLY && ONLY !== vp) continue;
     await page.setViewport({ width: vw, height: vh, deviceScaleFactor: 1 });
@@ -44,6 +44,7 @@ const ONLY = process.env.ONLY || "";
     if (st.board) errors.push(vp + " Boardroom text still visible");
     await shot(vp, "01-lounge"); await noScroll(vp + " lounge");
     await click('[data-lt="perk:media"]'); await sleep(500); await hidePenny(); await shot(vp, "02-ledger-media");
+    await sleep(1600); await hidePenny(); await shot(vp, "02b-ledger-hand");
     await click("#lg-sign"); await sleep(180); await shot(vp, "03-signing-thunk"); await sleep(700); await shot(vp, "04-after-purchase");
     const bal = await page.evaluate(() => JSON.parse(localStorage.getItem("lastDividend.v1")).dividends);
     if (bal !== 140) errors.push(vp + " balance after purchase " + bal);

@@ -600,7 +600,7 @@
     var label = o.name + (o.owned ? ", yours" : o.soon ? ", coming soon" : o.earnOnly ? ", earn by finishing a run" : ", " + o.price + " Dividends" + (o.afford ? ", affordable" : ", not enough Dividends"));
     return '<button type="button" class="' + cls + '" data-lt="' + o.key + '" aria-pressed="' + (o.key === sel) + '" aria-label="' + escapeHtml(label) + '">' +
       '<span class="lt-hook" aria-hidden="true"></span>' + lgKeySvg() +
-      '<span class="lt-tag"><i class="lt-eye" aria-hidden="true"></i>' + lgArt(o) + "<b>" + escapeHtml(o.short) + "</b>" + price +
+      '<span class="lt-tag"><i class="lt-eye" aria-hidden="true"></i>' + lgArt(o) + "<b" + (String(o.short || "").length >= 10 ? ' class="xl"' : String(o.short || "").length >= 8 ? ' class="l"' : "") + ">" + escapeHtml(o.short) + "</b>" + price +
       (o.owned ? '<span class="lt-stamp" aria-hidden="true">' + (o.free ? "House" : "Yours") + "</span>" : "") +
       (o.state === "short" || o.state === "earn" ? '<span class="lt-grille" aria-hidden="true"></span>' : "") + "</span></button>";
   }

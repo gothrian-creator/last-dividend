@@ -41,7 +41,7 @@ const ONLY = process.env.ONLY || "";
   }, label);
   const META = { penny: { offered: true, done: true, tipsOff: true, tips: {} }, audioOff: true, seenTutorial: true, dividends: 240, finished: 3, wins: 1,
     owned: ["perk:golden", "perk:media", "slot:2", "exec:reid", "exec:imani", "exec:julian"], equipped: ["golden"], ratingByExec: { mara: 3, reid: 1 }, xp: { mara: 260, reid: 40 }, bestRating: { mara: 2 }, history: [] };
-  for (const [vw, vh] of [[800, 1280], [1280, 800]]) {
+  for (const [vw, vh] of [[800, 1280], [1280, 800], [360, 800]]) {
     const vp = vw + "x" + vh;
     if (ONLY && ONLY !== vp) continue;
     await page.setViewport({ width: vw, height: vh, deviceScaleFactor: 1 });
@@ -80,9 +80,9 @@ const ONLY = process.env.ONLY || "";
     await click('.cx-pip[data-rating="2"]'); await sleep(200);
     await click('.cx-tag[data-perk-tag="media"]'); await sleep(300);
     const tip = await page.evaluate(() => { const t = document.querySelector(".cx-tip"); return t && t.textContent; });
-    if (!tip || !/Media Darling/.test(tip) || !/Equip/.test(tip)) errors.push(vp + " perk tooltip " + tip);
+    /* one tap on an owned perk equips it right away (tip then offers Unequip) */
+    if (!tip || !/Media Darling/.test(tip) || !/Unequip/.test(tip)) errors.push(vp + " one-tap equip / tooltip " + tip);
     await shot(vp, "04-perk-tip"); errors.push(...(await clipCheck(vp + " tip")));
-    await click(".cx-tip-btn[data-perk]"); await sleep(300);
     await click('.cx-tag[data-perk-tag="offshore"]'); await sleep(300);
     const tip2 = await page.evaluate(() => { const t = document.querySelector(".cx-tip"); return t && t.textContent; });
     if (!tip2 || !/140/.test(tip2)) errors.push(vp + " locked perk tooltip " + tip2);
@@ -104,7 +104,7 @@ const ONLY = process.env.ONLY || "";
     console.log(vp, "run", JSON.stringify(run));
   }
   if (!ONLY) {
-    await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
+    await page.setViewport({ width: 412, height: 915, deviceScaleFactor: 1 });
     await page.goto(origin, { waitUntil: "networkidle0" });
     await page.evaluate((m) => { localStorage.clear(); localStorage.setItem("lastDividend.v1", JSON.stringify(m)); }, META);
     await page.reload({ waitUntil: "networkidle0" }); await ready();

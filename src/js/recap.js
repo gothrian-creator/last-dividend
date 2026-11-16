@@ -416,10 +416,24 @@
     return c;
   };
 
+    /* Scroll cue: when the dossier is taller than the screen (landscape mostly), a small "More" tab nudges the inner scroll. */
+  LD.recapScrollCue = function (root) {
+    var rc = root.querySelector("#rc"), scroller = root.querySelector("#rc-scroll");
+    if (!rc || !scroller || rc.querySelector(".rc-more")) return;
+    (function () {
+      var more = document.createElement("button"); more.type = "button"; more.className = "rc-more"; more.setAttribute("aria-label", "Scroll down"); more.innerHTML = "More <i aria-hidden=\"true\">▾</i>";
+      rc.appendChild(more);
+      function upd() { var foot = rc.querySelector(".rc-foot"); more.style.bottom = ((foot ? foot.offsetHeight : 0) + 10) + "px"; rc.classList.toggle("rc-has-more", scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop > 28); }
+      scroller.addEventListener("scroll", upd, { passive: true }); window.addEventListener("resize", upd);
+      more.addEventListener("click", function (e) { e.stopPropagation(); scroller.scrollBy({ top: Math.round(scroller.clientHeight * 0.7), behavior: "smooth" }); });
+      var n = 0; (function tickUpd() { upd(); if (++n < 40 && document.body.contains(more)) setTimeout(tickUpd, 500); })();
+    })();
+  };
   /* ---------- Player (browser) ---------- */
   LD.playRecap = function (root, d, opts) {
     opts = opts || {};
     var rc = root.querySelector("#rc"), scroller = root.querySelector("#rc-scroll");
+    LD.recapScrollCue(root);
     var beats = Array.prototype.slice.call(root.querySelectorAll(".rc-beat")).sort(function (a, b) { return a.getAttribute("data-beat") - b.getAttribute("data-beat"); });
     var dur = LD.recapDurations(d), cues = LD.recapCues(d), sfx = opts.sfx || function () {};
     var cur = -1, timer = null, gap = null, cueT = [], rafs = [], finished = false;

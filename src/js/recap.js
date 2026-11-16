@@ -39,8 +39,9 @@
     if (fights.length > 4) { moreFights = fights.length - 4; fights = fights.slice(-4); }
     var rooms = (LD.SYSTEMS || []).map(function (s) {
       var b = (state.bunker && state.bunker[s.id]) || { level: 0 };
-      return { id: s.id, name: s.name, short: s.short, level: b.level | 0, quality: b.quality || "", ready: (b.level | 0) >= (LD.WIN_LEVEL || 2) };
+      return { id: s.id, name: s.name, short: s.short, level: b.level | 0, quality: b.quality || "", ready: (b.level | 0) >= (LD.WIN_LEVEL || 2), over: (b.level | 0) >= 3 };
     });
+    var sealB = win && LD.sealBonus ? LD.sealBonus(state) : null;
     var ready = rooms.filter(function (r) { return r.ready; }).length;
     var pay = info.payout || (LD.computeDividends ? LD.computeDividends(state) : { lines: [], total: 0 });
     var lines = (pay.lines || []).filter(function (l) { return l.amount; }).map(function (l) { return { label: l.label, amount: l.amount }; });
@@ -56,7 +57,7 @@
       stops: stops, fights: fights, doorTally: doorTally, moreFights: moreFights, rooms: rooms, ready: ready, roomsTotal: rooms.length || 4,
       ledger: lines, total: pay.total | 0, balance: meta.dividends != null ? meta.dividends | 0 : null,
       xp: info.xp || null, unlocks: info.unlocks || [], newRating: info.newRating != null ? info.newRating : null,
-      bigDeal: big, peak: peak, deals: deals.length, partial: !state.track
+      bigDeal: big, peak: peak, deals: deals.length, partial: !state.track, sealBonus: sealB && sealB.n ? sealB : null
     };
   }
   LD.recapData = recapData;
@@ -235,9 +236,13 @@
   function rooms(d, cls) {
     var h = '<ul class="rc-rooms ' + (cls || "") + '">';
     d.rooms.forEach(function (r, i) {
-      h += '<li class="' + (r.ready ? "ready" : r.level ? "part" : "empty") + '" style="--rd:' + (300 + i * 220) + 'ms"><b>' + esc(r.short) + "</b><small>Lv " + r.level + (r.quality === "cheap" && r.level ? " \u00b7 cheap" : "") + "</small></li>";
+      h += '<li class="' + (r.ready ? "ready" : r.level ? "part" : "empty") + (r.over ? " over" : "") + '" style="--rd:' + (300 + i * 220) + 'ms"><b>' + (r.over ? "\u2605 " : "") + esc(r.short) + "</b><small>Lv " + r.level + (r.quality === "cheap" && r.level ? " \u00b7 cheap" : "") + "</small></li>";
     });
-    return h + "</ul>";
+    h += "</ul>";
+    var sb = d.sealBonus;
+    if (sb) h += '<div class="rc-seal-bonus' + (sb.full ? " full" : "") + '">' + stamp(sb.full ? "Fortress seal" : "Overbuilt \u00d7" + sb.n, sb.full ? "lvl" : "", 1500) +
+      "<small>" + esc(sb.full ? LD.SEAL_BONUS.fullLine : sb.rooms.map(function (r) { return r.title; }).join(" \u00b7 ")) + " \u00b7 +" + sb.div + " \u25c8 \u00b7 +" + sb.xp + " XP</small></div>";
+    return h;
   }
   function ledger(d, opts) {
     opts = opts || {};
@@ -270,7 +275,7 @@
     if (!list.length) list = [{ kind: "goal", name: d.xp && d.xp.after && d.xp.after.need ? (d.xp.after.need - d.xp.after.into) + " XP to Lv " + (d.xp.after.level + 1) : "Climb again", text: "Nothing new unlocked this time" }];
     var h = '<ul class="rc-tags">';
     list.forEach(function (u, i) {
-      h += '<li class="k-' + esc(u.kind) + '" style="--gd:' + (500 + i * 180) + 'ms"><i class="rc-hole" aria-hidden="true"></i><small>' + esc({ seat: "New seat", rating: "New challenge", perk: "Level perk", mandate: "Mandate met", afford: "Within reach", goal: "Next goal" }[u.kind] || "Unlocked") + "</small><b>" + esc(u.name) + "</b>" + (u.text ? "<em>" + esc(u.text) + "</em>" : "") + "</li>";
+      h += '<li class="k-' + esc(u.kind) + '" style="--gd:' + (500 + i * 180) + 'ms"><i class="rc-hole" aria-hidden="true"></i><small>' + esc({ seat: "New seat", rating: "New challenge", perk: "Level perk", mandate: "Mandate met", afford: "Within reach", goal: "Next goal", bonus: "Seal bonus" }[u.kind] || "Unlocked") + "</small><b>" + esc(u.name) + "</b>" + (u.text ? "<em>" + esc(u.text) + "</em>" : "") + "</li>";
     });
     return h + "</ul>";
   }

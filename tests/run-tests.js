@@ -291,6 +291,30 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     ok(!/mother|brother|sister|julian/i.test(vic) && !/brother|victor/i.test(JSON.stringify(LD.EXEC_ASIDE.julian)) && !firms.some((f) => vic.indexOf(f) !== -1) && !narrow.length,
       "executive-neutral lines: Victor has no family tie or shared firm, no one-firm lines (" + narrow.join(",") + ")");
   }
+  /* Seal bonus: Lv 3 rooms pay on a successful seal, the full set is a Fortress seal that unlocks the Gilded Vault once. */
+  {
+    const st = LD.createRun({ seed: "seal-bonus", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 });
+    LD.SYSTEMS.forEach((x, i) => { st.bunker[x.id].level = i < 2 ? 3 : 2; st.bunker[x.id].quality = "sound"; });
+    st.turn = 10;
+    const note0 = LD.sealBonusNote(st), sb2 = LD.sealBonus(st);
+    const e2 = LD.evacuationResult ? LD.evacuationResult(st) : null;
+    st.ending = { kind: "win", reason: "evacuated", title: "x", body: "" };
+    const p2 = LD.computeDividends(st), xp2 = LD.runXp(st);
+    LD.SYSTEMS.forEach((x) => { st.bunker[x.id].level = 3; });
+    const sb4 = LD.sealBonus(st), p4 = LD.computeDividends(st), xp4 = LD.runXp(st);
+    const lose = JSON.parse(JSON.stringify(st)); lose.ending = { kind: "lose", reason: "unrest" };
+    const m0 = LD.migrateMeta({}), a1 = LD.applyRunEnd(m0, st), a2 = LD.applyRunEnd(a1.meta, st);
+    const line = (p, l) => (p.lines.find((x) => x.label === l) || {}).amount || 0;
+    ok(sb2.n === 2 && sb2.div === 12 && !sb2.full && sb4.full && sb4.div === 44 && line(p2, "Overbuilt rooms") === 12 && !line(p2, "Fortress seal") && line(p4, "Fortress seal") === 20 &&
+      p4.total > p2.total && xp4 > xp2 && !LD.computeDividends(lose).lines.some((l) => /Overbuilt|Fortress/.test(l.label)),
+      "Lv 3 rooms pay +6 \u25c8 each on a win, all four add a +20 Fortress seal, XP too, nothing on a loss");
+    ok(a1.payout.sealUnlock === "cos:rooms:gilded" && a1.meta.owned.indexOf("cos:rooms:gilded") !== -1 && !a2.payout.sealUnlock, "first Fortress seal unlocks the Gilded Vault fit-out once");
+    ok(/Lv 3 rooms: \+6/.test(note0) && /2\/4 overbuilt/.test(note0) && /Fortress seal \+20/.test(note0) && /Lv 3 rooms/.test(LD.renderBunkerView(st, {})), "vault footer shows the seal bonus before sealing");
+    const e4 = LD.evacuationResult ? LD.evacuationResult(st) : null;
+    ok(!e2 || (e2.kind === "win" && /cistern|scrubbers|generators|larder/.test(e2.body) && e4.title === LD.SEAL_BONUS.fullTitle && e4.fortress), "ending names the overbuilt rooms and a full set seals a fortress");
+    const rd = LD.recapData(st, { payout: p4, xp: null, unlocks: [] }, m0);
+    ok(rd.sealBonus && rd.sealBonus.full && rd.rooms.every((r) => r.over), "recap carries the seal bonus");
+  }
   /* The outcome follows how you won. */
   const mk = (pr, gal, extra) => Object.assign({ pr: pr, gal: gal, leaks: {}, bribes: 0 }, extra || {});
   ok(LD.fightOutcomeFor({}, mk({ obligation: 10 }, 0), true).out === "bought", "Debt wins buy them");

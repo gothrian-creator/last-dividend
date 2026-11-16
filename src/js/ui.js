@@ -65,6 +65,11 @@
   /* What this run newly opened: seats, harder ratings, level perks, mandates, and Lounge items now within reach. */
   function unlockDiff(before, after, applied, st) {
     var out = [];
+    /* the seal bonus unlock leads: it is this run's headline */
+    if (applied.payout && applied.payout.sealUnlock) {
+      var cz = (LD.COSMETICS || []).filter(function (c) { return "cos:" + c.slot + ":" + c.id === applied.payout.sealUnlock; })[0];
+      if (cz) out.push({ kind: "bonus", name: cz.name, text: "Fortress seal · yours in the Portfolio" });
+    }
     LD.EXECUTIVES.forEach(function (ex) {
       if (!LD.isExecutiveUnlocked(ex.id, before) && LD.isExecutiveUnlocked(ex.id, after)) out.push({ kind: "seat", name: ex.name, text: ex.firm });
     });
@@ -2233,7 +2238,7 @@
     });
   }
 
-  /* Debug/test: ?recap=reid&end=lose|win&era=1|2|3[&reason=unfinished|failed-systems][&final=1][&lvup=1] opens a sample recap. Never saves. */
+  /* Debug/test: ?recap=reid&end=lose|win&era=1|2|3[&reason=unfinished|failed-systems][&final=1][&lvup=1][&lv3=0-4] opens a sample recap. Never saves. */
   var DEBUG_RECAP = null;
   function demoRecap() {
     var q = null;
@@ -2263,7 +2268,9 @@
       "failed-systems": { kind: "lose", reason: "failed-systems", title: "The cheapest filters failed first", body: "You sealed on time. The bargain work did not hold." },
       evacuated: { kind: "win", reason: "evacuated", title: "The doors close on time", body: "Air, water, power, and food all hold. The last dividend is silence." }
     };
-    st.ending = END[reason] || END.unrest;
+    var lv3 = Math.max(0, Math.min(4, +q.get("lv3") || 0)); /* &lv3=N: N rooms overbuilt to Lv 3 (seal bonus) */
+    if (win && lv3) LD.SYSTEMS.forEach(function (s, i) { if (i < lv3) st.bunker[s.id].level = 3; });
+    st.ending = win && lv3 ? LD.evacuationResult(st) : END[reason] || END.unrest;
     st.unrest = reason === "unrest" ? 100 : 46; st.collapse = reason === "unfinished" ? 100 : win ? 72 : 58; st.cash = 24;
     st.ended = true; st.phase = "ended";
     var meta = loadMeta();

@@ -404,6 +404,7 @@
         h += chip(st === "ready" ? "good" : "bad", ICON[sy.id] + " " + sy.name + " " + (st === "ready" ? "✓" : st === "risk" ? "at risk" : "not ready"));
       });
       h += "</div>";
+      h += sealBonusNote(state);
       if (LD.canEvacuate(state)) h += '<button class="btn-seal" id="btn-seal">Seal the bunker</button>';
       else h += '<p class="bp-note">Sealing opens in quarter ' + LD.MIN_EVAC_TURN + (state.phase !== "bunker" ? ", after you sign a deal" : "") + ".</p>";
       return h;
@@ -416,8 +417,20 @@
     var h = '<div class="bp-hint"><b>Tap a room to build</b><span class="bp-dot">·</span><span>' + r.ready + "/4 ready</span>" +
       '<span class="bp-dot">·</span><span>Goal: all 4 rooms Lv 2+, then seal from Q' + LD.MIN_EVAC_TURN + "</span></div>";
     h += '<div class="bp-hint-sub"><b>Discount</b> cracks at Lv 2 unless you hire an engineer or reach Lv 3. Office, lot and blast door are tappable too.</div>';
+    h += sealBonusNote(state);
     return h;
   }
+
+  /* Seal bonus preview: what Lv 3 rooms pay when the doors close with you inside. */
+  function sealBonusNote(state) {
+    if (!LD.sealBonus) return "";
+    var sb = LD.sealBonus(state), B = LD.SEAL_BONUS;
+    var h = '<div class="bp-seal-bonus' + (sb.full ? " full" : sb.n ? " some" : "") + '"><b>★ Lv 3 rooms: +' + B.room.div + " ◈ each at seal</b>";
+    h += "<span>" + (sb.n ? sb.n + "/4 overbuilt · +" + sb.div + " ◈" + (sb.full ? " · Fortress seal" : "") : "none yet") + "</span>";
+    h += "<span>" + (sb.full ? "Fortress seal: +" + B.full.div + " ◈ and the Gilded Vault fit-out" : "All 4 at Lv 3: Fortress seal +" + B.full.div + " ◈ and the Gilded Vault fit-out") + "</span></div>";
+    return h;
+  }
+  LD.sealBonusNote = sealBonusNote;
 
   function renderBunkerPanel(state, focus, mode) {
     if (focus && LD.BUNKER_ROOMS[focus]) return roomPanel(state, focus, mode);

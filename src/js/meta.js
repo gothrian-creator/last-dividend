@@ -98,6 +98,31 @@
     return !!m.check(state);
   }
 
+  /* ---------- Seal bonus: rooms overbuilt to Lv 3 pay out when the doors close with you inside ---------- */
+  LD.SEAL_BONUS = {
+    room: { div: 6, xp: 10 }, full: { div: 20, xp: 30, cosmetic: "cos:rooms:gilded" },
+    rooms: {
+      air: { title: "Clean-room air", line: "The scrubbers are rated for a city. They clean the air for twelve." },
+      water: { title: "Deep cistern", line: "The cistern holds ten years of water. The town's well held ten days." },
+      power: { title: "Triple redundancy", line: "Three generators, two spares. The lights will outlive the shareholders." },
+      food: { title: "Full larder", line: "The larder is stocked to the ceiling. Nobody will ask who the peaches were for." }
+    },
+    fullTitle: "The doors close on a fortress",
+    fullLine: "Every room overbuilt. The brochure calls it generational resilience."
+  };
+  /* What sealing now would pay for Lv 3 rooms (win = only counted on a successful seal). */
+  function sealBonus(state) {
+    var B = LD.SEAL_BONUS, rooms = [];
+    LD.SYSTEMS.forEach(function (s) {
+      var b = state.bunker && state.bunker[s.id];
+      if (b && b.level >= 3) rooms.push({ id: s.id, name: s.name, title: B.rooms[s.id] ? B.rooms[s.id].title : s.name, line: B.rooms[s.id] ? B.rooms[s.id].line : "" });
+    });
+    var full = rooms.length === LD.SYSTEMS.length;
+    var div = rooms.length * B.room.div + (full ? B.full.div : 0), xp = rooms.length * B.room.xp + (full ? B.full.xp : 0);
+    return { rooms: rooms, n: rooms.length, full: full, div: div, xp: xp, perRoom: B.room.div, fullDiv: B.full.div };
+  }
+  LD.sealBonus = sealBonus;
+
   /* ---------- Dividends (◈): the Shareholder Letter ---------- */
   function computeDividends(state) {
     var win = !!(state.ending && state.ending.kind === "win");
@@ -122,6 +147,9 @@
       if (l3) add("Penthouse Suite", 3 * l3, l3 + " Lv 3 room" + (l3 === 1 ? "" : "s") + " × 3", "win");
     }
     if (win) {
+      var sb = sealBonus(state);
+      if (sb.n) add("Overbuilt rooms", sb.n * sb.perRoom, sb.rooms.map(function (r) { return r.name; }).join(", ") + " at Lv 3 × " + sb.perRoom, "win");
+      if (sb.full) add("Fortress seal", sb.fullDiv, "All 4 rooms at Lv 3", "win");
       add("Successful exit", 25, "The doors closed with you inside", "win");
       add("Headroom", Math.max(0, Math.floor((90 - state.collapse) / 2)), "Sealed at collapse " + state.collapse, "win");
     }
@@ -209,6 +237,12 @@
         payout.total += fc.div;
         xpGain += fc.xp;
       }
+    }
+    /* Fortress seal: the first one unlocks the Gilded Vault fit-out (an existing Portfolio cosmetic). */
+    payout.sealUnlock = null;
+    if (payout.win) {
+      var fsb = sealBonus(state), ck = LD.SEAL_BONUS.full.cosmetic;
+      if (fsb.full && meta.owned.indexOf(ck) === -1) { meta.owned.push(ck); payout.sealUnlock = ck; }
     }
     var before = LD.levelFromXp((meta.xp[ex] | 0));
     meta.xp[ex] = (meta.xp[ex] | 0) + xpGain;

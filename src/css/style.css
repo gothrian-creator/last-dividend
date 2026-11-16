@@ -5018,3 +5018,14 @@ body.era-3 .of-wallart i:not(.empty) { box-shadow: 2px 2px 0 rgba(20, 32, 33, .4
 @media (max-width: 620px) {
   .office .of-wallart i.empty, .office .of-wallart i:nth-child(n+6) { display: none; }
 }
+
+/* Seal bonus (Lv 3 rooms): vault footer preview and recap stamp. Text only; vault art untouched. */
+.bp-seal-bonus { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; margin-top: 6px; padding: 5px 8px; border: 1.5px dashed rgba(201, 148, 42, 0.7); border-radius: 6px; font-size: 12px; line-height: 1.3; color: var(--ivory-muted, #d9cfb8); }
+.bp-seal-bonus b { color: #e0b44a; font-size: 12px; }
+.bp-seal-bonus.some, .bp-seal-bonus.full { border-style: solid; }
+.bp-seal-bonus.full b { color: #f3d27a; }
+.rc-rooms li.over b { color: #c9942a; }
+.rc-rooms li.ready.over b { color: #f3d27a; }
+.rc-seal-bonus { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.rc-seal-bonus small { font: 600 12px/1.3 var(--rc-mono, var(--font-sans)); opacity: 0.9; }
+.rc-seal-bonus .rc-stamp { position: static; }

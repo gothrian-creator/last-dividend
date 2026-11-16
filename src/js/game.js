@@ -823,12 +823,16 @@
       flavor.push("The municipal contracts you sold are not coming back. Your private ones did.");
     }
     var body = "Air, water, power, and food all hold. The last dividend is silence.";
+    var sb = LD.sealBonus ? LD.sealBonus(state) : null;
+    if (sb && sb.n) body += " " + (sb.full ? LD.SEAL_BONUS.fullLine : sb.rooms.map(function (r) { return r.line; }).join(" "));
     if (flavor.length) body += " " + flavor.join(" ");
     return {
       kind: "win",
       reason: "evacuated",
-      title: "The doors close on time",
-      body: body
+      title: sb && sb.full ? LD.SEAL_BONUS.fullTitle : "The doors close on time",
+      body: body,
+      overbuilt: sb ? sb.n : 0,
+      fortress: !!(sb && sb.full)
     };
   }
 

@@ -1978,7 +1978,8 @@
   LD.runXp = function (state) {
     var win = !!(state.ending && state.ending.kind === "win");
     var q = Math.min(state.turn, 12), b = fy(state) ? fy(state).bosses : 0;
-    return Math.round((8 * q + 25 * b + (win ? 60 : 0)) * (1 + 0.15 * (state.rating | 0)));
+    var sb = win && LD.sealBonus ? LD.sealBonus(state).xp : 0;
+    return Math.round((8 * q + 25 * b + (win ? 60 : 0) + sb) * (1 + 0.15 * (state.rating | 0)));
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = LD;

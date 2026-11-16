@@ -283,6 +283,14 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     const pools = new Set(); for (let i = 0; i < 60; i++) pools.add(LD.seedBosses ? LD.seedBosses("s" + i).bossII : (LD.createRun({ seed: "b" + i, executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 }).fy || {}).bossII);
     ok(!pools.has("bid") && LD.ENCOUNTERS.rival.name === "The Holdout" && !/rival/i.test(JSON.stringify(LD.MEMOS) + JSON.stringify(LD.PACKS) + LD.EXEC_TRAITS.julian.bad.text), "no Hostile Takeover Bid boss, no rival memos, packs or traits (Act II bosses: " + [...pools].join(",") + ")");
   }
+  /* Lines work for every executive: no family tie between Victor Crowe and playable Julian Crowe, no "your bank/app" that only fits one firm. */
+  {
+    const txt = (o) => JSON.stringify([o.why, o.open, o.hit, o.block, o.react, o.end, o.role, o.place]);
+    const vic = txt(LD.OPPONENTS.crowe) + txt(LD.OPPONENTS.crowe_b), firms = LD.EXECUTIVES.map((e) => e.firm).concat(["Meridian"]);
+    const narrow = Object.keys(LD.OPPONENTS).filter((id) => /\byour (bank|app)\b/i.test(txt(LD.OPPONENTS[id])) || LD.EXECUTIVES.some((e) => txt(LD.OPPONENTS[id]).indexOf(e.firm.replace(/ PLC$/, "")) !== -1));
+    ok(!/mother|brother|sister|julian/i.test(vic) && !/brother|victor/i.test(JSON.stringify(LD.EXEC_ASIDE.julian)) && !firms.some((f) => vic.indexOf(f) !== -1) && !narrow.length,
+      "executive-neutral lines: Victor has no family tie or shared firm, no one-firm lines (" + narrow.join(",") + ")");
+  }
   /* The outcome follows how you won. */
   const mk = (pr, gal, extra) => Object.assign({ pr: pr, gal: gal, leaks: {}, bribes: 0 }, extra || {});
   ok(LD.fightOutcomeFor({}, mk({ obligation: 10 }, 0), true).out === "bought", "Debt wins buy them");

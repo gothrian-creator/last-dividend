@@ -481,8 +481,8 @@
   /* ---------- Fight scenes: one shared stage, a room and a face per faction ---------- */
   var FACTIONS = {
     regulator: { who: "Agnes Hale", role: "Federal Regulator", art: "hale", room: "regulator", place: "Her hearing room" },
-    rival: { who: "Victor Crowe", role: "Meridian Freight Exchange", art: "crowe", room: "exchange", place: "Meridian Freight Exchange, top floor" },
-    bid: { who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "exchange", place: "Meridian Freight Exchange, top floor" },
+    rival: { who: "Victor Crowe", role: "Gannet Freight Exchange", art: "crowe", room: "exchange", place: "Gannet Freight Exchange, top floor" },
+    bid: { who: "Victor Crowe", role: "Hostile takeover", art: "crowe", room: "exchange", place: "Gannet Freight Exchange, top floor" },
     protest: { who: "Rosa Lind", role: "The People", art: "rosa", room: "protest", place: "Your lobby glass" },
     journalist: { who: "Dev Okafor", role: "The Ledger", art: "okafor", room: "journalist", place: "The Ledger's front steps" },
     hearing: { who: "Sen. Walt Brennan", role: "Senate Committee", art: "brennan", room: "senate", place: "The Senate chamber" },

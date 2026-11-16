@@ -39,7 +39,7 @@ Every debate has two loud sides. Your executive sells to both.
 ## The executives (timeless, Boardroom)
 
 Mara Voss (AquaTerra Holdings), Reid Holtz (Northline), Dr. Imani Okoye (Yield & Residue PLC), Julian Crowe (Crowe Terminals), Soren Aalto (Halcyon), Cassius Vane (Meridian Capital).
-Lore ties: **Julian Crowe** is the younger brother of **Victor Crowe**, the Act III raider ("My brother always said you were the clever one"). **Imani's** firm is the one **Bea Harrow** was forced out of; when you play Imani, Bea is the ousted ex-partner.
+Lore ties (16 Nov 2026): **Julian Crowe** and **Victor Crowe** are not related; the family tie and every "Mother" line were cut. Victor runs **Gannet Freight Exchange**, Bea Harrow runs **Harrow Yield Partners**; no opponent shares a playable executive's firm, and no line only works for one executive.
 
 ## Act casts
 
@@ -62,14 +62,14 @@ Each act has its own pool. The engine keeps the balance types (regulator, holdou
 | **Councilman Ray Delacroix** | City Council, Ward 6 | Campaign money and the machine | *Zoning Hold* (6+: lose the claim) · *Campaign Ask* (+1 per paid card) · *Recount* (they win back 4) | City Hall office |
 | **Dev Okafor** | The Ledger | Journalism in the age of clicks | *Front Page* (your Deniability is halved; 4+: Leak) · *Follow-up Question* (Heat) · *It Went Viral* (grows +2) | The newsroom, 2 a.m. |
 | **Agnes Hale** | Resource Oversight Board | Regulatory capture | *Consent Decree* · *Comment Period* (4+: Subpoena) — both −2 for every Lobbyist card you play: she's on loan from industry | Her hearing room |
-| **Bea Harrow** | Yield & Residue | Financialisation | *Undercut* · *Poach the Contract* (6+: lose the claim) · *Bet Against You* (grows +2) | The Calder Club bar |
+| **Bea Harrow** | Harrow Yield Partners | Financialisation | *Undercut* · *Poach the Contract* (6+: lose the claim) · *Bet Against You* (grows +2) | The Calder Club bar |
 | **Commissioner Gray** | Calder Police Dept. | Protest policing and the overtime bill | *Kettle* (protest) · *Overtime Invoice* (grows +3) | Police HQ |
 
 ### Act III · The Top · now
 
 | Face | Who | Debate | Moves | Room |
 |---|---|---|---|---|
-| **Victor Crowe** | Crowe Terminals | Monopolies and the platform tax | *Platform Fee* (grows +2) · *Acquire & Shut Down* (6+: lose the claim) | Top floor |
+| **Victor Crowe** | Gannet Freight Exchange | Monopolies and the platform tax | *Platform Fee* (grows +2) · *Acquire & Shut Down* (6+: lose the claim) | Top floor |
 | **Rosa Lind** | The People | Populism, left and right, at one door | *Chant* · *Occupy the Lobby* (grows +2) | Your lobby glass |
 | **Lena Sorel** | Nightjar Capital | The only honest liar in the market | *Short Interest* · *Footnote 47* (5+: lose an Asset) | Garage B3 |
 | **Gail Ashby** | Lead analyst | Quarterly capitalism | *Downgrade* · *Guidance?* (they win back 3) | Broadcast studio |

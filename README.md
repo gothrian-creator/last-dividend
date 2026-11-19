@@ -63,7 +63,14 @@ A fixer at Heat 3 brings the Senate Hearing, an elite fight.
   - Assets hang as wall trophies.
   - The briefcase holds 3 items.
   - The phone rings with calls, and the deck button shows your cards and fixers.
-  - The bunker is under the floor hatch.
+  - The bunker is under the floor hatch, at the foot of the side rail.
+
+## The side rail, Penny's tour and bunker icons
+
+- **Side rail.** In a run, Menu, Deck, Case (briefcase and trophy wall) and Phone sit in a vertical rail on the right edge, with the floor hatch to the bunker at the bottom. On portrait phones the rail is a slim 58px column; every button stays at least 44px tall and nothing scrolls. The phone button stays in place when no one is calling and says so when tapped.
+- **Bunker icons.** The hatch shows your executive's own painted bunker (Mara's valve hatch, Reid's substation, Julian's container, Cassius's vault, Imani's granary, Soren's dome). If an icon fails to load, a generic hatch token is shown instead.
+- **Penny's tour.** A short, skippable first-quarter walkthrough of the current game: the era, a deal pin, the dossier, a door fight, the reward, the bunker hatch, the quarterly report and the goal. Penny points at the real control with a hand and her dialogue moves aside so it never covers what she points at. "Do it for me" buttons play a step for you. Replay it any time from Menu → Replay Penny's tour. If you skip the tour, her tips stay quiet and never cover a fight.
+- **Fixes.** The phone header no longer lets the LAST DIVIDEND wordmark run into the rating stamp, the phone bunker screen no longer leaves an empty black band, and the Hostile Takeover Bid (Victor Crowe) is back in the Act II boss pool alongside the General Strike and the Market Crash.
 - **The executive.** Your executive reacts to unrest and collapse: confident, nervous or panicking.
 - **Office items.** Active items work once per act or once per run. The Soundproofed Door and the Holo-Window are now wall Assets.
 - **Asset Prospectus.** Opened from the title screen, it records everything you have seen and held, across runs.

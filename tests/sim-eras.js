@@ -106,9 +106,9 @@ if (process.env.INTENTS) Object.keys(INT).sort().forEach((k) => console.log("INT
 console.log("OUTCOMES", JSON.stringify(outs));
 console.log("WALKED BY STYLE", JSON.stringify(styleWin));
 console.log("RUNS BY STYLE", JSON.stringify(runs));
-/* The Hostile Takeover Bid boss left the pool with the rivals; its face (crowe_b) only loads from old saves. */
+/* The Hostile Takeover Bid boss (Victor Crowe, crowe_b) is back in the Act II pool (2026-11-19). */
 Object.keys(LD.OPPONENTS).filter((k) => LD.OPPONENTS[k].boss !== "bid").forEach((k) => ok(tally[k] > 0, "every face shows up in 40 runs: " + k));
-ok(!tally.crowe_b, "no Hostile Takeover Bid boss in new runs");
+ok(tally.crowe_b > 0, "Hostile Takeover Bid boss shows up in new runs");
 LD.OUTCOMES.forEach((o) => ok(outs[o] >= 3, "ending reachable in sims (3+): " + o));
 ["pops", "varga_b", "brennan"].forEach((k) => ok(tally[k] >= 3, "rare face shows up 3+ times: " + k));
 Object.keys(styleWin).forEach((k) => { const w = styleWin[k], r = w.lost / w.n; ok(r < (k === "any" ? 0.65 : 0.45), "balance: " + k + " loses " + Math.round(100 * r) + "% of door fights"); });

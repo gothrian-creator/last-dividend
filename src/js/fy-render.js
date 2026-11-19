@@ -194,6 +194,13 @@
     return '<button class="pf-chip" id="btn-portfolio" aria-label="Briefcase, ' + LD.fySlotsUsed(state) + " of " + f.cap + " slots" + (rd ? ", " + rd + " drawer item" + (rd > 1 ? "s" : "") + " ready" : "") + (ft ? ". At quarter close: " + ft : "") + '">💼 ' + LD.fySlotsUsed(state) + "/" + f.cap + (rd ? '<span class="pf-act">⚡' + rd + "</span>" : "") +
       (ft ? '<span class="pf-fc ' + (fc.cash - fc.unrest - 2 * fc.collapse >= 0 ? "up" : "down") + '" title="At quarter close: ' + esc(ft) + '">▸ ' + esc(ft.split(" · ")[0]) + (ft.indexOf(" · ") > 0 ? " +" : "") + "</span>" : '<span class="pf-icons">' + icons + "</span>") + "</button>";
   }
+  /* Quarter-close forecast as a plain tag in the office header (the briefcase button moved to the side rail). */
+  function forecastTag(state) {
+    if (!state.fy) return "";
+    var fc = LD.fyForecast(state), ft = fcText(fc);
+    if (!ft) return "";
+    return '<span class="of-fc pf-fc ' + (fc.cash - fc.unrest - 2 * fc.collapse >= 0 ? "up" : "down") + '" title="At quarter close: ' + esc(ft) + '" aria-label="At quarter close: ' + esc(ft) + '">▸ ' + esc(ft.split(" · ")[0]) + (ft.indexOf(" · ") > 0 ? " +" : "") + "</span>";
+  }
   LD.fyForecastText = function (state) { return fcText(LD.fyForecast(state)); };
 
   /* ---------- The office: executive, door (unrest), window on the mainland (collapse), desk (cash) ----------
@@ -303,10 +310,7 @@
     var m = LD.mods(state);
     var ring = !!(f.memo), ERA = LD.ERAS && LD.eraOf ? LD.ERAS[LD.eraOf(state)] : null;
     var cashG = ogauge("cash", "$", "Cash", state.cash, true, o.cashSub || "", "Cash " + money(state.cash) + ". Buys bunker works, crisis pay-offs and boss demands." + (state.cash < 5 ? " Running dry: you cannot cover most pay-offs." : ""));
-    var h = '<div class="panel-k of-head"><span class="of-q">' + (LD.tok ? LD.tok("quarter") : "") + "Q" + state.turn + '<span class="of-ht"> · Office</span></span>' + cashG + '<span class="of-tools">' +
-      (f.deck ? '<button class="of-deckbtn" id="btn-deck" aria-label="Deck, ' + f.deck.length + ' cards">🃏 ' + f.deck.length + "</button>" : "") +
-      (ring ? '<button class="of-phone ringing" id="btn-phone" aria-label="' + esc(ERA ? ERA.phone : "The phone is ringing") + '">' + (ERA ? ERA.phoneIcon : "☎") + "</button>" : "") +
-      (LD.portfolioChip ? LD.portfolioChip(state) : "") + "</span></div>";
+    var h = '<div class="panel-k of-head"><span class="of-q">' + (LD.tok ? LD.tok("quarter") : "") + "Q" + state.turn + '<span class="of-ht"> · Office</span></span>' + cashG + '<span class="of-tools">' + forecastTag(state) + "</span></div>";
     var exk = execArt(state.executiveId);
     h += '<div class="of-room ex-' + exk + " mood-" + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
     h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';

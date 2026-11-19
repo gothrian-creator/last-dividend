@@ -1274,6 +1274,14 @@
   }
 
   function bindBunkerPanel() {
+    Array.prototype.forEach.call(document.querySelectorAll("#bk-panel [data-roster]"), function (b) {
+      b.addEventListener("click", function (e) {
+        e.stopPropagation(); tick();
+        bk.focus = b.getAttribute("data-roster");
+        refreshBunkerPanel();
+        pennyEmit("room");
+      });
+    });
     Array.prototype.forEach.call(document.querySelectorAll("#bk-panel [data-up]"), function (b) {
       b.addEventListener("click", function () {
         tick();
@@ -2112,7 +2120,7 @@
     var pf = $("btn-portfolio");
     if (pf) pf.addEventListener("click", function (e) { e.stopPropagation(); tick(); openPortfolio(false); });
     var bd = $("btn-deck"); if (bd) bd.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); });
-    var ph = $("btn-phone"); if (ph) ph.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (state.fy.memo) openMemo(); });
+    var ph = $("btn-phone"); if (ph) ph.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (state.fy.memo) openMemo(); else railTip(ph, "No calls right now. When it rings, the call waits here."); });
     var room = document.querySelector(".desk .office .of-room");
     if (room) { room.setAttribute("role", "button"); room.setAttribute("tabindex", "0"); room.setAttribute("aria-label", "Your office: tap to read the room");
       room.addEventListener("click", function (e) { e.stopPropagation(); tick(); openOfficeExplain(); });
@@ -2125,6 +2133,7 @@
   function openMenu() {
     showOverlay("Menu", "<p class='muted'>Seed " + LD.escapeHtml(String(state.seedLabel)) + " · Q" + state.turn + "</p>",
       '<button class="btn btn-coral" id="mn-resume">Resume</button>' +
+      '<button class="btn" id="mn-penny">Replay Penny\'s tour</button>' +
       '<button class="btn" id="mn-how">How to play</button>' +
       '<button class="btn" id="mn-sound">' + SFX.label() + "</button>" +
       '<button class="btn" id="mn-title">Save &amp; exit to title</button>' +
@@ -2132,6 +2141,7 @@
       function () {
         $("mn-resume").addEventListener("click", function () { tick(); hideOverlay(); });
         $("mn-how").addEventListener("click", function () { tick(); hideOverlay(); openHowTo(true); });
+        $("mn-penny").addEventListener("click", function () { tick(); hideOverlay(); pennyStart(); });
         $("mn-sound").addEventListener("click", function () { SFX.toggle(); tick(); this.textContent = SFX.label(); });
         $("mn-title").addEventListener("click", function () { tick(); persistRun(); show("title"); renderTitle(); });
         $("mn-abandon").addEventListener("click", function () {
@@ -2313,6 +2323,19 @@
     ov.innerHTML = "";
   }
 
+  /* Small note beside a side-rail button (no overlay): quiet phone, etc. */
+  function railTip(btn, msg) {
+    var old = document.getElementById("sr-tip"); if (old) old.remove();
+    if (!btn) return;
+    var t = document.createElement("div");
+    t.id = "sr-tip"; t.className = "sr-tip"; t.setAttribute("role", "status"); t.textContent = msg;
+    document.body.appendChild(t);
+    var r = btn.getBoundingClientRect(), tw = t.getBoundingClientRect();
+    t.style.top = Math.max(6, Math.min(window.innerHeight - tw.height - 6, r.top + r.height / 2 - tw.height / 2)) + "px";
+    t.style.left = Math.max(6, r.left - tw.width - 10) + "px";
+    setTimeout(function () { t.classList.add("out"); }, 1800);
+    setTimeout(function () { if (t.parentNode) t.remove(); }, 2300);
+  }
   function flash(msg) {
     showOverlay("Cannot do that", "<p>" + LD.escapeHtml(msg || "That action is not available.") + "</p>",
       '<button class="btn btn-coral" id="ov-ok">OK</button>',
@@ -2357,95 +2380,111 @@
     return cs[0] || null;
   }
 
+  /* Penny's guided first quarter (rewritten 2026-11-19 for the eras / office hub / door fight / side rail build).
+     n = group shown as "n / TOUR_TOTAL". on = event that advances. act = what "Do it for me" does. Targets are the real controls. */
+  function pennyExec() { return (state && LD.execById(state.executiveId)) || {}; }
+  function pennyEra() { return (LD.ERAS && LD.eraOf && state) ? LD.ERAS[LD.eraOf(state)] : null; }
+  /* A target made of several controls: one box around all of them (Penny cuts one hole). */
+  function pennyUnion(sel) {
+    var ns = Array.prototype.filter.call(document.querySelectorAll(sel), pvis);
+    if (!ns.length) return null;
+    return { getBoundingClientRect: function () { var L = 1e9, T = 1e9, R = -1e9, B = -1e9; ns.forEach(function (n) { var r = n.getBoundingClientRect(); L = Math.min(L, r.left); T = Math.min(T, r.top); R = Math.max(R, r.right); B = Math.max(B, r.bottom); }); return { left: L, top: T, right: R, bottom: B, width: R - L, height: B - T }; },
+      scrollIntoView: function () {} };
+  }
+  function fightLive() { return !!(state && state.fy && state.fy.fight && !state.fy.fight.done); }
   var TOUR = [
-    { id: "pin", n: 1, face: "wink", on: "pin", label: "Pick one for me ▸",
-      text: "Welcome aboard, Executive! ✦ Each quarter you sign <b>ONE</b> deal. Tap a glowing pin to see what it pays… and who pays for it!",
+    { id: "era", n: 1, face: "wink", next: true,
+      text: function () { var E = pennyEra(); return "Welcome to Port Calder, <b>" + (E ? E.year + ", " + E.name : "1978") + "</b> ✦ Your climb runs 12 quarters through three eras: <b>1978</b>, <b>2008</b> and <b>today</b>. Each quarter you sign <b>one deal</b> and place <b>one bunker order</b>."; },
+      skip: function () { return state.phase !== "deal"; },
+      target: function () { return pq("#rail-wrap"); } },
+    { id: "pin", n: 2, face: "excited", on: "pin", label: "Pick one for me ▸",
+      text: "These glowing pins are this quarter's <b>deals</b>. Tap one to see what it pays… and who pays for it!",
       skip: function () { return state.phase !== "deal"; },
       target: function () { return pennyPin(); },
       act: function () { var t = pennyPin(); if (t) selectDealPin(t.getAttribute("data-deal")); } },
     { id: "preview", n: 2, face: "smug", next: true, back: "pin",
-      text: "<b>NOW</b> is what lands in your account. <b>LATER</b> is the bill, parked on the timeline. And that glowing region on the map? Those stress pips are the people who pay. Not you, obviously!",
+      text: "<b>Now</b> is what lands in your account. <b>Later</b> is the bill, parked on the timeline. And every deal sends someone to your <b>door</b>: the sheet says who.",
       skip: function () { return state.phase !== "deal"; },
       lost: function () { return !sel.deal; },
       target: function () { return pq("#dossier .deal-dz") || pq("#dossier"); }, glow: ".desk .pv-plate, .desk .pv-outline" },
-    { id: "sign", n: 3, face: "excited", on: "signed", back: "pin", label: "Sign it for me ▸",
-      text: "Love it. Pure synergy! Now <b>sign the deal</b>. One signature per quarter, so make it count ♡",
+    { id: "sign", n: 2, face: "excited", on: "signed", back: "pin", label: "Sign it for me ▸",
+      text: "Love it. Pure synergy! <b>Sign the deal</b>. One signature per quarter, so make it count ♡",
       skip: function () { return state.phase !== "deal"; },
       lost: function () { return !sel.deal; },
       target: function () { return pq("#btn-sign:not([disabled])") || pq("#dossier .dz-choice:not([disabled])"); },
       act: function () { clickEl(pq("#btn-sign:not([disabled])") || pq("#dossier .dz-choice:not([disabled])")); } },
-    { id: "door", n: 4, face: "worried", on: "fight-card", label: "Play one for me ▸",
-      text: "Knock knock! Every deal sends someone to your <b>door</b>. Tap a <b>Talking Points</b> card: its <b>Pressure</b> knocks down their <b>Scrutiny</b>. Hit 0 and they leave.",
-      skip: function () { return !(state.fy && state.fy.fight && !state.fy.fight.done); },
+    { id: "door", n: 3, face: "worried", on: "fight-card", label: "Play one for me ▸",
+      text: "Knock knock! They're here. Cards cost <b>◆ Influence</b> (3 a round). <b>Pressure</b> knocks down their <b>Scrutiny</b>: hit 0 and you win the room. Tap a <b>Talking Points</b>.",
+      skip: function () { return !fightLive(); },
       wait: function () { return !doorOpen(); },
       target: function () { return pennyCard("p") || pq("#door .df-hand"); },
       act: function () { var c = pennyCard("p") || pennyCard(); if (c) clickEl(c); } },
-    { id: "intent", n: 4, face: "smug", next: true, back: "door",
-      text: "That red badge is their <b>intent</b>: what lands when you end the round, and on which meter. <b>No Comment</b> blocks it point for point. You get <b>3 ◆</b> a round, so choose!",
-      skip: function () { return !(state.fy && state.fy.fight && !state.fy.fight.done); },
+    { id: "intent", n: 3, face: "smug", next: true, back: "door",
+      text: "The red badge is their <b>intent</b>: what hits your cash, unrest or collapse when the round ends. <b>Deniability</b> (No Comment) blocks it point for point. The <b>Gallery</b> shows who the room is with.",
+      skip: function () { return !fightLive(); },
       target: function () { return pq("#df-intent"); } },
-    { id: "win", n: 4, face: "excited", on: "fight-done", label: "Play for me ▸",
-      text: "Finish them off! Play another <b>Talking Points</b>. If you can't, block what you can and <b>End round</b>. Losing still signs the deal… it just costs you.",
-      skip: function () { return !(state.fy && state.fy.fight && !state.fy.fight.done); },
+    { id: "win", n: 3, face: "excited", on: "fight-done", label: "Play for me ▸",
+      text: "Finish them! Play more <b>Pressure</b>, <b>Settle</b> (pay cash to make it go away), or <b>End round</b>. Win or lose, the deal still signs. Losing just lets their intent land.",
+      skip: function () { return !fightLive(); },
       target: function () { return pennyCard("p") || pq("#df-end"); },
       act: function () { var c = pennyCard("p") || pennyCard(); if (c) clickEl(c); else clickEl(pq("#df-end")); } },
-    { id: "close", n: 4, face: "wink", on: "reward-open", label: "Close it ▸",
-      text: "They're gone! Winning paid a bonus. Now <b>close the door</b> and collect your reward ✧",
+    { id: "close", n: 3, face: "wink", on: "reward-open", label: "Close it ▸",
+      text: "Done! How you won stamps their portrait, and they remember it later. <b>Close the door</b> for your reward ✧",
       skip: function () { return !(state.fy && state.fy.fight); },
       target: function () { return pq("#df-close"); },
       act: function () { clickEl(pq("#df-close")); } },
     { id: "reward", n: 4, face: "excited", on: "reward-done", label: "Pick for me ▸",
-      text: "Your <b>reward</b>: frame an Asset on the wall, then add a card to your deck, shred one, or skip for cash. A lean deck draws its best cards more often!",
+      text: function () { if (pq("#door .rw-item")) return "Loot! An <b>item</b> for your briefcase: keep it for a rainy quarter (the Case button on the rail), or sell it for cash. Assets and cards come next."; return pq("#door .rw-assets") ? "Loot! Frame one <b>Asset</b> on your office wall: it pays every quarter (read the small print). Next comes a card: add one, <b>shred</b> one, or skip for cash." : "Your <b>reward</b>: add a card to your deck, <b>shred</b> a weak one, or skip for cash. A lean deck draws its best cards more often!"; },
       skip: function () { return !(state.fy && state.fy.reward); },
-      target: function () { return pq("#door .rw-assets") || pq("#door .rw-cards") || pq("#door .rw-in"); },
+      target: function () { return (pq("#door .rw-item") ? pennyUnion("#door .rw-item, #door .rw-foot .btn") : null) || pennyUnion("#door .rw-assets [data-asset]") || pennyUnion("#door .rw-cards [data-card]") || pq("#door .rw-in"); },
       act: function () { var a = pq("#door [data-asset]"); if (a) { clickEl(a); return; } var k = pq("#rw-keep"); if (k) { clickEl(k); return; } var c = pq("#door [data-card]"); if (c) { clickEl(c); setTimeout(function () { clickEl(pq("#rw-take")); }, 80); } } },
     { id: "bunker", n: 5, face: "wink", on: "bunker-open", label: "Open it ▸",
-      text: "Back at the desk! Now the fun part: <b>your private bunker</b>. Open it up. You get one bunker order per quarter.",
+      text: function () { var x = pennyExec(); return "Back at the desk. That hatch on the side is your way down to <b>" + LD.escapeHtml(x.compound || "your bunker") + "</b>. One bunker order per quarter: open it up!"; },
       skip: function () { return state.phase !== "bunker" || state.bunkerActedThisTurn; },
-      wait: function () { return bunkerOpen(); },
+      wait: function () { return bunkerOpen() || !!pq("#overlay.on") || doorOpen(); },
       target: function () { return pq("#bunker-card"); },
       act: function () { clickEl(pq("#bunker-card")); } },
     { id: "room", n: 5, face: "excited", on: "room", back: "bunker", label: "Pick for me ▸",
-      text: "Four rooms: <b>Air, Water, Power, Food</b>. The doors only close for you once all four work. Tap a room to see your options ✧",
+      text: "Four rooms: <b>Air, Water, Power, Food</b>. The doors only close for you once all four work. Tap a room ✧",
       skip: function () { return state.bunkerActedThisTurn || (bk.focus && isRoom(bk.focus) && bunkerOpen()); },
       lost: function () { return !bunkerOpen(); },
       target: function () { return pennyRoom(); },
       act: function () { clickEl(pennyRoom()); } },
     { id: "order", n: 5, face: "worried", on: "built", back: "room", label: "Order it for me ▸",
-      text: "<b>Sound</b> work costs more and <i>holds</i> when the doors close. <b>Discount</b> is cheaper… but at Lv 2 it cracks at evacuation unless you hire an engineer or reach Lv 3. Ehehe… choose wisely!",
+      text: "<b>Sound</b> work costs more and <i>holds</i>. <b>Discount</b> is cheaper… but at Lv 2 it cracks at sealing unless you hire an engineer or reach Lv 3. Ehehe… choose wisely!",
       skip: function () { return state.bunkerActedThisTurn; },
       lost: function () { return !bunkerOpen() || !bk.focus || !isRoom(bk.focus); },
       target: function () { return pq("#bk-panel .bp-buy") || pq("#bk-panel"); },
       act: function () { clickEl(pq('#bk-panel [data-up][data-q="sound"]:not([disabled])') || pq("#bk-panel [data-up]:not([disabled])")); } },
-    { id: "meters", n: 6, face: "smug", next: true,
-      text: "Your office holds your three numbers. <b>Cash</b> is on the desk and buys everything. <b>Unrest</b> is the door: the angrier the street, the harder they knock, and at 100 they're inside. <b>Collapse</b> is the city out the window: at 100 it's over, bunker or not.",
+    { id: "office", n: 6, face: "smug", next: true,
+      text: "Your office holds your three numbers. <b>Cash</b> sits on the desk. <b>Unrest</b> is the door: the angrier the street, the harder they knock. <b>Collapse</b> is the city out the window. Either one at 100 ends you.",
       wait: function () { return bunkerOpen() || !!pq("#overlay.on"); },
       target: function () { return pq(".desk .dash-meters"); } },
-    { id: "rail", n: 7, face: "worried", next: true,
-      text: "This is the <b>timeline</b>. Deals leave little IOUs here (unrest, collapse, late shipments) that land in future quarters. Read it before you sign. Or don't! …Please do.",
+    { id: "rail", n: 6, face: "wink", next: true,
+      text: "Your desk drawer, on the side: your <b>Deck</b>, your <b>Case</b> (Assets on the wall, items in the drawer) and the <b>Phone</b>. When it rings, take the call: headhunters hire fixers, old friends offer a <b>Favour</b>.",
       wait: function () { return !!pq("#overlay.on"); },
-      target: function () { return pq("#rail-wrap"); } },
-    { id: "endq", n: 8, face: "excited", on: "endq", label: "End Quarter ▸",
+      target: function () { return pq("#side-rail .sr-top"); } },
+    { id: "endq", n: 7, face: "excited", on: "endq", label: "End Quarter ▸",
       text: "Ready? Press <b>End Quarter</b> and watch the world react to your genius.",
       skip: function () { return state.phase === "deal" || state.turn > PN.startTurn; },
       wait: function () { return !!pq("#overlay.on"); },
       target: function () { return pq("#btn-endq"); },
       act: function () { clickEl(pq("#btn-endq")); } },
-    { id: "react", n: 8, face: "wink", passive: true, on: "report", scrollTo: ".desk .board",
-      text: "Here it comes… income, protests, Collapse ticking up. Hit <b>Skip</b> any time if you're busy being visionary.",
+    { id: "react", n: 7, face: "wink", passive: true, on: "report",
+      text: "Here it comes… income, protests, Collapse ticking up. Busy being visionary? <b>Skip</b> any time.",
       skip: function () { return reportOpen(); },
       target: function () { return null; } },
-    { id: "report", n: 8, face: "smug", on: "report-closed", label: "Next quarter ▸",
-      text: "Your <b>quarterly report</b>. Numbers went up! Some of them were the bad ones. Open the next quarter when you're ready.",
+    { id: "report", n: 7, face: "smug", on: "report-closed", label: "Next quarter ▸",
+      text: "Your <b>quarterly report</b>. Numbers went up! Some of them were the bad ones.",
       skip: function () { return !reportOpen() && state.phase === "deal" && state.turn > PN.startTurn; },
-      target: function () { return pq("#overlay.report-mode .panel"); },
+      target: function () { return pq("#overlay.report-mode #ov-ok"); },
       act: function () { clickEl(pq("#ov-ok")); } },
-    { id: "goal", n: 9, face: "excited", next: true, last: true,
-      text: "The goal: get <b>all 4 rooms to Lv 2+</b>, then <b>seal the bunker from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse hits 100. Two bosses knock at Q4 and Q8, and the Reckoning waits at the end. Win fights, build your deck, hire fixers when the phone rings. Go get 'em, Executive! ✦",
-      wait: function () { return !!pq("#overlay.on"); },
+    { id: "goal", n: 8, face: "excited", next: true, last: true,
+      text: function () { return "The goal: all <b>4 rooms at Lv 2+</b>, then <b>seal the bunker from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse or Unrest hit 100. Bosses knock at Q4 and Q8. Between climbs, spend your Dividends ◈ in the <b>Summit Lounge</b>. Go get 'em, Executive! ✦"; },
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
       target: function () { return pq("#bunker-card"); } }
   ];
-  var TOUR_TOTAL = 9;
+  var TOUR_TOTAL = 8;
 
   var PENNY_TIPS = {
     crisis: { face: "worried", text: function () { return "Uh-oh, a <b>crisis</b>! You pick a response instead of a plain signature. Paying it off works… until Unrest hits " + LD.mods(state).crisisNoPayAt + ". Then the street stops cashing cheques."; },
@@ -2609,6 +2648,41 @@
     arrow.style.top = Math.max(4, Math.min(vh - 74, ay)) + "px";
     arrow.classList.toggle("up", up);
     pennyAvoidControls(box);
+    if (pennyFitAway(box, { left: L, top: T, right: R, bottom: B })) {
+      /* Box moved: re-aim the arrow from the side the box is not on. */
+      var nb = box.getBoundingClientRect(), up2 = nb.top < T;
+      var ay2 = up2 ? B + 6 : T - 74;
+      if (!up2 && ay2 < nb.bottom) { up2 = true; ay2 = B + 6; }
+      arrow.style.top = Math.max(4, Math.min(vh - 74, ay2)) + "px";
+      arrow.classList.toggle("up", up2);
+    }
+  }
+  /* Last resort: if the dialogue still sits on the thing it points at, slide it into the free band
+     just below (or above) the target, between the target and the nearest control. */
+  function pennyFitAway(box, hr) {
+    var b = box.getBoundingClientRect(), vh = window.innerHeight;
+    var ix = Math.min(b.right, hr.right) - Math.max(b.left, hr.left), iy = Math.min(b.bottom, hr.bottom) - Math.max(b.top, hr.top);
+    if (ix <= 4 || iy <= 4) return false;
+    var stops = document.querySelectorAll("#btn-endq, #door .df-hand, #door .df-actions, #df-end, #df-settle, #df-close, #door .rw-foot, #overlay .btn-row");
+    var floor = vh - 6, ceil = 6;
+    Array.prototype.forEach.call(stops, function (n) { if (!pvis(n)) return; var r = n.getBoundingClientRect(); if (r.top >= hr.bottom - 2 && r.top < floor) floor = r.top - 4; if (r.bottom <= hr.top + 2 && r.bottom > ceil) ceil = r.bottom + 4; });
+    var h = b.height, el = PN.el, vw = window.innerWidth;
+    /* Wide screens: move beside the target first. */
+    if (vw > 720) {
+      var room = Math.max(hr.left - 24, vw - hr.right - 24);
+      if (room >= 340) {
+        var w = Math.min(620, room), left = hr.left - 24 >= vw - hr.right - 24 ? 12 : hr.right + 12;
+        box.style.transform = "none"; box.style.left = Math.round(left) + "px"; box.style.right = "auto"; box.style.width = Math.round(w) + "px";
+        var nb = box.getBoundingClientRect();
+        if (Math.min(nb.right, hr.right) - Math.max(nb.left, hr.left) <= 4) return true;
+      }
+    }
+    var place = function (top) { el.classList.add("box-top"); box.style.bottom = "auto"; box.style.top = Math.round(Math.max(vw <= 720 ? 24 : 22, top)) + "px"; }; /* room for the name pill above the card */
+    if (hr.bottom + 10 + h <= floor) { place(hr.bottom + 10); return true; }
+    if (hr.top - 10 - h >= ceil) { place(hr.top - 10 - h); return true; }
+    /* No clean band: pick the bigger side and keep the box off the target's centre line at least. */
+    if (floor - hr.bottom > hr.top - ceil) place(Math.min(vh - h - 6, hr.bottom + 6)); else place(Math.max(6, hr.top - 6 - h));
+    return true;
   }
   function pennyHits(box, nodes) {
     var b = box.getBoundingClientRect();
@@ -2630,9 +2704,12 @@
   }
   /* Keep Penny off the deal card, End Quarter, the forecast rail, the ticker and the fight hand. */
   function pennyAvoidControls(box) {
-    box.style.left = ""; box.style.width = ""; box.style.top = ""; box.style.bottom = ""; box.style.transform = "";
+    box.style.left = ""; box.style.width = ""; box.style.top = ""; box.style.bottom = ""; box.style.transform = ""; box.style.right = "";
     var vw = window.innerWidth, vh = window.innerHeight;
     var el = PN.el;
+    /* Phones: keep the dialogue clear of the side rail so every rail button stays visible and tappable. */
+    var rail = document.querySelector(".desk #side-rail");
+    if (vw <= 720 && rail && pvis(rail) && !bunkerOpen() && !doorOpen() && !pq("#overlay.on")) box.style.right = Math.max(8, Math.round(vw - rail.getBoundingClientRect().left + 6)) + "px";
     var dz = document.querySelector(".desk.has-sel .deal-dz, .desk.has-sel #dossier");
     if (vw > 720 && dz && pvis(dz)) {
       var d = dz.getBoundingClientRect(), b = box.getBoundingClientRect();
@@ -2693,6 +2770,7 @@
     opts = opts || {};
     if (!state || screen !== "desk") return;
     pennyCloseTip(true);
+    if (!opts.offer) pennySave(function (p) { p.tipsOff = false; });
     PN.on = true;
     PN.mode = "tour";
     PN.startTurn = state.turn;
@@ -2702,7 +2780,7 @@
     renderDesk();
     if (opts.offer) {
       PN.idx = -1;
-      pennyShowStep({ offer: true, face: "wink", n: 0, text: "Hi! I'm <b>Penny</b>, from Onboarding ✦ Want a quick guided first quarter? Two minutes, nine steps, zero liability!", target: null });
+      pennyShowStep({ offer: true, face: "wink", n: 0, text: "Hi! I'm <b>Penny</b>, from Onboarding ✦ Want a quick guided first quarter? Eight short steps, zero liability! Skip it and I'll stay quiet ♡", target: null });
       return;
     }
     PN.idx = -1;
@@ -2744,13 +2822,15 @@
     Array.prototype.forEach.call(document.querySelectorAll(".pn-glow"), function (g) { g.classList.remove("pn-glow"); });
     if (PN.el) PN.el.hidden = true;
   }
-  function pennyDone() {
-    pennySave(function (p) { p.done = true; p.offered = true; });
+  function pennyDone(skipped) {
+    /* Skipping the tour also mutes the one-time tips (they used to pop over fight intros right after a skip).
+       Finishing it marks the tips the tour already covered as seen. Tips can be turned back on by replaying the tour. */
+    pennySave(function (p) { p.done = true; p.offered = true; if (skipped) p.tipsOff = true; else { p.tips = p.tips || {}; p.tips.fight = p.tips.reward = p.tips.boss = true; } });
     var wasDesk = screen === "desk" && state && !state.ended;
     pennyStop();
     if (wasDesk) renderDesk();
   }
-  function pennySkip() { pennyDone(); }
+  function pennySkip() { pennyDone(true); }
 
   /* One-time tips: same dialogue, "Got it" to close. Never during the tour. */
   function pennyTip(key) {

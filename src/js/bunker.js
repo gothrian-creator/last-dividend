@@ -418,7 +418,23 @@
       '<span class="bp-dot">·</span><span>Goal: all 4 rooms Lv 2+, then seal from Q' + LD.MIN_EVAC_TURN + "</span></div>";
     h += '<div class="bp-hint-sub"><b>Discount</b> cracks at Lv 2 unless you hire an engineer or reach Lv 3. Office, lot and blast door are tappable too.</div>';
     h += sealBonusNote(state);
+    h += roomRoster(state);
     return h;
+  }
+
+  /* Room roster: one tappable row per room (phones/portrait use it to fill the space under the cutaway). */
+  function roomRoster(state) {
+    var ups = {}; LD.availableUpgrades(state).forEach(function (u) { ups[u.systemId] = u; });
+    var label = { empty: "Empty", incomplete: "Building", risk: "At risk", ready: "Ready" };
+    var h = '<div class="bp-roster" role="list" aria-label="Rooms">';
+    ["air", "water", "power", "food"].forEach(function (id) {
+      var s = roomStage(state, id), u = ups[id];
+      var next = !u ? "Fully built" : u.inbound ? "Arrives Q" + u.inbound.due : "Next Lv " + u.level + " · " + money(u.soundCost) + " / " + money(u.cheapCost);
+      h += '<button class="bp-ros st-' + s.status + '" role="listitem" data-roster="' + id + '" aria-label="' + esc(LD.BUNKER_ROOMS[id].name + ", level " + s.level + ", " + label[s.status] + ". " + next) + '">' +
+        '<span class="bp-ico st-' + s.status + '" aria-hidden="true">' + ICON[id] + '</span><span class="bp-ros-t"><b>' + esc(LD.BUNKER_ROOMS[id].name) + " · Lv " + s.level + (s.cheap ? " · Discount" : s.level ? " · Sound" : "") + "</b><small>" + esc(next) + "</small></span>" +
+        '<span class="bp-ros-st">' + esc(label[s.status]) + "</span></button>";
+    });
+    return h + "</div>";
   }
 
   /* Seal bonus preview: what Lv 3 rooms pay when the doors close with you inside. */

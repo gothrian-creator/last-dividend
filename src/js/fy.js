@@ -228,7 +228,7 @@
   };
   function seedBosses(seed) {
     var h = LD.hashString("bosses:" + seed);
-    return { bossI: ["earnings", "earnings", "shortseller"][h % 3], bossII: ["strike", "crash"][Math.floor(h / 3) % 2], bossIII: ["reckoning", "heatdome", "seawall"][Math.floor(h / 9) % 3] };
+    return { bossI: ["earnings", "earnings", "shortseller"][h % 3], bossII: ["strike", "crash", "bid"][Math.floor(h / 3) % 3], bossIII: ["reckoning", "heatdome", "seawall"][Math.floor(h / 9) % 3] };
   }
 
   /* ---------- Credit rating rules (cumulative) ---------- */

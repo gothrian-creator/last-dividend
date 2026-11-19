@@ -281,7 +281,7 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
       "no rival faction in the engine (events: " + [...new Set(evs)].join(",") + ")");
     ok(dh && !/class="panel rivals"|rv-row|seals\?|Rival/.test(dh), "hub has no Rivals panel, rival flags or seal-race marks");
     const pools = new Set(); for (let i = 0; i < 60; i++) pools.add(LD.seedBosses ? LD.seedBosses("s" + i).bossII : (LD.createRun({ seed: "b" + i, executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 }).fy || {}).bossII);
-    ok(!pools.has("bid") && LD.ENCOUNTERS.rival.name === "The Holdout" && !/rival/i.test(JSON.stringify(LD.MEMOS) + JSON.stringify(LD.PACKS) + LD.EXEC_TRAITS.julian.bad.text), "no Hostile Takeover Bid boss, no rival memos, packs or traits (Act II bosses: " + [...pools].join(",") + ")");
+    ok(pools.has("bid") && pools.has("strike") && pools.has("crash") && LD.ENCOUNTERS.rival.name === "The Holdout" && !/rival/i.test(JSON.stringify(LD.MEMOS) + JSON.stringify(LD.PACKS) + LD.EXEC_TRAITS.julian.bad.text), "Hostile Takeover Bid is back in the Act II seed pool (Victor Crowe, a raider, not a rival exec); no rival memos, packs or traits (Act II bosses: " + [...pools].join(",") + ")");
   }
   /* Lines work for every executive: no family tie between Victor Crowe and playable Julian Crowe, no "your bank/app" that only fits one firm. */
   {

@@ -7,7 +7,7 @@ Do not rebuild or edit `/workspace/last-dividend` — that tree is an older arch
 ## Build
 
 ```
-python3 /workspace/last-dividend-v3/scripts/build.py
+python3 /workspace/ld-src/scripts/build.py
 ```
 
 Writes `dist/index.html`. Add `--pages` to also copy into `/workspace/last-dividend-pages/index.html` (the GitHub Pages repo). That does not commit or push.
@@ -15,8 +15,8 @@ Writes `dist/index.html`. Add `--pages` to also copy into `/workspace/last-divid
 ## Test
 
 ```
-node /workspace/last-dividend-v3/tests/run-tests.js
-node /workspace/last-dividend-v3/tests/smoke.js
+node /workspace/ld-src/tests/run-tests.js
+node /workspace/ld-src/tests/smoke.js
 ```
 
 `smoke.js` needs headless Chrome and a built `dist/index.html` (it will build if needed).
@@ -32,8 +32,8 @@ node /workspace/last-dividend-v3/tests/smoke.js
 
 The screenshot/smoke scripts load `puppeteer-core` from `/workspace/tools/node_modules` (durable; `/tmp` gets wiped) and drive `/usr/bin/google-chrome`.
 If it's missing: `cd /workspace/tools && npm i puppeteer-core`. Override with `PPTR=/path/to/puppeteer-core`.
-Test viewports: 360x800, 412x915, 800x1280, 1280x800 only.
+Test viewports (Nov 2026 sweep): 390x844, 375x667, 360x740, 768x1024, 1024x768, 1024x1366, 1366x1024, 1280x720, 1920x1080. In-run screens must not scroll; menus, collections and How to play may.
 
 ## Source control
 
-This tree is a git repo (local). It is backed up to the GitHub repo's `source` branch (separate history from `main`, which is the Pages build). Normal pushes only.
+This tree is a git repo (local). It is backed up to the GitHub repo's `source` branch (separate history from `main`, which is the Pages build). Normal pushes only. Deploy: build with `--pages`, then commit `index.html` (+ any new `assets/`) on `main` as "Deploy: …" and push. The source branch gets the matching source commit.

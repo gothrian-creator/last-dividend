@@ -503,6 +503,43 @@
   }
 
 
+  /* ---------- Side rail: the desk's menu buttons on the screen edge (menu, deck, briefcase, phone, bunker hatch) ---------- */
+  var RAIL_SVG = {
+    menu: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg>',
+    deck: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3.5" width="11" height="15" rx="1.6" transform="rotate(8 13.5 11)"/><rect x="5" y="5.5" width="11" height="15" rx="1.6" class="f"/><path d="M8.2 10.5l2.3-2.3 2.3 2.3-2.3 2.3z"/></svg>',
+    phone: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5c0-2.4 3.8-4.2 8.5-4.2s8.5 1.8 8.5 4.2v1.2h-4.2V8.9c-1.2-.4-2.7-.6-4.3-.6s-3.1.2-4.3.6v1.8H3.5z" class="f"/><path d="M6.5 12.5h11l1.5 6.5H5z"/><circle cx="12" cy="15.7" r="1.7"/></svg>'
+  };
+  LD.BUNKER_ICON = { mara: "bunker-mara", reid: "bunker-reid", imani: "bunker-imani", julian: "bunker-julian", soren: "bunker-soren", cassius: "bunker-cassius" };
+  /* The executive's own compound hatch (painted icon); unknown executives fall back to the shared bunker token. */
+  LD.bunkerIcon = function (state, cls) {
+    var k = LD.BUNKER_ICON[state && state.executiveId];
+    var tokFb = LD.tok ? LD.tok("bunker") : "⛫";
+    if (!k) return '<span class="' + (cls || "sr-hatch") + ' sr-hatch-fb">' + tokFb + "</span>";
+    return '<span class="' + (cls || "sr-hatch") + '"><img src="assets/icons/' + k + '.webp" alt="" draggable="false" onerror="this.parentNode.className+=\' sr-hatch-fb\'">' + tokFb + "</span>";
+  };
+  function sideRail(state, ui) {
+    var f = state.fy || {};
+    var dealPhase = state.phase === "deal";
+    var ring = !!f.memo, ERA = LD.ERAS && LD.eraOf ? LD.ERAS[LD.eraOf(state)] : null;
+    var r = LD.readinessSummary(state);
+    var lv = 0; LD.SYSTEMS.forEach(function (s) { lv += Math.min(3, (state.bunker[s.id] && state.bunker[s.id].level) | 0); });
+    var exec = LD.execById(state.executiveId) || {};
+    var bunkerReady = !dealPhase && !state.bunkerActedThisTurn;
+    var rd = (f.drawer || []).filter(function (d) { return LD.itemReady && LD.itemReady(state, d); }).length;
+    var h = '<nav class="side-rail" id="side-rail" aria-label="Desk controls"><div class="sr-top">';
+    h += '<button class="sr-btn sr-menu" id="btn-menu" aria-label="Menu"><span class="sr-ic">' + RAIL_SVG.menu + "</span><small>Menu</small></button>";
+    if (f.deck) h += '<button class="sr-btn sr-deck" id="btn-deck" aria-label="Deck, ' + f.deck.length + ' cards"><span class="sr-ic">' + RAIL_SVG.deck + '</span><small>Deck</small><em class="sr-badge">' + f.deck.length + "</em></button>";
+    if (state.fy) h += '<button class="sr-btn sr-case' + (rd ? " has-ready" : "") + '" id="btn-portfolio" aria-label="Briefcase, ' + LD.fySlotsUsed(state) + " of " + f.cap + " wall slots" + (rd ? ", " + rd + " drawer item" + (rd > 1 ? "s" : "") + " ready" : "") + '"><span class="sr-ic">' + (LD.tok ? LD.tok("case") : "💼") + '</span><small>Case</small><em class="sr-badge">' + (rd ? "⚡" + rd : LD.fySlotsUsed(state) + "/" + f.cap) + "</em></button>";
+    h += '<button class="sr-btn sr-phone' + (ring ? " ringing" : " quiet") + '" id="btn-phone" aria-label="' + esc(ring ? (ERA ? ERA.phone : "The phone is ringing") : "Phone: no calls right now") + '"' + '><span class="sr-ic">' + RAIL_SVG.phone + "</span><small>" + (ring ? "Call!" : "Phone") + "</small>" + (ring ? '<em class="sr-badge sr-ring">1</em>' : "") + "</button>";
+    h += '</div><span class="sr-gap" aria-hidden="true"></span>';
+    var pips = ""; for (var pi = 0; pi < 4; pi++) pips += '<i class="' + (pi < r.ready ? "on" : "") + '"></i>';
+    h += '<button class="sr-btn sr-bunker' + (bunkerReady ? " ready" : "") + (dealPhase ? " locked" : "") + (state.bunkerActedThisTurn ? " acted" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card" style="--bp:' + Math.round(lv / 12 * 100) + '%" aria-label="Floor hatch to ' + esc(exec.compound || "the bunker") + ", " + r.ready + " of 4 rooms ready" + (dealPhase ? ". Opens after you sign a deal" : state.bunkerActedThisTurn ? ". Works ordered this quarter" : ". Tap to build") + '">' +
+      LD.bunkerIcon(state) + '<span class="sr-pips" aria-hidden="true">' + pips + "</span><small>Bunker</small>" + (dealPhase ? '<em class="sr-lock" aria-hidden="true">🔒</em>' : "") + "</button>";
+    h += "</nav>";
+    return h;
+  }
+  LD.renderSideRail = sideRail;
+
   function renderDesk(state, ui) {
     ui = ui || {};
     var dealPhase = state.phase === "deal";
@@ -511,7 +548,8 @@
     h += '<header class="desk-head"><div class="brand"><div class="wordmark">LAST DIVIDEND<span class="sun" aria-hidden="true"></span></div>' +
       '<div class="tag">' + (LD.ERAS && LD.eraOf && LD.ERAS[LD.eraOf(state)] ? esc("Port Calder, " + LD.ERAS[LD.eraOf(state)].year.replace("Now", "now") + " · " + LD.ERAS[LD.eraOf(state)].name) : "A Brighter Tomorrow, Privately Owned") + '</div></div>' +
       '<div class="head-right"><div class="rating-plate" aria-label="Credit rating ' + esc(LD.ratingName(state.rating)) + '"><small>Rating</small>' + esc(LD.ratingName(state.rating)) + '</div><div class="q-chip" aria-label="Quarter ' + state.turn + '"><small>' + (LD.actChip ? LD.actChip(state) : "Quarter") + '</small>Q' + state.turn + (state.fy ? "<i>/" + state.fy.rules.finalQ + "</i>" : "") + "</div>" +
-      '<button class="icon-btn" id="btn-menu" aria-label="Menu">☰</button></div></header>';
+      "</div></header>";
+    h += sideRail(state, ui);
 
     h += '<aside class="dossier" id="dossier">' + renderDossier(state, ui) + "</aside>";
 
@@ -545,13 +583,6 @@
     }
     h += items.map(function (t, i) { return tickItem(t, i); }).join("");
     h += "</div></div></div>";
-    var bunkerReady = !dealPhase && !state.bunkerActedThisTurn;
-    h += '<button class="panel bunker-card' + (bunkerReady ? " ready" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card">' +
-      '<div class="panel-k bc-k">' + (LD.tok ? LD.tok("bunker") : "") + '<span>Floor hatch · bunker ' + esc(bunkerTally(state)) + (state.converting ? " · private" : "") + "</span></div>" +
-      (function () { var r = LD.readinessSummary(state), pp = '<div class="bc-pips" role="img" aria-label="' + r.ready + ' of 4 systems ready">'; for (var pi = 0; pi < 4; pi++) pp += '<i class="' + (pi < r.ready ? "on" : "") + '"></i>'; return pp + "</div>"; })() +
-      '<div class="bc-scene">' + LD.renderBunkerScene(state, { mini: true, idPrefix: "bm" }) + "</div>" +
-      (ui.coach === "bunker" && ui.coachText ? '<div class="coach-inline">' + esc(ui.coachText) + "</div>" : "") +
-      '<div class="bc-cta' + (dealPhase ? " locked" : "") + '">' + (dealPhase ? "Opens after you sign" : state.bunkerActedThisTurn ? "Works ordered this quarter" : "Tap to build ▸") + "</div></button>";
     h += "</aside>";
 
     h += '<footer class="hand">';

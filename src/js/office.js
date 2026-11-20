@@ -13,27 +13,27 @@
     "e1-L": { w: 1280, h: 720, hk: [0.72, 0], door: [81, 37, 188, 475], glass: [406, 181, 375, 181],
       occ: [[690, 372], [1280, 386], [1280, 650], [1120, 668], [950, 612], [700, 578]], deskY: 545, tick: [800, 445],
       mu: [335, 225], mc: [520, 362], pr: [1212, 402, 100], pl: [38, 92, 112, 72],
-      S: { door: [330, 545], desk: [930, 538], deskEntry: [640, 525], window: [600, 495], hatch: [470, 600], hatchAp: [320, 612], p1: [380, 600], p2: [640, 612], opp: [178, 512], oppIn: [270, 540] } },
+      S: { door: [330, 545], desk: [945, 538], deskEntry: [640, 525], window: [600, 495], hatch: [470, 600], hatchAp: [320, 612], p1: [380, 600], p2: [585, 612], opp: [178, 512], oppIn: [270, 540] } },
     "e2-L": { w: 1280, h: 720, hk: [0.745, 0], door: [50, 25, 244, 531], glass: [344, 56, 531, 388],
       occ: [[655, 336], [1000, 352], [1215, 400], [1215, 600], [1060, 640], [960, 645], [690, 550]], deskY: 560, tick: [830, 458],
       mu: [318, 250], mc: [500, 444], pr: [1168, 405, 80], pl: [40, 175, 165, 64],
-      S: { door: [350, 590], desk: [850, 555], deskEntry: [600, 545], window: [560, 520], hatch: [455, 608], hatchAp: [300, 620], p1: [380, 612], p2: [640, 622], opp: [172, 556], oppIn: [260, 580] } },
+      S: { door: [350, 590], desk: [850, 555], deskEntry: [600, 545], window: [560, 520], hatch: [455, 608], hatchAp: [300, 620], p1: [380, 612], p2: [555, 622], opp: [172, 556], oppIn: [260, 580] } },
     "e3-L": { w: 1280, h: 720, hk: [0.70, 0], door: [106, 50, 169, 431], glass: [369, 31, 493, 381],
       occ: [[675, 360], [1210, 385], [1210, 560], [1000, 590], [700, 480]], deskY: 520, tick: [850, 435],
       mu: [322, 230], mc: [500, 396], pr: [1160, 392, 84], pl: [30, 118, 110, 40],
-      S: { door: [330, 515], desk: [900, 515], deskEntry: [620, 505], window: [600, 470], hatch: [455, 592], hatchAp: [310, 604], p1: [360, 590], p2: [640, 600], opp: [190, 481], oppIn: [270, 505] } },
+      S: { door: [442, 530], desk: [900, 515], deskEntry: [620, 505], window: [600, 470], hatch: [455, 592], hatchAp: [310, 604], p1: [360, 590], p2: [605, 600], opp: [190, 481], oppIn: [270, 505] } },
     "e1-P": { w: 720, h: 1280, hk: [0.62, 10], door: [12, 106, 151, 506], glass: [244, 250, 325, 212],
       occ: [[412, 503], [720, 515], [720, 820], [650, 790], [480, 705], [420, 670]], deskY: 680, tick: [520, 585],
       mu: [190, 205], mc: [405, 252, 1], pr: [300, 484, 68], pl: [36, 88, 86, 62],
-      S: { door: [235, 650], desk: [575, 675], deskEntry: [345, 700], window: [400, 650], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [88, 612], oppIn: [160, 660] } },
+      S: { door: [235, 650], desk: [545, 675], deskEntry: [335, 700], window: [400, 650], hatch: [330, 950], hatchAp: [160, 960], p1: [170, 830], p2: [250, 1060], opp: [88, 612], oppIn: [160, 660] } },
     "e2-P": { w: 720, h: 1280, hk: [0.66, 10], door: [25, 50, 163, 575], glass: [222, 87, 353, 425],
       occ: [[365, 478], [600, 470], [720, 490], [720, 700], [590, 728], [385, 622]], deskY: 640, tick: [480, 555],
       mu: [200, 170], mc: [380, 102, 0], pr: [268, 522, 62], pl: [30, 175, 112, 58],
-      S: { door: [250, 670], desk: [560, 635], deskEntry: [330, 680], window: [400, 640], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [106, 625], oppIn: [180, 670] } },
+      S: { door: [250, 670], desk: [560, 635], deskEntry: [330, 680], window: [290, 580], hatch: [330, 950], hatchAp: [160, 960], p1: [170, 830], p2: [195, 1060], opp: [106, 625], oppIn: [180, 670] } },
     "e3-P": { w: 720, h: 1280, hk: [0.60, 10], door: [19, 144, 106, 531], glass: [187, 87, 388, 513],
       occ: [[398, 560], [720, 575], [720, 790], [620, 785], [410, 700]], deskY: 720, tick: [505, 615],
       mu: [150, 205], mc: [330, 150, 0], pr: [300, 602, 62], pl: [14, 122, 74, 30],
-      S: { door: [205, 710], desk: [585, 715], deskEntry: [330, 745], window: [390, 700], hatch: [330, 960], hatchAp: [160, 970], p1: [210, 860], p2: [470, 930], opp: [72, 675], oppIn: [140, 720] } }
+      S: { door: [205, 710], desk: [585, 715], deskEntry: [330, 745], window: [390, 700], hatch: [330, 960], hatchAp: [160, 970], p1: [170, 860], p2: [250, 1070], opp: [72, 675], oppIn: [140, 720] } }
   };
   var IDS = ["mara", "reid", "julian", "cassius", "imani", "soren"];
   var SAY = {
@@ -178,8 +178,8 @@
     var f = O.face && O.face[k]; if (!f) return;
     var n = f.querySelector(".o4-num"); n.textContent = txt;
     /* quads: the figure takes as much of the painted screen as it can (phones), by its length */
-    if (f.classList.contains("quad") && f._wh) { var w = f._wh[0], h = f._wh[1], len = Math.max(2, txt.length), sp = k === "C" ? [0.8, 0.5] : k === "K" ? [0.66, 0.92] : [0.6, 0.9];
-      n.style.fontSize = Math.min(h * sp[0], w * sp[1] / (len * 0.62)).toFixed(1) + "px"; } else n.style.fontSize = ""; f.querySelector(".o4-lab").textContent = label || "";
+    if (f.classList.contains("quad") && f._wh) { var w = f._wh[0], h = f._wh[1], len = Math.max(2, txt.length), sp = k === "C" ? [0.92, 0.52, 0.62] : k === "K" ? [0.72, 0.98, 0.56] : [0.66, 0.92, 0.62];
+      n.style.fontSize = Math.min(h * sp[0], w * sp[1] / (len * sp[2])).toFixed(1) + "px"; } else n.style.fontSize = ""; f.querySelector(".o4-lab").textContent = label || "";
     f.style.setProperty("--v", Math.max(0, Math.min(100, val)));
     f.classList.remove("lvl-ok", "lvl-warn", "lvl-danger"); f.classList.add("lvl-" + (lvl || "ok"));
   }

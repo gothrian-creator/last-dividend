@@ -5340,7 +5340,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   transition: transform 1s cubic-bezier(.3, 1.35, .5, 1); box-shadow: 2px 3px 2px rgba(40, 20, 0, .35); z-index: 2; }
 .o4-face.dial .o4-scr::after { content: ""; position: absolute; left: calc(50% - var(--r) * .11); top: calc(50% - var(--r) * .11); width: calc(var(--r) * .22); height: calc(var(--r) * .22); border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #f6dc8e, #a8741f 60%, #5c3a0c); box-shadow: 1px 2px 2px rgba(0, 0, 0, .45); z-index: 3; }
-.o4-face.dial .o4-num { left: 0; right: 0; top: 22%; text-align: center; font: 800 calc(var(--r) * .62)/1 var(--font-serif, Georgia, serif); color: #2b1a0b; text-shadow: 0 0 2px #f3e6c4, 0 0 4px #f3e6c4, 0 0 6px rgba(243, 230, 196, .8); z-index: 4; }
+.o4-face.dial .o4-num { left: 0; right: 0; top: 13%; text-align: center; font: 800 calc(var(--r) * .76)/1 var(--font-serif, Georgia, serif); color: #2b1a0b; text-shadow: 0 0 2px #f3e6c4, 0 0 4px #f3e6c4, 0 0 6px rgba(243, 230, 196, .8); z-index: 4; }
 .o4-face.dial .o4-lab, .o4-face.dial .o4-bar { display: none; }
 .o4-face.dial.lvl-warn .o4-num { color: #7a3d06; } .o4-face.dial.lvl-danger .o4-num { color: #a3170b; }
 .o4-face.dial.lvl-danger .o4-ndl { background: linear-gradient(90deg, #5a0a04, #b2200e 55%, #5a0a04); }
@@ -5370,3 +5370,4 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 .office .of-room.o4 .meter.o4-hit > * { visibility: hidden !important; }
 .office .of-room.o4 .meter.o4-hit:focus-visible { outline: 2px solid #f3d27a; outline-offset: 1px; }
 @media (prefers-reduced-motion: reduce) { .o4-face .o4-ndl, .o4-face .o4-bar i { transition: none !important; } .o4-face .o4-num { animation: none !important; } }
+.o4-stage[data-era="1"] .o4-fK .o4-num, .o4-stage[data-era="2"] .o4-fK .o4-num { letter-spacing: -.06em; }

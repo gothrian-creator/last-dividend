@@ -3,6 +3,7 @@
 const H=require("./h.js"),fs=require("fs");
 const OUT=process.argv[2]||"/workspace/ld-current/t/office"; fs.mkdirSync(OUT,{recursive:true});
 const sizes=(process.argv[3]||"390x844").split(",").map(s=>s.split("x").map(Number));
+const DEADLINE=Date.now()+(+(process.env.MAXMS||1200000));
 const RUN=JSON.parse(process.env.RUN||'{"seed":21,"stop":"deal:1","exec":"reid"}'), NQ=+(process.env.QUARTERS||3);
 const LOGGER=`(()=>{window.__o4=[];const t0=Date.now();let lp="",lc="";setInterval(()=>{const e=document.querySelector(".o4-ex"),s=document.querySelector(".o4-stage");if(!e||!s)return;const p=e.dataset.pose||"";const c=s.className.replace(/door-\\d|city-\\d|mood-\\w+|o4-stage|o4-rm/g,"").trim();const q=p.indexOf("walk")===0?"walk":p;if(q!==lp){window.__o4.push([Date.now()-t0,"pose",q,s.dataset.era,s.dataset.exec]);lp=q;}if(c!==lc){window.__o4.push([Date.now()-t0,"cls",c]);lc=c;}},60);})();`;
 async function vis(p,s){const h=await p.$(s);return h&&await h.isVisible().catch(()=>false)?h:null;}
@@ -12,19 +13,19 @@ async function scrolls(p){return p.evaluate(()=>{const se=document.scrollingElem
 for(const [w,h] of sizes){const tag=w+"x"+h+"-"+RUN.exec;const R=all[tag]={q:[],issues:[]};
  const ctxOpt=process.env.VIDEO?{recordVideo:{dir:OUT+"/vid-"+tag,size:{width:w,height:h}}}:null;
  let p;
- if(ctxOpt){const touch=w<1100||h>w;const ctx=await env.browser.newContext(Object.assign({viewport:{width:w,height:h},hasTouch:touch,isMobile:w<700,deviceScaleFactor:1},ctxOpt));p=await ctx.newPage();p.errs=[];p.ctx=ctx;
+ if(ctxOpt){const touch=w<1100||h>w;const ctx=await env.browser.newContext(Object.assign({viewport:{width:w,height:h},hasTouch:touch,isMobile:w<700,deviceScaleFactor:1},ctxOpt));p=await ctx.newPage();p.setDefaultTimeout(8000);p.errs=[];p.ctx=ctx;
    p.on("console",m=>{if(m.type()==="error")p.errs.push("console: "+m.text())});p.on("pageerror",e=>p.errs.push("pageerror: "+e));p.on("requestfailed",r=>p.errs.push("reqfail: "+r.url()));p.on("response",r=>{if(r.status()>=400)p.errs.push("http "+r.status()+" "+r.url())});}
  else p=await H.page(env,w,h);
  await p.addInitScript(LOGGER);
  try{
  await H.seedRun(p,env.origin,RUN);
  for(let q=0;q<NQ;q++){
-  const Q={};
+  const Q={}; if(Date.now()>DEADLINE){R.issues.push("deadline");await p.screenshot({path:`${OUT}/${tag}-deadline.png`});break;}
   const info=await p.evaluate(()=>{const s=document.querySelector(".o4-stage");const st=JSON.parse(localStorage.getItem("lastDividend.v1")).midRun;return {turn:st&&st.turn,era:s&&s.dataset.era,lay:s&&s.dataset.lay,want:st&&LD.eraOf(st),exec:s&&s.dataset.exec};});
   Q.info=info; if(info.era!=String(info.want)) R.issues.push("era mismatch "+JSON.stringify(info));
   if(process.env.SHOTS) await p.screenshot({path:`${OUT}/${tag}-q${info.turn}-hub.png`});
   const pin=await p.$(".desk .map .pin.ld-act")||await p.$(".desk .map .pin");
-  if(!pin){R.issues.push("no pin q"+info.turn);break;}
+  if(!pin){R.issues.push("no pin q"+info.turn);await p.screenshot({path:`${OUT}/${tag}-stuck-q${info.turn}.png`});break;}
   const bb=await pin.boundingBox();await p.mouse.click(bb.x+bb.width/2,bb.y+bb.height/2);await p.waitForTimeout(700);
   const m0=await p.evaluate(()=>window.__o4.length);
   await tap(p,"#btn-sign:not([disabled])")||await tap(p,"#dossier .dz-choice:not([disabled])");
@@ -32,7 +33,7 @@ for(const [w,h] of sizes){const tag=w+"x"+h+"-"+RUN.exec;const R=all[tag]={q:[],
   let fight=false,entShot=false;
   for(let i=0;i<200;i++){await p.waitForTimeout(250);
    if(!entShot&&await p.$(".o4-stage.o4-open")){entShot=true;if(process.env.SHOTS)await p.screenshot({path:`${OUT}/${tag}-q${info.turn}-entrance.png`});}
-   if(await vis(p,"#door.on")){fight=true; if(await tap(p,"#door .df-hand .dc:not(.no)"))continue; for(const s of ["#df-end","#df-close","#rw-skip","#rw-keep","#door [data-asset]","#door [data-card]","#rw-take:not([disabled])","#rw-apass"]){if(await tap(p,s))break;} continue;}
+   if(await vis(p,"#door.on")){fight=true; if(await tap(p,"#door .df-hand .dc:not(.no)"))continue; for(const s of ["#df-end","#df-close","#rw-skip","#rw-keep","#door [data-asset]","#door [data-card]","#door [data-isell]","#door [data-areplace]","#rw-take:not([disabled])","#rw-apass"]){if(await tap(p,s))break;} continue;}
    if(await vis(p,"#overlay.on")){if(await tap(p,"#fy-boss-ok")||await tap(p,"#fy-m-a")||await tap(p,"#ov-ok"))continue;}
    const st=await p.evaluate(()=>{const b=document.querySelector("#bunker-card");return !!(b&&!b.classList.contains("locked")&&!b.classList.contains("acted"))||!!document.querySelector("#btn-endq:not(.ld-dim)")});if(st&&(fight||i>12))break;}
   Q.fight=fight; await p.waitForTimeout(2500);

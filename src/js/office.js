@@ -18,13 +18,13 @@
       S: { door: [330, 515], desk: [900, 515], deskEntry: [620, 505], window: [600, 470], hatch: [455, 592], hatchAp: [310, 604], p1: [360, 590], p2: [640, 600], opp: [190, 481], oppIn: [270, 505] } },
     "e1-P": { w: 720, h: 1280, hk: [0.62, 10], door: [12, 106, 151, 506], glass: [244, 250, 325, 212],
       occ: [[410, 480], [720, 500], [720, 800], [640, 790], [412, 650]], deskY: 680, tick: [565, 640],
-      S: { door: [235, 650], desk: [575, 675], deskEntry: [345, 700], window: [400, 650], hatch: [330, 1010], hatchAp: [150, 1015], p1: [210, 830], p2: [470, 900], opp: [88, 612], oppIn: [160, 660] } },
+      S: { door: [235, 650], desk: [575, 675], deskEntry: [345, 700], window: [400, 650], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [88, 612], oppIn: [160, 660] } },
     "e2-P": { w: 720, h: 1280, hk: [0.66, 10], door: [25, 50, 163, 575], glass: [222, 87, 353, 425],
       occ: [[365, 465], [720, 500], [720, 720], [560, 720], [380, 610]], deskY: 640, tick: [545, 560],
-      S: { door: [250, 670], desk: [560, 635], deskEntry: [330, 680], window: [400, 640], hatch: [330, 1010], hatchAp: [150, 1015], p1: [210, 830], p2: [470, 900], opp: [106, 625], oppIn: [180, 670] } },
+      S: { door: [250, 670], desk: [560, 635], deskEntry: [330, 680], window: [400, 640], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [106, 625], oppIn: [180, 670] } },
     "e3-P": { w: 720, h: 1280, hk: [0.60, 10], door: [19, 144, 106, 531], glass: [187, 87, 388, 513],
       occ: [[398, 560], [720, 575], [720, 790], [620, 785], [410, 700]], deskY: 720, tick: [560, 660],
-      S: { door: [205, 710], desk: [585, 715], deskEntry: [330, 745], window: [390, 700], hatch: [330, 1030], hatchAp: [150, 1035], p1: [210, 860], p2: [470, 930], opp: [72, 675], oppIn: [140, 720] } }
+      S: { door: [205, 710], desk: [585, 715], deskEntry: [330, 745], window: [390, 700], hatch: [330, 960], hatchAp: [160, 970], p1: [210, 860], p2: [470, 930], opp: [72, 675], oppIn: [140, 720] } }
   };
   var IDS = ["mara", "reid", "julian", "cassius", "imani", "soren"];
   var SAY = {
@@ -96,9 +96,11 @@
     var R = O.R, s = H / R.h;
     /* very wide strips (tablet portrait): zoom in a little, trimming ceiling and floor edge but never the desk-height head or the hatch */
     if (lay === "L" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.84));
+    /* wide side panels (desktop): fill the width and trim the empty floor at the bottom rather than show edge strips */
+    if (lay === "P" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.8));
     var pw = R.w * s, ph = R.h * s, ox;
     if (pw > W) ox = lay === "P" ? -(pw - W) * 0.3 : -(pw - W) / 2; else ox = (W - pw) / 2;
-    var oy = H - ph; oy = oy > 0 ? oy / 2 : oy * 0.45;
+    var oy = H - ph; oy = oy > 0 ? oy / 2 : oy * (lay === "P" ? 0.3 : 0.45);
     O.s = s; O.ox = ox; O.oy = oy;
     O.world.style.transform = "translate(" + ox.toFixed(1) + "px," + oy.toFixed(1) + "px) scale(" + s.toFixed(4) + ")";
     var fw = Math.max(0, ox);

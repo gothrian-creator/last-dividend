@@ -5246,8 +5246,6 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 .o4-hatch { position: absolute; z-index: 2; background-size: contain; background-position: center; background-repeat: no-repeat; transform: perspective(500px) rotateX(58deg); transform-origin: 50% 60%; pointer-events: none; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .35)); }
 .o4-hatch .o4-hglow { position: absolute; inset: 15%; border-radius: 10px; background: radial-gradient(closest-side, rgba(255, 216, 120, .9), transparent); opacity: 0; transition: opacity .3s; }
 .o4-hatch.on .o4-hglow { opacity: 1; }
-.o4-tick { position: absolute; z-index: 5; transform: translate(-50%, -100%); padding: 4px 14px; border-radius: 8px; background: #10241a; border: 4px solid #c8a34a; color: #9ff0a8; font: 800 40px/1.05 ui-monospace, "SF Mono", Menlo, monospace; text-shadow: 0 0 10px rgba(120, 255, 140, .55); white-space: nowrap; pointer-events: none; box-shadow: 4px 4px 0 rgba(0, 0, 0, .45); }
-.o4-tick.low { color: #ff9a7a; text-shadow: 0 0 10px rgba(255, 120, 90, .6); }
 .o4-ex { position: absolute; left: 0; top: 0; z-index: 6; pointer-events: none; transition: opacity .35s; will-change: transform; }
 .o4-ex .o4-shadow { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(20, 12, 6, .38); }
 .o4-ex .o4-body { position: absolute; left: 0; bottom: 0; transform-origin: 0 100%; }
@@ -5298,6 +5296,103 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 @media (min-width: 700px) and (max-width: 1199px) and (orientation: portrait) {
   .desk .office .of-room.o4 { height: clamp(140px, calc(var(--app-h, 100dvh) * 0.17), 250px) !important; }
 }
+
+/* ===== Office 40s polish: the meters are fixtures painted into the room, one look per era =====
+   size tier from office.js: data-o4sz s (phone strip) / m (tablet strip) / l (side panel). Units are em of the fixture. */
+.o4-prop { position: absolute; width: auto; pointer-events: none; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
+.o4-plaque { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; overflow: hidden; line-height: 1.05; }
+.o4-plaque b { font: 800 22px/1.05 var(--font-serif, Georgia, serif); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.o4-plaque small { font: 700 13px/1.1 var(--font-serif, Georgia, serif); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; margin-top: 3px; }
+.o4-stage[data-era="1"] .o4-plaque { color: #e9c66a; text-shadow: 0 1px 0 #6b4a12, 0 0 6px rgba(255, 210, 120, .35); }
+.o4-stage[data-era="2"] .o4-plaque b, .o4-stage[data-era="2"] .o4-plaque small { font-family: var(--font-sans, Helvetica, Arial, sans-serif); }
+.o4-stage[data-era="2"] .o4-plaque { color: #3d4650; text-shadow: 0 1px 0 rgba(255, 255, 255, .5); background: linear-gradient(180deg, rgba(235, 240, 244, .78), rgba(190, 198, 205, .72)); border: 2px solid #8a949c; border-radius: 3px; }
+.o4-stage[data-era="3"] .o4-plaque { color: #3a2a08; background: linear-gradient(180deg, #f3d77e, #b8862b); border: 2px solid #6b4c12; border-radius: 4px; box-shadow: 0 2px 0 rgba(0, 0, 0, .4); }
+.o4-stage[data-era="3"] .o4-plaque b { font-size: 15px; } .o4-stage[data-era="3"] .o4-plaque small { font-size: 9px; margin-top: 1px; }
+.o4-stage[data-lay="P"] .o4-plaque b { font-size: 15px; } .o4-stage[data-lay="P"] .o4-plaque small { font-size: 9px; }
+.o4-stage[data-lay="P"][data-era="3"] .o4-plaque b { font-size: 11px; } .o4-stage[data-lay="P"][data-era="3"] .o4-plaque small { font-size: 7px; }
+.o4-stage.o4-open .o4-plaque { opacity: 0; }
+
+/* shared fixture reset */
+.office .of-room.o4 .of-g.of-g { font-size: 10px; display: block !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; animation: none !important; min-width: 0; column-gap: 0; }
+.office .of-room.o4[data-o4sz="m"] .of-g.of-g { font-size: 12px; }
+.office .of-room.o4[data-o4sz="l"] .of-g.of-g { font-size: 13px; }
+.office .of-room.o4 .of-g .m-lab { position: absolute; display: block !important; white-space: nowrap; pointer-events: none; }
+.office .of-room.o4 .of-g .m-lab .tok, .office .of-room.o4 .of-g .m-lab > i { display: none; }
+.office .of-room.o4 .of-g .m-name { display: inline !important; font: 800 .62em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; letter-spacing: .12em; text-transform: uppercase; }
+.office .of-room.o4 .of-g .m-val { display: block; text-align: center; text-shadow: none !important; }
+.office .of-room.o4 .of-g .m-bar { display: block !important; position: absolute; margin: 0; overflow: hidden; }
+.office .of-room.o4 .of-g .m-sub { display: none !important; }
+.office .of-room.o4 .of-g .m-pop { z-index: 2; }
+.office .of-room.o4[data-o4sz="s"] .of-g .m-name { font-size: .55em !important; letter-spacing: .06em; }
+
+/* ---- 1978: brass, enamel and paper ---- */
+/* unrest: a round brass pressure dial on the wall by the door, needle at the value, red sector past 60 */
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest { width: 4.4em; height: 4.4em; border-radius: 50% !important; border: .32em solid #b98a2e !important;
+  background: radial-gradient(circle at 50% 50%, #2a1a0c 0 .28em, transparent .3em), repeating-conic-gradient(from -120deg, #3a2a18 0 1.2deg, transparent 1.2deg 24deg) , conic-gradient(from -120deg, transparent 0 144deg, rgba(190, 40, 20, .75) 144deg 240deg, transparent 240deg), radial-gradient(circle at 40% 35%, #fffaf0, #eadfc2 70%, #cdbb8e) !important;
+  -webkit-mask: none; box-shadow: 0 0 0 .1em #5c3f10, .18em .22em 0 rgba(0, 0, 0, .45), inset 0 0 .3em rgba(0, 0, 0, .35) !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-bar { left: calc(50% - .07em); bottom: 50%; width: .14em; height: 1.55em; border-radius: .1em; background: #8a1a0e; transform-origin: 50% 100%; transform: rotate(calc(var(--v, 0) * 2.4deg - 120deg)); transition: transform .9s cubic-bezier(.3, 1.6, .5, 1); overflow: visible; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-bar span { display: none; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-val { position: absolute; left: 50%; bottom: .32em; transform: translateX(-50%); padding: .04em .22em; background: #1d140c; color: #fff4d6 !important; border-radius: .12em; font: 800 1.12em/1 ui-monospace, "SF Mono", Menlo, monospace !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-lab { left: 50%; top: 100%; transform: translate(-50%, .2em); padding: .08em .35em; background: linear-gradient(#e7c56a, #a97b25); color: #2a1a06 !important; border-radius: .15em; box-shadow: .1em .1em 0 rgba(0, 0, 0, .4); }
+.office .of-room.o4[data-o4era="1"][data-o4sz="s"] .of-g.m-unrest .m-lab { display: none !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest.lvl-danger .m-val { color: #ff9b7e !important; }
+/* collapse: a brass barometer plate screwed to the window frame: drum counter + mercury tube */
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse { width: 6.6em; height: 2.7em; border-radius: .35em !important; border: .12em solid #5c3f10 !important;
+  background: radial-gradient(circle at .35em .35em, #5c3f10 .1em, transparent .12em), radial-gradient(circle at calc(100% - .35em) .35em, #5c3f10 .1em, transparent .12em), linear-gradient(180deg, #f0d585, #c8973a 55%, #9c6e22) !important; box-shadow: .15em .2em 0 rgba(0, 0, 0, .45) !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-lab { left: .55em; top: .3em; color: #3a2606 !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-val { position: absolute; right: .45em; top: .25em; min-width: 1.9em; padding: .05em .2em; background: linear-gradient(180deg, #000, #2a221a 50%, #000); color: #fff4d6 !important; border-radius: .1em; font: 800 1.15em/1 ui-monospace, "SF Mono", Menlo, monospace !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-bar { left: .55em; right: .55em; bottom: .38em; height: .42em; border-radius: .25em; background: linear-gradient(180deg, #fffdf2, #d9d2bd) !important; box-shadow: inset 0 0 0 .06em #5c3f10; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-bar span { background: linear-gradient(180deg, #ff6a50, #a8140a) !important; border-radius: .25em; }
+.office .of-room.o4[data-o4era="1"][data-o4sz="s"] .of-g.m-collapse .m-lab { top: .38em; }
+/* cash: a stock-ticker dome feeding paper tape across the desk */
+.o4-tick { position: absolute; z-index: 7; pointer-events: none; white-space: nowrap; font-size: 10px; }
+.of-room[data-o4sz="m"] .o4-tick { font-size: 12px; } .of-room[data-o4sz="l"] .o4-tick { font-size: 13px; }
+.o4-tick b { display: block; font: 800 1.25em/1 ui-monospace, "SF Mono", Menlo, monospace; }
+.of-room[data-o4era="1"] .o4-tick { padding: .18em .5em .18em 1.9em; background: linear-gradient(180deg, #fffbea, #efe3bf); color: #1d140c; transform: rotate(-2.5deg); border-radius: .1em; box-shadow: .14em .18em 0 rgba(0, 0, 0, .45);
+  -webkit-mask: linear-gradient(90deg, #000 calc(100% - .35em), transparent calc(100% - .35em)), repeating-linear-gradient(180deg, #000 0 .25em, transparent .25em .4em); -webkit-mask-composite: source-over; }
+.of-room[data-o4era="1"] .o4-tick::before { content: ""; position: absolute; left: .12em; top: 50%; width: 1.5em; height: 1.5em; transform: translateY(-50%); border-radius: 50% 50% .25em .25em; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .85) 0 .15em, transparent .3em), radial-gradient(circle at 50% 60%, #6a4a1c, #2b1d0c); box-shadow: 0 0 0 .12em #c8973a; }
+.of-room[data-o4era="1"] .o4-tick.low { color: #a3170b; }
+
+/* ---- 2008: plastic bezels, LCD and LED ---- */
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest { width: 4.3em; height: 3.4em; border-radius: .3em !important; border: .12em solid #1a1d20 !important; background: linear-gradient(180deg, #4a5056, #2a2e32) !important; box-shadow: inset 0 .08em 0 rgba(255, 255, 255, .2), .15em .2em 0 rgba(0, 0, 0, .45) !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-lab { left: 0; right: 0; top: .22em; text-align: center; color: #d8dde2 !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-val { position: absolute; left: .35em; right: .35em; top: 1em; padding: .05em 0; background: linear-gradient(180deg, #a9bf90, #8ea877); color: #15200c !important; border-radius: .1em; box-shadow: inset 0 0 0 .06em #1a1d20; font: 700 1.25em/1 "Courier New", ui-monospace, monospace !important; letter-spacing: .04em; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-bar, .office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-bar { left: .35em; right: .35em; bottom: .3em; height: .32em; background: repeating-linear-gradient(90deg, #15181a 0 .42em, transparent .42em .52em) !important; border-radius: 0; }
+.office .of-room.o4[data-o4era="2"] .of-g .m-bar span { background: repeating-linear-gradient(90deg, #ffb12e 0 .42em, transparent .42em .52em) !important; border-radius: 0; }
+.office .of-room.o4[data-o4era="2"] .of-g.lvl-danger .m-bar span { background: repeating-linear-gradient(90deg, #ff3b22 0 .42em, transparent .42em .52em) !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest.lvl-danger .m-val { animation: o4lcd 1s steps(1) infinite; }
+@keyframes o4lcd { 50% { color: rgba(21, 32, 12, .25); } }
+.office .of-room.o4[data-o4era="2"] .of-g.m-collapse { width: 6.4em; height: 2.5em; border-radius: .2em !important; border: .12em solid #000 !important; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 .1em, transparent .1em .2em), #0b0c0d !important; box-shadow: .15em .2em 0 rgba(0, 0, 0, .45), 0 0 0 .1em #5a6168 !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-lab { left: .4em; top: .38em; color: #ffb12e !important; text-shadow: 0 0 .3em rgba(255, 170, 40, .6); }
+.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-val { position: absolute; right: .4em; top: .18em; color: #ff4a2a !important; font: 700 1.3em/1 "Courier New", ui-monospace, monospace !important; text-shadow: 0 0 .35em rgba(255, 60, 30, .8) !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-bar { bottom: .28em; }
+.of-room[data-o4era="2"] .o4-tick { padding: .3em .55em; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .05) 0 .1em, transparent .1em .22em), #0c0a06; color: #ffb12e; border: .14em solid #3d4247; border-radius: .25em; text-shadow: 0 0 .35em rgba(255, 170, 40, .7); box-shadow: .14em .18em 0 rgba(0, 0, 0, .45); }
+.of-room[data-o4era="2"] .o4-tick b { font-family: "Courier New", ui-monospace, monospace; font-weight: 700; }
+.of-room[data-o4era="2"] .o4-tick.low { color: #ff4a2a; }
+
+/* ---- Today: emerald glass and gold light ---- */
+.office .of-room.o4[data-o4era="3"] .of-g.m-unrest, .office .of-room.o4[data-o4era="3"] .of-g.m-collapse { border-radius: .45em !important; border: .08em solid rgba(240, 205, 120, .85) !important; background: linear-gradient(160deg, rgba(30, 80, 64, .55), rgba(8, 30, 24, .45)) !important; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); box-shadow: 0 0 .7em rgba(240, 205, 120, .35), inset 0 0 .5em rgba(160, 255, 220, .18) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-unrest { width: 4em; height: 3.3em; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-collapse { width: 6.2em; height: 2.4em; }
+.office .of-room.o4[data-o4era="3"] .of-g .m-lab { color: #f3dc98 !important; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-unrest .m-lab { left: 0; right: 0; top: .3em; text-align: center; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-unrest .m-val { position: absolute; left: 0; right: 0; top: .95em; color: #fff3cf !important; font: 300 1.55em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; text-shadow: 0 0 .4em rgba(240, 205, 120, .9) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-collapse .m-lab { left: .5em; top: .45em; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-collapse .m-val { position: absolute; right: .5em; top: .2em; color: #fff3cf !important; font: 300 1.5em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; text-shadow: 0 0 .4em rgba(240, 205, 120, .9) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g .m-bar { left: .5em; right: .5em; bottom: .35em; height: .14em; border-radius: .1em; background: rgba(240, 205, 120, .22) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g .m-bar span { background: linear-gradient(90deg, #9fffe0, #f3d27a) !important; box-shadow: 0 0 .4em #f3d27a; }
+.office .of-room.o4[data-o4era="3"] .of-g.lvl-danger .m-val { color: #ffb0a0 !important; text-shadow: 0 0 .45em rgba(255, 80, 60, .95) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g.lvl-danger .m-bar span { background: linear-gradient(90deg, #ff9a6a, #ff3b2e) !important; box-shadow: 0 0 .4em #ff3b2e; }
+.of-room[data-o4era="3"] .o4-tick { padding: .25em .6em; color: #fff3cf; border-radius: .4em; background: linear-gradient(180deg, rgba(240, 205, 120, .28), rgba(240, 205, 120, .06)); border: .08em solid rgba(240, 205, 120, .8); text-shadow: 0 0 .45em rgba(240, 205, 120, .95); box-shadow: 0 0 .8em rgba(240, 205, 120, .35); }
+.of-room[data-o4era="3"] .o4-tick::after { content: ""; position: absolute; left: 20%; right: 20%; top: 100%; height: .7em; background: linear-gradient(180deg, rgba(240, 205, 120, .35), transparent); clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%); }
+.of-room[data-o4era="3"] .o4-tick b { font-family: var(--font-sans, Helvetica, Arial, sans-serif); font-weight: 400; }
+.of-room[data-o4era="3"] .o4-tick.low { color: #ffb0a0; text-shadow: 0 0 .45em rgba(255, 80, 60, .95); }
+@media (prefers-reduced-motion: reduce) { .office .of-room.o4 .of-g .m-bar { transition: none !important; } .office .of-room.o4 .of-g .m-val { animation: none !important; } }
+/* the plate paints its own view; the legacy window art must not show through the O4 glass */
+.of-room.o4 .o4-glass.of-glass { background: none !important; filter: none !important; border-radius: 0; }
+.office .of-room.o4 .of-g.o4-under, .of-room.o4 .o4-tick.o4-under { opacity: .5 !important; }
+.office .of-room.o4 .of-g, .of-room.o4 .o4-tick { transition: opacity .25s; }
+.of-room[data-o4era="1"] .o4-tick { padding-right: .85em; }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -13604,7 +13699,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   function ogauge(cls, icon, label, num, isMoney, sub, title) {
     var pct = isMoney ? Math.max(0, Math.min(100, num)) : Math.max(0, Math.min(100, num));
     var lvl = LD.resLevel ? LD.resLevel(cls, num) : "ok";
-    return '<div class="meter of-g m-' + cls + " lvl-" + lvl + '" data-num="' + num + '"' + (isMoney ? ' data-money="1"' : "") + ' data-tip="' + esc(title || "") + '" tabindex="0" role="meter" aria-label="' + esc(label) + " " + (isMoney ? money(num) : num) + (isMoney ? "" : " of 100") + '" aria-valuenow="' + num + '" aria-valuemin="0" aria-valuemax="100">' +
+    return '<div class="meter of-g m-' + cls + " lvl-" + lvl + '" data-num="' + num + '" style="--v:' + pct + '"' + (isMoney ? ' data-money="1"' : "") + ' data-tip="' + esc(title || "") + '" tabindex="0" role="meter" aria-label="' + esc(label) + " " + (isMoney ? money(num) : num) + (isMoney ? "" : " of 100") + '" aria-valuenow="' + num + '" aria-valuemin="0" aria-valuemax="100">' +
       '<span class="m-lab">' + (LD.tok ? LD.tok(cls) : '<i aria-hidden="true">' + icon + "</i>") + '<span class="m-name">' + esc(label) + "</span></span>" +
       '<b class="m-val">' + (isMoney ? money(num) : num) + "</b>" +
       '<div class="m-bar"><span style="width:' + pct + '%"></span></div>' + (sub ? '<small class="m-sub">' + esc(sub) + "</small>" : "") + "</div>";
@@ -14154,22 +14249,28 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   /* Plate geometry, in plate pixels. L = 1280x720 (wide boxes), P = 720x1280 (tall side panels). */
   var ROOMS = {
     "e1-L": { w: 1280, h: 720, hk: [0.72, 0], door: [81, 37, 188, 475], glass: [406, 181, 375, 181],
-      occ: [[695, 360], [1280, 380], [1280, 650], [1080, 640], [700, 540]], deskY: 545, tick: [985, 470],
+      occ: [[690, 372], [1280, 386], [1280, 650], [1120, 668], [950, 612], [700, 578]], deskY: 545, tick: [800, 445],
+      mu: [335, 225], mc: [520, 362], pr: [738, 392, 112], pl: [38, 92, 112, 72],
       S: { door: [330, 545], desk: [930, 538], deskEntry: [640, 525], window: [600, 495], hatch: [470, 600], hatchAp: [320, 612], p1: [380, 600], p2: [640, 612], opp: [178, 512], oppIn: [270, 540] } },
     "e2-L": { w: 1280, h: 720, hk: [0.745, 0], door: [50, 25, 244, 531], glass: [344, 56, 531, 388],
-      occ: [[660, 375], [1190, 420], [1250, 350], [1280, 350], [1280, 570], [1190, 600], [950, 660], [690, 520]], deskY: 560, tick: [870, 455],
+      occ: [[655, 336], [1000, 352], [1215, 400], [1215, 600], [1060, 640], [960, 645], [690, 550]], deskY: 560, tick: [830, 458],
+      mu: [318, 250], mc: [500, 444], pr: [712, 350, 96], pl: [40, 175, 165, 64],
       S: { door: [350, 590], desk: [850, 555], deskEntry: [600, 545], window: [560, 520], hatch: [455, 608], hatchAp: [300, 620], p1: [380, 612], p2: [640, 622], opp: [172, 556], oppIn: [260, 580] } },
     "e3-L": { w: 1280, h: 720, hk: [0.70, 0], door: [106, 50, 169, 431], glass: [369, 31, 493, 381],
-      occ: [[675, 360], [1210, 385], [1210, 560], [1000, 590], [700, 480]], deskY: 520, tick: [945, 432],
+      occ: [[675, 360], [1210, 385], [1210, 560], [1000, 590], [700, 480]], deskY: 520, tick: [850, 435],
+      mu: [322, 230], mc: [500, 396], pr: [728, 376, 92], pl: [30, 118, 110, 40],
       S: { door: [330, 515], desk: [900, 515], deskEntry: [620, 505], window: [600, 470], hatch: [455, 592], hatchAp: [310, 604], p1: [360, 590], p2: [640, 600], opp: [190, 481], oppIn: [270, 505] } },
     "e1-P": { w: 720, h: 1280, hk: [0.62, 10], door: [12, 106, 151, 506], glass: [244, 250, 325, 212],
-      occ: [[410, 480], [720, 500], [720, 800], [640, 790], [412, 650]], deskY: 680, tick: [565, 640],
+      occ: [[412, 503], [720, 515], [720, 820], [650, 790], [480, 705], [420, 670]], deskY: 680, tick: [520, 585],
+      mu: [190, 205], mc: [405, 252, 1], pr: [438, 508, 84], pl: [36, 88, 86, 62],
       S: { door: [235, 650], desk: [575, 675], deskEntry: [345, 700], window: [400, 650], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [88, 612], oppIn: [160, 660] } },
     "e2-P": { w: 720, h: 1280, hk: [0.66, 10], door: [25, 50, 163, 575], glass: [222, 87, 353, 425],
-      occ: [[365, 465], [720, 500], [720, 720], [560, 720], [380, 610]], deskY: 640, tick: [545, 560],
+      occ: [[365, 478], [600, 470], [720, 490], [720, 700], [590, 728], [385, 622]], deskY: 640, tick: [480, 555],
+      mu: [200, 170], mc: [380, 102, 0], pr: [396, 492, 78], pl: [30, 175, 112, 58],
       S: { door: [250, 670], desk: [560, 635], deskEntry: [330, 680], window: [400, 640], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [106, 625], oppIn: [180, 670] } },
     "e3-P": { w: 720, h: 1280, hk: [0.60, 10], door: [19, 144, 106, 531], glass: [187, 87, 388, 513],
-      occ: [[398, 560], [720, 575], [720, 790], [620, 785], [410, 700]], deskY: 720, tick: [560, 660],
+      occ: [[398, 560], [720, 575], [720, 790], [620, 785], [410, 700]], deskY: 720, tick: [505, 615],
+      mu: [150, 205], mc: [330, 150, 0], pr: [440, 578, 72], pl: [14, 122, 74, 30],
       S: { door: [205, 710], desk: [585, 715], deskEntry: [330, 745], window: [390, 700], hatch: [330, 960], hatchAp: [160, 970], p1: [210, 860], p2: [470, 930], opp: [72, 675], oppIn: [140, 720] } }
   };
   var IDS = ["mara", "reid", "julian", "cassius", "imani", "soren"];
@@ -14196,9 +14297,14 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     O.glass = el("div", "o4-glass of-glass", w); el("i", "o4-sky", O.glass);
     O.door = el("div", "o4-door", w); O.hall = el("i", "o4-hall", O.door); O.opp = el("span", "o4-opp", O.door); O.oppImg = el("img", "", O.opp); O.oppImg.alt = ""; O.oppImg.draggable = false;
     O.leaf = el("i", "o4-leaf", O.door); O.gap = el("i", "o4-gap", O.door);
+    /* the executive's name on the door: gold leaf (1978), brushed steel (2008), engraved gold (Today); it swings with the leaf */
+    O.plaque = el("span", "o4-plaque", O.leaf); O.plN = el("b", "", O.plaque); O.plF = el("small", "", O.plaque);
+    /* a firm keepsake on the desk, per executive and era */
+    O.prop = el("img", "o4-prop", w); O.prop.alt = ""; O.prop.draggable = false;
     O.knock = el("span", "o4-knock", s);
     O.hatch = el("div", "o4-hatch", w); O.hglow = el("i", "o4-hglow", O.hatch);
-    O.tick = el("span", "o4-tick", w);
+    /* cash readout on the desk: screen space so the figure stays readable on phones */
+    O.tick = el("span", "o4-tick", s); O.tickV = el("b", "", O.tick);
     O.occ = el("div", "o4-occ", w);
     O.ex = el("div", "o4-ex", w); O.shadow = el("i", "o4-shadow", O.ex); O.body = el("div", "o4-body", O.ex); O.spr = el("i", "o4-spr", O.body);
     O.bub = el("span", "o4-bub", s);
@@ -14222,9 +14328,13 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     box(O.glass, R.glass); box(O.door, R.door);
     O.leaf.style.backgroundImage = "url(" + url + ")"; O.leaf.style.backgroundSize = R.w + "px " + R.h + "px"; O.leaf.style.backgroundPosition = (-R.door[0]) + "px " + (-R.door[1]) + "px";
     var hw = lay === "P" ? 300 : 240, hh = hw * 0.6;
-    box(O.hatch, [R.S.hatch[0] - hw / 2, R.S.hatch[1] - hh / 2, hw, hh]);
+    box(O.hatch, [R.S.hatch[0] - hw / 2, R.S.hatch[1] - hh / 2 - (lay === "P" ? 30 : 0), hw, hh]);
     O.hatch.style.backgroundImage = "url(" + BASE + "hatch-" + exec + ".webp)";
-    O.tick.style.left = R.tick[0] + "px"; O.tick.style.top = R.tick[1] + "px";
+    O.prop.src = BASE + "props/" + exec + "-e" + era + ".webp";
+    O.prop.style.left = R.pr[0] + "px"; O.prop.style.top = (R.pr[1] - R.pr[2]) + "px"; O.prop.style.height = R.pr[2] + "px";
+    box(O.plaque, R.pl);
+    var EX = LD.execById ? LD.execById(exec) : null;
+    O.plN.textContent = EX ? EX.name.replace(/^Dr\. /, "Dr ") : ""; O.plF.textContent = EX ? EX.firm : "";
     O.occ.style.backgroundImage = "url(" + url + ")"; O.occ.style.clipPath = "polygon(" + R.occ.map(function (p) { return p[0] + "px " + p[1] + "px"; }).join(",") + ")";
     O.occ.style.width = R.w + "px"; O.occ.style.height = R.h + "px";
     if (O.A) O.spr.style.backgroundImage = "url(" + BASE + key + ".webp)";
@@ -14241,12 +14351,12 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     if (O.R && O.rk.slice(-1) !== lay) { setEra(O.era, O.exec, lay); }
     var R = O.R, s = H / R.h;
     /* very wide strips (tablet portrait): zoom in a little, trimming ceiling and floor edge but never the desk-height head or the hatch */
-    if (lay === "L" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.84));
+    if (lay === "L" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.74));
     /* wide side panels (desktop): fill the width and trim the empty floor at the bottom rather than show edge strips */
     if (lay === "P" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.8));
     var pw = R.w * s, ph = R.h * s, ox;
     if (pw > W) ox = lay === "P" ? -(pw - W) * 0.3 : -(pw - W) / 2; else ox = (W - pw) / 2;
-    var oy = H - ph; oy = oy > 0 ? oy / 2 : oy * (lay === "P" ? 0.3 : 0.45);
+    var oy = H - ph; oy = oy > 0 ? oy / 2 : oy * (lay === "P" ? 0.3 : 0.6);
     O.s = s; O.ox = ox; O.oy = oy;
     O.world.style.transform = "translate(" + ox.toFixed(1) + "px," + oy.toFixed(1) + "px) scale(" + s.toFixed(4) + ")";
     var fw = Math.max(0, ox);
@@ -14262,30 +14372,43 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     draw();
   }
   function px(v, axis) { return axis === "x" ? O.ox + v * O.s : O.oy + v * O.s; }
+  /* The meters are fixtures of the room: unrest hangs on the wall by the door, collapse is mounted on the window frame,
+     cash sits on the desk. Anchors are plate points; the fixtures stay screen-sized so the numbers read on phones. */
   function placeMeters(room) {
     var R = O.R, W = room.clientWidth, H = room.clientHeight;
-    var u = room.querySelector(".m-unrest"), c = room.querySelector(".m-collapse");
-    function put(m, x, y, alignR) {
-      if (!m) return; var mw = m.offsetWidth || 60, mh = m.offsetHeight || 24;
-      var l = alignR ? x - mw : x; l = Math.max(3, Math.min(W - mw - 3, l)); var t = Math.max(3, Math.min(H - mh - 3, y));
-      m.style.setProperty("left", Math.round(l) + "px", "important"); m.style.setProperty("top", Math.round(t) + "px", "important");
-      m.style.setProperty("right", "auto", "important"); m.style.setProperty("bottom", "auto", "important"); m.style.setProperty("transform", "none", "important");
+    var u = room.querySelector(".m-unrest"), c = room.querySelector(".m-collapse"), t = O.tick;
+    room.dataset.o4sz = H < 200 ? "s" : W < 420 && H < 420 ? "m" : H < 420 ? "m" : "l";
+    if (O.era) room.dataset.o4era = O.era;
+    var placed = [];
+    function put(m, x, y, ax, ay, setImp) {
+      if (!m) { placed.push(null); return; } var mw = m.offsetWidth || 60, mh = m.offsetHeight || 24;
+      var l = Math.max(3, Math.min(W - mw - 3, x - mw * ax)), tp = Math.max(3, Math.min(H - mh - 3, y - mh * ay));
+      /* never stack two fixtures: slide sideways off anything already placed */
+      for (var i = 0; i < placed.length; i++) { var q = placed[i]; if (!q) continue;
+        if (l < q[0] + q[2] + 4 && q[0] < l + mw + 4 && tp < q[1] + q[3] + 2 && q[1] < tp + mh + 2) {
+          var right = q[0] + q[2] + 5; l = right + mw <= W - 3 ? right : Math.max(3, q[0] - mw - 5);
+          if (l < q[0] + q[2] + 4 && q[0] < l + mw + 4) tp = Math.min(H - mh - 3, q[1] + q[3] + 4);
+        } }
+      placed.push([l, tp, mw, mh]);
+      var imp = setImp ? "important" : "";
+      m.style.setProperty("left", Math.round(l) + "px", imp); m.style.setProperty("top", Math.round(tp) + "px", imp);
+      if (setImp) { m.style.setProperty("right", "auto", "important"); m.style.setProperty("bottom", "auto", "important"); m.style.setProperty("transform", "none", "important"); }
     }
-    /* unrest hangs by the door, collapse sits on the window sill */
-    put(u, px(R.door[0] + R.door[2] * 0.08, "x"), px(R.door[1] + R.door[3] * 0.06, "y"), false);
-    var narrow = H < 200;
-    if (narrow) {
-      /* short strip: both pills ride the top edge, unrest over the door, collapse at the window's right */
-      put(u, px(R.door[0], "x") + 2, 4, false);
-      put(c, px(R.glass[0] + R.glass[2], "x"), 4, true);
-    } else if (O.rk.slice(-1) === "P") put(c, px(R.glass[0] + R.glass[2] * 0.04, "x"), px(R.glass[1], "y") + 6, false);
-    else put(c, px(R.glass[0] + R.glass[2] * 0.04, "x"), px(R.glass[1] + R.glass[3], "y") - (c ? c.offsetHeight || 24 : 24) - 4, false);
-    if (u && c) {
-      var a = u.getBoundingClientRect(), b = c.getBoundingClientRect();
-      if (a.right + 4 > b.left && b.right + 4 > a.left && a.bottom + 2 > b.top && b.bottom + 2 > a.top) {
-        var l = parseFloat(u.style.left) + a.width + 6; if (l + b.width > W - 3) { c.style.setProperty("top", (parseFloat(u.style.top) + a.height + 4) + "px", "important"); } else c.style.setProperty("left", l + "px", "important");
-      }
-    }
+    put(u, px(R.mu[0], "x"), px(R.mu[1], "y"), 0.5, 0.5, true);
+    put(c, px(R.mc[0], "x"), px(R.mc[1], "y"), 0.5, R.mc[2] != null ? R.mc[2] : 0.75, true);
+    put(t, px(R.tick[0], "x"), px(R.tick[1], "y"), 0.5, 0.5, false);
+    O.fx = [u, c, t].map(function (m, i) { return m && placed[i] ? { m: m, r: placed[i] } : null; }).filter(Boolean);
+    under();
+  }
+  /* a fixture fades while the executive (or a visitor in the doorway) is behind it, so nobody is hidden by a meter */
+  function under() {
+    if (!O.fx || !O.R || !O.s) return;
+    var st = O.st, h = heightAt(st.y), rs = [];
+    /* the visible body: a little narrower than the sprite box; behind the desk only the upper half shows */
+    var behind = st.y < O.R.deskY && st.x > O.R.S.deskEntry[0] - 10, bot = behind ? st.y - h * 0.5 : st.y;
+    if (!st.hidden) rs.push([px(st.x - h * 0.15, "x"), px(st.y - h * 0.94, "y"), h * 0.3 * O.s, (bot - (st.y - h * 0.94)) * O.s]);
+    if (O.stage.classList.contains("o4-in") && O.opp.style.width) { var b = O.opp.getBoundingClientRect(), a = O.stage.getBoundingClientRect(); rs.push([b.left - a.left, b.top - a.top, b.width, b.height * 0.6]); }
+    O.fx.forEach(function (f) { var q = f.r, hit = rs.some(function (r) { return r[0] < q[0] + q[2] && q[0] < r[0] + r[2] && r[1] < q[1] + q[3] && q[1] < r[1] + r[3]; }); f.m.classList.toggle("o4-under", hit); });
   }
   function frame(p) { var F = O.A && O.A.f; if (!F) return null; return F[p] || F.idle; }
   function draw() {
@@ -14300,10 +14423,11 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     O.ex.style.transform = "translate(" + st.x.toFixed(1) + "px," + st.y.toFixed(1) + "px)";
     O.shadow.style.width = (h * 0.32).toFixed(0) + "px"; O.shadow.style.height = (h * 0.05).toFixed(0) + "px";
     var behind = st.y < O.R.deskY && st.x > O.R.S.deskEntry[0] - 10;
-    O.ex.style.zIndex = behind ? 3 : 6; O.occ.style.zIndex = 4; O.tick.style.zIndex = 5;
+    O.ex.style.zIndex = behind ? 3 : 6; O.occ.style.zIndex = 4; O.prop.style.zIndex = 5;
     O.ex.style.opacity = st.hidden ? "0" : "";
     O.ex.dataset.pose = st.pose;
     if (O.bub.classList.contains("on")) placeBub();
+    under();
   }
   function setPose(p) { O.st.pose = p; draw(); }
   function poseFor() { return O.mood === "panic" ? "panic" : O.mood === "nervous" ? "nervous" : "idle"; }
@@ -14376,7 +14500,8 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     O.ex.setAttribute("aria-hidden", "true");
     room.setAttribute("aria-label", (LD.execById ? LD.execById(state.executiveId).name : "") + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[O.mood]);
     /* meters on props */
-    O.tick.textContent = LD.formatMoney ? LD.formatMoney(state.cash) : "$" + state.cash + "M";
+    O.tickV.textContent = LD.formatMoney ? LD.formatMoney(state.cash) : "$" + state.cash + "M";
+    room.dataset.o4era = era;
     O.tick.classList.toggle("low", state.cash < 5);
     var door = LD.doorLevel ? LD.doorLevel(state) : 0, city = LD.cityStage ? LD.cityStage(state) : 0;
     O.knock.textContent = door >= 3 ? "BANG BANG!" : door >= 2 ? "KNOCK KNOCK" : "tap tap";
@@ -14429,10 +14554,12 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     })();
     return { skip: function () { O.skip = true; O.token++; finish(true); } };
   };
+  /* test hook (real-input placement shots): stand at a named spot in a pose */
+  API.debugSpot = function (spot, pose) { if (!O.R || !O.R.S[spot]) return false; O.frozen = true; O.token++; O.q.length = 0; O.st.hidden = false; O.st.x = O.R.S[spot][0]; O.st.y = O.R.S[spot][1]; O.st.pose = pose || "idle"; draw(); if (spot === "hatch") O.hatch.classList.add("on"); else O.hatch.classList.remove("on"); return true; };
   API.afterFight = function () { if (!O.stage) return; if (!O.st.hidden) enqueue("back", home); };
   /* idle life: small fidgets by mood; pacing in a panic */
   setInterval(function () {
-    if (!API.active() || O.busy || O.q.length || document.hidden || rm()) return;
+    if (!API.active() || O.busy || O.q.length || document.hidden || rm() || O.frozen) return;
     var desk = document.querySelector(".desk"); if (!desk || desk.closest(".screen[hidden]")) return;
     var idle = Date.now() - O.lastAct;
     if (O.mood === "panic") { if (idle > 2500) enqueue("pace", async function () { await go(Math.random() < 0.5 ? "p1" : "p2", true); hold("panic"); say(Math.random() < 0.3 ? pick(SAY.panic) : "", 1100); await wait(1200); }); return; }
@@ -15745,9 +15872,12 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
       var money = m.getAttribute("data-money");
       bar.style.transition = "none";
       bar.style.width = Math.max(0, Math.min(100, start)) + "%";
+      /* office fixtures (dials, LED strips) read --v */
+      if (m.style.getPropertyValue("--v")) m.style.setProperty("--v", Math.max(0, Math.min(100, start)));
       void bar.offsetWidth;
       bar.style.transition = "";
       bar.style.width = Math.max(0, Math.min(100, to)) + "%";
+      if (m.style.getPropertyValue("--v")) requestAnimationFrame(function () { m.style.setProperty("--v", Math.max(0, Math.min(100, to))); });
       m.classList.add(to > start ? "rise" : "fall");
       var d = to - start, pop = document.createElement("span");
       var goodUp = key === "cash";

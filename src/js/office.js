@@ -56,6 +56,8 @@
     O.occ = el("div", "o4-occ", w);
     O.ex = el("div", "o4-ex", w); O.shadow = el("i", "o4-shadow", O.ex); O.body = el("div", "o4-body", O.ex); O.spr = el("i", "o4-spr", O.body);
     O.bub = el("span", "o4-bub", s);
+    /* the stage is re-attached on every desk render, which would replay a finished knock: drop the class once it has played */
+    O.knock.addEventListener("animationend", function () { O.knock.classList.remove("show"); });
     O.stage = s;
     if (root.ResizeObserver) { O.ro = new ResizeObserver(function () { layout(); }); }
     return s;
@@ -107,7 +109,7 @@
       f.style.backgroundPosition = (i ? "100%" : "0") + " " + oy + "px";
     });
     O.W = W; O.H = H;
-    O.knock.style.left = px(R.door[0] + R.door[2] * 0.5, "x").toFixed(0) + "px"; O.knock.style.top = Math.max(14, px(R.door[1] + R.door[3] * 0.3, "y")).toFixed(0) + "px";
+    O.knock.style.left = Math.max(44, px(R.door[0] + R.door[2] * 0.5, "x")).toFixed(0) + "px"; O.knock.style.top = Math.max(H < 200 ? H * 0.5 : 14, px(R.door[1] + R.door[3] * 0.3, "y")).toFixed(0) + "px";
     placeMeters(room);
     draw();
   }
@@ -128,7 +130,8 @@
       /* short strip: both pills ride the top edge, unrest over the door, collapse at the window's right */
       put(u, px(R.door[0], "x") + 2, 4, false);
       put(c, px(R.glass[0] + R.glass[2], "x"), 4, true);
-    } else put(c, px(R.glass[0] + R.glass[2] * 0.04, "x"), px(R.glass[1] + R.glass[3], "y") - (c ? c.offsetHeight || 24 : 24) - 4, false);
+    } else if (O.rk.slice(-1) === "P") put(c, px(R.glass[0] + R.glass[2] * 0.04, "x"), px(R.glass[1], "y") + 6, false);
+    else put(c, px(R.glass[0] + R.glass[2] * 0.04, "x"), px(R.glass[1] + R.glass[3], "y") - (c ? c.offsetHeight || 24 : 24) - 4, false);
     if (u && c) {
       var a = u.getBoundingClientRect(), b = c.getBoundingClientRect();
       if (a.right + 4 > b.left && b.right + 4 > a.left && a.bottom + 2 > b.top && b.bottom + 2 > a.top) {
@@ -189,8 +192,13 @@
   }
   function hold(p, face) { if (face) O.st.face = face; setPose(p); }
   function placeBub() {
-    var st = O.st, top = px(st.y - heightAt(st.y), "y") - 4, bw = O.bub.offsetWidth || 80, x = px(st.x, "x");
-    x = Math.max(bw / 2 + 3, Math.min((O.W || 300) - bw / 2 - 3, x));
+    var st = O.st, top = px(st.y - heightAt(st.y), "y") - 4, bw = O.bub.offsetWidth || 80, bh = O.bub.offsetHeight || 20, x = px(st.x, "x"), W = O.W || 300;
+    if ((O.H || 200) < 200) {
+      /* short strip: the pills own the top edge, so the bubble sits beside the head */
+      top = Math.max(40 + bh, top + bh + 6);
+      var side = x + bw / 2 + 14 < W ? 1 : -1; x += side * (bw / 2 + 12);
+    }
+    x = Math.max(bw / 2 + 3, Math.min(W - bw / 2 - 3, x));
     O.bub.style.left = x.toFixed(0) + "px"; O.bub.style.top = Math.max((O.bub.offsetHeight || 20) + 2, top).toFixed(0) + "px";
   }
   function say(t, ms) { if (!t) return; O.bub.textContent = t; O.bub.classList.add("on"); placeBub(); clearTimeout(say.t); say.t = setTimeout(function () { O.bub.classList.remove("on"); }, ms || 1500); }
@@ -234,7 +242,7 @@
     if (O.mood !== prev.mood && !O.busy) { O.st.pose = O.st.pose.indexOf("walk") === 0 ? O.st.pose : poseFor(); draw(); }
   };
   API.knock = function (lv) {
-    if (!O.stage) return; var k = O.knock; k.classList.remove("show"); void k.offsetWidth; k.classList.add("show");
+    if (!O.stage) return; var k = O.knock; k.classList.remove("show"); void k.offsetWidth; k.classList.add("show"); clearTimeout(API.kt); API.kt = setTimeout(function () { k.classList.remove("show"); }, 1000);
     O.door.classList.remove("knocking"); void O.door.offsetWidth; O.door.classList.add("knocking"); setTimeout(function () { O.door.classList.remove("knocking"); }, 700);
   };
   API.on = function (kind, state) {

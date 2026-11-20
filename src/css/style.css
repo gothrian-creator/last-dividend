@@ -5265,7 +5265,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 .of-room.o4 .of-g { position: absolute !important; z-index: 9; }
 .of-room.o4 .of-voices { position: absolute; z-index: 9; left: 4px; top: 30%; font: 900 11px var(--font-serif, Georgia, serif); color: #fff3c4; -webkit-text-stroke: 2px #1d1410; paint-order: stroke; pointer-events: none; }
 .of-room.o4 .holo-tag { position: absolute; z-index: 9; right: 6px; top: 6px; }
-.of-room.o4 .o4-who { position: absolute; z-index: 9; left: 50%; bottom: 6px; transform: translateX(-50%); padding: 3px 10px; border-radius: 999px; background: var(--jy-paper, #f4e8c8); border: 2px solid var(--jy-ink, #1d2a2b); font: 800 12px var(--font-serif, Georgia, serif); white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis; animation: ofxFadeIn .3s ease-out both; }
+.of-room.o4 .o4-who { position: absolute; z-index: 9; left: 50%; bottom: 6px; transform: translateX(-50%); padding: 3px 10px; border-radius: 999px; background: var(--jy-paper, #f4e8c8); border: 2px solid var(--jy-ink, #1d2a2b); color: #1d1410; font: 800 12px var(--font-serif, Georgia, serif); white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis; animation: ofxFadeIn .3s ease-out both; }
 .of-room.o4 .o4-who.away { background: #f0cf86; }
 .of-room.o4.ofx .meter { opacity: 1; }
 /* bigger room on phones (the room was a 92px strip): the rail gives up some height */

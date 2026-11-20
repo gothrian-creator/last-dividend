@@ -576,11 +576,13 @@
   var OFX_FAR = { senate: 1, crash: 1, keys: 1 };
   var OFX_VEH = { car: [1, 2, 3].map(function (e) { return '<img src="assets/office/veh-car-e' + e + '.webp" alt="" draggable="false">'; }),
     air: [1, 2, 3].map(function (e) { return '<img src="assets/office/veh-air-e' + e + '.webp" alt="" draggable="false">'; }) };
+  /* full-body door poses (the fight art is framed to the old 3/4 crop for some opponents) */
+  var OPP_DOOR = {}; "ashby benny brennan crowe dana delacroix dunn gil grace gray hale harrow honoria june mickey mina moretti odell okafor pip pops rosa sorel theo ticker varga".split(" ").forEach(function (k) { OPP_DOOR[k] = 1; });
   LD.officeEntrance = function (state) {
     var fg = state && state.fy && state.fy.fight; if (!fg) return null;
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
     var away = venue === "away", air = away && !!OFX_FAR[F.room];
-    return { away: away, air: air, era: era, who: F.who, place: F.place || "", opp: "assets/fight/opp-" + F.art + "-idle.webp", ar: F.ar || ART_AR[F.art] || 0.6,
+    return { away: away, air: air, era: era, who: F.who, place: F.place || "", opp: "assets/fight/opp-" + F.art + (OPP_DOOR[F.art] ? "-door" : "-idle") + ".webp", ar: F.ar || ART_AR[F.art] || 0.6,
       veh: away ? OFX_VEH[air ? "air" : "car"][era - 1] : "", back: "assets/fight/back-" + execArt(state.executiveId) + ".webp" };
   };
   /* The Gallery: a 7-notch crowd meter between you and them. */

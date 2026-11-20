@@ -5234,8 +5234,6 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 .o4-hatch { position: absolute; z-index: 2; background-size: contain; background-position: center; background-repeat: no-repeat; transform: perspective(500px) rotateX(58deg); transform-origin: 50% 60%; pointer-events: none; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .35)); }
 .o4-hatch .o4-hglow { position: absolute; inset: 15%; border-radius: 10px; background: radial-gradient(closest-side, rgba(255, 216, 120, .9), transparent); opacity: 0; transition: opacity .3s; }
 .o4-hatch.on .o4-hglow { opacity: 1; }
-.o4-tick { position: absolute; z-index: 5; transform: translate(-50%, -100%); padding: 4px 14px; border-radius: 8px; background: #10241a; border: 4px solid #c8a34a; color: #9ff0a8; font: 800 40px/1.05 ui-monospace, "SF Mono", Menlo, monospace; text-shadow: 0 0 10px rgba(120, 255, 140, .55); white-space: nowrap; pointer-events: none; box-shadow: 4px 4px 0 rgba(0, 0, 0, .45); }
-.o4-tick.low { color: #ff9a7a; text-shadow: 0 0 10px rgba(255, 120, 90, .6); }
 .o4-ex { position: absolute; left: 0; top: 0; z-index: 6; pointer-events: none; transition: opacity .35s; will-change: transform; }
 .o4-ex .o4-shadow { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(20, 12, 6, .38); }
 .o4-ex .o4-body { position: absolute; left: 0; bottom: 0; transform-origin: 0 100%; }
@@ -5286,3 +5284,100 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 @media (min-width: 700px) and (max-width: 1199px) and (orientation: portrait) {
   .desk .office .of-room.o4 { height: clamp(140px, calc(var(--app-h, 100dvh) * 0.17), 250px) !important; }
 }
+
+/* ===== Office 40s polish: the meters are fixtures painted into the room, one look per era =====
+   size tier from office.js: data-o4sz s (phone strip) / m (tablet strip) / l (side panel). Units are em of the fixture. */
+.o4-prop { position: absolute; width: auto; pointer-events: none; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
+.o4-plaque { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; overflow: hidden; line-height: 1.05; }
+.o4-plaque b { font: 800 22px/1.05 var(--font-serif, Georgia, serif); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.o4-plaque small { font: 700 13px/1.1 var(--font-serif, Georgia, serif); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; margin-top: 3px; }
+.o4-stage[data-era="1"] .o4-plaque { color: #e9c66a; text-shadow: 0 1px 0 #6b4a12, 0 0 6px rgba(255, 210, 120, .35); }
+.o4-stage[data-era="2"] .o4-plaque b, .o4-stage[data-era="2"] .o4-plaque small { font-family: var(--font-sans, Helvetica, Arial, sans-serif); }
+.o4-stage[data-era="2"] .o4-plaque { color: #3d4650; text-shadow: 0 1px 0 rgba(255, 255, 255, .5); background: linear-gradient(180deg, rgba(235, 240, 244, .78), rgba(190, 198, 205, .72)); border: 2px solid #8a949c; border-radius: 3px; }
+.o4-stage[data-era="3"] .o4-plaque { color: #3a2a08; background: linear-gradient(180deg, #f3d77e, #b8862b); border: 2px solid #6b4c12; border-radius: 4px; box-shadow: 0 2px 0 rgba(0, 0, 0, .4); }
+.o4-stage[data-era="3"] .o4-plaque b { font-size: 15px; } .o4-stage[data-era="3"] .o4-plaque small { font-size: 9px; margin-top: 1px; }
+.o4-stage[data-lay="P"] .o4-plaque b { font-size: 15px; } .o4-stage[data-lay="P"] .o4-plaque small { font-size: 9px; }
+.o4-stage[data-lay="P"][data-era="3"] .o4-plaque b { font-size: 11px; } .o4-stage[data-lay="P"][data-era="3"] .o4-plaque small { font-size: 7px; }
+.o4-stage.o4-open .o4-plaque { opacity: 0; }
+
+/* shared fixture reset */
+.office .of-room.o4 .of-g.of-g { font-size: 10px; display: block !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; animation: none !important; min-width: 0; column-gap: 0; }
+.office .of-room.o4[data-o4sz="m"] .of-g.of-g { font-size: 12px; }
+.office .of-room.o4[data-o4sz="l"] .of-g.of-g { font-size: 13px; }
+.office .of-room.o4 .of-g .m-lab { position: absolute; display: block !important; white-space: nowrap; pointer-events: none; }
+.office .of-room.o4 .of-g .m-lab .tok, .office .of-room.o4 .of-g .m-lab > i { display: none; }
+.office .of-room.o4 .of-g .m-name { display: inline !important; font: 800 .62em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; letter-spacing: .12em; text-transform: uppercase; }
+.office .of-room.o4 .of-g .m-val { display: block; text-align: center; text-shadow: none !important; }
+.office .of-room.o4 .of-g .m-bar { display: block !important; position: absolute; margin: 0; overflow: hidden; }
+.office .of-room.o4 .of-g .m-sub { display: none !important; }
+.office .of-room.o4 .of-g .m-pop { z-index: 2; }
+.office .of-room.o4[data-o4sz="s"] .of-g .m-name { font-size: .55em !important; letter-spacing: .06em; }
+
+/* ---- 1978: brass, enamel and paper ---- */
+/* unrest: a round brass pressure dial on the wall by the door, needle at the value, red sector past 60 */
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest { width: 4.4em; height: 4.4em; border-radius: 50% !important; border: .32em solid #b98a2e !important;
+  background: radial-gradient(circle at 50% 50%, #2a1a0c 0 .28em, transparent .3em), repeating-conic-gradient(from -120deg, #3a2a18 0 1.2deg, transparent 1.2deg 24deg) , conic-gradient(from -120deg, transparent 0 144deg, rgba(190, 40, 20, .75) 144deg 240deg, transparent 240deg), radial-gradient(circle at 40% 35%, #fffaf0, #eadfc2 70%, #cdbb8e) !important;
+  -webkit-mask: none; box-shadow: 0 0 0 .1em #5c3f10, .18em .22em 0 rgba(0, 0, 0, .45), inset 0 0 .3em rgba(0, 0, 0, .35) !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-bar { left: calc(50% - .07em); bottom: 50%; width: .14em; height: 1.55em; border-radius: .1em; background: #8a1a0e; transform-origin: 50% 100%; transform: rotate(calc(var(--v, 0) * 2.4deg - 120deg)); transition: transform .9s cubic-bezier(.3, 1.6, .5, 1); overflow: visible; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-bar span { display: none; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-val { position: absolute; left: 50%; bottom: .32em; transform: translateX(-50%); padding: .04em .22em; background: #1d140c; color: #fff4d6 !important; border-radius: .12em; font: 800 1.12em/1 ui-monospace, "SF Mono", Menlo, monospace !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-lab { left: 50%; top: 100%; transform: translate(-50%, .2em); padding: .08em .35em; background: linear-gradient(#e7c56a, #a97b25); color: #2a1a06 !important; border-radius: .15em; box-shadow: .1em .1em 0 rgba(0, 0, 0, .4); }
+.office .of-room.o4[data-o4era="1"][data-o4sz="s"] .of-g.m-unrest .m-lab { display: none !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-unrest.lvl-danger .m-val { color: #ff9b7e !important; }
+/* collapse: a brass barometer plate screwed to the window frame: drum counter + mercury tube */
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse { width: 6.6em; height: 2.7em; border-radius: .35em !important; border: .12em solid #5c3f10 !important;
+  background: radial-gradient(circle at .35em .35em, #5c3f10 .1em, transparent .12em), radial-gradient(circle at calc(100% - .35em) .35em, #5c3f10 .1em, transparent .12em), linear-gradient(180deg, #f0d585, #c8973a 55%, #9c6e22) !important; box-shadow: .15em .2em 0 rgba(0, 0, 0, .45) !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-lab { left: .55em; top: .3em; color: #3a2606 !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-val { position: absolute; right: .45em; top: .25em; min-width: 1.9em; padding: .05em .2em; background: linear-gradient(180deg, #000, #2a221a 50%, #000); color: #fff4d6 !important; border-radius: .1em; font: 800 1.15em/1 ui-monospace, "SF Mono", Menlo, monospace !important; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-bar { left: .55em; right: .55em; bottom: .38em; height: .42em; border-radius: .25em; background: linear-gradient(180deg, #fffdf2, #d9d2bd) !important; box-shadow: inset 0 0 0 .06em #5c3f10; }
+.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-bar span { background: linear-gradient(180deg, #ff6a50, #a8140a) !important; border-radius: .25em; }
+.office .of-room.o4[data-o4era="1"][data-o4sz="s"] .of-g.m-collapse .m-lab { top: .38em; }
+/* cash: a stock-ticker dome feeding paper tape across the desk */
+.o4-tick { position: absolute; z-index: 7; pointer-events: none; white-space: nowrap; font-size: 10px; }
+.of-room[data-o4sz="m"] .o4-tick { font-size: 12px; } .of-room[data-o4sz="l"] .o4-tick { font-size: 13px; }
+.o4-tick b { display: block; font: 800 1.25em/1 ui-monospace, "SF Mono", Menlo, monospace; }
+.of-room[data-o4era="1"] .o4-tick { padding: .18em .5em .18em 1.9em; background: linear-gradient(180deg, #fffbea, #efe3bf); color: #1d140c; transform: rotate(-2.5deg); border-radius: .1em; box-shadow: .14em .18em 0 rgba(0, 0, 0, .45);
+  -webkit-mask: linear-gradient(90deg, #000 calc(100% - .35em), transparent calc(100% - .35em)), repeating-linear-gradient(180deg, #000 0 .25em, transparent .25em .4em); -webkit-mask-composite: source-over; }
+.of-room[data-o4era="1"] .o4-tick::before { content: ""; position: absolute; left: .12em; top: 50%; width: 1.5em; height: 1.5em; transform: translateY(-50%); border-radius: 50% 50% .25em .25em; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .85) 0 .15em, transparent .3em), radial-gradient(circle at 50% 60%, #6a4a1c, #2b1d0c); box-shadow: 0 0 0 .12em #c8973a; }
+.of-room[data-o4era="1"] .o4-tick.low { color: #a3170b; }
+
+/* ---- 2008: plastic bezels, LCD and LED ---- */
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest { width: 4.3em; height: 3.4em; border-radius: .3em !important; border: .12em solid #1a1d20 !important; background: linear-gradient(180deg, #4a5056, #2a2e32) !important; box-shadow: inset 0 .08em 0 rgba(255, 255, 255, .2), .15em .2em 0 rgba(0, 0, 0, .45) !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-lab { left: 0; right: 0; top: .22em; text-align: center; color: #d8dde2 !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-val { position: absolute; left: .35em; right: .35em; top: 1em; padding: .05em 0; background: linear-gradient(180deg, #a9bf90, #8ea877); color: #15200c !important; border-radius: .1em; box-shadow: inset 0 0 0 .06em #1a1d20; font: 700 1.25em/1 "Courier New", ui-monospace, monospace !important; letter-spacing: .04em; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-bar, .office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-bar { left: .35em; right: .35em; bottom: .3em; height: .32em; background: repeating-linear-gradient(90deg, #15181a 0 .42em, transparent .42em .52em) !important; border-radius: 0; }
+.office .of-room.o4[data-o4era="2"] .of-g .m-bar span { background: repeating-linear-gradient(90deg, #ffb12e 0 .42em, transparent .42em .52em) !important; border-radius: 0; }
+.office .of-room.o4[data-o4era="2"] .of-g.lvl-danger .m-bar span { background: repeating-linear-gradient(90deg, #ff3b22 0 .42em, transparent .42em .52em) !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-unrest.lvl-danger .m-val { animation: o4lcd 1s steps(1) infinite; }
+@keyframes o4lcd { 50% { color: rgba(21, 32, 12, .25); } }
+.office .of-room.o4[data-o4era="2"] .of-g.m-collapse { width: 6.4em; height: 2.5em; border-radius: .2em !important; border: .12em solid #000 !important; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 .1em, transparent .1em .2em), #0b0c0d !important; box-shadow: .15em .2em 0 rgba(0, 0, 0, .45), 0 0 0 .1em #5a6168 !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-lab { left: .4em; top: .38em; color: #ffb12e !important; text-shadow: 0 0 .3em rgba(255, 170, 40, .6); }
+.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-val { position: absolute; right: .4em; top: .18em; color: #ff4a2a !important; font: 700 1.3em/1 "Courier New", ui-monospace, monospace !important; text-shadow: 0 0 .35em rgba(255, 60, 30, .8) !important; }
+.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-bar { bottom: .28em; }
+.of-room[data-o4era="2"] .o4-tick { padding: .3em .55em; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .05) 0 .1em, transparent .1em .22em), #0c0a06; color: #ffb12e; border: .14em solid #3d4247; border-radius: .25em; text-shadow: 0 0 .35em rgba(255, 170, 40, .7); box-shadow: .14em .18em 0 rgba(0, 0, 0, .45); }
+.of-room[data-o4era="2"] .o4-tick b { font-family: "Courier New", ui-monospace, monospace; font-weight: 700; }
+.of-room[data-o4era="2"] .o4-tick.low { color: #ff4a2a; }
+
+/* ---- Today: emerald glass and gold light ---- */
+.office .of-room.o4[data-o4era="3"] .of-g.m-unrest, .office .of-room.o4[data-o4era="3"] .of-g.m-collapse { border-radius: .45em !important; border: .08em solid rgba(240, 205, 120, .85) !important; background: linear-gradient(160deg, rgba(30, 80, 64, .55), rgba(8, 30, 24, .45)) !important; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); box-shadow: 0 0 .7em rgba(240, 205, 120, .35), inset 0 0 .5em rgba(160, 255, 220, .18) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-unrest { width: 4em; height: 3.3em; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-collapse { width: 6.2em; height: 2.4em; }
+.office .of-room.o4[data-o4era="3"] .of-g .m-lab { color: #f3dc98 !important; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-unrest .m-lab { left: 0; right: 0; top: .3em; text-align: center; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-unrest .m-val { position: absolute; left: 0; right: 0; top: .95em; color: #fff3cf !important; font: 300 1.55em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; text-shadow: 0 0 .4em rgba(240, 205, 120, .9) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-collapse .m-lab { left: .5em; top: .45em; }
+.office .of-room.o4[data-o4era="3"] .of-g.m-collapse .m-val { position: absolute; right: .5em; top: .2em; color: #fff3cf !important; font: 300 1.5em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; text-shadow: 0 0 .4em rgba(240, 205, 120, .9) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g .m-bar { left: .5em; right: .5em; bottom: .35em; height: .14em; border-radius: .1em; background: rgba(240, 205, 120, .22) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g .m-bar span { background: linear-gradient(90deg, #9fffe0, #f3d27a) !important; box-shadow: 0 0 .4em #f3d27a; }
+.office .of-room.o4[data-o4era="3"] .of-g.lvl-danger .m-val { color: #ffb0a0 !important; text-shadow: 0 0 .45em rgba(255, 80, 60, .95) !important; }
+.office .of-room.o4[data-o4era="3"] .of-g.lvl-danger .m-bar span { background: linear-gradient(90deg, #ff9a6a, #ff3b2e) !important; box-shadow: 0 0 .4em #ff3b2e; }
+.of-room[data-o4era="3"] .o4-tick { padding: .25em .6em; color: #fff3cf; border-radius: .4em; background: linear-gradient(180deg, rgba(240, 205, 120, .28), rgba(240, 205, 120, .06)); border: .08em solid rgba(240, 205, 120, .8); text-shadow: 0 0 .45em rgba(240, 205, 120, .95); box-shadow: 0 0 .8em rgba(240, 205, 120, .35); }
+.of-room[data-o4era="3"] .o4-tick::after { content: ""; position: absolute; left: 20%; right: 20%; top: 100%; height: .7em; background: linear-gradient(180deg, rgba(240, 205, 120, .35), transparent); clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%); }
+.of-room[data-o4era="3"] .o4-tick b { font-family: var(--font-sans, Helvetica, Arial, sans-serif); font-weight: 400; }
+.of-room[data-o4era="3"] .o4-tick.low { color: #ffb0a0; text-shadow: 0 0 .45em rgba(255, 80, 60, .95); }
+@media (prefers-reduced-motion: reduce) { .office .of-room.o4 .of-g .m-bar { transition: none !important; } .office .of-room.o4 .of-g .m-val { animation: none !important; } }
+/* the plate paints its own view; the legacy window art must not show through the O4 glass */
+.of-room.o4 .o4-glass.of-glass { background: none !important; filter: none !important; border-radius: 0; }
+.office .of-room.o4 .of-g.o4-under, .of-room.o4 .o4-tick.o4-under { opacity: .3 !important; }
+.office .of-room.o4 .of-g, .of-room.o4 .o4-tick { transition: opacity .25s; }
+.of-room[data-o4era="1"] .o4-tick { padding-right: .85em; }

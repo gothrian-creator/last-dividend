@@ -293,7 +293,7 @@
   function ogauge(cls, icon, label, num, isMoney, sub, title) {
     var pct = isMoney ? Math.max(0, Math.min(100, num)) : Math.max(0, Math.min(100, num));
     var lvl = LD.resLevel ? LD.resLevel(cls, num) : "ok";
-    return '<div class="meter of-g m-' + cls + " lvl-" + lvl + '" data-num="' + num + '"' + (isMoney ? ' data-money="1"' : "") + ' data-tip="' + esc(title || "") + '" tabindex="0" role="meter" aria-label="' + esc(label) + " " + (isMoney ? money(num) : num) + (isMoney ? "" : " of 100") + '" aria-valuenow="' + num + '" aria-valuemin="0" aria-valuemax="100">' +
+    return '<div class="meter of-g m-' + cls + " lvl-" + lvl + '" data-num="' + num + '" style="--v:' + pct + '"' + (isMoney ? ' data-money="1"' : "") + ' data-tip="' + esc(title || "") + '" tabindex="0" role="meter" aria-label="' + esc(label) + " " + (isMoney ? money(num) : num) + (isMoney ? "" : " of 100") + '" aria-valuenow="' + num + '" aria-valuemin="0" aria-valuemax="100">' +
       '<span class="m-lab">' + (LD.tok ? LD.tok(cls) : '<i aria-hidden="true">' + icon + "</i>") + '<span class="m-name">' + esc(label) + "</span></span>" +
       '<b class="m-val">' + (isMoney ? money(num) : num) + "</b>" +
       '<div class="m-bar"><span style="width:' + pct + '%"></span></div>' + (sub ? '<small class="m-sub">' + esc(sub) + "</small>" : "") + "</div>";

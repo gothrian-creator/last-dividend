@@ -8,22 +8,28 @@
   /* Plate geometry, in plate pixels. L = 1280x720 (wide boxes), P = 720x1280 (tall side panels). */
   var ROOMS = {
     "e1-L": { w: 1280, h: 720, hk: [0.72, 0], door: [81, 37, 188, 475], glass: [406, 181, 375, 181],
-      occ: [[695, 360], [1280, 380], [1280, 650], [1080, 640], [700, 540]], deskY: 545, tick: [985, 470],
+      occ: [[690, 372], [1280, 386], [1280, 650], [1120, 668], [950, 612], [700, 578]], deskY: 545, tick: [800, 445],
+      mu: [335, 225], mc: [520, 362], pr: [738, 392, 112], pl: [38, 92, 112, 72],
       S: { door: [330, 545], desk: [930, 538], deskEntry: [640, 525], window: [600, 495], hatch: [470, 600], hatchAp: [320, 612], p1: [380, 600], p2: [640, 612], opp: [178, 512], oppIn: [270, 540] } },
     "e2-L": { w: 1280, h: 720, hk: [0.745, 0], door: [50, 25, 244, 531], glass: [344, 56, 531, 388],
-      occ: [[660, 375], [1190, 420], [1250, 350], [1280, 350], [1280, 570], [1190, 600], [950, 660], [690, 520]], deskY: 560, tick: [870, 455],
+      occ: [[655, 336], [1000, 352], [1215, 400], [1215, 600], [1060, 640], [960, 645], [690, 550]], deskY: 560, tick: [830, 458],
+      mu: [318, 250], mc: [500, 444], pr: [712, 350, 96], pl: [40, 175, 165, 64],
       S: { door: [350, 590], desk: [850, 555], deskEntry: [600, 545], window: [560, 520], hatch: [455, 608], hatchAp: [300, 620], p1: [380, 612], p2: [640, 622], opp: [172, 556], oppIn: [260, 580] } },
     "e3-L": { w: 1280, h: 720, hk: [0.70, 0], door: [106, 50, 169, 431], glass: [369, 31, 493, 381],
-      occ: [[675, 360], [1210, 385], [1210, 560], [1000, 590], [700, 480]], deskY: 520, tick: [945, 432],
+      occ: [[675, 360], [1210, 385], [1210, 560], [1000, 590], [700, 480]], deskY: 520, tick: [850, 435],
+      mu: [322, 230], mc: [500, 396], pr: [728, 376, 92], pl: [30, 118, 110, 40],
       S: { door: [330, 515], desk: [900, 515], deskEntry: [620, 505], window: [600, 470], hatch: [455, 592], hatchAp: [310, 604], p1: [360, 590], p2: [640, 600], opp: [190, 481], oppIn: [270, 505] } },
     "e1-P": { w: 720, h: 1280, hk: [0.62, 10], door: [12, 106, 151, 506], glass: [244, 250, 325, 212],
-      occ: [[410, 480], [720, 500], [720, 800], [640, 790], [412, 650]], deskY: 680, tick: [565, 640],
+      occ: [[412, 503], [720, 515], [720, 820], [650, 790], [480, 705], [420, 670]], deskY: 680, tick: [520, 585],
+      mu: [190, 205], mc: [405, 252, 1], pr: [438, 508, 84], pl: [36, 88, 86, 62],
       S: { door: [235, 650], desk: [575, 675], deskEntry: [345, 700], window: [400, 650], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [88, 612], oppIn: [160, 660] } },
     "e2-P": { w: 720, h: 1280, hk: [0.66, 10], door: [25, 50, 163, 575], glass: [222, 87, 353, 425],
-      occ: [[365, 465], [720, 500], [720, 720], [560, 720], [380, 610]], deskY: 640, tick: [545, 560],
+      occ: [[365, 478], [600, 470], [720, 490], [720, 700], [590, 728], [385, 622]], deskY: 640, tick: [480, 555],
+      mu: [200, 170], mc: [380, 102, 0], pr: [396, 492, 78], pl: [30, 175, 112, 58],
       S: { door: [250, 670], desk: [560, 635], deskEntry: [330, 680], window: [400, 640], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [106, 625], oppIn: [180, 670] } },
     "e3-P": { w: 720, h: 1280, hk: [0.60, 10], door: [19, 144, 106, 531], glass: [187, 87, 388, 513],
-      occ: [[398, 560], [720, 575], [720, 790], [620, 785], [410, 700]], deskY: 720, tick: [560, 660],
+      occ: [[398, 560], [720, 575], [720, 790], [620, 785], [410, 700]], deskY: 720, tick: [505, 615],
+      mu: [150, 205], mc: [330, 150, 0], pr: [440, 578, 72], pl: [14, 122, 74, 30],
       S: { door: [205, 710], desk: [585, 715], deskEntry: [330, 745], window: [390, 700], hatch: [330, 960], hatchAp: [160, 970], p1: [210, 860], p2: [470, 930], opp: [72, 675], oppIn: [140, 720] } }
   };
   var IDS = ["mara", "reid", "julian", "cassius", "imani", "soren"];
@@ -50,9 +56,14 @@
     O.glass = el("div", "o4-glass of-glass", w); el("i", "o4-sky", O.glass);
     O.door = el("div", "o4-door", w); O.hall = el("i", "o4-hall", O.door); O.opp = el("span", "o4-opp", O.door); O.oppImg = el("img", "", O.opp); O.oppImg.alt = ""; O.oppImg.draggable = false;
     O.leaf = el("i", "o4-leaf", O.door); O.gap = el("i", "o4-gap", O.door);
+    /* the executive's name on the door: gold leaf (1978), brushed steel (2008), engraved gold (Today); it swings with the leaf */
+    O.plaque = el("span", "o4-plaque", O.leaf); O.plN = el("b", "", O.plaque); O.plF = el("small", "", O.plaque);
+    /* a firm keepsake on the desk, per executive and era */
+    O.prop = el("img", "o4-prop", w); O.prop.alt = ""; O.prop.draggable = false;
     O.knock = el("span", "o4-knock", s);
     O.hatch = el("div", "o4-hatch", w); O.hglow = el("i", "o4-hglow", O.hatch);
-    O.tick = el("span", "o4-tick", w);
+    /* cash readout on the desk: screen space so the figure stays readable on phones */
+    O.tick = el("span", "o4-tick", s); O.tickV = el("b", "", O.tick);
     O.occ = el("div", "o4-occ", w);
     O.ex = el("div", "o4-ex", w); O.shadow = el("i", "o4-shadow", O.ex); O.body = el("div", "o4-body", O.ex); O.spr = el("i", "o4-spr", O.body);
     O.bub = el("span", "o4-bub", s);
@@ -76,9 +87,13 @@
     box(O.glass, R.glass); box(O.door, R.door);
     O.leaf.style.backgroundImage = "url(" + url + ")"; O.leaf.style.backgroundSize = R.w + "px " + R.h + "px"; O.leaf.style.backgroundPosition = (-R.door[0]) + "px " + (-R.door[1]) + "px";
     var hw = lay === "P" ? 300 : 240, hh = hw * 0.6;
-    box(O.hatch, [R.S.hatch[0] - hw / 2, R.S.hatch[1] - hh / 2, hw, hh]);
+    box(O.hatch, [R.S.hatch[0] - hw / 2, R.S.hatch[1] - hh / 2 - (lay === "P" ? 30 : 0), hw, hh]);
     O.hatch.style.backgroundImage = "url(" + BASE + "hatch-" + exec + ".webp)";
-    O.tick.style.left = R.tick[0] + "px"; O.tick.style.top = R.tick[1] + "px";
+    O.prop.src = BASE + "props/" + exec + "-e" + era + ".webp";
+    O.prop.style.left = R.pr[0] + "px"; O.prop.style.top = (R.pr[1] - R.pr[2]) + "px"; O.prop.style.height = R.pr[2] + "px";
+    box(O.plaque, R.pl);
+    var EX = LD.execById ? LD.execById(exec) : null;
+    O.plN.textContent = EX ? EX.name.replace(/^Dr\. /, "Dr ") : ""; O.plF.textContent = EX ? EX.firm : "";
     O.occ.style.backgroundImage = "url(" + url + ")"; O.occ.style.clipPath = "polygon(" + R.occ.map(function (p) { return p[0] + "px " + p[1] + "px"; }).join(",") + ")";
     O.occ.style.width = R.w + "px"; O.occ.style.height = R.h + "px";
     if (O.A) O.spr.style.backgroundImage = "url(" + BASE + key + ".webp)";
@@ -95,12 +110,12 @@
     if (O.R && O.rk.slice(-1) !== lay) { setEra(O.era, O.exec, lay); }
     var R = O.R, s = H / R.h;
     /* very wide strips (tablet portrait): zoom in a little, trimming ceiling and floor edge but never the desk-height head or the hatch */
-    if (lay === "L" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.84));
+    if (lay === "L" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.74));
     /* wide side panels (desktop): fill the width and trim the empty floor at the bottom rather than show edge strips */
     if (lay === "P" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.8));
     var pw = R.w * s, ph = R.h * s, ox;
     if (pw > W) ox = lay === "P" ? -(pw - W) * 0.3 : -(pw - W) / 2; else ox = (W - pw) / 2;
-    var oy = H - ph; oy = oy > 0 ? oy / 2 : oy * (lay === "P" ? 0.3 : 0.45);
+    var oy = H - ph; oy = oy > 0 ? oy / 2 : oy * (lay === "P" ? 0.3 : 0.6);
     O.s = s; O.ox = ox; O.oy = oy;
     O.world.style.transform = "translate(" + ox.toFixed(1) + "px," + oy.toFixed(1) + "px) scale(" + s.toFixed(4) + ")";
     var fw = Math.max(0, ox);
@@ -116,30 +131,43 @@
     draw();
   }
   function px(v, axis) { return axis === "x" ? O.ox + v * O.s : O.oy + v * O.s; }
+  /* The meters are fixtures of the room: unrest hangs on the wall by the door, collapse is mounted on the window frame,
+     cash sits on the desk. Anchors are plate points; the fixtures stay screen-sized so the numbers read on phones. */
   function placeMeters(room) {
     var R = O.R, W = room.clientWidth, H = room.clientHeight;
-    var u = room.querySelector(".m-unrest"), c = room.querySelector(".m-collapse");
-    function put(m, x, y, alignR) {
-      if (!m) return; var mw = m.offsetWidth || 60, mh = m.offsetHeight || 24;
-      var l = alignR ? x - mw : x; l = Math.max(3, Math.min(W - mw - 3, l)); var t = Math.max(3, Math.min(H - mh - 3, y));
-      m.style.setProperty("left", Math.round(l) + "px", "important"); m.style.setProperty("top", Math.round(t) + "px", "important");
-      m.style.setProperty("right", "auto", "important"); m.style.setProperty("bottom", "auto", "important"); m.style.setProperty("transform", "none", "important");
+    var u = room.querySelector(".m-unrest"), c = room.querySelector(".m-collapse"), t = O.tick;
+    room.dataset.o4sz = H < 200 ? "s" : W < 420 && H < 420 ? "m" : H < 420 ? "m" : "l";
+    if (O.era) room.dataset.o4era = O.era;
+    var placed = [];
+    function put(m, x, y, ax, ay, setImp) {
+      if (!m) { placed.push(null); return; } var mw = m.offsetWidth || 60, mh = m.offsetHeight || 24;
+      var l = Math.max(3, Math.min(W - mw - 3, x - mw * ax)), tp = Math.max(3, Math.min(H - mh - 3, y - mh * ay));
+      /* never stack two fixtures: slide sideways off anything already placed */
+      for (var i = 0; i < placed.length; i++) { var q = placed[i]; if (!q) continue;
+        if (l < q[0] + q[2] + 4 && q[0] < l + mw + 4 && tp < q[1] + q[3] + 2 && q[1] < tp + mh + 2) {
+          var right = q[0] + q[2] + 5; l = right + mw <= W - 3 ? right : Math.max(3, q[0] - mw - 5);
+          if (l < q[0] + q[2] + 4 && q[0] < l + mw + 4) tp = Math.min(H - mh - 3, q[1] + q[3] + 4);
+        } }
+      placed.push([l, tp, mw, mh]);
+      var imp = setImp ? "important" : "";
+      m.style.setProperty("left", Math.round(l) + "px", imp); m.style.setProperty("top", Math.round(tp) + "px", imp);
+      if (setImp) { m.style.setProperty("right", "auto", "important"); m.style.setProperty("bottom", "auto", "important"); m.style.setProperty("transform", "none", "important"); }
     }
-    /* unrest hangs by the door, collapse sits on the window sill */
-    put(u, px(R.door[0] + R.door[2] * 0.08, "x"), px(R.door[1] + R.door[3] * 0.06, "y"), false);
-    var narrow = H < 200;
-    if (narrow) {
-      /* short strip: both pills ride the top edge, unrest over the door, collapse at the window's right */
-      put(u, px(R.door[0], "x") + 2, 4, false);
-      put(c, px(R.glass[0] + R.glass[2], "x"), 4, true);
-    } else if (O.rk.slice(-1) === "P") put(c, px(R.glass[0] + R.glass[2] * 0.04, "x"), px(R.glass[1], "y") + 6, false);
-    else put(c, px(R.glass[0] + R.glass[2] * 0.04, "x"), px(R.glass[1] + R.glass[3], "y") - (c ? c.offsetHeight || 24 : 24) - 4, false);
-    if (u && c) {
-      var a = u.getBoundingClientRect(), b = c.getBoundingClientRect();
-      if (a.right + 4 > b.left && b.right + 4 > a.left && a.bottom + 2 > b.top && b.bottom + 2 > a.top) {
-        var l = parseFloat(u.style.left) + a.width + 6; if (l + b.width > W - 3) { c.style.setProperty("top", (parseFloat(u.style.top) + a.height + 4) + "px", "important"); } else c.style.setProperty("left", l + "px", "important");
-      }
-    }
+    put(u, px(R.mu[0], "x"), px(R.mu[1], "y"), 0.5, 0.5, true);
+    put(c, px(R.mc[0], "x"), px(R.mc[1], "y"), 0.5, R.mc[2] != null ? R.mc[2] : 0.75, true);
+    put(t, px(R.tick[0], "x"), px(R.tick[1], "y"), 0.5, 0.5, false);
+    O.fx = [u, c, t].map(function (m, i) { return m && placed[i] ? { m: m, r: placed[i] } : null; }).filter(Boolean);
+    under();
+  }
+  /* a fixture fades while the executive (or a visitor in the doorway) is behind it, so nobody is hidden by a meter */
+  function under() {
+    if (!O.fx || !O.R || !O.s) return;
+    var st = O.st, h = heightAt(st.y), rs = [];
+    /* the visible body: a little narrower than the sprite box; behind the desk only the upper half shows */
+    var behind = st.y < O.R.deskY && st.x > O.R.S.deskEntry[0] - 10, bot = behind ? st.y - h * 0.5 : st.y;
+    if (!st.hidden) rs.push([px(st.x - h * 0.15, "x"), px(st.y - h * 0.94, "y"), h * 0.3 * O.s, (bot - (st.y - h * 0.94)) * O.s]);
+    if (O.stage.classList.contains("o4-in") && O.opp.style.width) { var b = O.opp.getBoundingClientRect(), a = O.stage.getBoundingClientRect(); rs.push([b.left - a.left, b.top - a.top, b.width, b.height * 0.6]); }
+    O.fx.forEach(function (f) { var q = f.r, hit = rs.some(function (r) { return r[0] < q[0] + q[2] && q[0] < r[0] + r[2] && r[1] < q[1] + q[3] && q[1] < r[1] + r[3]; }); f.m.classList.toggle("o4-under", hit); });
   }
   function frame(p) { var F = O.A && O.A.f; if (!F) return null; return F[p] || F.idle; }
   function draw() {
@@ -154,10 +182,11 @@
     O.ex.style.transform = "translate(" + st.x.toFixed(1) + "px," + st.y.toFixed(1) + "px)";
     O.shadow.style.width = (h * 0.32).toFixed(0) + "px"; O.shadow.style.height = (h * 0.05).toFixed(0) + "px";
     var behind = st.y < O.R.deskY && st.x > O.R.S.deskEntry[0] - 10;
-    O.ex.style.zIndex = behind ? 3 : 6; O.occ.style.zIndex = 4; O.tick.style.zIndex = 5;
+    O.ex.style.zIndex = behind ? 3 : 6; O.occ.style.zIndex = 4; O.prop.style.zIndex = 5;
     O.ex.style.opacity = st.hidden ? "0" : "";
     O.ex.dataset.pose = st.pose;
     if (O.bub.classList.contains("on")) placeBub();
+    under();
   }
   function setPose(p) { O.st.pose = p; draw(); }
   function poseFor() { return O.mood === "panic" ? "panic" : O.mood === "nervous" ? "nervous" : "idle"; }
@@ -230,7 +259,8 @@
     O.ex.setAttribute("aria-hidden", "true");
     room.setAttribute("aria-label", (LD.execById ? LD.execById(state.executiveId).name : "") + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[O.mood]);
     /* meters on props */
-    O.tick.textContent = LD.formatMoney ? LD.formatMoney(state.cash) : "$" + state.cash + "M";
+    O.tickV.textContent = LD.formatMoney ? LD.formatMoney(state.cash) : "$" + state.cash + "M";
+    room.dataset.o4era = era;
     O.tick.classList.toggle("low", state.cash < 5);
     var door = LD.doorLevel ? LD.doorLevel(state) : 0, city = LD.cityStage ? LD.cityStage(state) : 0;
     O.knock.textContent = door >= 3 ? "BANG BANG!" : door >= 2 ? "KNOCK KNOCK" : "tap tap";
@@ -283,10 +313,12 @@
     })();
     return { skip: function () { O.skip = true; O.token++; finish(true); } };
   };
+  /* test hook (real-input placement shots): stand at a named spot in a pose */
+  API.debugSpot = function (spot, pose) { if (!O.R || !O.R.S[spot]) return false; O.frozen = true; O.token++; O.q.length = 0; O.st.hidden = false; O.st.x = O.R.S[spot][0]; O.st.y = O.R.S[spot][1]; O.st.pose = pose || "idle"; draw(); if (spot === "hatch") O.hatch.classList.add("on"); else O.hatch.classList.remove("on"); return true; };
   API.afterFight = function () { if (!O.stage) return; if (!O.st.hidden) enqueue("back", home); };
   /* idle life: small fidgets by mood; pacing in a panic */
   setInterval(function () {
-    if (!API.active() || O.busy || O.q.length || document.hidden || rm()) return;
+    if (!API.active() || O.busy || O.q.length || document.hidden || rm() || O.frozen) return;
     var desk = document.querySelector(".desk"); if (!desk || desk.closest(".screen[hidden]")) return;
     var idle = Date.now() - O.lastAct;
     if (O.mood === "panic") { if (idle > 2500) enqueue("pace", async function () { await go(Math.random() < 0.5 ? "p1" : "p2", true); hold("panic"); say(Math.random() < 0.3 ? pick(SAY.panic) : "", 1100); await wait(1200); }); return; }

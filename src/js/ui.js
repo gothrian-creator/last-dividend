@@ -761,9 +761,12 @@
       var money = m.getAttribute("data-money");
       bar.style.transition = "none";
       bar.style.width = Math.max(0, Math.min(100, start)) + "%";
+      /* office fixtures (dials, LED strips) read --v */
+      if (m.style.getPropertyValue("--v")) m.style.setProperty("--v", Math.max(0, Math.min(100, start)));
       void bar.offsetWidth;
       bar.style.transition = "";
       bar.style.width = Math.max(0, Math.min(100, to)) + "%";
+      if (m.style.getPropertyValue("--v")) requestAnimationFrame(function () { m.style.setProperty("--v", Math.max(0, Math.min(100, to))); });
       m.classList.add(to > start ? "rise" : "fall");
       var d = to - start, pop = document.createElement("span");
       var goodUp = key === "cash";

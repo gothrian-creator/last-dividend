@@ -577,7 +577,8 @@
   var OFX_VEH = { car: [1, 2, 3].map(function (e) { return '<img src="assets/office/veh-car-e' + e + '.webp" alt="" draggable="false">'; }),
     air: [1, 2, 3].map(function (e) { return '<img src="assets/office/veh-air-e' + e + '.webp" alt="" draggable="false">'; }) };
   /* full-body door poses (the fight art is framed to the old 3/4 crop for some opponents) */
-  var OPP_DOOR = {}; "ashby benny brennan crowe dana delacroix dunn gil grace gray hale harrow honoria june mickey mina moretti odell okafor pip pops rosa sorel theo ticker varga".split(" ").forEach(function (k) { OPP_DOOR[k] = 1; });
+  /* Milestone B: full-body door art per opponent (opp-<id>-door.webp). Held until the restyled opponents ship; empty = door scene uses the idle art. */
+  var OPP_DOOR = {}; /* Milestone B list: "ashby benny brennan crowe dana delacroix dunn gil grace gray hale harrow honoria june mickey mina moretti odell okafor pip pops rosa sorel theo ticker varga" */
   LD.officeEntrance = function (state) {
     var fg = state && state.fy && state.fy.fight; if (!fg) return null;
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));

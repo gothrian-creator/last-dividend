@@ -6,30 +6,33 @@
   if (typeof document === "undefined") return;
   var BASE = "assets/office40/";
   /* Plate geometry, in plate pixels. L = 1280x720 (wide boxes), P = 720x1280 (tall side panels). */
+  /* The meters are painted into each plate (a wall gauge / panel by the door, a gauge / readout in the window frame, a ticker / terminal / glass on the desk).
+     Painted faces in plate pixels: dial = [cx, cy, r] + counter window; quad = TL, TR, BR, BL of the screen. Code draws only the live needle, number and fill. */
+  var FACES = {"e1-L":{"U":{"dial":[345.6,109.3,64.5],"win":[326.6,131.0,365.6,153.1]},"C":{"dial":[809.7,234.0,60.0],"win":[790.6,255.0,829.6,276.0]},"K":{"quad":[[697.2,345.0],[832.2,342.5],[832.2,392.5],[697.2,395.0]]}},"e1-P":{"U":{"dial":[219.4,172.4,44.6],"win":[204.0,186.0,232.0,203.0]},"C":{"dial":[621.8,205.2,36.0],"win":[611.0,220.0,638.0,234.0]},"K":{"quad":[[428.0,486.0],[511.0,485.0],[511.0,513.0],[428.0,514.0]]}},"e2-L":{"U":{"quad":[[318.6,72.3],[441.0,72.3],[441.0,147.9],[318.6,147.9]]},"C":{"quad":[[541.7,73.6],[777.0,73.6],[777.0,123.0],[541.7,123.0]]},"K":{"quad":[[677.9,285.4],[778.0,285.4],[778.0,347.8],[675.3,347.8]]}},"e2-P":{"U":{"quad":[[224.0,109.0],[317.0,109.0],[317.0,165.0],[224.0,165.0]]},"C":{"quad":[[360.0,99.0],[512.0,99.0],[512.0,146.0],[360.0,146.0]]},"K":{"quad":[[370.8,406.0],[459.2,406.0],[459.2,455.5],[370.8,455.5]]}},"e3-L":{"U":{"quad":[[289.9,69.5],[357.2,79.6],[360.2,195.0],[291.9,184.0]]},"C":{"quad":[[532.7,51.4],[785.2,53.5],[784.0,108.9],[534.4,103.7]]},"K":{"quad":[[704.9,313.2],[805.4,314.5],[788.9,368.8],[688.0,363.4]]}},"e3-P":{"U":{"quad":[[66.0,58.0],[155.0,84.0],[160.0,158.0],[67.0,131.0]]},"C":{"quad":[[302.4,113.5],[486.0,115.0],[485.0,169.0],[303.0,164.0]]},"K":{"quad":[[431.6,522.0],[498.4,528.0],[490.3,566.8],[421.5,560.7]]}}};
   var ROOMS = {
     "e1-L": { w: 1280, h: 720, hk: [0.72, 0], door: [81, 37, 188, 475], glass: [406, 181, 375, 181],
       occ: [[690, 372], [1280, 386], [1280, 650], [1120, 668], [950, 612], [700, 578]], deskY: 545, tick: [800, 445],
-      mu: [335, 225], mc: [520, 362], pr: [738, 392, 112], pl: [38, 92, 112, 72],
+      mu: [335, 225], mc: [520, 362], pr: [1212, 402, 100], pl: [38, 92, 112, 72],
       S: { door: [330, 545], desk: [930, 538], deskEntry: [640, 525], window: [600, 495], hatch: [470, 600], hatchAp: [320, 612], p1: [380, 600], p2: [640, 612], opp: [178, 512], oppIn: [270, 540] } },
     "e2-L": { w: 1280, h: 720, hk: [0.745, 0], door: [50, 25, 244, 531], glass: [344, 56, 531, 388],
       occ: [[655, 336], [1000, 352], [1215, 400], [1215, 600], [1060, 640], [960, 645], [690, 550]], deskY: 560, tick: [830, 458],
-      mu: [318, 250], mc: [500, 444], pr: [712, 350, 96], pl: [40, 175, 165, 64],
+      mu: [318, 250], mc: [500, 444], pr: [1168, 405, 80], pl: [40, 175, 165, 64],
       S: { door: [350, 590], desk: [850, 555], deskEntry: [600, 545], window: [560, 520], hatch: [455, 608], hatchAp: [300, 620], p1: [380, 612], p2: [640, 622], opp: [172, 556], oppIn: [260, 580] } },
     "e3-L": { w: 1280, h: 720, hk: [0.70, 0], door: [106, 50, 169, 431], glass: [369, 31, 493, 381],
       occ: [[675, 360], [1210, 385], [1210, 560], [1000, 590], [700, 480]], deskY: 520, tick: [850, 435],
-      mu: [322, 230], mc: [500, 396], pr: [728, 376, 92], pl: [30, 118, 110, 40],
+      mu: [322, 230], mc: [500, 396], pr: [1160, 392, 84], pl: [30, 118, 110, 40],
       S: { door: [330, 515], desk: [900, 515], deskEntry: [620, 505], window: [600, 470], hatch: [455, 592], hatchAp: [310, 604], p1: [360, 590], p2: [640, 600], opp: [190, 481], oppIn: [270, 505] } },
     "e1-P": { w: 720, h: 1280, hk: [0.62, 10], door: [12, 106, 151, 506], glass: [244, 250, 325, 212],
       occ: [[412, 503], [720, 515], [720, 820], [650, 790], [480, 705], [420, 670]], deskY: 680, tick: [520, 585],
-      mu: [190, 205], mc: [405, 252, 1], pr: [438, 508, 84], pl: [36, 88, 86, 62],
+      mu: [190, 205], mc: [405, 252, 1], pr: [300, 484, 68], pl: [36, 88, 86, 62],
       S: { door: [235, 650], desk: [575, 675], deskEntry: [345, 700], window: [400, 650], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [88, 612], oppIn: [160, 660] } },
     "e2-P": { w: 720, h: 1280, hk: [0.66, 10], door: [25, 50, 163, 575], glass: [222, 87, 353, 425],
       occ: [[365, 478], [600, 470], [720, 490], [720, 700], [590, 728], [385, 622]], deskY: 640, tick: [480, 555],
-      mu: [200, 170], mc: [380, 102, 0], pr: [396, 492, 78], pl: [30, 175, 112, 58],
+      mu: [200, 170], mc: [380, 102, 0], pr: [268, 522, 62], pl: [30, 175, 112, 58],
       S: { door: [250, 670], desk: [560, 635], deskEntry: [330, 680], window: [400, 640], hatch: [330, 950], hatchAp: [160, 960], p1: [210, 830], p2: [470, 900], opp: [106, 625], oppIn: [180, 670] } },
     "e3-P": { w: 720, h: 1280, hk: [0.60, 10], door: [19, 144, 106, 531], glass: [187, 87, 388, 513],
       occ: [[398, 560], [720, 575], [720, 790], [620, 785], [410, 700]], deskY: 720, tick: [505, 615],
-      mu: [150, 205], mc: [330, 150, 0], pr: [440, 578, 72], pl: [14, 122, 74, 30],
+      mu: [150, 205], mc: [330, 150, 0], pr: [300, 602, 62], pl: [14, 122, 74, 30],
       S: { door: [205, 710], desk: [585, 715], deskEntry: [330, 745], window: [390, 700], hatch: [330, 960], hatchAp: [160, 970], p1: [210, 860], p2: [470, 930], opp: [72, 675], oppIn: [140, 720] } }
   };
   var IDS = ["mara", "reid", "julian", "cassius", "imani", "soren"];
@@ -62,8 +65,10 @@
     O.prop = el("img", "o4-prop", w); O.prop.alt = ""; O.prop.draggable = false;
     O.knock = el("span", "o4-knock", s);
     O.hatch = el("div", "o4-hatch", w); O.hglow = el("i", "o4-hglow", O.hatch);
-    /* cash readout on the desk: screen space so the figure stays readable on phones */
-    O.tick = el("span", "o4-tick", s); O.tickV = el("b", "", O.tick);
+    /* live faces on the painted fixtures: U (unrest) and C (collapse) on wall / window, so people pass in front; K (cash) on the desk */
+    /* the painted housing is re-laid over the window glass (the city view is its own layer) so the glass never hides a fixture */
+    O.patch = {}; ["U", "C", "K"].forEach(function (k) { O.patch[k] = el("div", "o4-occ o4-patch", w); });
+    O.face = {}; ["U", "C", "K"].forEach(function (k) { var f = el("div", "o4-face o4-f" + k, w); f.setAttribute("aria-hidden", "true"); f.innerHTML = '<span class="o4-scr"><i class="o4-ndl"></i><b class="o4-num"></b><small class="o4-lab"></small><span class="o4-bar"><i></i></span></span>'; O.face[k] = f; });
     O.occ = el("div", "o4-occ", w);
     O.ex = el("div", "o4-ex", w); O.shadow = el("i", "o4-shadow", O.ex); O.body = el("div", "o4-body", O.ex); O.spr = el("i", "o4-spr", O.body);
     O.bub = el("span", "o4-bub", s);
@@ -90,6 +95,7 @@
     box(O.hatch, [R.S.hatch[0] - hw / 2, R.S.hatch[1] - hh / 2 - (lay === "P" ? 30 : 0), hw, hh]);
     O.hatch.style.backgroundImage = "url(" + BASE + "hatch-" + exec + ".webp)";
     O.prop.src = BASE + "props/" + exec + "-e" + era + ".webp";
+    setFaces(FACES[rk] || {}, url);
     O.prop.style.left = R.pr[0] + "px"; O.prop.style.top = (R.pr[1] - R.pr[2]) + "px"; O.prop.style.height = R.pr[2] + "px";
     box(O.plaque, R.pl);
     var EX = LD.execById ? LD.execById(exec) : null;
@@ -131,43 +137,57 @@
     draw();
   }
   function px(v, axis) { return axis === "x" ? O.ox + v * O.s : O.oy + v * O.s; }
-  /* The meters are fixtures of the room: unrest hangs on the wall by the door, collapse is mounted on the window frame,
-     cash sits on the desk. Anchors are plate points; the fixtures stay screen-sized so the numbers read on phones. */
-  function placeMeters(room) {
-    var R = O.R, W = room.clientWidth, H = room.clientHeight;
-    var u = room.querySelector(".m-unrest"), c = room.querySelector(".m-collapse"), t = O.tick;
-    room.dataset.o4sz = H < 200 ? "s" : W < 420 && H < 420 ? "m" : H < 420 ? "m" : "l";
-    if (O.era) room.dataset.o4era = O.era;
-    var placed = [];
-    function put(m, x, y, ax, ay, setImp) {
-      if (!m) { placed.push(null); return; } var mw = m.offsetWidth || 60, mh = m.offsetHeight || 24;
-      var l = Math.max(3, Math.min(W - mw - 3, x - mw * ax)), tp = Math.max(3, Math.min(H - mh - 3, y - mh * ay));
-      /* never stack two fixtures: slide sideways off anything already placed */
-      for (var i = 0; i < placed.length; i++) { var q = placed[i]; if (!q) continue;
-        if (l < q[0] + q[2] + 4 && q[0] < l + mw + 4 && tp < q[1] + q[3] + 2 && q[1] < tp + mh + 2) {
-          var right = q[0] + q[2] + 5; l = right + mw <= W - 3 ? right : Math.max(3, q[0] - mw - 5);
-          if (l < q[0] + q[2] + 4 && q[0] < l + mw + 4) tp = Math.min(H - mh - 3, q[1] + q[3] + 4);
-        } }
-      placed.push([l, tp, mw, mh]);
-      var imp = setImp ? "important" : "";
-      m.style.setProperty("left", Math.round(l) + "px", imp); m.style.setProperty("top", Math.round(tp) + "px", imp);
-      if (setImp) { m.style.setProperty("right", "auto", "important"); m.style.setProperty("bottom", "auto", "important"); m.style.setProperty("transform", "none", "important"); }
-    }
-    put(u, px(R.mu[0], "x"), px(R.mu[1], "y"), 0.5, 0.5, true);
-    put(c, px(R.mc[0], "x"), px(R.mc[1], "y"), 0.5, R.mc[2] != null ? R.mc[2] : 0.75, true);
-    put(t, px(R.tick[0], "x"), px(R.tick[1], "y"), 0.5, 0.5, false);
-    O.fx = [u, c, t].map(function (m, i) { return m && placed[i] ? { m: m, r: placed[i] } : null; }).filter(Boolean);
-    under();
+  /* rect (0,0,w,h) -> quad as a CSS matrix3d, so a face's content lies in the painting's perspective */
+  function quadMatrix(w, h, q) {
+    var x0 = q[0][0], y0 = q[0][1], x1 = q[1][0], y1 = q[1][1], x2 = q[2][0], y2 = q[2][1], x3 = q[3][0], y3 = q[3][1];
+    var dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2, sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3;
+    var g = 0, hh = 0, den = dx1 * dy2 - dx2 * dy1;
+    if (Math.abs(sx) > 1e-6 || Math.abs(sy) > 1e-6) { g = (sx * dy2 - dx2 * sy) / den; hh = (dx1 * sy - sx * dy1) / den; }
+    var a = x1 - x0 + g * x1, b = x3 - x0 + hh * x3, d = y1 - y0 + g * y1, e = y3 - y0 + hh * y3;
+    a /= w; d /= w; g /= w; b /= h; e /= h; hh /= h;
+    return "matrix3d(" + [a, d, 0, g, b, e, 0, hh, 0, 0, 1, 0, x0, y0, 0, 1].map(function (v) { return +v.toFixed(6); }).join(",") + ")";
   }
-  /* a fixture fades while the executive (or a visitor in the doorway) is behind it, so nobody is hidden by a meter */
-  function under() {
-    if (!O.fx || !O.R || !O.s) return;
-    var st = O.st, h = heightAt(st.y), rs = [];
-    /* the visible body: a little narrower than the sprite box; behind the desk only the upper half shows */
-    var behind = st.y < O.R.deskY && st.x > O.R.S.deskEntry[0] - 10, bot = behind ? st.y - h * 0.5 : st.y;
-    if (!st.hidden) rs.push([px(st.x - h * 0.15, "x"), px(st.y - h * 0.94, "y"), h * 0.3 * O.s, (bot - (st.y - h * 0.94)) * O.s]);
-    if (O.stage.classList.contains("o4-in") && O.opp.style.width) { var b = O.opp.getBoundingClientRect(), a = O.stage.getBoundingClientRect(); rs.push([b.left - a.left, b.top - a.top, b.width, b.height * 0.6]); }
-    O.fx.forEach(function (f) { var q = f.r, hit = rs.some(function (r) { return r[0] < q[0] + q[2] && q[0] < r[0] + r[2] && r[1] < q[1] + q[3] && q[1] < r[1] + r[3]; }); f.m.classList.toggle("o4-under", hit); });
+  function setFaces(FS, url) {
+    ["U", "C", "K"].forEach(function (k) {
+      var f = O.face[k], g = FS[k], pt = O.patch[k]; pt.style.display = f.style.display = g ? "" : "none"; if (!g) return;
+      pt.style.backgroundImage = "url(" + url + ")"; pt.style.width = O.R.w + "px"; pt.style.height = O.R.h + "px"; pt.style.zIndex = k === "K" ? 4 : 2;
+      if (g.dial) pt.style.clipPath = "circle(" + (g.dial[2] * 1.3).toFixed(1) + "px at " + g.dial[0] + "px " + g.dial[1] + "px)";
+      else { var cx = 0, cy = 0; g.quad.forEach(function (p) { cx += p[0] / 4; cy += p[1] / 4; });
+        var bw = Math.max.apply(null, g.quad.map(function (p) { return p[0]; })) - Math.min.apply(null, g.quad.map(function (p) { return p[0]; })), bh = Math.max.apply(null, g.quad.map(function (p) { return p[1]; })) - Math.min.apply(null, g.quad.map(function (p) { return p[1]; }));
+        var ex = 1 + 36 / bw, ey = 1 + 36 / bh;
+        pt.style.clipPath = "polygon(" + g.quad.map(function (p) { return (cx + (p[0] - cx) * ex).toFixed(1) + "px " + (cy + (p[1] - cy) * ey).toFixed(1) + "px"; }).join(",") + ")"; }
+      f.classList.toggle("dial", !!g.dial); f.classList.toggle("quad", !g.dial);
+      if (g.dial) {
+        f._wh = null; var r = g.dial[2]; f.style.width = f.style.height = (2 * r) + "px"; f.style.transform = "translate(" + (g.dial[0] - r) + "px," + (g.dial[1] - r) + "px)";
+        f.style.setProperty("--r", r + "px");
+      } else {
+        var q = g.quad, w = Math.round(Math.hypot(q[1][0] - q[0][0], q[1][1] - q[0][1])), h = Math.round(Math.hypot(q[3][0] - q[0][0], q[3][1] - q[0][1]));
+        f.style.width = w + "px"; f.style.height = h + "px"; f.style.transform = quadMatrix(w, h, q); f.style.setProperty("--h", h + "px"); f.style.setProperty("--w", w + "px"); f._wh = [w, h];
+      }
+    });
+  }
+  function setFace(k, val, txt, lvl, label) {
+    var f = O.face && O.face[k]; if (!f) return;
+    var n = f.querySelector(".o4-num"); n.textContent = txt;
+    /* quads: the figure takes as much of the painted screen as it can (phones), by its length */
+    if (f.classList.contains("quad") && f._wh) { var w = f._wh[0], h = f._wh[1], len = Math.max(2, txt.length), sp = k === "C" ? [0.8, 0.5] : k === "K" ? [0.66, 0.92] : [0.6, 0.9];
+      n.style.fontSize = Math.min(h * sp[0], w * sp[1] / (len * 0.62)).toFixed(1) + "px"; } else n.style.fontSize = ""; f.querySelector(".o4-lab").textContent = label || "";
+    f.style.setProperty("--v", Math.max(0, Math.min(100, val)));
+    f.classList.remove("lvl-ok", "lvl-warn", "lvl-danger"); f.classList.add("lvl-" + (lvl || "ok"));
+  }
+  /* the real meters stay in the DOM for taps, focus and screen readers: an invisible hit area over each painted face */
+  function placeMeters(room) {
+    room.dataset.o4sz = room.clientHeight < 200 ? "s" : room.clientHeight < 420 ? "m" : "l";
+    if (O.era) room.dataset.o4era = O.era;
+    var a = room.getBoundingClientRect();
+    [[room.querySelector(".m-unrest"), "U"], [room.querySelector(".m-collapse"), "C"], [room.querySelector(".m-cash"), "K"]].forEach(function (p) {
+      var m = p[0], f = O.face[p[1]]; if (!m || !f || f.style.display === "none") return;
+      var b = f.getBoundingClientRect(), pad = 4;
+      m.classList.add("o4-hit");
+      m.style.setProperty("left", Math.round(b.left - a.left - pad) + "px", "important"); m.style.setProperty("top", Math.round(b.top - a.top - pad) + "px", "important");
+      m.style.setProperty("width", Math.round(b.width + 2 * pad) + "px", "important"); m.style.setProperty("height", Math.round(b.height + 2 * pad) + "px", "important");
+      m.style.setProperty("right", "auto", "important"); m.style.setProperty("bottom", "auto", "important"); m.style.setProperty("transform", "none", "important");
+    });
   }
   function frame(p) { var F = O.A && O.A.f; if (!F) return null; return F[p] || F.idle; }
   function draw() {
@@ -182,11 +202,10 @@
     O.ex.style.transform = "translate(" + st.x.toFixed(1) + "px," + st.y.toFixed(1) + "px)";
     O.shadow.style.width = (h * 0.32).toFixed(0) + "px"; O.shadow.style.height = (h * 0.05).toFixed(0) + "px";
     var behind = st.y < O.R.deskY && st.x > O.R.S.deskEntry[0] - 10;
-    O.ex.style.zIndex = behind ? 3 : 6; O.occ.style.zIndex = 4; O.prop.style.zIndex = 5;
+    O.ex.style.zIndex = behind ? 3 : 6; O.occ.style.zIndex = 4; O.prop.style.zIndex = 5; O.face.K.style.zIndex = 5;
     O.ex.style.opacity = st.hidden ? "0" : "";
     O.ex.dataset.pose = st.pose;
     if (O.bub.classList.contains("on")) placeBub();
-    under();
   }
   function setPose(p) { O.st.pose = p; draw(); }
   function poseFor() { return O.mood === "panic" ? "panic" : O.mood === "nervous" ? "nervous" : "idle"; }
@@ -259,9 +278,11 @@
     O.ex.setAttribute("aria-hidden", "true");
     room.setAttribute("aria-label", (LD.execById ? LD.execById(state.executiveId).name : "") + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[O.mood]);
     /* meters on props */
-    O.tickV.textContent = LD.formatMoney ? LD.formatMoney(state.cash) : "$" + state.cash + "M";
+    var fm = LD.formatMoney || function (v) { return "$" + v + "M"; }, lv = LD.resLevel || function () { return "ok"; };
+    setFace("U", state.unrest, String(state.unrest), lv("unrest", state.unrest), "UNREST");
+    setFace("C", state.collapse, String(state.collapse), lv("collapse", state.collapse), "COLLAPSE");
+    setFace("K", Math.min(100, state.cash), fm(state.cash), lv("cash", state.cash), "");
     room.dataset.o4era = era;
-    O.tick.classList.toggle("low", state.cash < 5);
     var door = LD.doorLevel ? LD.doorLevel(state) : 0, city = LD.cityStage ? LD.cityStage(state) : 0;
     O.knock.textContent = door >= 3 ? "BANG BANG!" : door >= 2 ? "KNOCK KNOCK" : "tap tap";
     O.stage.className = "o4-stage door-" + door + " city-" + city + " mood-" + O.mood + (rm() ? " o4-rm" : "");

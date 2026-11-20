@@ -5285,8 +5285,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   .desk .office .of-room.o4 { height: clamp(140px, calc(var(--app-h, 100dvh) * 0.17), 250px) !important; }
 }
 
-/* ===== Office 40s polish: the meters are fixtures painted into the room, one look per era =====
-   size tier from office.js: data-o4sz s (phone strip) / m (tablet strip) / l (side panel). Units are em of the fixture. */
+/* ===== Office 40s polish: per-executive props, door plaque =====
 .o4-prop { position: absolute; width: auto; pointer-events: none; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
 .o4-plaque { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; overflow: hidden; line-height: 1.05; }
 .o4-plaque b { font: 800 22px/1.05 var(--font-serif, Georgia, serif); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
@@ -5301,85 +5300,73 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 .o4-stage.o4-open .o4-plaque { opacity: 0; }
 
 /* shared fixture reset */
-.office .of-room.o4 .of-g.of-g { font-size: 10px; display: block !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; animation: none !important; min-width: 0; column-gap: 0; }
-.office .of-room.o4[data-o4sz="m"] .of-g.of-g { font-size: 12px; }
-.office .of-room.o4[data-o4sz="l"] .of-g.of-g { font-size: 13px; }
-.office .of-room.o4 .of-g .m-lab { position: absolute; display: block !important; white-space: nowrap; pointer-events: none; }
-.office .of-room.o4 .of-g .m-lab .tok, .office .of-room.o4 .of-g .m-lab > i { display: none; }
-.office .of-room.o4 .of-g .m-name { display: inline !important; font: 800 .62em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; letter-spacing: .12em; text-transform: uppercase; }
-.office .of-room.o4 .of-g .m-val { display: block; text-align: center; text-shadow: none !important; }
-.office .of-room.o4 .of-g .m-bar { display: block !important; position: absolute; margin: 0; overflow: hidden; }
-.office .of-room.o4 .of-g .m-sub { display: none !important; }
-.office .of-room.o4 .of-g .m-pop { z-index: 2; }
-.office .of-room.o4[data-o4sz="s"] .of-g .m-name { font-size: .55em !important; letter-spacing: .06em; }
 
 /* ---- 1978: brass, enamel and paper ---- */
 /* unrest: a round brass pressure dial on the wall by the door, needle at the value, red sector past 60 */
-.office .of-room.o4[data-o4era="1"] .of-g.m-unrest { width: 4.4em; height: 4.4em; border-radius: 50% !important; border: .32em solid #b98a2e !important;
   background: radial-gradient(circle at 50% 50%, #2a1a0c 0 .28em, transparent .3em), repeating-conic-gradient(from -120deg, #3a2a18 0 1.2deg, transparent 1.2deg 24deg) , conic-gradient(from -120deg, transparent 0 144deg, rgba(190, 40, 20, .75) 144deg 240deg, transparent 240deg), radial-gradient(circle at 40% 35%, #fffaf0, #eadfc2 70%, #cdbb8e) !important;
   -webkit-mask: none; box-shadow: 0 0 0 .1em #5c3f10, .18em .22em 0 rgba(0, 0, 0, .45), inset 0 0 .3em rgba(0, 0, 0, .35) !important; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-bar { left: calc(50% - .07em); bottom: 50%; width: .14em; height: 1.55em; border-radius: .1em; background: #8a1a0e; transform-origin: 50% 100%; transform: rotate(calc(var(--v, 0) * 2.4deg - 120deg)); transition: transform .9s cubic-bezier(.3, 1.6, .5, 1); overflow: visible; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-bar span { display: none; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-val { position: absolute; left: 50%; bottom: .32em; transform: translateX(-50%); padding: .04em .22em; background: #1d140c; color: #fff4d6 !important; border-radius: .12em; font: 800 1.12em/1 ui-monospace, "SF Mono", Menlo, monospace !important; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-unrest .m-lab { left: 50%; top: 100%; transform: translate(-50%, .2em); padding: .08em .35em; background: linear-gradient(#e7c56a, #a97b25); color: #2a1a06 !important; border-radius: .15em; box-shadow: .1em .1em 0 rgba(0, 0, 0, .4); }
-.office .of-room.o4[data-o4era="1"][data-o4sz="s"] .of-g.m-unrest .m-lab { display: none !important; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-unrest.lvl-danger .m-val { color: #ff9b7e !important; }
 /* collapse: a brass barometer plate screwed to the window frame: drum counter + mercury tube */
-.office .of-room.o4[data-o4era="1"] .of-g.m-collapse { width: 6.6em; height: 2.7em; border-radius: .35em !important; border: .12em solid #5c3f10 !important;
   background: radial-gradient(circle at .35em .35em, #5c3f10 .1em, transparent .12em), radial-gradient(circle at calc(100% - .35em) .35em, #5c3f10 .1em, transparent .12em), linear-gradient(180deg, #f0d585, #c8973a 55%, #9c6e22) !important; box-shadow: .15em .2em 0 rgba(0, 0, 0, .45) !important; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-lab { left: .55em; top: .3em; color: #3a2606 !important; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-val { position: absolute; right: .45em; top: .25em; min-width: 1.9em; padding: .05em .2em; background: linear-gradient(180deg, #000, #2a221a 50%, #000); color: #fff4d6 !important; border-radius: .1em; font: 800 1.15em/1 ui-monospace, "SF Mono", Menlo, monospace !important; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-bar { left: .55em; right: .55em; bottom: .38em; height: .42em; border-radius: .25em; background: linear-gradient(180deg, #fffdf2, #d9d2bd) !important; box-shadow: inset 0 0 0 .06em #5c3f10; }
-.office .of-room.o4[data-o4era="1"] .of-g.m-collapse .m-bar span { background: linear-gradient(180deg, #ff6a50, #a8140a) !important; border-radius: .25em; }
-.office .of-room.o4[data-o4era="1"][data-o4sz="s"] .of-g.m-collapse .m-lab { top: .38em; }
 /* cash: a stock-ticker dome feeding paper tape across the desk */
-.o4-tick { position: absolute; z-index: 7; pointer-events: none; white-space: nowrap; font-size: 10px; }
-.of-room[data-o4sz="m"] .o4-tick { font-size: 12px; } .of-room[data-o4sz="l"] .o4-tick { font-size: 13px; }
-.o4-tick b { display: block; font: 800 1.25em/1 ui-monospace, "SF Mono", Menlo, monospace; }
-.of-room[data-o4era="1"] .o4-tick { padding: .18em .5em .18em 1.9em; background: linear-gradient(180deg, #fffbea, #efe3bf); color: #1d140c; transform: rotate(-2.5deg); border-radius: .1em; box-shadow: .14em .18em 0 rgba(0, 0, 0, .45);
   -webkit-mask: linear-gradient(90deg, #000 calc(100% - .35em), transparent calc(100% - .35em)), repeating-linear-gradient(180deg, #000 0 .25em, transparent .25em .4em); -webkit-mask-composite: source-over; }
-.of-room[data-o4era="1"] .o4-tick::before { content: ""; position: absolute; left: .12em; top: 50%; width: 1.5em; height: 1.5em; transform: translateY(-50%); border-radius: 50% 50% .25em .25em; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .85) 0 .15em, transparent .3em), radial-gradient(circle at 50% 60%, #6a4a1c, #2b1d0c); box-shadow: 0 0 0 .12em #c8973a; }
-.of-room[data-o4era="1"] .o4-tick.low { color: #a3170b; }
 
 /* ---- 2008: plastic bezels, LCD and LED ---- */
-.office .of-room.o4[data-o4era="2"] .of-g.m-unrest { width: 4.3em; height: 3.4em; border-radius: .3em !important; border: .12em solid #1a1d20 !important; background: linear-gradient(180deg, #4a5056, #2a2e32) !important; box-shadow: inset 0 .08em 0 rgba(255, 255, 255, .2), .15em .2em 0 rgba(0, 0, 0, .45) !important; }
-.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-lab { left: 0; right: 0; top: .22em; text-align: center; color: #d8dde2 !important; }
-.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-val { position: absolute; left: .35em; right: .35em; top: 1em; padding: .05em 0; background: linear-gradient(180deg, #a9bf90, #8ea877); color: #15200c !important; border-radius: .1em; box-shadow: inset 0 0 0 .06em #1a1d20; font: 700 1.25em/1 "Courier New", ui-monospace, monospace !important; letter-spacing: .04em; }
-.office .of-room.o4[data-o4era="2"] .of-g.m-unrest .m-bar, .office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-bar { left: .35em; right: .35em; bottom: .3em; height: .32em; background: repeating-linear-gradient(90deg, #15181a 0 .42em, transparent .42em .52em) !important; border-radius: 0; }
-.office .of-room.o4[data-o4era="2"] .of-g .m-bar span { background: repeating-linear-gradient(90deg, #ffb12e 0 .42em, transparent .42em .52em) !important; border-radius: 0; }
-.office .of-room.o4[data-o4era="2"] .of-g.lvl-danger .m-bar span { background: repeating-linear-gradient(90deg, #ff3b22 0 .42em, transparent .42em .52em) !important; }
-.office .of-room.o4[data-o4era="2"] .of-g.m-unrest.lvl-danger .m-val { animation: o4lcd 1s steps(1) infinite; }
 @keyframes o4lcd { 50% { color: rgba(21, 32, 12, .25); } }
-.office .of-room.o4[data-o4era="2"] .of-g.m-collapse { width: 6.4em; height: 2.5em; border-radius: .2em !important; border: .12em solid #000 !important; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 .1em, transparent .1em .2em), #0b0c0d !important; box-shadow: .15em .2em 0 rgba(0, 0, 0, .45), 0 0 0 .1em #5a6168 !important; }
-.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-lab { left: .4em; top: .38em; color: #ffb12e !important; text-shadow: 0 0 .3em rgba(255, 170, 40, .6); }
-.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-val { position: absolute; right: .4em; top: .18em; color: #ff4a2a !important; font: 700 1.3em/1 "Courier New", ui-monospace, monospace !important; text-shadow: 0 0 .35em rgba(255, 60, 30, .8) !important; }
-.office .of-room.o4[data-o4era="2"] .of-g.m-collapse .m-bar { bottom: .28em; }
-.of-room[data-o4era="2"] .o4-tick { padding: .3em .55em; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .05) 0 .1em, transparent .1em .22em), #0c0a06; color: #ffb12e; border: .14em solid #3d4247; border-radius: .25em; text-shadow: 0 0 .35em rgba(255, 170, 40, .7); box-shadow: .14em .18em 0 rgba(0, 0, 0, .45); }
-.of-room[data-o4era="2"] .o4-tick b { font-family: "Courier New", ui-monospace, monospace; font-weight: 700; }
-.of-room[data-o4era="2"] .o4-tick.low { color: #ff4a2a; }
 
 /* ---- Today: emerald glass and gold light ---- */
-.office .of-room.o4[data-o4era="3"] .of-g.m-unrest, .office .of-room.o4[data-o4era="3"] .of-g.m-collapse { border-radius: .45em !important; border: .08em solid rgba(240, 205, 120, .85) !important; background: linear-gradient(160deg, rgba(30, 80, 64, .55), rgba(8, 30, 24, .45)) !important; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); box-shadow: 0 0 .7em rgba(240, 205, 120, .35), inset 0 0 .5em rgba(160, 255, 220, .18) !important; }
-.office .of-room.o4[data-o4era="3"] .of-g.m-unrest { width: 4em; height: 3.3em; }
-.office .of-room.o4[data-o4era="3"] .of-g.m-collapse { width: 6.2em; height: 2.4em; }
-.office .of-room.o4[data-o4era="3"] .of-g .m-lab { color: #f3dc98 !important; }
-.office .of-room.o4[data-o4era="3"] .of-g.m-unrest .m-lab { left: 0; right: 0; top: .3em; text-align: center; }
-.office .of-room.o4[data-o4era="3"] .of-g.m-unrest .m-val { position: absolute; left: 0; right: 0; top: .95em; color: #fff3cf !important; font: 300 1.55em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; text-shadow: 0 0 .4em rgba(240, 205, 120, .9) !important; }
-.office .of-room.o4[data-o4era="3"] .of-g.m-collapse .m-lab { left: .5em; top: .45em; }
-.office .of-room.o4[data-o4era="3"] .of-g.m-collapse .m-val { position: absolute; right: .5em; top: .2em; color: #fff3cf !important; font: 300 1.5em/1 var(--font-sans, Helvetica, Arial, sans-serif) !important; text-shadow: 0 0 .4em rgba(240, 205, 120, .9) !important; }
-.office .of-room.o4[data-o4era="3"] .of-g .m-bar { left: .5em; right: .5em; bottom: .35em; height: .14em; border-radius: .1em; background: rgba(240, 205, 120, .22) !important; }
-.office .of-room.o4[data-o4era="3"] .of-g .m-bar span { background: linear-gradient(90deg, #9fffe0, #f3d27a) !important; box-shadow: 0 0 .4em #f3d27a; }
-.office .of-room.o4[data-o4era="3"] .of-g.lvl-danger .m-val { color: #ffb0a0 !important; text-shadow: 0 0 .45em rgba(255, 80, 60, .95) !important; }
-.office .of-room.o4[data-o4era="3"] .of-g.lvl-danger .m-bar span { background: linear-gradient(90deg, #ff9a6a, #ff3b2e) !important; box-shadow: 0 0 .4em #ff3b2e; }
-.of-room[data-o4era="3"] .o4-tick { padding: .25em .6em; color: #fff3cf; border-radius: .4em; background: linear-gradient(180deg, rgba(240, 205, 120, .28), rgba(240, 205, 120, .06)); border: .08em solid rgba(240, 205, 120, .8); text-shadow: 0 0 .45em rgba(240, 205, 120, .95); box-shadow: 0 0 .8em rgba(240, 205, 120, .35); }
-.of-room[data-o4era="3"] .o4-tick::after { content: ""; position: absolute; left: 20%; right: 20%; top: 100%; height: .7em; background: linear-gradient(180deg, rgba(240, 205, 120, .35), transparent); clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%); }
-.of-room[data-o4era="3"] .o4-tick b { font-family: var(--font-sans, Helvetica, Arial, sans-serif); font-weight: 400; }
-.of-room[data-o4era="3"] .o4-tick.low { color: #ffb0a0; text-shadow: 0 0 .45em rgba(255, 80, 60, .95); }
-@media (prefers-reduced-motion: reduce) { .office .of-room.o4 .of-g .m-bar { transition: none !important; } .office .of-room.o4 .of-g .m-val { animation: none !important; } }
+/* the plate paints its own view; the legacy window art must not show through the O4 glass */
+
+/* ===== Painted meters: the housings are part of the room plate; only the live needle, number and fill are drawn here, in plate pixels
+   (office.js lays each face onto its painted screen with a matrix3d, so it shares the plate's perspective and is covered by whoever walks past) */
+.o4-face { position: absolute; left: 0; top: 0; transform-origin: 0 0; pointer-events: none; z-index: 2; --v: 0; }
+.o4-face .o4-scr { position: absolute; inset: 0; overflow: hidden; }
+.o4-face .o4-num { position: absolute; white-space: nowrap; line-height: 1; font-variant-numeric: tabular-nums; }
+.o4-face .o4-lab { position: absolute; white-space: nowrap; line-height: 1; letter-spacing: .08em; }
+.o4-face .o4-bar { position: absolute; overflow: hidden; } .o4-face .o4-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--v) * 1%); transition: width .9s ease; }
+.o4-face .o4-ndl { display: none; }
+/* quads: label top-left, figure centred, fill along the bottom */
+.o4-face.quad .o4-num { left: 0; right: 0; top: 50%; transform: translateY(-46%); text-align: center; font-size: min(calc(var(--h) * .56), calc(var(--w) * .34)); }
+.o4-face.quad .o4-lab { left: 6%; top: 7%; font-size: max(9px, calc(var(--h) * .15)); }
+.o4-face.quad .o4-bar { left: 6%; right: 6%; bottom: 8%; height: max(3px, calc(var(--h) * .08)); }
+.o4-face.o4-fC.quad .o4-lab { top: 50%; transform: translateY(-50%); font-size: max(9px, calc(var(--h) * .2)); }
+.o4-face.o4-fC.quad .o4-num { left: auto; right: 5%; text-align: right; font-size: calc(var(--h) * .62); }
+.o4-face.o4-fC.quad .o4-bar { bottom: 6%; height: max(2px, calc(var(--h) * .06)); }
+.o4-face.o4-fK .o4-lab, .o4-face.o4-fK .o4-bar { display: none; }
+.o4-face.o4-fK.quad .o4-num { font-size: min(calc(var(--h) * .62), calc(var(--w) * .3)); }
+/* 1978 brass: a needle over the cream dial, the figure inked on the face; the ticker types cash on its tape */
+.o4-face.dial .o4-scr { border-radius: 50%; }
+.o4-face.dial .o4-ndl { display: block; position: absolute; left: calc(50% - 3px); bottom: 50%; width: 6px; height: calc(var(--r) * .8); border-radius: 3px 3px 1px 1px;
+  background: linear-gradient(90deg, #120b05, #3a2716 55%, #120b05); transform-origin: 50% 100%; transform: rotate(calc(var(--v) * 2.6deg - 130deg));
+  transition: transform 1s cubic-bezier(.3, 1.35, .5, 1); box-shadow: 2px 3px 2px rgba(40, 20, 0, .35); z-index: 2; }
+.o4-face.dial .o4-scr::after { content: ""; position: absolute; left: calc(50% - var(--r) * .11); top: calc(50% - var(--r) * .11); width: calc(var(--r) * .22); height: calc(var(--r) * .22); border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f6dc8e, #a8741f 60%, #5c3a0c); box-shadow: 1px 2px 2px rgba(0, 0, 0, .45); z-index: 3; }
+.o4-face.dial .o4-num { left: 0; right: 0; top: 22%; text-align: center; font: 800 calc(var(--r) * .62)/1 var(--font-serif, Georgia, serif); color: #2b1a0b; text-shadow: 0 0 2px #f3e6c4, 0 0 4px #f3e6c4, 0 0 6px rgba(243, 230, 196, .8); z-index: 4; }
+.o4-face.dial .o4-lab, .o4-face.dial .o4-bar { display: none; }
+.o4-face.dial.lvl-warn .o4-num { color: #7a3d06; } .o4-face.dial.lvl-danger .o4-num { color: #a3170b; }
+.o4-face.dial.lvl-danger .o4-ndl { background: linear-gradient(90deg, #5a0a04, #b2200e 55%, #5a0a04); }
+.o4-stage[data-era="1"] .o4-fK .o4-num { font-family: "Courier New", ui-monospace, monospace; font-weight: 700; color: #241509; text-shadow: 0 0 1px rgba(36, 21, 9, .5); }
+.o4-stage[data-era="1"] .o4-fK.lvl-danger .o4-num { color: #a3170b; }
+/* 2008: LCD wall panel (dark segments), red LED strip in the window rail, amber desk terminal */
+.o4-stage[data-era="2"] .o4-fU .o4-num { font: 700 min(calc(var(--h) * .56), calc(var(--w) * .34))/1 "Courier New", ui-monospace, monospace; color: #b8f0c8; text-shadow: 0 0 6px rgba(120, 255, 170, .55); }
+.o4-stage[data-era="2"] .o4-fU .o4-lab { color: #8fd6a6; font-family: var(--font-sans, Helvetica, Arial, sans-serif); font-weight: 700; }
+.o4-stage[data-era="2"] .o4-fU .o4-bar i { background: repeating-linear-gradient(90deg, #7dffa8 0 8px, transparent 8px 11px); box-shadow: 0 0 6px rgba(120, 255, 170, .6); }
+.o4-stage[data-era="2"] .o4-fC .o4-num { font: 700 calc(var(--h) * .62)/1 "Courier New", ui-monospace, monospace; color: #ff4a2a; text-shadow: 0 0 6px rgba(255, 60, 30, .85), 0 0 14px rgba(255, 60, 30, .4); }
+.o4-stage[data-era="2"] .o4-fC .o4-lab { color: #ffb12e; font-family: var(--font-sans, Helvetica, Arial, sans-serif); font-weight: 700; text-shadow: 0 0 5px rgba(255, 170, 40, .7); }
+.o4-stage[data-era="2"] .o4-fC .o4-bar { right: 42%; } .o4-stage[data-era="2"] .o4-fC .o4-bar i { background: repeating-linear-gradient(90deg, #ffb12e 0 6px, transparent 6px 9px); }
+.o4-stage[data-era="2"] .o4-fK .o4-num { font-family: "Courier New", ui-monospace, monospace; font-weight: 700; color: #ffc04a; text-shadow: 0 0 6px rgba(255, 180, 60, .8); }
+.o4-stage[data-era="2"] .o4-face.lvl-danger .o4-num { color: #ff4a2a; text-shadow: 0 0 7px rgba(255, 60, 30, .9); animation: o4lcd 1s steps(1) infinite; }
+.o4-stage[data-era="2"] .o4-face.lvl-danger .o4-bar i { background: repeating-linear-gradient(90deg, #ff3b22 0 8px, transparent 8px 11px); }
+/* Today: light living in the glass — warm white figures, gold labels, a thin mint-to-gold fill */
+.o4-stage[data-era="3"] .o4-face .o4-num { font-family: var(--font-sans, Helvetica, Arial, sans-serif); font-weight: 300; color: #fff6d8; text-shadow: 0 0 8px rgba(255, 225, 150, .8), 0 0 2px rgba(0, 0, 0, .5); }
+.o4-stage[data-era="3"] .o4-face .o4-lab { color: #f3d27a; font-family: var(--font-sans, Helvetica, Arial, sans-serif); font-weight: 600; text-shadow: 0 0 5px rgba(243, 210, 122, .6); }
+.o4-stage[data-era="3"] .o4-face .o4-bar { background: rgba(255, 255, 255, .1); border-radius: 2px; } .o4-stage[data-era="3"] .o4-face .o4-bar i { background: linear-gradient(90deg, #9fffe0, #f3d27a); box-shadow: 0 0 6px rgba(159, 255, 224, .8); }
+.o4-stage[data-era="3"] .o4-fU .o4-lab { left: 0; right: 0; text-align: center; font-size: calc(var(--w) * .15); }
+.o4-stage[data-era="3"] .o4-face.lvl-danger .o4-num { color: #ffc0b0; text-shadow: 0 0 9px rgba(255, 80, 60, .95); } .o4-stage[data-era="3"] .o4-face.lvl-danger .o4-bar i { background: linear-gradient(90deg, #ff9a6a, #ff3b2e); }
+.o4-face .o4-scr { mix-blend-mode: normal; }
 /* the plate paints its own view; the legacy window art must not show through the O4 glass */
 .of-room.o4 .o4-glass.of-glass { background: none !important; filter: none !important; border-radius: 0; }
-/* someone behind a fixture: it thins out but its number stays readable (lifts and keeps a dark halo) */
-.office .of-room.o4 .of-g.o4-under, .of-room.o4 .o4-tick.o4-under { opacity: .72 !important; }
-.office .of-room.o4 .of-g.o4-under .m-val { filter: drop-shadow(0 0 2px rgba(0, 0, 0, .9)); }
-.office .of-room.o4 .of-g, .of-room.o4 .o4-tick { transition: opacity .25s; }
-.of-room[data-o4era="1"] .o4-tick { padding-right: .85em; }
+/* the real meters: invisible hit areas over the painted faces (tap / focus for the tooltip; screen readers read them) */
+.office .of-room.o4 .meter.o4-hit { position: absolute !important; z-index: 8; background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; min-width: 0 !important; min-height: 0 !important; border-radius: 8px !important; cursor: help; }
+.office .of-room.o4 .meter.o4-hit > * { visibility: hidden !important; }
+.office .of-room.o4 .meter.o4-hit:focus-visible { outline: 2px solid #f3d27a; outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { .o4-face .o4-ndl, .o4-face .o4-bar i { transition: none !important; } .o4-face .o4-num { animation: none !important; } }

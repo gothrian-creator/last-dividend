@@ -1,6 +1,6 @@
 const H=require("./h.js");
 (async()=>{
-  const oldEnv=await H.start("/tmp/oldld"), newEnv=await H.start(process.env.DIST||"/workspace/ld-src/dist");
+  const oldEnv=await H.start(process.env.OLD||"/tmp/oldld"), newEnv=await H.start(process.env.DIST||"/workspace/ld-src/dist");
   const out=[];
   for(const [o,label] of [[{seed:11,stop:"deal:3"},"q3"],[{seed:12,stop:"deal:6",exec:"reid"},"q6"],[{seed:13,stop:"deal:10",exec:"cassius"},"q10"]]){
     const p=await H.page(oldEnv,390,844);

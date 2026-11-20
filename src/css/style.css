@@ -5378,6 +5378,6 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 @media (prefers-reduced-motion: reduce) { .office .of-room.o4 .of-g .m-bar { transition: none !important; } .office .of-room.o4 .of-g .m-val { animation: none !important; } }
 /* the plate paints its own view; the legacy window art must not show through the O4 glass */
 .of-room.o4 .o4-glass.of-glass { background: none !important; filter: none !important; border-radius: 0; }
-.office .of-room.o4 .of-g.o4-under, .of-room.o4 .o4-tick.o4-under { opacity: .3 !important; }
+.office .of-room.o4 .of-g.o4-under, .of-room.o4 .o4-tick.o4-under { opacity: .5 !important; }
 .office .of-room.o4 .of-g, .of-room.o4 .o4-tick { transition: opacity .25s; }
 .of-room[data-o4era="1"] .o4-tick { padding-right: .85em; }

@@ -23,6 +23,11 @@ for(const [w,h] of sizes){const tag=w+"x"+h+"-"+RUN.exec;const R=all[tag]={q:[],
   const Q={}; if(Date.now()>DEADLINE){R.issues.push("deadline");await p.screenshot({path:`${OUT}/${tag}-deadline.png`});break;}
   const info=await p.evaluate(()=>{const s=document.querySelector(".o4-stage");const st=JSON.parse(localStorage.getItem("lastDividend.v1")).midRun;return {turn:st&&st.turn,era:s&&s.dataset.era,lay:s&&s.dataset.lay,want:st&&LD.eraOf(st),exec:s&&s.dataset.exec};});
   Q.info=info; if(info.era!=String(info.want)) R.issues.push("era mismatch "+JSON.stringify(info));
+  // the room fixtures (unrest dial/panel, collapse plate/strip) are real meters: a real tap opens their tooltip
+  if(q===0){for(const m of [".of-room.o4 .m-unrest",".of-room.o4 .m-collapse"]){const ok=await tap(p,m);await p.waitForTimeout(250);
+    const tip=await p.evaluate(()=>{const t=document.querySelector(".rs-tip");return t?t.textContent.slice(0,40):""});
+    (Q.fixtures=Q.fixtures||[]).push([m,ok,tip]); if(!ok||!tip) R.issues.push("fixture tap failed "+m);
+    await tap(p,m); await p.waitForTimeout(200);}}
   if(process.env.SHOTS) await p.screenshot({path:`${OUT}/${tag}-q${info.turn}-hub.png`});
   const pin=await p.$(".desk .map .pin.ld-act")||await p.$(".desk .map .pin");
   if(!pin){R.issues.push("no pin q"+info.turn);await p.screenshot({path:`${OUT}/${tag}-stuck-q${info.turn}.png`});break;}

@@ -313,6 +313,18 @@
     var h = '<div class="panel-k of-head"><span class="of-q">' + (LD.tok ? LD.tok("quarter") : "") + "Q" + state.turn + '<span class="of-ht"> · Office</span></span>' + cashG + '<span class="of-tools">' + forecastTag(state) + "</span></div>";
     var exk = execArt(state.executiveId);
     h += '<div class="of-room ex-' + exk + " mood-" + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
+    if (LD.O4 && o.o4 !== false) {
+      /* The 40s office: office.js paints the room and walks the executive into the slot; the meters stay real DOM on top. */
+      var dn4 = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
+      h = h.replace('<div class="of-room ', '<div class="of-room o4 ');
+      h += '<div class="o4-slot"></div>' + (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "");
+      h += '<div class="of-window o4-w">' + ogauge("collapse", "☢", "Collapse", state.collapse, false,
+        (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
+        "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
+      h += '<div class="of-door o4-d">' + (door >= 3 && !quiet ? '<span class="of-voices" aria-hidden="true">“Open up!”</span>' : "") + ogauge("unrest", "✊", "Unrest", state.unrest, false, dn4,
+        "Unrest " + state.unrest + "/100 · " + dn4 + ". Crisis deals likely from 48; crises cannot be paid off from " + m.crisisNoPayAt + "; the board removes you at " + LD.MAX_UNREST + ".") + "</div>";
+      return h + "</div>";
+    }
     h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';
     if (f.hand) { h += '<div class="of-wallart" aria-hidden="true">'; for (var wi = 0; wi < (f.cap || 5); wi++) { var wa = f.hand[wi] && LD.assetById(f.hand[wi].id); h += wa ? "<i>" + IA(wa) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
     /* Window */

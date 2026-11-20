@@ -727,6 +727,7 @@
     var el = $("screen-desk");
     el.innerHTML = LD.renderDesk(state, uiOpts());
     bindDesk();
+    if (LD.O4) LD.O4.mount(state);
     armTicker();
     if (from) animateMeters(from);
   }
@@ -1133,6 +1134,7 @@
     clearSel();
     persistRun();
     renderDesk(prev);
+    if (LD.O4) LD.O4.on("deal", state);
     SFX.play("pick");
     pennyEmit("signed");
     var dcash = state.cash - prev.cash, dun = state.unrest - prev.unrest, dco = state.collapse - prev.collapse;
@@ -1263,7 +1265,7 @@
     pennyEmit("built");
     if (ot) { SFX.play("good"); return; }
     setTimeout(function () {
-      if ($("overlay").classList.contains("bunker-mode")) closeBunker(function () { animateMeters(prev); var c = $("bunker-card"); if (c) c.classList.add("installed"); });
+      if ($("overlay").classList.contains("bunker-mode")) closeBunker(function () { animateMeters(prev); var c = $("bunker-card"); if (c) c.classList.add("installed"); if (LD.O4) LD.O4.on("bunker", state); });
     }, 1700);
   }
 
@@ -1271,6 +1273,7 @@
     var el = $("screen-desk");
     el.innerHTML = LD.renderDesk(state, uiOpts());
     bindDesk();
+    if (LD.O4) LD.O4.mount(state);
   }
 
   function bindBunkerPanel() {
@@ -1389,6 +1392,7 @@
       clearSel();
       hidePins = true;
       renderDesk(prev);
+      if (LD.O4) LD.O4.on("endq", state);
       var skip = document.createElement("button");
       skip.className = "skip-btn";
       skip.id = "btn-skip-react";
@@ -1750,6 +1754,7 @@
     var room = document.querySelector(".desk .office .of-room");
     var E = LD.officeEntrance ? LD.officeEntrance(state) : null;
     if (!room || !E || screen !== "desk") { done(false); return; }
+    if (LD.O4 && LD.O4.active() && room.classList.contains("o4")) { o4Entrance(room, E, done); return; }
     var office = room.closest(".office"), rb = room.getBoundingClientRect();
     if (rb.width < 120 || rb.height < 40) { done(false); return; }
     try { room.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch (e) {}
@@ -1809,6 +1814,29 @@
     else timers.push(setTimeout(function () { SFX.play("pick"); }, 900));
     timers.push(setTimeout(function () { finish(false); }, E.away ? 2300 : 2150));
     timers.push(setTimeout(function () { finish(false); }, 5000));
+  }
+  /* 40s office: the executive walks to the door and the visitor steps in (or the executive heads out). Tap to skip. */
+  function o4Entrance(room, E, done) {
+    var rb = room.getBoundingClientRect();
+    if (rb.width < 120 || rb.height < 60) { done(false); return; }
+    try { room.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch (e) {}
+    var t = document.createElement("div"); t.innerHTML = '<div id="ofx-shield" role="button" aria-label="Skip"><span class="ofx-skip">Tap to skip</span></div>';
+    var shield = t.firstChild; document.body.appendChild(shield);
+    var tag = document.createElement("b"); tag.className = "o4-who" + (E.away ? " away" : ""); tag.textContent = E.away ? "→ " + (E.place || E.who) : E.who; room.appendChild(tag);
+    var ended = false, guard = null, ctl = null;
+    function finish(skipped) {
+      if (ended) return; ended = true; clearTimeout(guard);
+      shield.removeEventListener("pointerdown", onSkip); document.removeEventListener("keydown", onKey, true);
+      if (shield.parentNode) shield.parentNode.removeChild(shield); if (tag.parentNode) tag.parentNode.removeChild(tag);
+      done(true, skipped);
+    }
+    function onSkip(e) { if (e) { e.preventDefault(); e.stopPropagation(); } if (ctl) ctl.skip(); finish(true); }
+    function onKey(e) { if (e.key === "Escape" || e.key === " " || e.key === "Enter") onSkip(e); }
+    shield.addEventListener("pointerdown", onSkip); document.addEventListener("keydown", onKey, true);
+    SFX.play("knock", Math.max(1, LD.doorLevel(state)));
+    if (!E.away) setTimeout(function () { if (!ended) SFX.play("flip"); }, 900);
+    ctl = LD.O4.entrance(E, function () { finish(false); });
+    guard = setTimeout(function () { if (ctl) ctl.skip(); finish(false); }, 5000);
   }
   function openFight() {
     if (!state || !state.fy || !state.fy.fight || FI.on) return;
@@ -2036,6 +2064,7 @@
     var room = document.querySelector(".desk .office .of-room"); if (!room) return;
     room.classList.remove("react-glee", "react-shock"); void room.offsetWidth; room.classList.add("react-" + kind);
     setTimeout(function () { room.classList.remove("react-" + kind); }, 1800);
+    if (LD.O4) LD.O4.react(kind);
   }
   var KN = { last: 0, q: null };
   function knockNow() {
@@ -2044,6 +2073,7 @@
     var lv = LD.doorLevel(state);
     door.classList.remove("knocking"); void door.offsetWidth; door.classList.add("knocking");
     setTimeout(function () { door.classList.remove("knocking"); }, 700);
+    if (LD.O4) LD.O4.knock(lv);
     SFX.play("knock", lv);
     KN.last = Date.now();
   }

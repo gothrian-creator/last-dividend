@@ -4,11 +4,11 @@
 
 ## The premise
 
-You are one of six executives in **Port Calder**, a harbour city that stands in for every Western city of the last fifty years. A run climbs society from the bottom up across three acts, and each act is an era:
+You are one of six executives in **Port Calder**, a harbour city that stands in for every Western city of the last fifty years. A run starts at a gritty but moneyed firm on the waterfront and climbs to the very top across three acts, and each act is an era:
 
 | Act | Name | Year | Where you are | What the city argues about |
 |---|---|---|---|---|
-| I | **The Street** | 1978 | A walk-up office over the docks | Mills closing, unions shrinking, rents rising, broken-windows policing, selling off the water works |
+| I | **The Street** | 1978 | A mahogany corner office over the docks | Mills closing, unions shrinking, rents rising, broken-windows policing, selling off the water works |
 | II | **The Middle** | 2008 | A glass tower downtown | The crash and the bailout, lobbying, clickbait news, regulators who used to work for you, gentrification |
 | III | **The Top** | Now | A resilience estate on your own island | Climate collapse, billionaire bunkers, tech monopolies, inequality, populism from both ends, trust breaking, then **The Reckoning** |
 

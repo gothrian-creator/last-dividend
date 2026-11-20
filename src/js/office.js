@@ -114,14 +114,16 @@
     var W = room.clientWidth, H = room.clientHeight; if (!W || !H) return;
     var lay = W / H < 1 ? "P" : "L";
     if (O.R && O.rk.slice(-1) !== lay) { setEra(O.era, O.exec, lay); }
-    var R = O.R, s = H / R.h;
-    /* very wide strips (tablet portrait): zoom in a little, trimming ceiling and floor edge but never the desk-height head or the hatch */
-    if (lay === "L" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.74));
+    var R = O.R, s = H / R.h, ft = faceTop(), hb = Math.min(R.h, R.S.hatch[1] + 60);
+    /* very wide strips (tablet portrait): zoom in a little, trimming ceiling and floor edge but never the painted meters, the head or the hatch */
+    if (lay === "L" && R.w * s < W) s = Math.min(W / R.w, H / (hb - ft));
     /* wide side panels (desktop): fill the width and trim the empty floor at the bottom rather than show edge strips */
     if (lay === "P" && R.w * s < W) s = Math.min(W / R.w, H / (R.h * 0.8));
     var pw = R.w * s, ph = R.h * s, ox;
     if (pw > W) ox = lay === "P" ? -(pw - W) * 0.3 : -(pw - W) / 2; else ox = (W - pw) / 2;
     var oy = H - ph; oy = oy > 0 ? oy / 2 : oy * (lay === "P" ? 0.3 : 0.6);
+    /* the painted meters must stay in view: crop the floor rather than the ceiling band they hang in */
+    if (oy < 0 && -oy > ft * s) oy = Math.max(H - ph, -ft * s);
     O.s = s; O.ox = ox; O.oy = oy;
     O.world.style.transform = "translate(" + ox.toFixed(1) + "px," + oy.toFixed(1) + "px) scale(" + s.toFixed(4) + ")";
     var fw = Math.max(0, ox);
@@ -135,6 +137,12 @@
     O.knock.style.left = Math.max(44, px(R.door[0] + R.door[2] * 0.5, "x")).toFixed(0) + "px"; O.knock.style.top = Math.max(H < 200 ? H * 0.5 : 14, px(R.door[1] + R.door[3] * 0.3, "y")).toFixed(0) + "px";
     placeMeters(room);
     draw();
+  }
+  /* top of the highest painted meter housing (plate px), with its bezel */
+  function faceTop() {
+    var FS = FACES[O.rk] || {}, t = O.R.h;
+    ["U", "C"].forEach(function (k) { var g = FS[k]; if (!g) return; t = Math.min(t, g.dial ? g.dial[1] - g.dial[2] * 1.3 : Math.min.apply(null, g.quad.map(function (p) { return p[1]; })) - 20); });
+    return Math.max(0, t - 6);
   }
   function px(v, axis) { return axis === "x" ? O.ox + v * O.s : O.oy + v * O.s; }
   /* rect (0,0,w,h) -> quad as a CSS matrix3d, so a face's content lies in the painting's perspective */

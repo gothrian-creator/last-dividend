@@ -5371,3 +5371,18 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 .office .of-room.o4 .meter.o4-hit:focus-visible { outline: 2px solid #f3d27a; outline-offset: 1px; }
 @media (prefers-reduced-motion: reduce) { .o4-face .o4-ndl, .o4-face .o4-bar i { transition: none !important; } .o4-face .o4-num { animation: none !important; } }
 .o4-stage[data-era="1"] .o4-fK .o4-num, .o4-stage[data-era="2"] .o4-fK .o4-num { letter-spacing: -.06em; }
+
+/* Vault v4: painted room plates (gouache cutaways). Per-executive wall tone is a faint soft-light wash. */
+.bk-scene .bk-room .bk-tint { fill: transparent; pointer-events: none; mix-blend-mode: soft-light; opacity: 0.22; }
+.bk-scene .bk-room .bk-tint.x-mara { fill: #b5543a; }
+.bk-scene .bk-room .bk-tint.x-imani { fill: #2f7a72; }
+.bk-scene .bk-room .bk-tint.x-julian { fill: #c99428; }
+.bk-scene .bk-room .bk-tint.x-soren { fill: #4f6478; }
+.bk-scene .bk-room .bk-tint.x-cassius { fill: #7a2e2a; }
+.bk-scene .bk-room .bk-tint.x-reid { fill: #6f7040; }
+.bk-scene .bk-room.sg-empty .bk-tint { opacity: 0.1; }
+.bk-scene.is-sealed .bk-room > image.bk-plate { animation: dim 1.4s 0.6s both; }
+/* Vault v4: larger spot labels on phones (the 880-unit scene scales to ~0.4 at 360–412px). */
+@media (max-width: 600px) {
+  .bk-scene .bk-spotlbl-s { transform-box: fill-box; transform-origin: center; transform: scale(1.7); }
+}

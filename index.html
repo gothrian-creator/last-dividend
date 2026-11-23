@@ -5398,6 +5398,292 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
 @media (max-width: 600px) {
   .bk-scene .bk-spotlbl-s { transform-box: fill-box; transform-origin: center; transform: scale(1.7); }
 }
+
+/* =====================================================================
+   2026-11-23 IN-SCENE FIGHTS, DISCOVER REWARDS, THE DECK PILE, THE VAULT TAB
+   The fight is a bay laid over the board / office area of the live desk (header, side rail and a side dossier stay),
+   docked hand at the bottom, cards fly into the scene. Rewards: a dim + blur veil over the whole run screen with three
+   floating choices. #door hosts both; no separate fight or reward screen.
+   ===================================================================== */
+/* ---------- the fight bay ---------- */
+#door.fb-mode { position: fixed; inset: auto; left: var(--fb-l, 8px); top: var(--fb-t, 60px); width: var(--fb-w, calc(100vw - 16px)); height: var(--fb-h, calc(100dvh - 68px)); background: none; overflow: visible; z-index: 30; color: var(--ivory, #f6ecd4); }
+body.in-fight #screen-desk .desk .board, body.in-fight #screen-desk .desk .dash, body.in-fight #screen-desk .desk .hand { visibility: hidden; }
+body.in-fight #screen-desk .desk .dossier { pointer-events: none; }
+body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: none; filter: saturate(.55) brightness(.75); }
+#door.fb-mode .door-in.fb { position: relative; height: 100%; max-width: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; grid-template-columns: none; grid-template-rows: none; min-height: 0; }
+#door.fb-mode .door-in.fb > * { flex: none; min-width: 0; align-self: stretch; }
+#door.fb-mode .fb-head, #door.fb-mode .fb-intent, #door.fb-mode .fb-dock { background: linear-gradient(180deg, #13233a, #0d1a2b); border: 1.5px solid rgba(201, 148, 42, .75); border-radius: 12px; box-shadow: 0 3px 0 rgba(4, 10, 14, .55), inset 0 0 0 1px rgba(0, 0, 0, .4); }
+/* header: venue pill + who, Scrutiny, the Gallery notches, Round */
+#door.fb-mode .df-top.fb-head { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "title title help" "scrut gal round"; align-items: center; gap: 4px 10px; padding: 7px 10px 8px; margin: 0; }
+#door.fb-mode .fb-head .df-title { grid-area: title; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 9px; min-width: 0; }
+#door.fb-mode .fb-head .df-title small.fb-venue { align-self: center; padding: 3px 8px; border-radius: 4px; font: 800 9.5px/1.1 var(--font-sans); letter-spacing: .12em; text-transform: uppercase; color: #cfe8df; background: #1d4a44; border: 1px solid #7fb8a6; white-space: nowrap; }
+#door.fb-mode .fb-head .fb-venue.v-away { color: #ffe2d6; background: #6b2a1f; border-color: #e08a6d; }
+#door.fb-mode .fb-head .fb-venue.v-lobby { color: #fff0c4; background: #6a4d14; border-color: #e3c26a; }
+#door.fb-mode .fb-head .df-title b { font: 700 17px/1.15 var(--font-serif); color: #fbf3dc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+#door.fb-mode .fb-head .df-title em { flex-basis: 100%; font: 600 11px/1.2 var(--font-sans); font-style: normal; color: rgba(246, 236, 212, .7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: -1px; }
+#door.fb-mode .fb-head .df-scrut { grid-area: scrut; position: static; left: auto; top: auto; right: auto; width: auto; max-width: none; display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; padding: 0; margin: 0; background: none; border: 0; box-shadow: none; min-width: 0; }
+#door.fb-mode .fb-head .df-scrut .df-k { display: contents; }
+#door.fb-mode .fb-head .df-scrut .df-k .tok { display: none; }
+#door.fb-mode .fb-head .df-scrut .df-k { font: 800 10px/1 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; color: rgba(246, 236, 212, .82); }
+#door.fb-mode .fb-head .fb-sn { justify-self: end; font: 700 11px/1 var(--font-sans); letter-spacing: .04em; color: rgba(246, 236, 212, .82); }
+#door.fb-mode .fb-head .fb-sn b { font-size: 12px; color: #fff; }
+#door.fb-mode .fb-head .df-bar { grid-column: 1 / -1; height: 7px; border-radius: 4px; background: rgba(0, 0, 0, .55); border: 1px solid rgba(0, 0, 0, .6); overflow: hidden; margin: 0; }
+#door.fb-mode .fb-head .df-bar i { display: block; height: 100%; background: linear-gradient(180deg, #e0583c, #b33a22); border-radius: 3px; transition: width .35s; }
+#door.fb-mode .fb-head .df-goal { display: none; }
+#door.fb-mode .fb-head .df-gal { grid-area: gal; display: grid; grid-template-columns: auto auto; grid-template-areas: "a c" "r r"; gap: 3px 22px; justify-content: space-between; padding: 0; margin: 0; background: none; border: 0; }
+#door.fb-mode .fb-head .df-gal > small:first-child { grid-area: a; } #door.fb-mode .fb-head .df-gal > small:nth-of-type(2) { grid-area: c; text-align: right; }
+#door.fb-mode .fb-head .df-gal small { font: 800 8.5px/1 var(--font-sans); letter-spacing: .12em; text-transform: uppercase; color: rgba(246, 236, 212, .7); }
+#door.fb-mode .fb-head .df-gal .dg-row { grid-area: r; display: flex; gap: 3px; }
+#door.fb-mode .fb-head .df-gal .dg-row i { width: 9px; height: 7px; border-radius: 1.5px; background: rgba(246, 236, 212, .16); border: 0; box-shadow: none; }
+#door.fb-mode .fb-head .df-gal .dg-row i.lit { background: #7fbfa8; } #door.fb-mode .fb-head .df-gal.gn .dg-row i.lit { background: #e0583c; }
+#door.fb-mode .fb-head .df-gal .dg-row i.on { background: #f3d98f; box-shadow: 0 0 0 1px #1e1404; }
+#door.fb-mode .fb-head .df-gal > b { display: none; }
+#door.fb-mode .fb-head .df-round { grid-area: round; display: flex; align-items: baseline; gap: 0; padding: 6px 10px; border-radius: 8px; border: 1.5px solid rgba(201, 148, 42, .85); background: rgba(0, 0, 0, .25); font: 700 13px/1 var(--font-serif); color: #fbf3dc; white-space: nowrap; min-width: 0; height: auto; }
+#door.fb-mode .fb-head .df-round small { margin-right: 4px; font: inherit; color: inherit; letter-spacing: 0; text-transform: none; }
+#door.fb-mode .fb-head .df-round i { font-style: normal; color: inherit; }
+#door.fb-mode .fb-head .df-help { grid-area: help; min-width: 0; width: 26px; height: 26px; min-height: 0; padding: 0; font-size: 13px; border-radius: 50%; justify-self: end; background: rgba(0, 0, 0, .3); color: #f3d98f; border: 1px solid rgba(201, 148, 42, .75); box-shadow: none; }
+@media (orientation: landscape) and (min-width: 900px) {
+  #door.fb-mode .df-top.fb-head { grid-template-columns: minmax(0, 1.25fr) minmax(150px, 1fr) auto auto auto; grid-template-areas: "title scrut gal round help"; padding: 6px 10px; }
+  #door.fb-mode .fb-head .df-title { flex-wrap: nowrap; }
+  #door.fb-mode .fb-head .df-title em { flex-basis: auto; margin: 0; }
+}
+/* the stage: the scene the fight happens in */
+#door.fb-mode .df-stage.fb-stage { position: relative; display: block; flex: 1 1 200px; min-height: 0; padding: 0; margin: 0; border-radius: 12px; overflow: hidden; border: 1.5px solid rgba(201, 148, 42, .75); background: #0b1418; box-shadow: 0 3px 0 rgba(4, 10, 14, .55); grid-template-columns: none; grid-template-rows: none; }
+#door.fb-mode .fb-stage::after { display: none; }
+#door.fb-mode .fb-room.of-room { position: absolute; inset: 0; z-index: 0; display: block; height: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: #2a1f14; overflow: hidden; isolation: isolate; }
+#door.fb-mode .fb-room.of-room::before, #door.fb-mode .fb-room.of-room::after { display: none; }
+#door.fb-mode .fb-stage .sc-room { z-index: 0; }
+#door.fb-mode .fb-stage .sc-haze { z-index: 1; }
+/* opponent, away: stands left of centre; in the office it lives in office.js's room (plate coordinates, set inline) */
+#door.fb-mode .fb-away .sc-opp { left: 31%; bottom: 0; height: 72%; max-width: 58%; z-index: 3; }
+#door.fb-mode .fb-away .sc-opp.full { bottom: 3%; height: 76%; }
+@media (orientation: landscape) and (min-width: 900px) { #door.fb-mode .fb-away .sc-opp { left: 34%; height: 84%; } #door.fb-mode .fb-away .sc-opp.full { height: 84%; } }
+#door.fb-mode .sc-opp.crop img { -webkit-mask-image: linear-gradient(180deg, #000 80%, transparent 99%); mask-image: linear-gradient(180deg, #000 80%, transparent 99%); }
+.o4-world .sc-opp { pointer-events: none; animation: none; }
+.o4-world .sc-opp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; opacity: 0; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, .3)); }
+.o4-world .sc-opp[data-pose="idle"] .p-idle, .o4-world .sc-opp[data-pose="attack"] .p-attack, .o4-world .sc-opp[data-pose="hit"] .p-hit, .o4-world .sc-opp[data-pose="block"] .p-block, .o4-world .sc-opp[data-pose="defeated"] .p-defeated, .o4-world .sc-opp[data-pose="paid"] .p-paid { opacity: 1; }
+.o4-world .sc-opp.shake { animation: fb-shake .42s ease-out; } .o4-world .sc-opp.lunge { animation: fb-lunge .46s ease-out; } .o4-world .sc-opp.brace { animation: fb-brace .4s ease-out; }
+@keyframes fb-shake { 15% { transform: translateX(4%) rotate(2deg); } 35% { transform: translateX(-5%) rotate(-1.5deg); } 55% { transform: translateX(3%); } 75% { transform: translateX(-2%); } }
+@keyframes fb-lunge { 35% { transform: translateX(12%) translateY(2%) scale(1.08); } }
+@keyframes fb-brace { 40% { transform: translateY(2%) scale(.97); } }
+.o4-ex .fb-you-anchor { pointer-events: none; }
+/* you, away: full-body, on the right, facing them */
+#door.fb-mode .fb-away .sc-you.fb-exec { position: absolute; left: auto; top: auto; right: 3%; bottom: 3%; height: 76%; width: auto; aspect-ratio: .5; z-index: 3; display: flex; align-items: flex-end; justify-content: center; transform-origin: 50% 100%; }
+#door.fb-mode .fb-away .sc-you.fb-back { right: auto; left: -4%; bottom: -2%; height: 46%; }
+.o4-fig { display: block; background-repeat: no-repeat; flex: none; filter: drop-shadow(0 6px 5px rgba(0, 0, 0, .35)); }
+.o4-fig.flip { transform: scaleX(-1); }
+#door.fb-mode .sc-you.recoil { animation: fb-recoil .36s ease-out; }
+@keyframes fb-recoil { 30% { transform: translate(4%, 3%) rotate(3deg); } }
+/* speech: over the visitor's head, tail pointing down at them */
+#door.fb-mode .fb-stage .sc-bubble { left: 4%; top: 9%; right: auto; max-width: min(62%, 360px); z-index: 7; padding: 7px 11px 8px; font: 700 13px/1.28 var(--font-sans); border-radius: 12px; }
+#door.fb-mode .fb-stage .sc-bubble b { font-size: 9.5px; margin-bottom: 2px; }
+#door.fb-mode .fb-stage .sc-bubble::after { right: auto; left: var(--tail, 20%); top: 100%; border: 0; border-top: 13px solid var(--ink-line); border-right: 12px solid transparent; }
+#door.fb-mode .fb-stage .sc-bubble::before { right: auto; left: calc(var(--tail, 20%) + 3px); top: calc(100% - 3px); border: 0; border-top: 10px solid #fffaf0; border-right: 8px solid transparent; }
+#door.fb-mode .fb-stage .sc-bubble.k-hit::before { border-top-color: #ffe3d6; } #door.fb-mode .fb-stage .sc-bubble.k-block::before { border-top-color: #e3f1ea; } #door.fb-mode .fb-stage .sc-bubble.k-attack::before { border-top-color: #ffd9c9; }
+#door.fb-mode .fb-away .sc-bubble { left: 12%; }
+#door.fb-mode .fb-stage .sc-bubble.side::after { left: -13px; top: var(--tailY, 30%); border: 0; border-right: 14px solid var(--ink-line); border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+#door.fb-mode .fb-stage .sc-bubble.side::before { left: -8px; top: calc(var(--tailY, 30%) + 3px); border: 0; border-right: 10px solid #fffaf0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+#door.fb-mode .fb-stage .sc-bubble.side.k-hit::before { border-right-color: #ffe3d6; } #door.fb-mode .fb-stage .sc-bubble.side.k-block::before { border-right-color: #e3f1ea; } #door.fb-mode .fb-stage .sc-bubble.side.k-attack::before { border-right-color: #ffd9c9; }
+#door.fb-mode .fb-stage .sc-cap { z-index: 6; }
+@media (max-width: 600px) { #door.fb-mode .fb-stage .sc-cap.e1 { font-size: 11.5px; line-height: 1.25; } #door.fb-mode .fb-stage .sc-cap.e2 { font-size: 9.5px; } #door.fb-mode .fb-stage .sc-cap.e3 { font-size: 11.5px; } #door.fb-mode .fb-stage .sc-cap { padding: 5px 8px 6px; } }
+#door.fb-mode .fb-stage .sc-cap.sc-why { top: auto; bottom: 8px; left: 8px; max-width: min(78%, 460px); }
+#door.fb-mode .fb-stage .sc-cb { z-index: 9; }
+/* the away telemetry plaque; at home the office's own painted meters read out instead */
+#door.fb-mode .fb-plaque { position: absolute; z-index: 6; right: 8px; top: 8px; display: flex; gap: 0; padding: 4px 2px; border-radius: 8px; background: rgba(10, 18, 28, .9); border: 1.5px solid rgba(201, 148, 42, .8); box-shadow: 0 2px 0 rgba(0, 0, 0, .5); }
+#door.fb-mode .fb-plaque span { display: grid; justify-items: center; padding: 0 8px; border-left: 1px solid rgba(201, 148, 42, .35); cursor: pointer; }
+#door.fb-mode .fb-plaque span:first-child { border-left: 0; }
+#door.fb-mode .fb-plaque small { font: 800 8px/1.1 var(--font-sans); letter-spacing: .12em; text-transform: uppercase; color: rgba(246, 236, 212, .7); }
+#door.fb-mode .fb-plaque b { font: 700 15px/1.1 var(--font-serif); color: #fbf3dc; }
+#door.fb-mode .fb-plaque span:nth-child(2) b { color: #f0b267; } #door.fb-mode .fb-plaque span:nth-child(3) b { color: #ff8a6b; }
+#door.fb-mode .fb-office .fb-plaque { opacity: 0; pointer-events: none; }
+#door.fb-mode .fb-stage.fb-entering ~ * { visibility: hidden; }
+/* the intent ribbon */
+#door.fb-mode .df-intent.fb-intent { flex-direction: row; overflow: visible; position: relative; left: auto; top: auto; right: auto; bottom: auto; width: auto; max-width: none; height: auto; border-radius: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 6px 10px; margin: 0; min-height: 0; transform: none; color: #fbf3dc; text-align: left; }
+#door.fb-mode .fb-intent::before, #door.fb-mode .fb-intent::after { display: none; }
+#door.fb-mode .fb-intent .di-main { display: flex; align-items: baseline; gap: 6px; font: 600 13px/1.2 var(--font-sans); min-width: 0; }
+#door.fb-mode .fb-intent .df-k { font: 800 10px/1 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; color: #ff8a6b; }
+#door.fb-mode .fb-intent .di-say b { font-family: var(--font-serif); font-size: 14px; color: #fff; }
+#door.fb-mode .fb-intent .di-sig { color: #f3d98f; font-style: normal; margin-left: 3px; }
+#door.fb-mode .fb-intent .di-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+#door.fb-mode .fb-intent .di-chip { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 999px; font: 700 11px/1.15 var(--font-sans); background: #1d4a44; border: 1px solid #7fb8a6; color: #e8f6f0; white-space: nowrap; }
+#door.fb-mode .fb-intent .di-chip.di-hit { background: #6b2a1f; border-color: #e08a6d; color: #ffe2d6; }
+#door.fb-mode .fb-intent.blocked .di-chip.di-hit { background: #1d4a44; border-color: #7fb8a6; color: #e8f6f0; text-decoration: line-through; }
+#door.fb-mode .fb-intent .di-chip.di-rider, #door.fb-mode .fb-intent .di-chip.di-notes, #door.fb-mode .fb-intent .di-chip.di-peek { background: rgba(0, 0, 0, .3); border-color: rgba(246, 236, 212, .3); color: rgba(246, 236, 212, .85); white-space: normal; }
+#door.fb-mode .fb-intent .di-chip.di-rider.live { border-color: #ff8a6b; color: #ffd2c4; }
+#door.fb-mode .fb-intent .di-ico { font-size: 11px; }
+#door.fb-mode .fb-intent.firing { animation: fb-fire .5s ease-out; }
+@keyframes fb-fire { 30% { transform: translateY(-3px); box-shadow: 0 0 0 2px #e0583c, 0 3px 0 rgba(4, 10, 14, .55); } }
+/* the dock: the pile, the round bar, the hand */
+#door.fb-mode .fb-dock { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "bar bar" "pile hand"; align-items: center; gap: 6px 10px; padding: 7px 8px 8px; }
+#door.fb-mode .fb-dock > .fb-pile { grid-area: pile; } #door.fb-mode .fb-dock-main { display: contents; } #door.fb-mode .fb-dock .fb-bar { grid-area: bar; } #door.fb-mode .fb-dock .df-hand { grid-area: hand; }
+#door.fb-mode .fb-dock.is-out { grid-template-areas: "pile out"; } #door.fb-mode .fb-dock.is-out .fb-out { grid-area: out; }
+#door.fb-mode .fb-dock.is-wait { min-height: 150px; }
+.fb-pile, .run-deck { position: relative; display: block; flex: none; width: 58px; aspect-ratio: 200 / 290; padding: 0; margin: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.fb-pile img, .run-deck img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 0 0 1px #0a1416, 3px 3px 0 #0d2224, 6px 6px 0 #0a1a1c, 8px 9px 8px rgba(0, 0, 0, .5); }
+.fb-pile .rd-count, .run-deck .rd-count { position: absolute; z-index: 2; top: -8px; right: -9px; min-width: 24px; height: 24px; display: grid; place-items: center; padding: 0 4px; border-radius: 999px; font: 800 12px/1 var(--font-sans); font-style: normal; color: #1e1404; background: #f3d98f; border: 2px solid #14211f; box-shadow: 1px 2px 0 rgba(0, 0, 0, .5); }
+.fb-pile:active, .run-deck:active { transform: translateY(1px) scale(.97); }
+.run-deck.landed img, .fb-pile.landed img { animation: rd-land .5s cubic-bezier(.2, 1.6, .4, 1); }
+.run-deck.landed .rd-count { animation: rd-bump .5s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes rd-land { 0% { transform: translateY(-6px) scale(1.08); } 100% { transform: none; } }
+@keyframes rd-bump { 40% { transform: scale(1.45); background: #fff3c4; } }
+#door.fb-mode .fb-dock .fb-pile { align-self: center; width: 60px; }
+#door.fb-mode .df-hud.fb-bar { display: flex; align-items: center; gap: 8px; padding: 0; margin: 0; background: none; border: 0; min-height: 32px; }
+#door.fb-mode .fb-bar .df-inf { display: flex; align-items: center; gap: 3px; margin-right: auto; padding: 0; background: none; border: 0; }
+#door.fb-mode .fb-bar .df-inf i { width: 11px; height: 11px; transform: rotate(45deg); border-radius: 1px; background: transparent; border: 1.5px solid #f3d98f; box-shadow: none; margin: 0 1px; }
+#door.fb-mode .fb-bar .df-inf i.on { background: #f3d98f; }
+#door.fb-mode .fb-bar .df-inf b { margin-left: 5px; font: 700 12px/1 var(--font-sans); color: #fbf3dc; }
+#door.fb-mode .fb-bar .fb-piles { font: 700 10px/1 var(--font-sans); letter-spacing: .04em; color: rgba(246, 236, 212, .6); white-space: nowrap; }
+#door.fb-mode .fb-bar .df-actions { display: flex; gap: 6px; margin: 0; padding: 0; position: static; background: none; grid-template-columns: none; }
+#door.fb-mode .fb-bar .df-actions .btn { min-height: 32px; height: 32px; padding: 0 11px; border-radius: 8px; display: inline-flex; flex-direction: row; align-items: center; justify-content: center; width: auto; flex: none; font: 800 12px/1 var(--font-sans); letter-spacing: .02em; }
+#door.fb-mode .fb-bar .df-actions .btn small { display: none; }
+#door.fb-mode .fb-bar .df-actions .btn b { font: inherit; }
+#door.fb-mode .fb-bar .df-settle { background: linear-gradient(180deg, #e7c76f, #c99a3a); color: #23180a; border: 1.5px solid #6b4a12; box-shadow: 0 2px 0 rgba(0, 0, 0, .45); }
+#door.fb-mode .fb-bar .df-settle:disabled { filter: grayscale(.6) brightness(.8); }
+#door.fb-mode .fb-bar .df-settle.armed { background: linear-gradient(180deg, #f6dc8c, #e0b04a); }
+#door.fb-mode .fb-bar .df-settle.armed small { display: inline; margin-left: 5px; font: 600 10px/1 var(--font-sans); }
+#door.fb-mode .fb-bar .df-end { background: linear-gradient(180deg, #d4553a, #a83a24); color: #fff6ea; border: 1.5px solid #4a160c; box-shadow: 0 2px 0 rgba(0, 0, 0, .45); }
+/* the hand: a docked row, scrolls sideways when it holds more than fits */
+#door.fb-mode .fb-dock .df-hand { --cw: 92px; justify-content: flex-start; display: flex; flex-wrap: nowrap; gap: 7px; overflow-x: auto; overflow-y: visible; overscroll-behavior-x: contain; scroll-snap-type: x proximity; padding: 6px 2px 2px; margin: -6px 0 0; grid-template-columns: none; scrollbar-width: thin; scrollbar-color: rgba(201, 148, 42, .6) transparent; }
+#door.fb-mode .fb-dock .df-hand .dc { flex: 0 0 var(--cw); width: var(--cw); min-height: 0; height: calc(var(--cw) * 1.5); scroll-snap-align: start; padding: 5px 5px 4px; gap: 3px; }
+#door.fb-mode .fb-dock .df-hand .dc .dc-name { font-size: 10.5px; line-height: 1.05; white-space: normal; text-overflow: clip; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-height: calc(2.1em + 4px); padding: 2px 3px 2px 22px; overflow-wrap: anywhere; }
+#door.fb-mode .fb-dock .df-hand .dc .dc-art { flex: 1 1 auto; min-height: 0; }
+#door.fb-mode .fb-dock .df-hand .dc .dc-type { font-size: 7.5px; }
+#door.fb-mode .fb-dock .df-hand .dc .dc-txt { font-size: 10px; line-height: 1.18; -webkit-line-clamp: 3; flex: none; }
+#door.fb-mode .fb-dock .df-hand .dc .dc-why { font-size: 9px; }
+#door.fb-mode .fb-dock .df-hand.dealing .dc { animation: fb-deal .42s cubic-bezier(.2, .9, .3, 1.15) both; }
+#door.fb-mode .fb-dock .df-hand.dealing .dc:nth-child(2) { animation-delay: .06s; } #door.fb-mode .fb-dock .df-hand.dealing .dc:nth-child(3) { animation-delay: .12s; } #door.fb-mode .fb-dock .df-hand.dealing .dc:nth-child(4) { animation-delay: .18s; } #door.fb-mode .fb-dock .df-hand.dealing .dc:nth-child(5) { animation-delay: .24s; } #door.fb-mode .fb-dock .df-hand.dealing .dc:nth-child(n+6) { animation-delay: .3s; }
+@keyframes fb-deal { from { transform: translate(-90px, 10px) rotate(-10deg) scale(.6); opacity: 0; } }
+#door.fb-mode .fb-dock .df-empty { margin: 0; padding: 18px 8px; font: 600 13px var(--font-sans); color: rgba(246, 236, 212, .7); }
+@media (min-width: 600px) { #door.fb-mode .fb-dock .df-hand { --cw: 112px; } #door.fb-mode .fb-dock .df-hand .dc .dc-name { font-size: 12.5px; } #door.fb-mode .fb-dock .df-hand .dc .dc-txt { font-size: 11px; } #door.fb-mode .fb-dock .fb-pile { width: 74px; } }
+@media (orientation: landscape) and (min-width: 900px) { #door.fb-mode .fb-dock .df-hand { --cw: 122px; justify-content: safe center; } #door.fb-mode .fb-dock .df-hand .dc { height: calc(var(--cw) * 1.42); } }
+@media (max-height: 820px) and (max-width: 420px) { #door.fb-mode .fb-dock .df-hand { --cw: 86px; } }
+/* knockdown: the dock turns into the outcome tray */
+#door.fb-mode .fb-dock.is-out { grid-template-columns: auto minmax(0, 1fr); align-items: center; background: linear-gradient(180deg, #f3e6c8, #e8d6ae); border: 2px solid #c9942a; color: #1b2422; }
+#door.fb-mode .fb-out.df-result { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 2px 2px 0; margin: 0; text-align: left; background: none; border: 0; border-radius: 0; box-shadow: none; animation: fb-tray .4s cubic-bezier(.2, .9, .3, 1.1) both; }
+@keyframes fb-tray { from { transform: translateY(16px); opacity: 0; } }
+#door.fb-mode .fb-out .sc-ending { display: block; padding: 0; margin: 0; border: 0; }
+#door.fb-mode .fb-out .sc-end-stamp.sc-stamp { position: static; display: inline-block; transform: rotate(-3deg); padding: 2px 12px; font: 800 18px/1.1 var(--font-serif); letter-spacing: .12em; border-width: 3px; background: rgba(255, 250, 240, .6); animation: sc-stamp-in .32s .1s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes sc-stamp-in { from { transform: rotate(-3deg) scale(1.7); opacity: 0; } }
+#door.fb-mode .fb-out-t { display: grid; gap: 2px; }
+#door.fb-mode .fb-out-t b { font: 700 16px/1.2 var(--font-serif); color: #1b2422; }
+#door.fb-mode .fb-out-t em { font: italic 600 12.5px/1.25 var(--font-serif); color: #6a5530; }
+#door.fb-mode .fb-out-t q { font: italic 600 13px/1.3 var(--font-serif); color: #3b3020; }
+#door.fb-mode .fb-out-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.fb-chip { display: inline-block; padding: 3px 9px; border-radius: 999px; font: 700 11px/1.2 var(--font-sans); background: #1f4f4a; color: #eaf6f1; border: 1px solid #0e2826; }
+.fb-chip.bad { background: #8f2e1d; color: #ffe8de; border-color: #4a160c; }
+#door.fb-mode .fb-out .df-close { justify-self: stretch; min-height: 42px; margin-top: 2px; font: 800 14px var(--font-sans); background: linear-gradient(180deg, #2a6b5f, #1a4d44); color: #fbf3dc; border: 2px solid #0e2826; border-radius: 9px; box-shadow: 0 3px 0 rgba(0, 0, 0, .4); }
+#door.fb-mode .fb-dock.is-out .fb-pile { width: 64px; }
+#door.fb-mode .df-log { position: absolute; z-index: 12; left: 50%; bottom: calc(100% + 6px); top: auto; transform: translateX(-50%); max-width: 92%; }
+#door.fb-mode .door-in.fb > .df-log { bottom: auto; top: calc(var(--fb-h, 600px) * 0.5); }
+#door.fb-mode .door-in .fx { z-index: 20; }
+/* sizes */
+@media (max-width: 380px) {
+  #door.fb-mode .fb-head .df-title b { font-size: 15.5px; }
+  #door.fb-mode .df-top.fb-head { gap: 3px 8px; padding: 6px 8px 7px; }
+  #door.fb-mode .fb-head .df-gal { gap: 3px 10px; } #door.fb-mode .fb-head .df-gal .dg-row i { width: 7px; }
+  #door.fb-mode .fb-head .df-round { padding: 5px 7px; font-size: 12px; }
+  #door.fb-mode .fb-bar .fb-piles { display: none; }
+  #door.fb-mode .fb-bar .df-actions .btn { padding: 0 8px; font-size: 11.5px; }
+  #door.fb-mode .fb-dock .fb-pile { width: 50px; }
+  #door.fb-mode .fb-stage .sc-bubble { font-size: 12px; }
+}
+@media (orientation: landscape) and (min-width: 900px) { #door.fb-mode .door-in.fb { gap: 7px; } }
+@media (prefers-reduced-motion: reduce) { #door.fb-mode .df-hand.dealing .dc, #door.fb-mode .fb-out.df-result, .run-deck.landed img, .run-deck.landed .rd-count { animation: none !important; } }
+
+/* ---------- the deck pile on the run screen ---------- */
+.desk .hand.has-deck { grid-template-columns: auto minmax(0, 1fr) !important; align-items: center; column-gap: 10px; }
+.desk .hand .run-deck { width: 50px; margin-left: 6px; align-self: center; }
+.desk .board .run-deck { position: absolute; z-index: 6; right: 16px; bottom: 156px; width: 54px; }
+@media (max-width: 380px) { .desk .hand .run-deck { width: 44px; } }
+
+/* ---------- framed assets on the 40s office wall: big enough to land a pick on ---------- */
+.office .of-room.o4 .of-wallart.o4-wa { position: absolute; z-index: 9; left: 8px; right: auto; top: 8px; display: flex; gap: 4px; justify-content: flex-start; pointer-events: none; }
+.office .of-room.o4 .of-wallart.o4-wa i { width: 26px; height: 30px; display: grid !important; place-items: center; font-size: 14px; font-style: normal; border: 2px solid #c9942a; border-radius: 2px; background: #f3e6c8; box-shadow: inset 0 0 0 1.5px #5a3f0f, 1px 2px 0 rgba(10, 22, 24, .55); overflow: hidden; }
+.office .of-room.o4 .of-wallart.o4-wa i .ia, .office .of-room.o4 .of-wallart.o4-wa i img { width: 100%; height: 100%; object-fit: cover; }
+.office .of-room.o4 .of-wallart.o4-wa i.empty { background: rgba(20, 14, 8, .35); border-style: solid; border-color: rgba(201, 148, 42, .7); opacity: 1; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .5); }
+.office .of-room.o4 .of-wallart.o4-wa i.landed { animation: wa-land .55s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes wa-land { 0% { transform: scale(1.5); box-shadow: 0 0 0 3px #f3d98f; } }
+@media (max-width: 600px) { .office .of-room.o4 .of-wallart.o4-wa { left: 6px; top: 6px; gap: 3px; } .office .of-room.o4 .of-wallart.o4-wa i { width: 22px; height: 26px; } }
+@media (orientation: landscape) and (min-width: 900px) { .office .of-room.o4 .of-wallart.o4-wa { left: 8px; top: 8px; } }
+
+/* ---------- the Discover veil: the run screen stays, dimmed and softly blurred; three big floating choices ---------- */
+#door.disc-mode { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; overflow: auto; background: radial-gradient(120% 90% at 50% 45%, rgba(8, 12, 16, .5), rgba(8, 12, 16, .7)); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); background-size: auto; animation: disc-in .28s ease-out both; transition: opacity .45s ease, backdrop-filter .45s ease; }
+#door.disc-mode::before { display: none; }
+#door.disc-mode.lifting { opacity: 0; -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); pointer-events: none; }
+#door.disc-mode.picking .rw-in > *:not(.rw-cards):not(.rw-assets):not(.rw-item) { opacity: .25; transition: opacity .2s; }
+@keyframes disc-in { from { opacity: 0; } }
+#door.disc-mode .rw-in { position: relative; height: auto; max-height: 100%; width: min(100%, 980px); max-width: none; margin: auto; padding: max(14px, env(safe-area-inset-top)) 12px max(14px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 12px; background: none; border: 0; box-shadow: none; }
+#door.disc-mode .rw-head { display: grid; justify-items: center; gap: 2px; text-align: center; padding: 0; margin: 0; background: none; border: 0; }
+#door.disc-mode .rw-head small { font: 800 10.5px/1.2 var(--font-sans); letter-spacing: .16em; text-transform: uppercase; color: #f3d98f; text-shadow: 0 1px 2px #000; }
+#door.disc-mode .rw-head h2 { margin: 0; font: 700 clamp(24px, 6.4vw, 34px)/1.1 var(--font-serif); color: #fbf3dc; text-shadow: 0 2px 0 rgba(0, 0, 0, .55), 0 0 18px rgba(0, 0, 0, .6); }
+#door.disc-mode .rw-sub { margin: 0; font: 600 12px/1.3 var(--font-sans); color: rgba(246, 236, 212, .85); text-shadow: 0 1px 2px #000; }
+#door.disc-mode .rw-cards, #door.disc-mode .rw-assets { display: flex; flex-wrap: nowrap; justify-content: center; align-items: flex-end; gap: clamp(6px, 2.2vw, 22px); width: 100%; padding: 14px 0 4px; margin: 0; grid-template-columns: none; }
+#door.disc-mode .rw-cards .dc { flex: 0 1 220px; width: auto; min-width: 0; min-height: 0; height: auto; aspect-ratio: 2 / 3.15; max-height: none; padding: 7px 7px 7px; transition: transform .18s cubic-bezier(.2, .9, .3, 1.2), box-shadow .18s; box-shadow: inset 0 0 0 2px var(--paper-c), inset 0 0 0 3px var(--rim2), 0 14px 26px rgba(0, 0, 0, .55); animation: disc-float .45s cubic-bezier(.2, .9, .3, 1.15) both; }
+#door.disc-mode .rw-cards .dc:nth-child(2) { animation-delay: .07s; } #door.disc-mode .rw-cards .dc:nth-child(3) { animation-delay: .14s; }
+#door.disc-mode .rw-cards .dc.sel { transform: translateY(-12px) scale(1.03); box-shadow: inset 0 0 0 2px var(--paper-c), inset 0 0 0 3px var(--rim2), 0 0 0 3px #e0a040, 0 0 26px rgba(243, 200, 110, .55), 0 18px 28px rgba(0, 0, 0, .55); }
+@keyframes disc-float { from { transform: translateY(40px) scale(.85); opacity: 0; } }
+#door.disc-mode .rw-cards .dc .dc-name { font-size: clamp(12px, 3.4vw, 17px); }
+#door.disc-mode .rw-cards .dc .dc-art { flex: 1 1 auto; min-height: 0; }
+#door.disc-mode .rw-cards .dc .dc-txt { font-size: clamp(10.5px, 2.9vw, 13.5px); line-height: 1.22; -webkit-line-clamp: 4; flex: none; }
+#door.disc-mode .rw-cards .dc .dc-type { font-size: clamp(7px, 2vw, 9.5px); }
+#door.disc-mode .rw-assets .rw-asset { flex: 0 1 230px; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 9px 9px 10px; border-radius: 6px; text-align: center; background: linear-gradient(180deg, #f6ead0, #ead8b2); color: #1b2422; border: 3px solid #c9942a; box-shadow: inset 0 0 0 1.5px #5a3f0f, 0 14px 26px rgba(0, 0, 0, .55); cursor: pointer; transition: transform .18s cubic-bezier(.2, .9, .3, 1.2); animation: disc-float .45s cubic-bezier(.2, .9, .3, 1.15) both; }
+#door.disc-mode .rw-assets .rw-asset:nth-child(2) { animation-delay: .07s; transform: translateY(-10px); } #door.disc-mode .rw-assets .rw-asset:nth-child(3) { animation-delay: .14s; }
+#door.disc-mode .rw-assets .rw-asset:hover, #door.disc-mode .rw-assets .rw-asset:focus-visible { transform: translateY(-12px); }
+#door.disc-mode .rw-asset .fy-ico { display: block; width: 100%; height: auto; max-height: none; border-radius: 3px; box-shadow: none; aspect-ratio: 1 / .9; font-size: 56px; line-height: 1; border: 2px solid #3b2a0c; background: #2a2018; overflow: hidden; }
+#door.disc-mode .rw-asset .fy-ico .ia, #door.disc-mode .rw-asset .fy-ico img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 0; box-shadow: none; vertical-align: top; }
+#door.disc-mode .rw-asset .fy-txt { display: grid; gap: 2px; justify-items: center; }
+#door.disc-mode .rw-asset .fy-txt b { font: 700 clamp(13px, 3.6vw, 17px)/1.15 var(--font-serif); color: #1b2422; }
+#door.disc-mode .rw-asset .fy-txt em { font: 800 9px/1 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; color: #6a5530; font-style: normal; }
+#door.disc-mode .rw-asset .fy-eff { font: 600 clamp(10.5px, 2.9vw, 13px)/1.25 var(--font-sans); color: #2a2a22; }
+#door.disc-mode .rw-item { width: min(300px, 86%); display: grid; justify-items: center; gap: 4px; padding: 14px; text-align: center; background: linear-gradient(180deg, #f6ead0, #ead8b2); color: #1b2422; border: 3px solid #c9942a; border-radius: 8px; box-shadow: 0 14px 26px rgba(0, 0, 0, .55); animation: disc-float .45s both; }
+#door.disc-mode .rw-item .rw-ico { width: 96px; height: 96px; font-size: 56px; display: grid; place-items: center; }
+#door.disc-mode .rw-item .rw-ico .ia, #door.disc-mode .rw-item .rw-ico img { width: 100%; height: 100%; object-fit: contain; }
+#door.disc-mode .rw-item b { font: 700 18px var(--font-serif); } #door.disc-mode .rw-item span { font: 600 13px/1.3 var(--font-sans); } #door.disc-mode .rw-item em { font: 700 11px var(--font-sans); color: #6a5530; }
+#door.disc-mode .rw-q { margin: 0; font: 700 14px var(--font-sans); color: #fbf3dc; text-shadow: 0 1px 2px #000; }
+#door.disc-mode .rw-minis, #door.disc-mode .rw-deck { width: min(100%, 760px); max-height: 52vh; overflow: auto; }
+#door.disc-mode .rw-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 0; margin: 0; background: none; border: 0; position: static; width: auto; }
+#door.disc-mode .rw-foot .btn { flex: 0 0 auto; width: auto; min-height: 42px; padding: 0 14px; border-radius: 9px; font: 800 13px/1 var(--font-sans); white-space: nowrap; background: linear-gradient(180deg, #1f5a52, #154238); color: #fbf3dc; border: 1.5px solid #0a2622; box-shadow: 0 3px 0 rgba(0, 0, 0, .5); }
+#door.disc-mode .rw-foot .btn-coral { background: linear-gradient(180deg, #d4553a, #a83a24); color: #fff6ea; border-color: #4a160c; }
+#door.disc-mode .rw-foot .btn:disabled { opacity: .6; }
+.disc-fly { position: fixed; z-index: 80; margin: 0 !important; pointer-events: none; transform-origin: 50% 50%; will-change: transform; animation: none !important; }
+.disc-fly.go { transition: transform .58s cubic-bezier(.5, 0, .25, 1), opacity .58s ease-in; opacity: .85; }
+@media (max-width: 420px) {
+  #door.disc-mode .rw-in { gap: 10px; padding-left: 8px; padding-right: 8px; }
+  #door.disc-mode .rw-cards .dc { padding: 5px 5px 6px; aspect-ratio: 2 / 3.35; }
+  #door.disc-mode .rw-cards .dc .dc-txt { -webkit-line-clamp: 5; }
+  #door.disc-mode .rw-foot { gap: 6px; } #door.disc-mode .rw-foot .btn { padding: 0 10px; font-size: 12px; min-height: 40px; }
+  #door.disc-mode .rw-assets .rw-asset { padding: 6px 6px 8px; }
+}
+@media (max-width: 370px) { #door.disc-mode .rw-foot .btn { padding: 0 8px; font-size: 11.5px; } #door.disc-mode .rw-cards .dc .dc-txt { font-size: 10px; line-height: 1.18; } }
+@media (prefers-reduced-motion: reduce) { #door.disc-mode, #door.disc-mode .rw-cards .dc, #door.disc-mode .rw-asset, #door.disc-mode .rw-item { animation: none !important; transition: none !important; } }
+
+/* ---------- the vault tab: a big bold Art Deco vault front (option B), lock pill, four pips ---------- */
+.sr-btn.sr-bunker { min-height: 164px; padding: 8px 2px 7px; gap: 5px; justify-content: flex-end; background: linear-gradient(180deg, color-mix(in srgb, var(--vt, #2e7f73) 34%, #13233a), #0d1a2b); border: 1.5px solid rgba(201, 148, 42, .85); }
+.sr-hatch.sr-vault { width: 100%; height: auto; border-radius: 0; background: none; box-shadow: none; display: grid; place-items: center; padding: 0; }
+.sr-vault .vt-svg { width: 100%; max-width: 50px; height: auto; display: block; overflow: visible; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .55)); }
+.sr-vault .vt-body { fill: color-mix(in srgb, var(--vt, #2e7f73) 70%, #0c1620); }
+.sr-vault .vt-door { fill: #0c1620; }
+.sr-vault .vt-line { fill: none; stroke: #e8c66a; stroke-width: 3; stroke-linejoin: round; }
+.sr-vault .vt-thin { fill: none; stroke: rgba(232, 198, 106, .7); stroke-width: 1.5; }
+.sr-vault .vt-rays line { stroke: #e8c66a; stroke-width: 2.4; stroke-linecap: round; }
+.sr-vault .vt-hub { fill: #c0482f; stroke: #e2bf63; stroke-width: 1.4; } .sr-vault .vt-pin { fill: #f3d98f; }
+.sr-vault .vt-sky { fill: #e2bf63; } .sr-vault .vt-base { fill: #c9942a; }
+.sr-bunker .sr-pips { gap: 3px; } .sr-bunker .sr-pips i { width: 8px; height: 5px; }
+.sr-bunker small { font-size: 10.5px; letter-spacing: .14em; color: #f1e3c2; }
+.sr-bunker .sr-lock { top: 6px; right: 5px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: #0c1620; border: 1.5px solid #e2bf63; filter: none; }
+.sr-bunker .sr-lock svg { width: 13px; height: 13px; fill: #e2bf63; stroke: #e2bf63; stroke-width: 1.8; }
+.sr-bunker .sr-lock svg path { fill: none; }
+.sr-bunker.locked .sr-vault .vt-svg { filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .55)) saturate(.7) brightness(.85); }
+.sr-bunker.ready .sr-hatch.sr-vault { animation: none; }
+.sr-bunker.ready .sr-vault .vt-rays { animation: vt-spin 6s linear infinite; transform-origin: 32px 75px; }
+.sr-bunker.ready { box-shadow: 2px 3px 0 rgba(10, 22, 24, .55), 0 0 0 2px rgba(243, 217, 143, .55), 0 0 16px rgba(243, 217, 143, .35); }
+@keyframes vt-spin { to { transform: rotate(360deg); } }
+@media (max-height: 820px), (max-width: 380px) { .sr-btn.sr-bunker { min-height: 150px; } .sr-vault .vt-svg { max-width: 46px; } }
+@media (prefers-reduced-motion: reduce) { .sr-bunker.ready .sr-vault .vt-rays { animation: none; } }
+/* cash-cost cards: the wider $NM badge must not cover the start of the name */
+.dc:not(.chip):has(.dc-cost.cash) .dc-name,
+#door.fb-mode .fb-dock .df-hand .dc:has(.dc-cost.cash) .dc-name,
+#door.disc-mode .rw-cards .dc:has(.dc-cost.cash) .dc-name { padding-left: 34px; }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -12587,7 +12873,26 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   };
   LD.BUNKER_ICON = { mara: "bunker-mara", reid: "bunker-reid", imani: "bunker-imani", julian: "bunker-julian", soren: "bunker-soren", cassius: "bunker-cassius" };
   /* The executive's own compound hatch (painted icon); unknown executives fall back to the shared bunker token. */
+  /* The vault tab: a stepped Art Deco vault front with a sunburst wheel door, gold line on the rail navy.
+     Tinted per executive (--vt). Big on purpose: it is the other half of the game. */
+  var VAULT_TINT = { mara: "#2e7f73", reid: "#7a5a2a", julian: "#2b5d86", cassius: "#7c3b34", imani: "#5a6a2c", soren: "#5b4a7c" };
+  LD.vaultIconSvg = function () {
+    var cx = 32, cy = 75, rays = "";
+    for (var i = 0; i < 12; i++) { var a = i * Math.PI / 6, x1 = cx + Math.cos(a) * 6.8, y1 = cy + Math.sin(a) * 6.8, x2 = cx + Math.cos(a) * 13.6, y2 = cy + Math.sin(a) * 13.6; rays += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>'; }
+    var tiers = "M27 15 H37 V25 H43 V35 H49 V45 H56 V102 H8 V45 H15 V35 H21 V25 H27 Z";
+    return '<svg class="vt-svg" viewBox="0 0 64 108" aria-hidden="true">' +
+      '<path class="vt-sky" d="M32 1 L35 15 L29 15 Z"/>' +
+      '<path class="vt-body" d="' + tiers + '"/><path class="vt-line" d="' + tiers + '"/>' +
+      '<path class="vt-thin" d="M15 45 H49 M21 35 H43 M27 25 H37 M32 17 V43 M24.5 27 V43 M39.5 27 V43 M12.5 50 V98 M51.5 50 V98"/>' +
+      '<path class="vt-thin" d="M18 52 H46"/>' +
+      '<circle class="vt-door" cx="' + cx + '" cy="' + cy + '" r="17.5"/><circle class="vt-line" cx="' + cx + '" cy="' + cy + '" r="17.5"/><circle class="vt-thin" cx="' + cx + '" cy="' + cy + '" r="14.8"/>' +
+      '<g class="vt-rays">' + rays + '</g><circle class="vt-hub" cx="' + cx + '" cy="' + cy + '" r="4.6"/><circle class="vt-pin" cx="' + cx + '" cy="' + cy + '" r="1.7"/>' +
+      '<path class="vt-base" d="M3 102 H61 V107 H3 Z"/></svg>';
+  };
+  LD.vaultLockSvg = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" rx="2"/><path d="M6.5 9 V6.5 a3.5 3.5 0 0 1 7 0 V9" fill="none"/></svg>';
+  LD.vaultTint = function (state) { return VAULT_TINT[state && state.executiveId] || "#2e7f73"; };
   LD.bunkerIcon = function (state, cls) {
+    if (!cls) return '<span class="sr-hatch sr-vault">' + LD.vaultIconSvg() + "</span>";
     var k = LD.BUNKER_ICON[state && state.executiveId];
     var tokFb = LD.tok ? LD.tok("bunker") : "⛫";
     if (!k) return '<span class="' + (cls || "sr-hatch") + ' sr-hatch-fb">' + tokFb + "</span>";
@@ -12609,13 +12914,21 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     h += '<button class="sr-btn sr-phone' + (ring ? " ringing" : " quiet") + '" id="btn-phone" aria-label="' + esc(ring ? (ERA ? ERA.phone : "The phone is ringing") : "Phone: no calls right now") + '"' + '><span class="sr-ic">' + RAIL_SVG.phone + "</span><small>" + (ring ? "Call!" : "Phone") + "</small>" + (ring ? '<em class="sr-badge sr-ring">1</em>' : "") + "</button>";
     h += '</div><span class="sr-gap" aria-hidden="true"></span>';
     var pips = ""; for (var pi = 0; pi < 4; pi++) pips += '<i class="' + (pi < r.ready ? "on" : "") + '"></i>';
-    h += '<button class="sr-btn sr-bunker' + (bunkerReady ? " ready" : "") + (dealPhase ? " locked" : "") + (state.bunkerActedThisTurn ? " acted" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card" style="--bp:' + Math.round(lv / 12 * 100) + '%" aria-label="Floor hatch to ' + esc(exec.compound || "the bunker") + ", " + r.ready + " of 4 rooms ready" + (dealPhase ? ". Opens after you sign a deal" : state.bunkerActedThisTurn ? ". Works ordered this quarter" : ". Tap to build") + '">' +
-      LD.bunkerIcon(state) + '<span class="sr-pips" aria-hidden="true">' + pips + "</span><small>Bunker</small>" + (dealPhase ? '<em class="sr-lock" aria-hidden="true">🔒</em>' : "") + "</button>";
+    h += '<button class="sr-btn sr-bunker' + (bunkerReady ? " ready" : "") + (dealPhase ? " locked" : "") + (state.bunkerActedThisTurn ? " acted" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card" style="--bp:' + Math.round(lv / 12 * 100) + "%;--vt:" + LD.vaultTint(state) + '" aria-label="Floor hatch to ' + esc(exec.compound || "the bunker") + ", " + r.ready + " of 4 rooms ready" + (dealPhase ? ". Opens after you sign a deal" : state.bunkerActedThisTurn ? ". Works ordered this quarter" : ". Tap to build") + '">' +
+      LD.bunkerIcon(state) + '<span class="sr-pips" aria-hidden="true">' + pips + "</span><small>Bunker</small>" + (dealPhase ? '<em class="sr-lock" aria-hidden="true">' + LD.vaultLockSvg + "</em>" : "") + "</button>";
     h += "</nav>";
     return h;
   }
   LD.renderSideRail = sideRail;
 
+  /* The deck, face down, always on the run screen: the hand is dealt from it when a fight starts (the fight bay docks its own
+     copy, counting the draw pile) and the cards go back to it after. Reward picks fly into it. Tap: the deck list. */
+  function runDeck(state) {
+    var f = state.fy; if (!f || !f.deck) return "";
+    var n = f.deck.length;
+    return '<button class="run-deck" id="run-deck" aria-label="Your deck, ' + n + ' cards. Open the deck list"><img src="assets/ui/card-back.webp" alt="" draggable="false"><i class="rd-stack" aria-hidden="true"></i><em class="rd-count">' + n + "</em></button>";
+  }
+  LD.runDeckHtml = runDeck;
   function renderDesk(state, ui) {
     ui = ui || {};
     var dealPhase = state.phase === "deal";
@@ -12640,6 +12953,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
       state.offered.forEach(function (id) { h += '<li><button class="sr-deal" data-deal="' + id + '">' + esc(pinAria(state, id)) + "</button></li>"; });
       h += "</ul></div>";
     }
+    if (ui.globe) h += runDeck(state);
     h += '<div class="map-tip" id="map-tip" role="tooltip" hidden></div>';
     h += '<div class="fx" id="fx" aria-hidden="true"></div></main>';
 
@@ -12661,7 +12975,8 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     h += "</div></div></div>";
     h += "</aside>";
 
-    h += '<footer class="hand">';
+    h += '<footer class="hand' + (!ui.globe && state.fy && state.fy.deck ? " has-deck" : "") + '">';
+    if (!ui.globe) h += runDeck(state);
     var canEnd = !dealPhase;
     h += '<button class="end-q' + (canEnd ? " live" : "") + (ui.coach === "end" ? " coach" : "") + '" id="btn-endq">' +
       '<span class="eq-ico">✓</span><span class="eq-t">END QUARTER<small>' + (ui.hidePins ? "Dealing Q" + state.turn + " opportunities…" : canEnd ? "Ride the upside. Own the future." : "Pick 1 of " + state.offered.length + " deals on the map first") + "</small></span></button>";
@@ -13712,6 +14027,8 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
       var dn4 = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
       h = h.replace('<div class="of-room ', '<div class="of-room o4 ');
       h += '<div class="o4-slot"></div>' + (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "");
+      /* framed assets on the wall: gilt frames, empty ones visible so a fresh pick has somewhere to land */
+      if (f.hand) { h += '<div class="of-wallart o4-wa" aria-hidden="true">'; for (var wj = 0; wj < (f.cap || 5); wj++) { var wb = f.hand[wj] && LD.assetById(f.hand[wj].id); h += wb ? '<i title="' + esc(wb.name) + '">' + IA(wb) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
       h += '<div class="of-window o4-w">' + ogauge("collapse", "☢", "Collapse", state.collapse, false,
         (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
         "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
@@ -13925,6 +14242,12 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     var I = fg.intent && LD.INTENTS[fg.intent.k];
     return { t: LD.moveSay ? LD.moveSay(fg, fg.intent.k) : I && I.say ? I.say : "", k: "move" };
   }
+  /* Opponent art drawn head to toe (the rest are framed to the old 3/4 crop and stand a little lower, fading at the knee). */
+  var FULL_BODY = { benny: 1, dana: 1, gil: 1, grace: 1, honoria: 1, pip: 1, pops: 1, theo: 1 };
+  LD.oppFullBody = function (art) { return !!FULL_BODY[art]; };
+  var VENUE_PILL = { home: "At your desk", lobby: "At the glass" };
+  /* The fight happens in the scene: a visitor stands in your own office (the live 40s room, borrowed by office.js),
+     or you have gone out to their room and stand there full-body. Cards fly into it; the hand stays docked below. */
   function sceneHtml(state, fg, ui) {
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
     var room = venue === "home" ? homeRoom(fg) : F.room;
@@ -13932,24 +14255,34 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     var how = fg.done ? fg.done.how || (fg.done.win ? "crushed" : fg.done.settled ? "paid" : "walked") : null;
     var out = fg.done ? fg.done.out : null;
     var base = !fg.done ? "idle" : out === "martyred" || how === "walked" ? "attack" : out === "bought" || out === "converted" || out === "deal" || how === "paid" ? (F.paid ? "paid" : "idle") : "defeated";
-    var ex = execArt(state.executiveId);
-    var h = '<div class="df-stage sc v-' + venue + " room-" + room + (ui.enter ? " enter" : "") + '" data-room="' + room + '" data-venue="' + venue + '" data-city="' + stage + '">';
-    h += '<div class="sc-room" aria-hidden="true" style="background-image:url(assets/fight/room-' + room + '.webp)"></div><div class="sc-haze" aria-hidden="true"></div>';
-    h += '<div class="sc-opp" id="sc-opp" data-base="' + base + '" data-pose="' + base + '" style="--ar:' + (F.ar || ART_AR[F.art] || 0.6) + '" aria-hidden="true">';
+    var ex = execArt(state.executiveId), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
+    var office = venue === "home" || ui.entering, o4 = !!(LD.O4 && LD.O4_ATLAS);
+    var h = '<div class="df-stage sc fb-stage v-' + venue + " room-" + room + (office && o4 ? " fb-office" : " fb-away") + (ui.entering ? " fb-entering" : "") + (ui.enter ? " enter" : "") + '" data-room="' + room + '" data-venue="' + venue + '" data-city="' + stage + '">';
+    if (office && o4) h += '<div class="fb-room of-room o4" aria-hidden="true"><div class="o4-slot"></div></div>';
+    else h += '<div class="sc-room" aria-hidden="true" style="background-image:url(assets/fight/room-' + room + '.webp)"></div><div class="sc-haze" aria-hidden="true"></div>';
+    if (ui.entering) return h;
+    h += '<div class="sc-opp ' + (FULL_BODY[F.art] ? "full" : "crop") + '" id="sc-opp" data-base="' + base + '" data-pose="' + base + '" style="--ar:' + (F.ar || ART_AR[F.art] || 0.6) + '" aria-hidden="true">';
     POSES.concat(F.paid ? ["paid"] : []).forEach(function (p) { h += '<img class="p-' + p + '" src="assets/fight/opp-' + F.art + "-" + p + '.webp" alt="" draggable="false">'; });
     h += "</div>";
+    if (office && o4) h += '<div class="sc-you fb-you-anchor" id="sc-you" aria-hidden="true"></div>';
+    else {
+      var fig = o4 && LD.O4.figureHtml ? LD.O4.figureHtml(ex, era, fg.done && !fg.done.win && !fg.done.settled ? "panic" : "idle", 100, true) : "";
+      h += '<div class="sc-you fb-exec' + (fig ? "" : " fb-back") + '" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true">' + (fig || '<img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false">') + "</div>";
+    }
     var bt = F.opp && !(ui.cap && ui.cap.t && !fg.done) ? bubbleText(state, fg, ui) : null;
-    if (bt && bt.t) h += '<div class="sc-bubble k-' + bt.k + '" id="sc-bubble" role="status" aria-live="polite"><b>' + esc(F.short) + "</b>" + esc(bt.t) + "</div>";
+    if (bt && bt.t) h += '<div class="sc-bubble k-' + bt.k + '" id="sc-bubble" role="status" aria-live="polite"><b>' + esc(F.who) + "</b>" + esc(bt.t) + "</div>";
     if (fg.cb && !fg.done && fg.round === 1 && !fg.played && !ui.cbHide) {
       var cb = fg.cb, img = cb.art ? "assets/fight/" + cb.art + ".webp" : "";
       h += '<div class="sc-cb' + (cb.inset ? " is-witness" : "") + '" id="sc-cb" role="note"><div class="sc-cb-k">★ A FAMILIAR FACE ★</div>' +
         (img ? '<img src="' + img + '" alt="" draggable="false">' : "") + '<div class="sc-cb-t"><b>' + esc(cb.who) + '</b><q>' + esc(cb.line) + "</q><em>" + esc(cb.effect) + '</em></div><button class="sc-cb-ok" id="sc-cb-ok">Face them ▸</button></div>';
     }
-    h += '<div class="sc-you" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
-    if (!fg.done && !fg.played && (fg.round | 0) <= 1 && !(ui.cap && ui.cap.t) && !(fg.cb && !ui.cbHide)) { var opener = LD.fightOpener(state, fg); if (opener) h += '<div class="sc-cap sc-why e' + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)) + '" id="sc-why" role="note"><span>' + esc(opener) + "</span></div>"; }
+    if (!fg.done && !fg.played && (fg.round | 0) <= 1 && !(ui.cap && ui.cap.t) && !(fg.cb && !ui.cbHide)) { var opener = LD.fightOpener(state, fg); if (opener) h += '<div class="sc-cap sc-why e' + era + '" id="sc-why" role="note"><span>' + esc(opener) + "</span></div>"; }
     if (ui.cap && ui.cap.t && !fg.done) h += '<div class="sc-cap e' + ui.cap.era + (ui.cap.w4 ? " w4" : "") + '" id="sc-cap" role="note"><span>' + esc(ui.cap.t) + "</span></div>";
-    h += '<div class="sc-place" aria-hidden="true">' + (venue === "home" ? "🚪 Your office · they came to you" : venue === "lobby" ? "🏢 Your lobby · through the glass" : "↩ Out the back door · " + esc(F.place)) + "</div>";
-    if (fg.done) h += '<div class="sc-stamp ' + (how || "lost") + (out ? " o-" + out : "") + '" aria-hidden="true">' + (F.opp && out && LD.OUT_LABEL && LD.OUT_LABEL[out] ? LD.OUT_LABEL[out] : F.opp && LD.HOW_LABEL[how] ? LD.HOW_LABEL[how] : fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
+    /* the away telemetry plaque (at home the office's own painted meters read out) */
+    h += '<div class="df-meters fb-plaque" aria-label="Cash $' + state.cash + "M, unrest " + state.unrest + ", collapse " + state.collapse + '">' +
+      '<span data-tip="Cash $' + state.cash + 'M. Settling costs $' + LD.DOOR.SETTLE + 'M per Scrutiny left; some cards cost cash."><small>Cash</small><b>$' + state.cash + "M</b></span>" +
+      '<span data-tip="Unrest ' + state.unrest + '/100. Grievance hits that get through raise it."><small>Unrest</small><b>' + state.unrest + "</b></span>" +
+      '<span data-tip="Collapse ' + state.collapse + '/100. Hits aimed at collapse land at half strength."><small>Collapse</small><b>' + state.collapse + "</b></span></div>";
     return h;
   }
   /* ---------- Fight opener: the narrator line that used to sit on the intro card. Shown in the fight as the
@@ -13990,59 +14323,65 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   LD.renderFight = function (state, ui) {
     ui = ui || {};
     var f = state.fy, fg = f.fight; if (!fg) return "";
-    var it = fg.done ? null : LD.fightIntent(state);
+    var it = fg.done || ui.entering ? null : LD.fightIntent(state);
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
     var pct = fg.max ? Math.max(0, Math.round(100 * Math.max(0, fg.scrut) / fg.max)) : 0;
-    var h = '<div class="door-in fight2' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + '" data-enc="' + fg.enc + '">';
-    var kind = fg.boss ? "Boss" : fg.elite ? "Elite" : venue === "home" ? "Home turf" : venue === "lobby" ? "At the glass" : "Away";
-    h += '<header class="df-top"><div class="df-title"><small>' + kind + " · Q" + fg.q + " · " + esc(fg.dealTitle || "") + "</small><b>" + esc(F.who) + (fg.cb ? ' <i class="df-cbchip" title="A familiar face">★</i>' : "") + "</b><em>" + esc(F.opp ? F.role : F.role + " · " + (fg.encName || fg.name)) + "</em></div>" +
-      '<div class="df-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small>' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></div>" +
+    var h = '<div class="door-in fight2 fb' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + (ui.entering ? " is-entering" : "") + '" data-enc="' + fg.enc + '" data-venue="' + venue + '">';
+    var place = venue === "away" ? (F.opp && F.opp.place ? F.opp.place : F.place || "Their turf") : "";
+    var pill = (fg.boss ? "Boss · " : fg.elite ? "Hearing · " : "") + (VENUE_PILL[venue] || "Away · " + place.replace(/^The /, "the ").replace(/,.*$/, ""));
+    h += '<header class="df-top fb-head"><div class="df-title"><small class="fb-venue v-' + venue + '" title="Q' + fg.q + " · " + esc(fg.dealTitle || "") + '">' + esc(pill) + "</small><b>" + esc(F.who) + (fg.cb ? ' <i class="df-cbchip" title="A familiar face">★</i>' : "") + "</b><em>" + esc(F.opp ? F.role : F.role + " · " + (fg.encName || fg.name)) + "</em></div>" +
+      '<div class="df-scrut lvl-' + (LD.resLevel ? LD.resLevel("scrutiny", fg.max ? Math.max(0, fg.scrut) / fg.max : 0) : "ok") + '"><div class="df-k">' + (LD.tok ? LD.tok("scrutiny") : "") + 'Scrutiny <span class="fb-sn"><b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</span></div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div></div>" + galHtml(fg) +
+      '<div class="df-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small> ' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></div>" +
       '<button class="icon-btn df-help" id="df-help" aria-label="How fights work">?</button></header>';
     h += sceneHtml(state, fg, ui);
-    h += '<div class="df-scrut lvl-' + (LD.resLevel ? LD.resLevel("scrutiny", fg.max ? Math.max(0, fg.scrut) / fg.max : 0) : "ok") + '"><div class="df-k">' + (LD.tok ? LD.tok("scrutiny") : "") + 'Scrutiny <b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
-      '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div>" + galHtml(fg) + "</div>";
-    if (it) {
-      var thr = it.through, ico = METER_ICO[it.meter] || "!";
-      h += '<div class="df-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><div class="df-k">Next, ' + esc(F.short) + " will</div>" +
-        '<div class="di-main"><span class="di-ico" aria-hidden="true">' + ico + '</span><b>' + esc(it.label) + " " + it.n + "</b>" + (F.opp && F.opp.sig === it.k ? '<i class="di-sig" title="Signature move">★</i>' : "") + "</div>" +
-        '<div class="di-math">Block <b>' + it.block + "</b> · through <b>" + thr + "</b> → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " (×½)" : "") + "</div>" +
-        (it.rtext ? '<div class="di-rider' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</div>" : "") +
-        (it.notes.length ? '<div class="di-notes">' + esc(it.notes.join(" · ")) + "</div>" : "") +
-        (LD.fightPeek && LD.fightPeek(state) ? '<div class="di-peek">Then: ' + esc(LD.fightPeek(state).label) + " " + LD.fightPeek(state).n + "</div>" : "") + "</div>";
-    }
     h += "</div>";
+    if (it) {
+      var thr = it.through, ico = METER_ICO[it.meter] || "!", pk = LD.fightPeek ? LD.fightPeek(state) : null;
+      h += '<div class="df-intent fb-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite">' +
+        '<div class="di-main"><span class="df-k">Next:</span> <span class="di-say">' + esc(F.short) + " will <b>" + esc(it.label) + "</b>" + (F.opp && F.opp.sig === it.k ? '<i class="di-sig" title="Signature move">★</i>' : "") + "</span></div>" +
+        '<div class="di-chips"><span class="di-chip di-hit m-' + it.meter + '"><span class="di-ico" aria-hidden="true">' + ico + "</span>" + it.n + " → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " ×½" : "") + "</span>" +
+        '<span class="di-chip di-math">Blk <b>' + it.block + "</b> · <b>" + thr + "</b> through</span>" +
+        (it.rtext ? '<span class="di-chip di-rider' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</span>" : "") +
+        (it.notes.length ? '<span class="di-chip di-notes">' + esc(it.notes.join(" · ")) + "</span>" : "") +
+        (pk ? '<span class="di-chip di-peek">Then: ' + esc(pk.label) + " " + pk.n + "</span>" : "") + "</div></div>";
+    }
+    var pileN = fg.done ? f.deck.length : fg.draw.length;
+    h += '<div class="fb-dock' + (fg.done ? " is-out" : "") + (ui.entering ? " is-wait" : "") + '">';
+    h += '<button class="df-pile fb-pile" id="df-deck" aria-label="' + (fg.done ? "Your deck, " + pileN + " cards" : "Draw pile, " + pileN + " cards left") + '. Open the deck list"><img src="assets/ui/card-back.webp" alt="" draggable="false"><em class="rd-count">' + pileN + "</em></button>";
     if (fg.done) {
       var d = fg.done, L = d.leaks, bits = [];
       if (L.cash) bits.push("−$" + L.cash + "M"); if (L.unrest) bits.push("unrest +" + L.unrest); if (L.collapse) bits.push("collapse +" + L.collapse); if (L.heat) bits.push("Heat +" + L.heat);
       var bye = venue === "home" || venue === "lobby" ? "Show them out ▸" : "Back to the office ▸";
       var how2 = d.how, O2 = F.opp, remember = O2 && !O2.boss && O2.act < 3 && how2 !== "walked";
       var out2 = d.out, aside = LD.execAside ? LD.execAside(state) : null;
-      var endLine = O2 ? '<div class="sc-ending h-' + how2 + (out2 ? " o-" + out2 : "") + '"><i class="sc-end-stamp">' + esc((out2 && LD.OUT_LABEL && LD.OUT_LABEL[out2]) || LD.HOW_LABEL[how2] || "") + "</i>" +
-        (out2 && LD.OUT_NOTE && LD.OUT_NOTE[out2] ? "<em>" + esc(LD.OUT_NOTE[out2]) + (remember ? " They'll remember this." : "") + "</em>" : remember ? "<em>They'll remember this.</em>" : how2 === "walked" ? "<em>" + esc(F.short) + " walks out with what they came for.</em>" : "") +
-        (aside ? '<q class="sc-aside">' + esc(aside.t) + "</q>" : "") + "</div>" : "";
-      h += '<div class="df-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status">' + endLine + '<b>' + (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + "</b>" +
-        "<span>" + esc(d.win ? (d.notes.join(" · ") || "The deal closes.") : d.settled ? "No bonus, no more damage. " + (d.notes.join(" · ")) : "The deal still signs. " + (d.notes.join(" · ") || "")) + "</span>" +
-        (bits.length ? '<span class="df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") +
+      var stampT = (out2 && LD.OUT_LABEL && LD.OUT_LABEL[out2]) || LD.HOW_LABEL[how2] || (d.win ? "Deal closed" : d.settled ? "Settled" : "They got through");
+      var endLine = '<div class="sc-ending h-' + (how2 || (d.win ? "crushed" : d.settled ? "paid" : "walked")) + (out2 ? " o-" + out2 : "") + '"><i class="sc-end-stamp sc-stamp ' + (how2 || "lost") + (out2 ? " o-" + out2 : "") + '">' + esc(stampT) + "</i></div>";
+      var title = (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + (remember ? " · They'll remember this" : "");
+      var sub = O2 && out2 && LD.OUT_NOTE && LD.OUT_NOTE[out2] ? LD.OUT_NOTE[out2] : how2 === "walked" && O2 ? F.short + " walks out with what they came for." : "";
+      var notes = d.win ? (d.notes.length ? d.notes : ["The deal closes."]) : d.settled ? ["No bonus, no more damage."].concat(d.notes) : ["The deal still signs."].concat(d.notes);
+      h += '<div class="df-result fb-out ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status">' + endLine +
+        '<div class="fb-out-t"><b>' + esc(title) + "</b>" + (sub ? "<em>" + esc(sub) + "</em>" : "") + (aside ? '<q class="sc-aside">' + esc(aside.t) + "</q>" : "") + "</div>" +
+        '<div class="fb-out-chips">' + notes.filter(Boolean).map(function (n) { return '<span class="fb-chip good">' + esc(n) + "</span>"; }).join("") +
+        (bits.length ? '<span class="fb-chip bad df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") + "</div>" +
         '<button class="btn btn-coral df-close" id="df-close">' + bye + "</button></div>";
-    } else {
-      h += '<div class="df-hud"><div class="df-inf" aria-label="Influence ' + fg.inf + '"><small>Influence</small>';
+    } else if (!ui.entering) {
+      h += '<div class="fb-dock-main"><div class="df-hud fb-bar"><div class="df-inf" aria-label="Influence ' + fg.inf + '">';
       for (var i = 0; i < Math.max(fg.inf, LD.DOOR.INF); i++) h += '<i class="' + (i < fg.inf ? "on" : "") + '"></i>';
-      h += '<b>' + fg.inf + "◆</b></div>";
-      h += '<div class="df-meters" aria-label="Cash $' + state.cash + "M, unrest " + state.unrest + ", collapse " + state.collapse + '">' +
-        (LD.resPill ? LD.resPill("cash", state.cash, "Cash $" + state.cash + "M. Settling costs $" + LD.DOOR.SETTLE + "M per Scrutiny left; some cards cost cash.") + LD.resPill("unrest", state.unrest, "Unrest " + state.unrest + "/100. Grievance hits that get through raise it. Knocks at 20, pounding at 40.") + LD.resPill("collapse", state.collapse, "Collapse " + state.collapse + "/100. Hits aimed at collapse land at half strength. Crises likely from 55.")
-          : "<b>$" + state.cash + "M</b><span>✊ " + state.unrest + "</span><span>☢ " + state.collapse + "</span>") + "</div>";
-      h += '<div class="df-piles"><button class="df-pile" id="df-deck" aria-label="Deck view">Draw ' + fg.draw.length + "</button><span>Discard " + fg.disc.length + "</span></div></div>";
+      h += '<b>' + fg.inf + "/" + LD.DOOR.INF + "◆</b></div>";
+      h += '<span class="df-piles fb-piles">Draw ' + fg.draw.length + " · Disc " + fg.disc.length + "</span>";
+      var sc = LD.fightSettleCost(state);
+      h += '<div class="df-actions"><button class="btn df-settle" id="df-settle"' + (state.cash < sc ? " disabled" : "") + '><b>Settle $' + sc + "M</b><small>" + (state.cash < sc ? "Not enough cash" : "Pay it off now") + "</small></button>" +
+        '<button class="btn btn-coral df-end" id="df-end"><b>End round</b><small>' + (it ? (it.through ? esc(it.label) + " hits for " + it.through : "Fully blocked") : "") + (fg.round >= fg.rounds ? " · last round" : "") + "</small></button></div></div>";
       h += '<div class="df-hand" role="group" aria-label="Your hand">';
       fg.hand.forEach(function (u) {
         var ci = LD.fightCardInfo(state, u); if (!ci) return;
         h += cardFace(ci.id, ci.up, { attrs: ' data-u="' + u + '"', why: ci.why, cost: ci.o.cash ? (ci.cost || null) : ci.cost, p: ci.p, d: ci.d, cls: ui.flashU === u ? "pop" : "" });
       });
       if (!fg.hand.length) h += '<p class="df-empty">No cards left. End the round.</p>';
-      h += "</div>";
-      var sc = LD.fightSettleCost(state);
-      h += '<div class="df-actions"><button class="btn df-settle" id="df-settle"' + (state.cash < sc ? " disabled" : "") + '><b>Settle $' + sc + "M</b><small>" + (state.cash < sc ? "Not enough cash" : "Pay it off now") + "</small></button>" +
-        '<button class="btn btn-coral df-end" id="df-end"><b>End round</b><small>' + (it ? (it.through ? esc(it.label) + " hits for " + it.through : "Fully blocked") : "") + (fg.round >= fg.rounds ? " · last round" : "") + "</small></button></div>";
+      h += "</div></div>";
     }
+    h += "</div>";
     h += '<div class="df-log" id="df-log" aria-live="polite">' + esc(ui.log || "") + "</div>";
     h += '<div class="fx" id="df-fx" aria-hidden="true"></div>';
     return h + "</div>";
@@ -14507,6 +14846,8 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   API.mount = function (state) {
     var slot = document.querySelector(".desk .office .of-room.o4 .o4-slot");
     if (!slot || !state) return;
+    /* in-scene fight: the room is on loan to the fight bay; leave the desk's slot empty until the fight hands it back */
+    if (O.fightOn) return;
     if (!O.stage) build();
     var room = slot.parentNode;
     var era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)), exec = exKey(state.executiveId);
@@ -14574,12 +14915,84 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     })();
     return { skip: function () { O.skip = true; O.token++; finish(true); } };
   };
+  /* ---------- In-scene fights: the fight bay borrows the whole room (visitor fights), or paints the executive full-body
+     on someone else's turf (away fights). The fight UI re-renders on every play, so the bay calls adopt() after each paint. ---------- */
+  function placeFoe(foe, full) {
+    var R = O.R, sp = R.S.oppIn, H = heightAt(sp[1]), h = H * (full ? 1 : 0.86), ar = parseFloat(foe.style.getPropertyValue("--ar")) || 0.55, w = h * ar;
+    foe.style.position = "absolute"; foe.style.height = h.toFixed(1) + "px"; foe.style.width = w.toFixed(1) + "px";
+    foe.style.left = (sp[0] - w / 2).toFixed(1) + "px"; foe.style.top = (sp[1] - h + (full ? 0 : H * 0.04)).toFixed(1) + "px";
+    foe.style.bottom = "auto"; foe.style.transform = "none"; foe.style.zIndex = 5;
+  }
+  function placeYou(you) {
+    var h = heightAt(O.st.y);
+    you.style.position = "absolute"; you.style.left = (-h * 0.2).toFixed(1) + "px"; you.style.top = (-h * 0.98).toFixed(1) + "px";
+    you.style.width = (h * 0.4).toFixed(1) + "px"; you.style.height = (h * 0.98).toFixed(1) + "px"; you.style.bottom = "auto";
+  }
+  API.adopt = function (slot, state, o) {
+    o = o || {};
+    if (!slot || !state) return false;
+    if (!O.stage) build();
+    var room = slot.parentNode, era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)), exec = exKey(state.executiveId);
+    var lay = room.clientWidth / Math.max(1, room.clientHeight) < 1 ? "P" : "L";
+    var first = !O.fightOn;
+    O.fightOn = true;
+    setEra(era, exec, lay);
+    slot.parentNode.replaceChild(O.stage, slot);
+    if (O.ro) { try { O.ro.disconnect(); O.ro.observe(room); } catch (e) {} }
+    O.stage.classList.add("o4-fight");
+    API.setMeters(state);
+    layout();
+    if (O.foe && O.foe !== o.foe && O.foe.parentNode) O.foe.parentNode.removeChild(O.foe);
+    O.foe = o.foe || null;
+    if (O.foe) { O.world.appendChild(O.foe); O.foeFull = !!o.full; placeFoe(O.foe, O.foeFull); }
+    if (O.you && O.you !== o.you && O.you.parentNode) O.you.parentNode.removeChild(O.you);
+    O.you = o.you || null;
+    if (O.you) { O.ex.appendChild(O.you); placeYou(O.you); }
+    if (o.entering) return true;
+    if (first || o.settle) {
+      /* the visitor is in: the executive goes back behind the desk and squares up to them */
+      O.st.hidden = false;
+      if (!atDesk()) { O.q.length = 0; enqueue("fightdesk", async function () { await go("desk", true, 900); hold("idle", -1); }); }
+      else if (!O.busy) hold("idle", -1);
+    }
+    return true;
+  };
+  API.setMeters = function (state) {
+    if (!O.face || !state) return;
+    var fm = LD.formatMoney || function (v) { return "$" + v + "M"; }, lv = LD.resLevel || function () { return "ok"; };
+    setFace("U", state.unrest, String(state.unrest), lv("unrest", state.unrest), "UNREST");
+    setFace("C", state.collapse, String(state.collapse), lv("collapse", state.collapse), "COLLAPSE");
+    setFace("K", Math.min(100, state.cash), fm(state.cash), lv("cash", state.cash), "");
+  };
+  /* a short reaction from the executive during a fight: snap (played a card), panic (took a hit), nervous (blocked) */
+  API.fightPose = function (pose, ms) {
+    if (!O.fightOn || !O.stage || O.st.hidden || O.busy) return;
+    clearTimeout(API.fpT); hold(pose, -1);
+    API.fpT = setTimeout(function () { if (O.fightOn && !O.busy) hold("idle", -1); }, ms || 700);
+  };
+  API.exitFight = function () {
+    if (!O.fightOn) return;
+    O.fightOn = false; clearTimeout(API.fpT);
+    if (O.foe && O.foe.parentNode) O.foe.parentNode.removeChild(O.foe); O.foe = null;
+    if (O.you && O.you.parentNode) O.you.parentNode.removeChild(O.you); O.you = null;
+    if (O.stage) { O.stage.classList.remove("o4-fight"); if (O.stage.parentNode) O.stage.parentNode.removeChild(O.stage); }
+    if (!O.st.hidden) { O.st.face = 1; if (!O.busy) O.st.pose = poseFor(); }
+  };
+  API.inFight = function () { return !!O.fightOn; };
+  /* the executive full-body, standing in someone else's room (away fights): one atlas frame as a CSS-only sprite, sized in % of the stage */
+  API.figureHtml = function (execId, era, pose, pct, flip) {
+    var key = exKey(execId) + "-e" + Math.max(1, Math.min(3, era || 1)), A = LD.O4_ATLAS && LD.O4_ATLAS[key]; if (!A) return "";
+    var f = A.f[pose] || A.f.idle, r = f.r, k = r[3] / A.h;
+    var bx = A.w > r[2] ? r[0] / (A.w - r[2]) * 100 : 0, by = A.ht > r[3] ? r[1] / (A.ht - r[3]) * 100 : 0;
+    return '<span class="o4-fig' + (flip ? " flip" : "") + '" data-pose="' + pose + '" style="height:' + ((pct || 78) * k).toFixed(2) + "%;aspect-ratio:" + r[2] + "/" + r[3] +
+      ";background-image:url(" + BASE + key + ".webp);background-size:" + (A.w / r[2] * 100).toFixed(3) + "% " + (A.ht / r[3] * 100).toFixed(3) + "%;background-position:" + bx.toFixed(3) + "% " + by.toFixed(3) + '%"></span>';
+  };
   /* test hook (real-input placement shots): stand at a named spot in a pose */
   API.debugSpot = function (spot, pose) { if (!O.R || !O.R.S[spot]) return false; O.frozen = true; O.token++; O.q.length = 0; O.st.hidden = false; O.st.x = O.R.S[spot][0]; O.st.y = O.R.S[spot][1]; O.st.pose = pose || "idle"; draw(); if (spot === "hatch") O.hatch.classList.add("on"); else O.hatch.classList.remove("on"); return true; };
   API.afterFight = function () { if (!O.stage) return; if (!O.st.hidden) enqueue("back", home); };
   /* idle life: small fidgets by mood; pacing in a panic */
   setInterval(function () {
-    if (!API.active() || O.busy || O.q.length || document.hidden || rm() || O.frozen) return;
+    if (!API.active() || O.busy || O.q.length || document.hidden || rm() || O.frozen || O.fightOn) return;
     var desk = document.querySelector(".desk"); if (!desk || desk.closest(".screen[hidden]")) return;
     var idle = Date.now() - O.lastAct;
     if (O.mood === "panic") { if (idle > 2500) enqueue("pace", async function () { await go(Math.random() < 0.5 ? "p1" : "p2", true); hold("panic"); say(Math.random() < 0.3 ? pick(SAY.panic) : "", 1100); await wait(1200); }); return; }
@@ -16049,6 +16462,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     });
     $("bunker-card").addEventListener("click", function (e) {
       tick();
+      if (document.body.classList.contains("in-fight") || doorOpen()) { flash("Finish the fight first."); return; }
       var rm = e.target && e.target.closest ? e.target.closest("[data-room]") : null;
       openBunker(rm ? rm.getAttribute("data-room") : null);
     });
@@ -16751,8 +17165,60 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   var RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
   function doorEl() { return $("door"); }
   function doorOpen() { var d = doorEl(); return !!(d && d.classList.contains("on")); }
-  function showDoor(html, mode) { var d = doorEl(); d.hidden = false; d.className = "door-screen on " + (mode || ""); d.innerHTML = html; }
-  function hideDoor() { var d = doorEl(); if (!d) return; d.className = "door-screen"; d.hidden = true; d.innerHTML = ""; }
+  /* The door element now hosts two in-run layers, never a separate screen:
+     df-mode = the fight bay, laid over the board / office area of the live desk (the header, side rail and dossier stay put);
+     rw-mode = the Discover veil, a dim + blur over the whole run screen with three floating choices. */
+  function showDoor(html, mode) {
+    var d = doorEl(); d.hidden = false;
+    var fb = mode === "df-mode", keep = d.classList.contains("lifting") && !fb ? " lifting" : "";
+    d.className = "door-screen on " + (mode || "") + (fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" : "") + keep;
+    d.setAttribute("aria-label", fb ? "Fight" : mode === "rw-mode" ? "Pick a reward" : "At the door");
+    d.setAttribute("aria-modal", fb ? "false" : "true");
+    d.innerHTML = html;
+    document.body.classList.toggle("in-fight", fb);
+    if (fb) placeBay();
+  }
+  function hideDoor() {
+    var d = doorEl(); if (!d) return;
+    var wasFight = d.classList.contains("fb-mode");
+    d.className = "door-screen"; d.hidden = true; d.innerHTML = ""; d.removeAttribute("style");
+    document.body.classList.remove("in-fight");
+    if (wasFight && LD.O4 && LD.O4.exitFight) LD.O4.exitFight();
+  }
+  /* The bay covers what the board, dash and End Quarter hold on the desk: below the header, left of the side rail, right of a
+     side-by-side dossier (desktop). Measured from the live desk so every layout gets it right. */
+  function placeBay() {
+    var d = doorEl(); if (!d || !d.classList.contains("fb-mode")) return;
+    var desk = document.querySelector("#screen-desk .desk"), vw = window.innerWidth, vh = window.innerHeight;
+    var head = desk && desk.querySelector(".desk-head"), rail = desk && desk.querySelector(".side-rail"), dos = desk && desk.querySelector(".dossier"), board = desk && desk.querySelector(".board");
+    var g = vw >= 700 ? 10 : 8, t = g, l = g, r = vw - g, b = vh - g;
+    if (head) { var hb = head.getBoundingClientRect(); t = Math.max(t, hb.bottom + g); l = Math.max(g, hb.left); }
+    if (rail) { var rb = rail.getBoundingClientRect(); if (rb.width && rb.left > vw / 2) r = Math.min(r, rb.left - (vw >= 700 ? 10 : 6)); }
+    if (dos) { var db = dos.getBoundingClientRect(), bb = board ? board.getBoundingClientRect() : null; if (db.width && db.height > 120 && bb && db.right <= bb.left + 4) l = Math.max(l, db.right + g); }
+    d.style.setProperty("--fb-l", Math.round(l) + "px"); d.style.setProperty("--fb-t", Math.round(t) + "px");
+    d.style.setProperty("--fb-w", Math.max(200, Math.round(r - l)) + "px"); d.style.setProperty("--fb-h", Math.max(300, Math.round(b - t)) + "px");
+  }
+  window.addEventListener("resize", function () { placeBay(); setTimeout(placeBubble, 60); });
+  /* the speech bubble hangs over the speaker's head, tail down at them; with no headroom it sits beside the head */
+  function placeBubble() {
+    var b = $("sc-bubble"), o = $("sc-opp"), st = document.querySelector("#door .fb-stage");
+    if (!b || !o || !st) return;
+    var sr = st.getBoundingClientRect(), r = o.getBoundingClientRect(); if (!r.width || !sr.width) return;
+    var img = o.querySelector('img.p-' + (o.getAttribute("data-pose") || "idle")) || o.querySelector("img");
+    var bw = b.offsetWidth, bh = b.offsetHeight, hx = r.left + r.width * 0.5 - sr.left, hy = r.top - sr.top + r.height * 0.03;
+    var top = hy - bh - 14, side = top < 4;
+    b.classList.toggle("side", side);
+    if (!side) { var left = Math.max(6, Math.min(sr.width - bw - 6, hx - bw * 0.3)); b.style.left = left.toFixed(0) + "px"; b.style.top = top.toFixed(0) + "px"; b.style.setProperty("--tail", Math.max(12, Math.min(bw - 26, hx - left - 8)).toFixed(0) + "px"); }
+    else { var lx = Math.min(sr.width - bw - 6, hx + r.width * 0.22); b.style.left = Math.max(6, lx).toFixed(0) + "px"; b.style.top = Math.max(6, hy + r.height * 0.02).toFixed(0) + "px"; b.style.setProperty("--tailY", "18px"); }
+    void img;
+  }
+  /* visitor fights: hand the bay's room slot to office.js (the live office, its executive and the visitor in it) */
+  function adoptScene(settle) {
+    var slot = document.querySelector("#door .fb-room .o4-slot");
+    if (!slot || !LD.O4 || !LD.O4.adopt) return false;
+    var foe = $("sc-opp"), you = $("sc-you");
+    return LD.O4.adopt(slot, state, { foe: foe, you: you, full: !!(foe && foe.classList.contains("full")), settle: !!settle });
+  }
   function dfLog(t) {
     var root = document.querySelector(".door-in");
     if (root && root.classList.contains("is-done")) return;
@@ -16834,9 +17300,10 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     var opp = $("sc-opp"), you = $("sc-you"), root = document.querySelector(".door-in"), fx = scLayer();
     var hitPose = dS > 0 ? "hit" : dB > 0 ? "block" : null;
     var react = function () {
-      if (hitPose === "hit") { scPose("hit", 440, "shake"); scBurst("−" + dS, "pow", opp); }
+      if (hitPose === "hit") { scPose("hit", 440, "shake"); scBurst("−" + dS + " Scrutiny!", "pow", opp); }
       else if (hitPose === "block") { scPose("block", 440, "brace"); scBurst("Block +" + dB, "shield", you || opp); }
     };
+    if (LD.O4 && LD.O4.fightPose) LD.O4.fightPose(hitPose === "block" ? "watch" : "snap", 650);
     if (you) { you.classList.remove("flick"); void you.offsetWidth; you.classList.add("flick"); }
     if (reduced() || !rect || !cardHtml || !opp || !root || !fx) { react(); return; }
     var b = { left: 0, top: 0 }, tr = (hitPose === "block" && you ? you : opp).getBoundingClientRect();
@@ -16858,6 +17325,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   function scAttackAnim(n) {
     var you = $("sc-you");
     scPose("attack", 460, "lunge");
+    if (LD.O4 && LD.O4.fightPose) setTimeout(function () { LD.O4.fightPose(n ? "panic" : "nervous", 800); }, reduced() ? 0 : 200);
     setTimeout(function () {
       if (you) { you.classList.remove("recoil"); void you.offsetWidth; if (n) you.classList.add("recoil"); }
       scBurst(n ? "Hit " + n : "Blocked!", n ? "ouch" : "shield", you || "#sc-opp");
@@ -16876,11 +17344,29 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     if (!want || reduced() || screen !== "desk") { if (want) FI.key = LD.fightIntroKey(state); openFight(); return; }
     try {
       FI.on = true;
-      playOfficeEntrance(function () { FI.on = false; FI.key = LD.fightIntroKey(state); openFight(); });
+      var go = function () { FI.on = false; FI.key = LD.fightIntroKey(state); DF.settle = true; openFight(); };
+      if (LD.O4 && LD.O4.adopt && LD.O4_ATLAS) bayEntrance(go); else playOfficeEntrance(go);
     } catch (e) {
       if (window.console) console.error(e);
       FI.on = false; openFight();
     }
+  }
+  /* In-scene arrival: the bay opens on your own office (the room zooms up from the desk panel), you walk to the door,
+     and the visitor steps in, or you walk out and the bay cuts to their room. Tap skips. */
+  function bayEntrance(done) {
+    var E = LD.officeEntrance ? LD.officeEntrance(state) : null;
+    if (!E || screen !== "desk") { done(false); return; }
+    var from = document.querySelector(".desk .office .of-room"), fr = from ? from.getBoundingClientRect() : null;
+    if (!DF.start) DF.start = state;
+    showDoor(LD.renderFight(state, { entering: true }), "df-mode");
+    if (!adoptScene(false)) { done(false); return; }
+    var bay = doorEl(), room = document.querySelector("#door .fb-room");
+    if (fr && fr.width && bay.animate) {
+      var br = bay.getBoundingClientRect();
+      try { bay.animate([{ clipPath: "inset(" + Math.max(0, fr.top - br.top) + "px " + Math.max(0, br.right - fr.right) + "px " + Math.max(0, br.bottom - fr.bottom) + "px " + Math.max(0, fr.left - br.left) + "px round 14px)", opacity: 0.6 },
+        { clipPath: "inset(0px 0px 0px 0px round 14px)", opacity: 1 }], { duration: 380, easing: "cubic-bezier(.3,.7,.2,1)" }); } catch (e) {}
+    }
+    setTimeout(function () { o4Entrance(room, E, function () { done(true); }); }, reduced() ? 0 : 380);
   }
   /* Hub office strip: the actual opponent walks in through the strip door to your desk, or you leave by the back
      door and a car / plane pulls away in the window. ~2 s, tap anywhere to skip; then straight into the fight. */
@@ -16977,6 +17463,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     hideOverlay();
     if (!DF.start) DF.start = state;
     DF.busy = false; DF.arm = 0; DF.say = null; DF.cbHide = false; DF.cap = null; DF.reacted = {};
+    DF.deal = true;
     paintFight(null, true);
     SFX.play("knock", Math.max(1, LD.doorLevel(state)));
     if (!state.fy.fight.done) setTimeout(function () { if (doorOpen() && PN.mode !== "tour") pennyTip("fight"); }, 700);
@@ -16985,6 +17472,10 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
     showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap }), "df-mode");
     var root = doorEl();
+    adoptScene(DF.settle); DF.settle = false; placeBubble();
+    /* deal the hand out of the pile (fight start and each new round) */
+    if (DF.deal && !reduced()) { var hand = root.querySelector(".df-hand"); if (hand) hand.classList.add("dealing"); }
+    DF.deal = false;
     var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"), stg = cb && cb.parentNode; if (stg) stg.removeChild(cb);
       /* the familiar-face card held the stage; now show the opener caption it was covering */
       var fg1 = state.fy && state.fy.fight, op = fg1 && !fg1.played && !$("sc-cap") && !$("sc-why") && LD.fightOpener ? LD.fightOpener(state, fg1) : "";
@@ -17041,7 +17532,7 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     DF.busy = true; DF.cbHide = true;
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
     var bub = $("sc-bubble"), I0 = res.intent && LD.INTENTS[res.intent.k];
-    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); }
+    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); placeBubble(); }
     DF.say = null; DF.cap = null;
     var cp = $("sc-cap"); if (cp && cp.parentNode) cp.parentNode.removeChild(cp);
     scAttackAnim(res.hit && res.hit.n);
@@ -17049,13 +17540,14 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     setTimeout(function () {
       DF.busy = false;
       state = res.state; persistRun();
+      DF.deal = !!(state.fy.fight && !state.fy.fight.done);
       paintFight();
       dfLog(res.hit.text + (res.hit.riders.length ? " " + res.hit.riders.join(" ") : ""));
       var d = [];
       if (state.cash !== prev.cash) d.push((state.cash > prev.cash ? "+$" : "−$") + Math.abs(state.cash - prev.cash) + "M");
       if (state.unrest !== prev.unrest) d.push("Unrest " + signed(state.unrest - prev.unrest));
       if (state.collapse !== prev.collapse) d.push("Collapse " + signed(state.collapse - prev.collapse));
-      d.forEach(function (t, i) { dfFloat(t, "bad", state.fy.fight.done ? ".df-result" : ".df-meters", i * 160); });
+      d.forEach(function (t, i) { dfFloat(t, "bad", ".df-meters", i * 160); });
       if (!d.length && !res.hit.n) dfFloat("Blocked!", "good big", ".df-stage");
       if (res.rumour) dfFloat("The rumour lands: Scrutiny −" + res.rumour, "good big", ".df-scrut", 300);
       if (state.fy.fight.done) fightOver();
@@ -17080,13 +17572,19 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   function fightOver() {
     var d = state.fy.fight && state.fy.fight.done; if (!d) return;
     SFX.play(d.win ? "win" : d.settled ? "coin" : "bad");
+    /* the hand and the discard go back onto the pile */
+    var pl = $("df-deck"); if (pl) { pl.classList.remove("landed"); void pl.offsetWidth; pl.classList.add("landed"); }
     pennyEmit("fight-done");
   }
   function closeFight() {
     var res = LD.fightClose(state);
     if (!res.ok) { flash(res.error); return; }
     state = res.state; persistRun();
-    if (state.fy.reward) openReward();
+    if (state.fy.reward) {
+      /* the bay folds away and the reward is picked over the live run screen (no reward room) */
+      var from = DF.start; hideDoor(); renderDesk(from); DF.start = state;
+      openReward();
+    }
     else finishDoor();
     pennyEmit("reward-open");
   }
@@ -17115,25 +17613,55 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
     RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
     return res;
   }
+  /* Discover pick: the chosen card flies to the deck pile, an asset to its frame on the office wall, an item to the
+     briefcase. When it was the last pick the veil lifts while it flies. */
+  var rwBusy = false; /* a pick is flying or the veil is lifting: further taps on the old choices are ignored */
+  function rwFly(src, target, done) {
+    rwBusy = true;
+    var tgt = typeof target === "string" ? document.querySelector(target) : target, last = !state.fy.reward, d = doorEl();
+    if (last && d) d.classList.add("lifting");
+    if (!src || !tgt || reduced()) { done(); return; }
+    var a = src.getBoundingClientRect(), b = tgt.getBoundingClientRect();
+    if (!a.width || !b.width) { done(); return; }
+    var c = src.cloneNode(true); c.removeAttribute("id"); c.classList.remove("sel"); c.classList.add("disc-fly");
+    c.style.left = a.left + "px"; c.style.top = a.top + "px"; c.style.width = a.width + "px"; c.style.height = a.height + "px";
+    document.body.appendChild(c);
+    src.style.visibility = "hidden";
+    if (d) d.classList.add("picking");
+    var sc = Math.max(0.12, Math.min(b.width / a.width, b.height / a.height));
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      c.classList.add("go");
+      c.style.transform = "translate(" + (b.left + b.width / 2 - a.left - a.width / 2).toFixed(1) + "px," + (b.top + b.height / 2 - a.top - a.height / 2).toFixed(1) + "px) scale(" + sc.toFixed(3) + ") rotate(-6deg)";
+    }); });
+    setTimeout(function () {
+      if (c.parentNode) c.parentNode.removeChild(c); if (d) d.classList.remove("picking");
+      done();
+      var land = typeof target === "string" ? document.querySelector(target) : null;
+      if (land) { land.classList.remove("landed"); void land.offsetWidth; land.classList.add("landed"); }
+    }, 620);
+  }
+  function wallSlot() { return document.querySelector(".desk .office .of-wallart i.empty") || document.querySelector(".desk .office .of-wallart") || "#btn-portfolio"; }
   function paintReward() {
+    rwBusy = false;
     if (!state.fy.reward) { pennyEmit("reward-done"); finishDoor(); return; }
     showDoor(LD.renderReward(state, RW), "rw-mode");
     var root = doorEl();
-    function on(id, fn) { var n = $(id); if (n) n.addEventListener("click", function () { tick(); fn(); }); }
-    function each(sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.addEventListener("click", function () { tick(); fn(n); }); }); }
-    on("rw-keep", function () { var r = rwAct({ kind: "item", keep: true }, function () { RW.replaceItem = true; paintReward(); }); if (r) { SFX.play("item"); codexMark([r.item.id], true); paintReward(); } });
+    function on(id, fn) { var n = $(id); if (n) n.addEventListener("click", function () { if (rwBusy) return; tick(); fn(); }); }
+    function each(sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.addEventListener("click", function () { if (rwBusy) return; tick(); fn(n); }); }); }
+    on("rw-keep", function () { var src = root.querySelector(".rw-item"); var r = rwAct({ kind: "item", keep: true }, function () { RW.replaceItem = true; paintReward(); }); if (r) { SFX.play("item"); codexMark([r.item.id], true); rwFly(src, "#btn-portfolio", paintReward); } });
     on("rw-sell", function () { if (rwAct({ kind: "item", keep: false })) { SFX.play("coin"); paintReward(); } });
     each("[data-isell]", function (n) { var r = rwAct({ kind: "item", keep: true, replace: n.getAttribute("data-isell") }); if (r) { SFX.play("item"); paintReward(); } });
     each("[data-asset]", function (n) {
       var id = n.getAttribute("data-asset");
       if (LD.fySlotsUsed(state) >= state.fy.cap) { RW.replaceFor = id; paintReward(); return; }
-      var r = rwAct({ kind: "asset", id: id }); if (r) { SFX.play("rare"); codexMark([id], true); paintReward(); }
+      var slot = wallSlot();
+      var r = rwAct({ kind: "asset", id: id }); if (r) { SFX.play("rare"); codexMark([id], true); rwFly(n, slot, paintReward); }
     });
     each("[data-areplace]", function (n) { var id = RW.replaceFor; var r = rwAct({ kind: "asset", id: id, replace: n.getAttribute("data-areplace") }); if (r) { codexMark([id], true); SFX.play("rare"); paintReward(); } });
     on("rw-apass", function () { if (rwAct({ kind: "assetPass" })) paintReward(); });
     each("[data-card]", function (n) { RW.sel = n.getAttribute("data-card"); paintReward(); var t = $("rw-take"); if (t) try { t.focus({ preventScroll: true }); } catch (x) {} });
-    on("rw-take", function () { if (!RW.sel) return; var r = rwAct({ kind: "card", id: RW.sel }); if (r) { SFX.play("item"); paintReward(); } });
-    on("rw-skip", function () { if (rwAct({ kind: "skip" })) { SFX.play("coin"); paintReward(); } });
+    on("rw-take", function () { if (!RW.sel) return; var src = root.querySelector('[data-card="' + RW.sel + '"]'); var r = rwAct({ kind: "card", id: RW.sel }); if (r) { SFX.play("item"); rwFly(src, "#run-deck", paintReward); } });
+    on("rw-skip", function () { if (rwAct({ kind: "skip" })) { rwBusy = true; SFX.play("coin"); if (!state.fy.reward) doorEl().classList.add("lifting"); setTimeout(paintReward, reduced() ? 0 : 260); } });
     on("rw-shred", function () { RW.shredding = true; paintReward(); });
     on("rw-upg", function () { RW.upgrading = true; paintReward(); });
     on("rw-reroll", function () { if (rwAct({ kind: "reroll" })) paintReward(); });
@@ -17282,9 +17810,10 @@ body.era-1 .sr-phone.ringing, body.era-2 .sr-phone.ringing { background: linear-
   }
   function bindFyDesk() {
     var pf = $("btn-portfolio");
-    if (pf) pf.addEventListener("click", function (e) { e.stopPropagation(); tick(); openPortfolio(false); });
+    if (pf) pf.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (doorOpen()) return; openPortfolio(false); });
     var bd = $("btn-deck"); if (bd) bd.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); });
-    var ph = $("btn-phone"); if (ph) ph.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (state.fy.memo) openMemo(); else railTip(ph, "No calls right now. When it rings, the call waits here."); });
+    var rdk = $("run-deck"); if (rdk) rdk.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); });
+    var ph = $("btn-phone"); if (ph) ph.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (doorOpen()) return; if (state.fy.memo) openMemo(); else railTip(ph, "No calls right now. When it rings, the call waits here."); });
     var room = document.querySelector(".desk .office .of-room");
     if (room) { room.setAttribute("role", "button"); room.setAttribute("tabindex", "0"); room.setAttribute("aria-label", "Your office: tap to read the room");
       room.addEventListener("click", function (e) { e.stopPropagation(); tick(); openOfficeExplain(); });

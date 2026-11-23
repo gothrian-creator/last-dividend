@@ -918,6 +918,7 @@
     });
     $("bunker-card").addEventListener("click", function (e) {
       tick();
+      if (document.body.classList.contains("in-fight") || doorOpen()) { flash("Finish the fight first."); return; }
       var rm = e.target && e.target.closest ? e.target.closest("[data-room]") : null;
       openBunker(rm ? rm.getAttribute("data-room") : null);
     });
@@ -1620,8 +1621,60 @@
   var RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
   function doorEl() { return $("door"); }
   function doorOpen() { var d = doorEl(); return !!(d && d.classList.contains("on")); }
-  function showDoor(html, mode) { var d = doorEl(); d.hidden = false; d.className = "door-screen on " + (mode || ""); d.innerHTML = html; }
-  function hideDoor() { var d = doorEl(); if (!d) return; d.className = "door-screen"; d.hidden = true; d.innerHTML = ""; }
+  /* The door element now hosts two in-run layers, never a separate screen:
+     df-mode = the fight bay, laid over the board / office area of the live desk (the header, side rail and dossier stay put);
+     rw-mode = the Discover veil, a dim + blur over the whole run screen with three floating choices. */
+  function showDoor(html, mode) {
+    var d = doorEl(); d.hidden = false;
+    var fb = mode === "df-mode", keep = d.classList.contains("lifting") && !fb ? " lifting" : "";
+    d.className = "door-screen on " + (mode || "") + (fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" : "") + keep;
+    d.setAttribute("aria-label", fb ? "Fight" : mode === "rw-mode" ? "Pick a reward" : "At the door");
+    d.setAttribute("aria-modal", fb ? "false" : "true");
+    d.innerHTML = html;
+    document.body.classList.toggle("in-fight", fb);
+    if (fb) placeBay();
+  }
+  function hideDoor() {
+    var d = doorEl(); if (!d) return;
+    var wasFight = d.classList.contains("fb-mode");
+    d.className = "door-screen"; d.hidden = true; d.innerHTML = ""; d.removeAttribute("style");
+    document.body.classList.remove("in-fight");
+    if (wasFight && LD.O4 && LD.O4.exitFight) LD.O4.exitFight();
+  }
+  /* The bay covers what the board, dash and End Quarter hold on the desk: below the header, left of the side rail, right of a
+     side-by-side dossier (desktop). Measured from the live desk so every layout gets it right. */
+  function placeBay() {
+    var d = doorEl(); if (!d || !d.classList.contains("fb-mode")) return;
+    var desk = document.querySelector("#screen-desk .desk"), vw = window.innerWidth, vh = window.innerHeight;
+    var head = desk && desk.querySelector(".desk-head"), rail = desk && desk.querySelector(".side-rail"), dos = desk && desk.querySelector(".dossier"), board = desk && desk.querySelector(".board");
+    var g = vw >= 700 ? 10 : 8, t = g, l = g, r = vw - g, b = vh - g;
+    if (head) { var hb = head.getBoundingClientRect(); t = Math.max(t, hb.bottom + g); l = Math.max(g, hb.left); }
+    if (rail) { var rb = rail.getBoundingClientRect(); if (rb.width && rb.left > vw / 2) r = Math.min(r, rb.left - (vw >= 700 ? 10 : 6)); }
+    if (dos) { var db = dos.getBoundingClientRect(), bb = board ? board.getBoundingClientRect() : null; if (db.width && db.height > 120 && bb && db.right <= bb.left + 4) l = Math.max(l, db.right + g); }
+    d.style.setProperty("--fb-l", Math.round(l) + "px"); d.style.setProperty("--fb-t", Math.round(t) + "px");
+    d.style.setProperty("--fb-w", Math.max(200, Math.round(r - l)) + "px"); d.style.setProperty("--fb-h", Math.max(300, Math.round(b - t)) + "px");
+  }
+  window.addEventListener("resize", function () { placeBay(); setTimeout(placeBubble, 60); });
+  /* the speech bubble hangs over the speaker's head, tail down at them; with no headroom it sits beside the head */
+  function placeBubble() {
+    var b = $("sc-bubble"), o = $("sc-opp"), st = document.querySelector("#door .fb-stage");
+    if (!b || !o || !st) return;
+    var sr = st.getBoundingClientRect(), r = o.getBoundingClientRect(); if (!r.width || !sr.width) return;
+    var img = o.querySelector('img.p-' + (o.getAttribute("data-pose") || "idle")) || o.querySelector("img");
+    var bw = b.offsetWidth, bh = b.offsetHeight, hx = r.left + r.width * 0.5 - sr.left, hy = r.top - sr.top + r.height * 0.03;
+    var top = hy - bh - 14, side = top < 4;
+    b.classList.toggle("side", side);
+    if (!side) { var left = Math.max(6, Math.min(sr.width - bw - 6, hx - bw * 0.3)); b.style.left = left.toFixed(0) + "px"; b.style.top = top.toFixed(0) + "px"; b.style.setProperty("--tail", Math.max(12, Math.min(bw - 26, hx - left - 8)).toFixed(0) + "px"); }
+    else { var lx = Math.min(sr.width - bw - 6, hx + r.width * 0.22); b.style.left = Math.max(6, lx).toFixed(0) + "px"; b.style.top = Math.max(6, hy + r.height * 0.02).toFixed(0) + "px"; b.style.setProperty("--tailY", "18px"); }
+    void img;
+  }
+  /* visitor fights: hand the bay's room slot to office.js (the live office, its executive and the visitor in it) */
+  function adoptScene(settle) {
+    var slot = document.querySelector("#door .fb-room .o4-slot");
+    if (!slot || !LD.O4 || !LD.O4.adopt) return false;
+    var foe = $("sc-opp"), you = $("sc-you");
+    return LD.O4.adopt(slot, state, { foe: foe, you: you, full: !!(foe && foe.classList.contains("full")), settle: !!settle });
+  }
   function dfLog(t) {
     var root = document.querySelector(".door-in");
     if (root && root.classList.contains("is-done")) return;
@@ -1703,9 +1756,10 @@
     var opp = $("sc-opp"), you = $("sc-you"), root = document.querySelector(".door-in"), fx = scLayer();
     var hitPose = dS > 0 ? "hit" : dB > 0 ? "block" : null;
     var react = function () {
-      if (hitPose === "hit") { scPose("hit", 440, "shake"); scBurst("−" + dS, "pow", opp); }
+      if (hitPose === "hit") { scPose("hit", 440, "shake"); scBurst("−" + dS + " Scrutiny!", "pow", opp); }
       else if (hitPose === "block") { scPose("block", 440, "brace"); scBurst("Block +" + dB, "shield", you || opp); }
     };
+    if (LD.O4 && LD.O4.fightPose) LD.O4.fightPose(hitPose === "block" ? "watch" : "snap", 650);
     if (you) { you.classList.remove("flick"); void you.offsetWidth; you.classList.add("flick"); }
     if (reduced() || !rect || !cardHtml || !opp || !root || !fx) { react(); return; }
     var b = { left: 0, top: 0 }, tr = (hitPose === "block" && you ? you : opp).getBoundingClientRect();
@@ -1727,6 +1781,7 @@
   function scAttackAnim(n) {
     var you = $("sc-you");
     scPose("attack", 460, "lunge");
+    if (LD.O4 && LD.O4.fightPose) setTimeout(function () { LD.O4.fightPose(n ? "panic" : "nervous", 800); }, reduced() ? 0 : 200);
     setTimeout(function () {
       if (you) { you.classList.remove("recoil"); void you.offsetWidth; if (n) you.classList.add("recoil"); }
       scBurst(n ? "Hit " + n : "Blocked!", n ? "ouch" : "shield", you || "#sc-opp");
@@ -1745,11 +1800,29 @@
     if (!want || reduced() || screen !== "desk") { if (want) FI.key = LD.fightIntroKey(state); openFight(); return; }
     try {
       FI.on = true;
-      playOfficeEntrance(function () { FI.on = false; FI.key = LD.fightIntroKey(state); openFight(); });
+      var go = function () { FI.on = false; FI.key = LD.fightIntroKey(state); DF.settle = true; openFight(); };
+      if (LD.O4 && LD.O4.adopt && LD.O4_ATLAS) bayEntrance(go); else playOfficeEntrance(go);
     } catch (e) {
       if (window.console) console.error(e);
       FI.on = false; openFight();
     }
+  }
+  /* In-scene arrival: the bay opens on your own office (the room zooms up from the desk panel), you walk to the door,
+     and the visitor steps in, or you walk out and the bay cuts to their room. Tap skips. */
+  function bayEntrance(done) {
+    var E = LD.officeEntrance ? LD.officeEntrance(state) : null;
+    if (!E || screen !== "desk") { done(false); return; }
+    var from = document.querySelector(".desk .office .of-room"), fr = from ? from.getBoundingClientRect() : null;
+    if (!DF.start) DF.start = state;
+    showDoor(LD.renderFight(state, { entering: true }), "df-mode");
+    if (!adoptScene(false)) { done(false); return; }
+    var bay = doorEl(), room = document.querySelector("#door .fb-room");
+    if (fr && fr.width && bay.animate) {
+      var br = bay.getBoundingClientRect();
+      try { bay.animate([{ clipPath: "inset(" + Math.max(0, fr.top - br.top) + "px " + Math.max(0, br.right - fr.right) + "px " + Math.max(0, br.bottom - fr.bottom) + "px " + Math.max(0, fr.left - br.left) + "px round 14px)", opacity: 0.6 },
+        { clipPath: "inset(0px 0px 0px 0px round 14px)", opacity: 1 }], { duration: 380, easing: "cubic-bezier(.3,.7,.2,1)" }); } catch (e) {}
+    }
+    setTimeout(function () { o4Entrance(room, E, function () { done(true); }); }, reduced() ? 0 : 380);
   }
   /* Hub office strip: the actual opponent walks in through the strip door to your desk, or you leave by the back
      door and a car / plane pulls away in the window. ~2 s, tap anywhere to skip; then straight into the fight. */
@@ -1846,6 +1919,7 @@
     hideOverlay();
     if (!DF.start) DF.start = state;
     DF.busy = false; DF.arm = 0; DF.say = null; DF.cbHide = false; DF.cap = null; DF.reacted = {};
+    DF.deal = true;
     paintFight(null, true);
     SFX.play("knock", Math.max(1, LD.doorLevel(state)));
     if (!state.fy.fight.done) setTimeout(function () { if (doorOpen() && PN.mode !== "tour") pennyTip("fight"); }, 700);
@@ -1854,6 +1928,10 @@
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
     showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap }), "df-mode");
     var root = doorEl();
+    adoptScene(DF.settle); DF.settle = false; placeBubble();
+    /* deal the hand out of the pile (fight start and each new round) */
+    if (DF.deal && !reduced()) { var hand = root.querySelector(".df-hand"); if (hand) hand.classList.add("dealing"); }
+    DF.deal = false;
     var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"), stg = cb && cb.parentNode; if (stg) stg.removeChild(cb);
       /* the familiar-face card held the stage; now show the opener caption it was covering */
       var fg1 = state.fy && state.fy.fight, op = fg1 && !fg1.played && !$("sc-cap") && !$("sc-why") && LD.fightOpener ? LD.fightOpener(state, fg1) : "";
@@ -1910,7 +1988,7 @@
     DF.busy = true; DF.cbHide = true;
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
     var bub = $("sc-bubble"), I0 = res.intent && LD.INTENTS[res.intent.k];
-    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); }
+    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); placeBubble(); }
     DF.say = null; DF.cap = null;
     var cp = $("sc-cap"); if (cp && cp.parentNode) cp.parentNode.removeChild(cp);
     scAttackAnim(res.hit && res.hit.n);
@@ -1918,13 +1996,14 @@
     setTimeout(function () {
       DF.busy = false;
       state = res.state; persistRun();
+      DF.deal = !!(state.fy.fight && !state.fy.fight.done);
       paintFight();
       dfLog(res.hit.text + (res.hit.riders.length ? " " + res.hit.riders.join(" ") : ""));
       var d = [];
       if (state.cash !== prev.cash) d.push((state.cash > prev.cash ? "+$" : "−$") + Math.abs(state.cash - prev.cash) + "M");
       if (state.unrest !== prev.unrest) d.push("Unrest " + signed(state.unrest - prev.unrest));
       if (state.collapse !== prev.collapse) d.push("Collapse " + signed(state.collapse - prev.collapse));
-      d.forEach(function (t, i) { dfFloat(t, "bad", state.fy.fight.done ? ".df-result" : ".df-meters", i * 160); });
+      d.forEach(function (t, i) { dfFloat(t, "bad", ".df-meters", i * 160); });
       if (!d.length && !res.hit.n) dfFloat("Blocked!", "good big", ".df-stage");
       if (res.rumour) dfFloat("The rumour lands: Scrutiny −" + res.rumour, "good big", ".df-scrut", 300);
       if (state.fy.fight.done) fightOver();
@@ -1949,13 +2028,19 @@
   function fightOver() {
     var d = state.fy.fight && state.fy.fight.done; if (!d) return;
     SFX.play(d.win ? "win" : d.settled ? "coin" : "bad");
+    /* the hand and the discard go back onto the pile */
+    var pl = $("df-deck"); if (pl) { pl.classList.remove("landed"); void pl.offsetWidth; pl.classList.add("landed"); }
     pennyEmit("fight-done");
   }
   function closeFight() {
     var res = LD.fightClose(state);
     if (!res.ok) { flash(res.error); return; }
     state = res.state; persistRun();
-    if (state.fy.reward) openReward();
+    if (state.fy.reward) {
+      /* the bay folds away and the reward is picked over the live run screen (no reward room) */
+      var from = DF.start; hideDoor(); renderDesk(from); DF.start = state;
+      openReward();
+    }
     else finishDoor();
     pennyEmit("reward-open");
   }
@@ -1984,25 +2069,55 @@
     RW = { sel: null, shredding: false, upgrading: false, replaceItem: false, replaceFor: null };
     return res;
   }
+  /* Discover pick: the chosen card flies to the deck pile, an asset to its frame on the office wall, an item to the
+     briefcase. When it was the last pick the veil lifts while it flies. */
+  var rwBusy = false; /* a pick is flying or the veil is lifting: further taps on the old choices are ignored */
+  function rwFly(src, target, done) {
+    rwBusy = true;
+    var tgt = typeof target === "string" ? document.querySelector(target) : target, last = !state.fy.reward, d = doorEl();
+    if (last && d) d.classList.add("lifting");
+    if (!src || !tgt || reduced()) { done(); return; }
+    var a = src.getBoundingClientRect(), b = tgt.getBoundingClientRect();
+    if (!a.width || !b.width) { done(); return; }
+    var c = src.cloneNode(true); c.removeAttribute("id"); c.classList.remove("sel"); c.classList.add("disc-fly");
+    c.style.left = a.left + "px"; c.style.top = a.top + "px"; c.style.width = a.width + "px"; c.style.height = a.height + "px";
+    document.body.appendChild(c);
+    src.style.visibility = "hidden";
+    if (d) d.classList.add("picking");
+    var sc = Math.max(0.12, Math.min(b.width / a.width, b.height / a.height));
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      c.classList.add("go");
+      c.style.transform = "translate(" + (b.left + b.width / 2 - a.left - a.width / 2).toFixed(1) + "px," + (b.top + b.height / 2 - a.top - a.height / 2).toFixed(1) + "px) scale(" + sc.toFixed(3) + ") rotate(-6deg)";
+    }); });
+    setTimeout(function () {
+      if (c.parentNode) c.parentNode.removeChild(c); if (d) d.classList.remove("picking");
+      done();
+      var land = typeof target === "string" ? document.querySelector(target) : null;
+      if (land) { land.classList.remove("landed"); void land.offsetWidth; land.classList.add("landed"); }
+    }, 620);
+  }
+  function wallSlot() { return document.querySelector(".desk .office .of-wallart i.empty") || document.querySelector(".desk .office .of-wallart") || "#btn-portfolio"; }
   function paintReward() {
+    rwBusy = false;
     if (!state.fy.reward) { pennyEmit("reward-done"); finishDoor(); return; }
     showDoor(LD.renderReward(state, RW), "rw-mode");
     var root = doorEl();
-    function on(id, fn) { var n = $(id); if (n) n.addEventListener("click", function () { tick(); fn(); }); }
-    function each(sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.addEventListener("click", function () { tick(); fn(n); }); }); }
-    on("rw-keep", function () { var r = rwAct({ kind: "item", keep: true }, function () { RW.replaceItem = true; paintReward(); }); if (r) { SFX.play("item"); codexMark([r.item.id], true); paintReward(); } });
+    function on(id, fn) { var n = $(id); if (n) n.addEventListener("click", function () { if (rwBusy) return; tick(); fn(); }); }
+    function each(sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.addEventListener("click", function () { if (rwBusy) return; tick(); fn(n); }); }); }
+    on("rw-keep", function () { var src = root.querySelector(".rw-item"); var r = rwAct({ kind: "item", keep: true }, function () { RW.replaceItem = true; paintReward(); }); if (r) { SFX.play("item"); codexMark([r.item.id], true); rwFly(src, "#btn-portfolio", paintReward); } });
     on("rw-sell", function () { if (rwAct({ kind: "item", keep: false })) { SFX.play("coin"); paintReward(); } });
     each("[data-isell]", function (n) { var r = rwAct({ kind: "item", keep: true, replace: n.getAttribute("data-isell") }); if (r) { SFX.play("item"); paintReward(); } });
     each("[data-asset]", function (n) {
       var id = n.getAttribute("data-asset");
       if (LD.fySlotsUsed(state) >= state.fy.cap) { RW.replaceFor = id; paintReward(); return; }
-      var r = rwAct({ kind: "asset", id: id }); if (r) { SFX.play("rare"); codexMark([id], true); paintReward(); }
+      var slot = wallSlot();
+      var r = rwAct({ kind: "asset", id: id }); if (r) { SFX.play("rare"); codexMark([id], true); rwFly(n, slot, paintReward); }
     });
     each("[data-areplace]", function (n) { var id = RW.replaceFor; var r = rwAct({ kind: "asset", id: id, replace: n.getAttribute("data-areplace") }); if (r) { codexMark([id], true); SFX.play("rare"); paintReward(); } });
     on("rw-apass", function () { if (rwAct({ kind: "assetPass" })) paintReward(); });
     each("[data-card]", function (n) { RW.sel = n.getAttribute("data-card"); paintReward(); var t = $("rw-take"); if (t) try { t.focus({ preventScroll: true }); } catch (x) {} });
-    on("rw-take", function () { if (!RW.sel) return; var r = rwAct({ kind: "card", id: RW.sel }); if (r) { SFX.play("item"); paintReward(); } });
-    on("rw-skip", function () { if (rwAct({ kind: "skip" })) { SFX.play("coin"); paintReward(); } });
+    on("rw-take", function () { if (!RW.sel) return; var src = root.querySelector('[data-card="' + RW.sel + '"]'); var r = rwAct({ kind: "card", id: RW.sel }); if (r) { SFX.play("item"); rwFly(src, "#run-deck", paintReward); } });
+    on("rw-skip", function () { if (rwAct({ kind: "skip" })) { rwBusy = true; SFX.play("coin"); if (!state.fy.reward) doorEl().classList.add("lifting"); setTimeout(paintReward, reduced() ? 0 : 260); } });
     on("rw-shred", function () { RW.shredding = true; paintReward(); });
     on("rw-upg", function () { RW.upgrading = true; paintReward(); });
     on("rw-reroll", function () { if (rwAct({ kind: "reroll" })) paintReward(); });
@@ -2151,9 +2266,10 @@
   }
   function bindFyDesk() {
     var pf = $("btn-portfolio");
-    if (pf) pf.addEventListener("click", function (e) { e.stopPropagation(); tick(); openPortfolio(false); });
+    if (pf) pf.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (doorOpen()) return; openPortfolio(false); });
     var bd = $("btn-deck"); if (bd) bd.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); });
-    var ph = $("btn-phone"); if (ph) ph.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (state.fy.memo) openMemo(); else railTip(ph, "No calls right now. When it rings, the call waits here."); });
+    var rdk = $("run-deck"); if (rdk) rdk.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); });
+    var ph = $("btn-phone"); if (ph) ph.addEventListener("click", function (e) { e.stopPropagation(); tick(); if (doorOpen()) return; if (state.fy.memo) openMemo(); else railTip(ph, "No calls right now. When it rings, the call waits here."); });
     var room = document.querySelector(".desk .office .of-room");
     if (room) { room.setAttribute("role", "button"); room.setAttribute("tabindex", "0"); room.setAttribute("aria-label", "Your office: tap to read the room");
       room.addEventListener("click", function (e) { e.stopPropagation(); tick(); openOfficeExplain(); });

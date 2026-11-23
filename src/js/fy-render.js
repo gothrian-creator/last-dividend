@@ -318,6 +318,8 @@
       var dn4 = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
       h = h.replace('<div class="of-room ', '<div class="of-room o4 ');
       h += '<div class="o4-slot"></div>' + (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "");
+      /* framed assets on the wall: gilt frames, empty ones visible so a fresh pick has somewhere to land */
+      if (f.hand) { h += '<div class="of-wallart o4-wa" aria-hidden="true">'; for (var wj = 0; wj < (f.cap || 5); wj++) { var wb = f.hand[wj] && LD.assetById(f.hand[wj].id); h += wb ? '<i title="' + esc(wb.name) + '">' + IA(wb) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
       h += '<div class="of-window o4-w">' + ogauge("collapse", "☢", "Collapse", state.collapse, false,
         (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
         "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
@@ -531,6 +533,12 @@
     var I = fg.intent && LD.INTENTS[fg.intent.k];
     return { t: LD.moveSay ? LD.moveSay(fg, fg.intent.k) : I && I.say ? I.say : "", k: "move" };
   }
+  /* Opponent art drawn head to toe (the rest are framed to the old 3/4 crop and stand a little lower, fading at the knee). */
+  var FULL_BODY = { benny: 1, dana: 1, gil: 1, grace: 1, honoria: 1, pip: 1, pops: 1, theo: 1 };
+  LD.oppFullBody = function (art) { return !!FULL_BODY[art]; };
+  var VENUE_PILL = { home: "At your desk", lobby: "At the glass" };
+  /* The fight happens in the scene: a visitor stands in your own office (the live 40s room, borrowed by office.js),
+     or you have gone out to their room and stand there full-body. Cards fly into it; the hand stays docked below. */
   function sceneHtml(state, fg, ui) {
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
     var room = venue === "home" ? homeRoom(fg) : F.room;
@@ -538,24 +546,34 @@
     var how = fg.done ? fg.done.how || (fg.done.win ? "crushed" : fg.done.settled ? "paid" : "walked") : null;
     var out = fg.done ? fg.done.out : null;
     var base = !fg.done ? "idle" : out === "martyred" || how === "walked" ? "attack" : out === "bought" || out === "converted" || out === "deal" || how === "paid" ? (F.paid ? "paid" : "idle") : "defeated";
-    var ex = execArt(state.executiveId);
-    var h = '<div class="df-stage sc v-' + venue + " room-" + room + (ui.enter ? " enter" : "") + '" data-room="' + room + '" data-venue="' + venue + '" data-city="' + stage + '">';
-    h += '<div class="sc-room" aria-hidden="true" style="background-image:url(assets/fight/room-' + room + '.webp)"></div><div class="sc-haze" aria-hidden="true"></div>';
-    h += '<div class="sc-opp" id="sc-opp" data-base="' + base + '" data-pose="' + base + '" style="--ar:' + (F.ar || ART_AR[F.art] || 0.6) + '" aria-hidden="true">';
+    var ex = execArt(state.executiveId), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
+    var office = venue === "home" || ui.entering, o4 = !!(LD.O4 && LD.O4_ATLAS);
+    var h = '<div class="df-stage sc fb-stage v-' + venue + " room-" + room + (office && o4 ? " fb-office" : " fb-away") + (ui.entering ? " fb-entering" : "") + (ui.enter ? " enter" : "") + '" data-room="' + room + '" data-venue="' + venue + '" data-city="' + stage + '">';
+    if (office && o4) h += '<div class="fb-room of-room o4" aria-hidden="true"><div class="o4-slot"></div></div>';
+    else h += '<div class="sc-room" aria-hidden="true" style="background-image:url(assets/fight/room-' + room + '.webp)"></div><div class="sc-haze" aria-hidden="true"></div>';
+    if (ui.entering) return h;
+    h += '<div class="sc-opp ' + (FULL_BODY[F.art] ? "full" : "crop") + '" id="sc-opp" data-base="' + base + '" data-pose="' + base + '" style="--ar:' + (F.ar || ART_AR[F.art] || 0.6) + '" aria-hidden="true">';
     POSES.concat(F.paid ? ["paid"] : []).forEach(function (p) { h += '<img class="p-' + p + '" src="assets/fight/opp-' + F.art + "-" + p + '.webp" alt="" draggable="false">'; });
     h += "</div>";
+    if (office && o4) h += '<div class="sc-you fb-you-anchor" id="sc-you" aria-hidden="true"></div>';
+    else {
+      var fig = o4 && LD.O4.figureHtml ? LD.O4.figureHtml(ex, era, fg.done && !fg.done.win && !fg.done.settled ? "panic" : "idle", 100, true) : "";
+      h += '<div class="sc-you fb-exec' + (fig ? "" : " fb-back") + '" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true">' + (fig || '<img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false">') + "</div>";
+    }
     var bt = F.opp && !(ui.cap && ui.cap.t && !fg.done) ? bubbleText(state, fg, ui) : null;
-    if (bt && bt.t) h += '<div class="sc-bubble k-' + bt.k + '" id="sc-bubble" role="status" aria-live="polite"><b>' + esc(F.short) + "</b>" + esc(bt.t) + "</div>";
+    if (bt && bt.t) h += '<div class="sc-bubble k-' + bt.k + '" id="sc-bubble" role="status" aria-live="polite"><b>' + esc(F.who) + "</b>" + esc(bt.t) + "</div>";
     if (fg.cb && !fg.done && fg.round === 1 && !fg.played && !ui.cbHide) {
       var cb = fg.cb, img = cb.art ? "assets/fight/" + cb.art + ".webp" : "";
       h += '<div class="sc-cb' + (cb.inset ? " is-witness" : "") + '" id="sc-cb" role="note"><div class="sc-cb-k">★ A FAMILIAR FACE ★</div>' +
         (img ? '<img src="' + img + '" alt="" draggable="false">' : "") + '<div class="sc-cb-t"><b>' + esc(cb.who) + '</b><q>' + esc(cb.line) + "</q><em>" + esc(cb.effect) + '</em></div><button class="sc-cb-ok" id="sc-cb-ok">Face them ▸</button></div>';
     }
-    h += '<div class="sc-you" id="sc-you" style="--ar:' + ART_AR["back-" + ex] + '" aria-hidden="true"><img src="assets/fight/back-' + ex + '.webp" alt="" draggable="false"></div>';
-    if (!fg.done && !fg.played && (fg.round | 0) <= 1 && !(ui.cap && ui.cap.t) && !(fg.cb && !ui.cbHide)) { var opener = LD.fightOpener(state, fg); if (opener) h += '<div class="sc-cap sc-why e' + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)) + '" id="sc-why" role="note"><span>' + esc(opener) + "</span></div>"; }
+    if (!fg.done && !fg.played && (fg.round | 0) <= 1 && !(ui.cap && ui.cap.t) && !(fg.cb && !ui.cbHide)) { var opener = LD.fightOpener(state, fg); if (opener) h += '<div class="sc-cap sc-why e' + era + '" id="sc-why" role="note"><span>' + esc(opener) + "</span></div>"; }
     if (ui.cap && ui.cap.t && !fg.done) h += '<div class="sc-cap e' + ui.cap.era + (ui.cap.w4 ? " w4" : "") + '" id="sc-cap" role="note"><span>' + esc(ui.cap.t) + "</span></div>";
-    h += '<div class="sc-place" aria-hidden="true">' + (venue === "home" ? "🚪 Your office · they came to you" : venue === "lobby" ? "🏢 Your lobby · through the glass" : "↩ Out the back door · " + esc(F.place)) + "</div>";
-    if (fg.done) h += '<div class="sc-stamp ' + (how || "lost") + (out ? " o-" + out : "") + '" aria-hidden="true">' + (F.opp && out && LD.OUT_LABEL && LD.OUT_LABEL[out] ? LD.OUT_LABEL[out] : F.opp && LD.HOW_LABEL[how] ? LD.HOW_LABEL[how] : fg.done.win ? "Deal closed" : fg.done.settled ? "Settled" : "They got through") + "</div>";
+    /* the away telemetry plaque (at home the office's own painted meters read out) */
+    h += '<div class="df-meters fb-plaque" aria-label="Cash $' + state.cash + "M, unrest " + state.unrest + ", collapse " + state.collapse + '">' +
+      '<span data-tip="Cash $' + state.cash + 'M. Settling costs $' + LD.DOOR.SETTLE + 'M per Scrutiny left; some cards cost cash."><small>Cash</small><b>$' + state.cash + "M</b></span>" +
+      '<span data-tip="Unrest ' + state.unrest + '/100. Grievance hits that get through raise it."><small>Unrest</small><b>' + state.unrest + "</b></span>" +
+      '<span data-tip="Collapse ' + state.collapse + '/100. Hits aimed at collapse land at half strength."><small>Collapse</small><b>' + state.collapse + "</b></span></div>";
     return h;
   }
   /* ---------- Fight opener: the narrator line that used to sit on the intro card. Shown in the fight as the
@@ -596,59 +614,65 @@
   LD.renderFight = function (state, ui) {
     ui = ui || {};
     var f = state.fy, fg = f.fight; if (!fg) return "";
-    var it = fg.done ? null : LD.fightIntent(state);
+    var it = fg.done || ui.entering ? null : LD.fightIntent(state);
     var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
     var pct = fg.max ? Math.max(0, Math.round(100 * Math.max(0, fg.scrut) / fg.max)) : 0;
-    var h = '<div class="door-in fight2' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + '" data-enc="' + fg.enc + '">';
-    var kind = fg.boss ? "Boss" : fg.elite ? "Elite" : venue === "home" ? "Home turf" : venue === "lobby" ? "At the glass" : "Away";
-    h += '<header class="df-top"><div class="df-title"><small>' + kind + " · Q" + fg.q + " · " + esc(fg.dealTitle || "") + "</small><b>" + esc(F.who) + (fg.cb ? ' <i class="df-cbchip" title="A familiar face">★</i>' : "") + "</b><em>" + esc(F.opp ? F.role : F.role + " · " + (fg.encName || fg.name)) + "</em></div>" +
-      '<div class="df-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small>' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></div>" +
+    var h = '<div class="door-in fight2 fb' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + (ui.entering ? " is-entering" : "") + '" data-enc="' + fg.enc + '" data-venue="' + venue + '">';
+    var place = venue === "away" ? (F.opp && F.opp.place ? F.opp.place : F.place || "Their turf") : "";
+    var pill = (fg.boss ? "Boss · " : fg.elite ? "Hearing · " : "") + (VENUE_PILL[venue] || "Away · " + place.replace(/^The /, "the ").replace(/,.*$/, ""));
+    h += '<header class="df-top fb-head"><div class="df-title"><small class="fb-venue v-' + venue + '" title="Q' + fg.q + " · " + esc(fg.dealTitle || "") + '">' + esc(pill) + "</small><b>" + esc(F.who) + (fg.cb ? ' <i class="df-cbchip" title="A familiar face">★</i>' : "") + "</b><em>" + esc(F.opp ? F.role : F.role + " · " + (fg.encName || fg.name)) + "</em></div>" +
+      '<div class="df-scrut lvl-' + (LD.resLevel ? LD.resLevel("scrutiny", fg.max ? Math.max(0, fg.scrut) / fg.max : 0) : "ok") + '"><div class="df-k">' + (LD.tok ? LD.tok("scrutiny") : "") + 'Scrutiny <span class="fb-sn"><b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</span></div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div></div>" + galHtml(fg) +
+      '<div class="df-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small> ' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></div>" +
       '<button class="icon-btn df-help" id="df-help" aria-label="How fights work">?</button></header>';
     h += sceneHtml(state, fg, ui);
-    h += '<div class="df-scrut lvl-' + (LD.resLevel ? LD.resLevel("scrutiny", fg.max ? Math.max(0, fg.scrut) / fg.max : 0) : "ok") + '"><div class="df-k">' + (LD.tok ? LD.tok("scrutiny") : "") + 'Scrutiny <b id="df-scrut-n">' + Math.max(0, fg.scrut) + "</b>/" + fg.max + '</div><div class="df-bar" role="meter" aria-label="Scrutiny" aria-valuemin="0" aria-valuemax="' + fg.max + '" aria-valuenow="' + Math.max(0, fg.scrut) + '"><i style="width:' + pct + '%"></i></div>' +
-      '<div class="df-goal">' + (fg.done ? "" : "Pressure to 0 to win · " + esc(LD.ENCOUNTERS[fg.enc].win)) + "</div>" + galHtml(fg) + "</div>";
-    if (it) {
-      var thr = it.through, ico = METER_ICO[it.meter] || "!";
-      h += '<div class="df-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><div class="df-k">Next, ' + esc(F.short) + " will</div>" +
-        '<div class="di-main"><span class="di-ico" aria-hidden="true">' + ico + '</span><b>' + esc(it.label) + " " + it.n + "</b>" + (F.opp && F.opp.sig === it.k ? '<i class="di-sig" title="Signature move">★</i>' : "") + "</div>" +
-        '<div class="di-math">Block <b>' + it.block + "</b> · through <b>" + thr + "</b> → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " (×½)" : "") + "</div>" +
-        (it.rtext ? '<div class="di-rider' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</div>" : "") +
-        (it.notes.length ? '<div class="di-notes">' + esc(it.notes.join(" · ")) + "</div>" : "") +
-        (LD.fightPeek && LD.fightPeek(state) ? '<div class="di-peek">Then: ' + esc(LD.fightPeek(state).label) + " " + LD.fightPeek(state).n + "</div>" : "") + "</div>";
-    }
     h += "</div>";
+    if (it) {
+      var thr = it.through, ico = METER_ICO[it.meter] || "!", pk = LD.fightPeek ? LD.fightPeek(state) : null;
+      h += '<div class="df-intent fb-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite">' +
+        '<div class="di-main"><span class="df-k">Next:</span> <span class="di-say">' + esc(F.short) + " will <b>" + esc(it.label) + "</b>" + (F.opp && F.opp.sig === it.k ? '<i class="di-sig" title="Signature move">★</i>' : "") + "</span></div>" +
+        '<div class="di-chips"><span class="di-chip di-hit m-' + it.meter + '"><span class="di-ico" aria-hidden="true">' + ico + "</span>" + it.n + " → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " ×½" : "") + "</span>" +
+        '<span class="di-chip di-math">Blk <b>' + it.block + "</b> · <b>" + thr + "</b> through</span>" +
+        (it.rtext ? '<span class="di-chip di-rider' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</span>" : "") +
+        (it.notes.length ? '<span class="di-chip di-notes">' + esc(it.notes.join(" · ")) + "</span>" : "") +
+        (pk ? '<span class="di-chip di-peek">Then: ' + esc(pk.label) + " " + pk.n + "</span>" : "") + "</div></div>";
+    }
+    var pileN = fg.done ? f.deck.length : fg.draw.length;
+    h += '<div class="fb-dock' + (fg.done ? " is-out" : "") + (ui.entering ? " is-wait" : "") + '">';
+    h += '<button class="df-pile fb-pile" id="df-deck" aria-label="' + (fg.done ? "Your deck, " + pileN + " cards" : "Draw pile, " + pileN + " cards left") + '. Open the deck list"><img src="assets/ui/card-back.webp" alt="" draggable="false"><em class="rd-count">' + pileN + "</em></button>";
     if (fg.done) {
       var d = fg.done, L = d.leaks, bits = [];
       if (L.cash) bits.push("−$" + L.cash + "M"); if (L.unrest) bits.push("unrest +" + L.unrest); if (L.collapse) bits.push("collapse +" + L.collapse); if (L.heat) bits.push("Heat +" + L.heat);
       var bye = venue === "home" || venue === "lobby" ? "Show them out ▸" : "Back to the office ▸";
       var how2 = d.how, O2 = F.opp, remember = O2 && !O2.boss && O2.act < 3 && how2 !== "walked";
       var out2 = d.out, aside = LD.execAside ? LD.execAside(state) : null;
-      var endLine = O2 ? '<div class="sc-ending h-' + how2 + (out2 ? " o-" + out2 : "") + '"><i class="sc-end-stamp">' + esc((out2 && LD.OUT_LABEL && LD.OUT_LABEL[out2]) || LD.HOW_LABEL[how2] || "") + "</i>" +
-        (out2 && LD.OUT_NOTE && LD.OUT_NOTE[out2] ? "<em>" + esc(LD.OUT_NOTE[out2]) + (remember ? " They'll remember this." : "") + "</em>" : remember ? "<em>They'll remember this.</em>" : how2 === "walked" ? "<em>" + esc(F.short) + " walks out with what they came for.</em>" : "") +
-        (aside ? '<q class="sc-aside">' + esc(aside.t) + "</q>" : "") + "</div>" : "";
-      h += '<div class="df-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status">' + endLine + '<b>' + (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + "</b>" +
-        "<span>" + esc(d.win ? (d.notes.join(" · ") || "The deal closes.") : d.settled ? "No bonus, no more damage. " + (d.notes.join(" · ")) : "The deal still signs. " + (d.notes.join(" · ") || "")) + "</span>" +
-        (bits.length ? '<span class="df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") +
+      var stampT = (out2 && LD.OUT_LABEL && LD.OUT_LABEL[out2]) || LD.HOW_LABEL[how2] || (d.win ? "Deal closed" : d.settled ? "Settled" : "They got through");
+      var endLine = '<div class="sc-ending h-' + (how2 || (d.win ? "crushed" : d.settled ? "paid" : "walked")) + (out2 ? " o-" + out2 : "") + '"><i class="sc-end-stamp sc-stamp ' + (how2 || "lost") + (out2 ? " o-" + out2 : "") + '">' + esc(stampT) + "</i></div>";
+      var title = (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + (remember ? " · They'll remember this" : "");
+      var sub = O2 && out2 && LD.OUT_NOTE && LD.OUT_NOTE[out2] ? LD.OUT_NOTE[out2] : how2 === "walked" && O2 ? F.short + " walks out with what they came for." : "";
+      var notes = d.win ? (d.notes.length ? d.notes : ["The deal closes."]) : d.settled ? ["No bonus, no more damage."].concat(d.notes) : ["The deal still signs."].concat(d.notes);
+      h += '<div class="df-result fb-out ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status">' + endLine +
+        '<div class="fb-out-t"><b>' + esc(title) + "</b>" + (sub ? "<em>" + esc(sub) + "</em>" : "") + (aside ? '<q class="sc-aside">' + esc(aside.t) + "</q>" : "") + "</div>" +
+        '<div class="fb-out-chips">' + notes.filter(Boolean).map(function (n) { return '<span class="fb-chip good">' + esc(n) + "</span>"; }).join("") +
+        (bits.length ? '<span class="fb-chip bad df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") + "</div>" +
         '<button class="btn btn-coral df-close" id="df-close">' + bye + "</button></div>";
-    } else {
-      h += '<div class="df-hud"><div class="df-inf" aria-label="Influence ' + fg.inf + '"><small>Influence</small>';
+    } else if (!ui.entering) {
+      h += '<div class="fb-dock-main"><div class="df-hud fb-bar"><div class="df-inf" aria-label="Influence ' + fg.inf + '">';
       for (var i = 0; i < Math.max(fg.inf, LD.DOOR.INF); i++) h += '<i class="' + (i < fg.inf ? "on" : "") + '"></i>';
-      h += '<b>' + fg.inf + "◆</b></div>";
-      h += '<div class="df-meters" aria-label="Cash $' + state.cash + "M, unrest " + state.unrest + ", collapse " + state.collapse + '">' +
-        (LD.resPill ? LD.resPill("cash", state.cash, "Cash $" + state.cash + "M. Settling costs $" + LD.DOOR.SETTLE + "M per Scrutiny left; some cards cost cash.") + LD.resPill("unrest", state.unrest, "Unrest " + state.unrest + "/100. Grievance hits that get through raise it. Knocks at 20, pounding at 40.") + LD.resPill("collapse", state.collapse, "Collapse " + state.collapse + "/100. Hits aimed at collapse land at half strength. Crises likely from 55.")
-          : "<b>$" + state.cash + "M</b><span>✊ " + state.unrest + "</span><span>☢ " + state.collapse + "</span>") + "</div>";
-      h += '<div class="df-piles"><button class="df-pile" id="df-deck" aria-label="Deck view">Draw ' + fg.draw.length + "</button><span>Discard " + fg.disc.length + "</span></div></div>";
+      h += '<b>' + fg.inf + "/" + LD.DOOR.INF + "◆</b></div>";
+      h += '<span class="df-piles fb-piles">Draw ' + fg.draw.length + " · Disc " + fg.disc.length + "</span>";
+      var sc = LD.fightSettleCost(state);
+      h += '<div class="df-actions"><button class="btn df-settle" id="df-settle"' + (state.cash < sc ? " disabled" : "") + '><b>Settle $' + sc + "M</b><small>" + (state.cash < sc ? "Not enough cash" : "Pay it off now") + "</small></button>" +
+        '<button class="btn btn-coral df-end" id="df-end"><b>End round</b><small>' + (it ? (it.through ? esc(it.label) + " hits for " + it.through : "Fully blocked") : "") + (fg.round >= fg.rounds ? " · last round" : "") + "</small></button></div></div>";
       h += '<div class="df-hand" role="group" aria-label="Your hand">';
       fg.hand.forEach(function (u) {
         var ci = LD.fightCardInfo(state, u); if (!ci) return;
         h += cardFace(ci.id, ci.up, { attrs: ' data-u="' + u + '"', why: ci.why, cost: ci.o.cash ? (ci.cost || null) : ci.cost, p: ci.p, d: ci.d, cls: ui.flashU === u ? "pop" : "" });
       });
       if (!fg.hand.length) h += '<p class="df-empty">No cards left. End the round.</p>';
-      h += "</div>";
-      var sc = LD.fightSettleCost(state);
-      h += '<div class="df-actions"><button class="btn df-settle" id="df-settle"' + (state.cash < sc ? " disabled" : "") + '><b>Settle $' + sc + "M</b><small>" + (state.cash < sc ? "Not enough cash" : "Pay it off now") + "</small></button>" +
-        '<button class="btn btn-coral df-end" id="df-end"><b>End round</b><small>' + (it ? (it.through ? esc(it.label) + " hits for " + it.through : "Fully blocked") : "") + (fg.round >= fg.rounds ? " · last round" : "") + "</small></button></div>";
+      h += "</div></div>";
     }
+    h += "</div>";
     h += '<div class="df-log" id="df-log" aria-live="polite">' + esc(ui.log || "") + "</div>";
     h += '<div class="fx" id="df-fx" aria-hidden="true"></div>';
     return h + "</div>";

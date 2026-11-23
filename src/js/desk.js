@@ -511,7 +511,26 @@
   };
   LD.BUNKER_ICON = { mara: "bunker-mara", reid: "bunker-reid", imani: "bunker-imani", julian: "bunker-julian", soren: "bunker-soren", cassius: "bunker-cassius" };
   /* The executive's own compound hatch (painted icon); unknown executives fall back to the shared bunker token. */
+  /* The vault tab: a stepped Art Deco vault front with a sunburst wheel door, gold line on the rail navy.
+     Tinted per executive (--vt). Big on purpose: it is the other half of the game. */
+  var VAULT_TINT = { mara: "#2e7f73", reid: "#7a5a2a", julian: "#2b5d86", cassius: "#7c3b34", imani: "#5a6a2c", soren: "#5b4a7c" };
+  LD.vaultIconSvg = function () {
+    var cx = 32, cy = 75, rays = "";
+    for (var i = 0; i < 12; i++) { var a = i * Math.PI / 6, x1 = cx + Math.cos(a) * 6.8, y1 = cy + Math.sin(a) * 6.8, x2 = cx + Math.cos(a) * 13.6, y2 = cy + Math.sin(a) * 13.6; rays += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>'; }
+    var tiers = "M27 15 H37 V25 H43 V35 H49 V45 H56 V102 H8 V45 H15 V35 H21 V25 H27 Z";
+    return '<svg class="vt-svg" viewBox="0 0 64 108" aria-hidden="true">' +
+      '<path class="vt-sky" d="M32 1 L35 15 L29 15 Z"/>' +
+      '<path class="vt-body" d="' + tiers + '"/><path class="vt-line" d="' + tiers + '"/>' +
+      '<path class="vt-thin" d="M15 45 H49 M21 35 H43 M27 25 H37 M32 17 V43 M24.5 27 V43 M39.5 27 V43 M12.5 50 V98 M51.5 50 V98"/>' +
+      '<path class="vt-thin" d="M18 52 H46"/>' +
+      '<circle class="vt-door" cx="' + cx + '" cy="' + cy + '" r="17.5"/><circle class="vt-line" cx="' + cx + '" cy="' + cy + '" r="17.5"/><circle class="vt-thin" cx="' + cx + '" cy="' + cy + '" r="14.8"/>' +
+      '<g class="vt-rays">' + rays + '</g><circle class="vt-hub" cx="' + cx + '" cy="' + cy + '" r="4.6"/><circle class="vt-pin" cx="' + cx + '" cy="' + cy + '" r="1.7"/>' +
+      '<path class="vt-base" d="M3 102 H61 V107 H3 Z"/></svg>';
+  };
+  LD.vaultLockSvg = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" rx="2"/><path d="M6.5 9 V6.5 a3.5 3.5 0 0 1 7 0 V9" fill="none"/></svg>';
+  LD.vaultTint = function (state) { return VAULT_TINT[state && state.executiveId] || "#2e7f73"; };
   LD.bunkerIcon = function (state, cls) {
+    if (!cls) return '<span class="sr-hatch sr-vault">' + LD.vaultIconSvg() + "</span>";
     var k = LD.BUNKER_ICON[state && state.executiveId];
     var tokFb = LD.tok ? LD.tok("bunker") : "⛫";
     if (!k) return '<span class="' + (cls || "sr-hatch") + ' sr-hatch-fb">' + tokFb + "</span>";
@@ -533,13 +552,21 @@
     h += '<button class="sr-btn sr-phone' + (ring ? " ringing" : " quiet") + '" id="btn-phone" aria-label="' + esc(ring ? (ERA ? ERA.phone : "The phone is ringing") : "Phone: no calls right now") + '"' + '><span class="sr-ic">' + RAIL_SVG.phone + "</span><small>" + (ring ? "Call!" : "Phone") + "</small>" + (ring ? '<em class="sr-badge sr-ring">1</em>' : "") + "</button>";
     h += '</div><span class="sr-gap" aria-hidden="true"></span>';
     var pips = ""; for (var pi = 0; pi < 4; pi++) pips += '<i class="' + (pi < r.ready ? "on" : "") + '"></i>';
-    h += '<button class="sr-btn sr-bunker' + (bunkerReady ? " ready" : "") + (dealPhase ? " locked" : "") + (state.bunkerActedThisTurn ? " acted" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card" style="--bp:' + Math.round(lv / 12 * 100) + '%" aria-label="Floor hatch to ' + esc(exec.compound || "the bunker") + ", " + r.ready + " of 4 rooms ready" + (dealPhase ? ". Opens after you sign a deal" : state.bunkerActedThisTurn ? ". Works ordered this quarter" : ". Tap to build") + '">' +
-      LD.bunkerIcon(state) + '<span class="sr-pips" aria-hidden="true">' + pips + "</span><small>Bunker</small>" + (dealPhase ? '<em class="sr-lock" aria-hidden="true">🔒</em>' : "") + "</button>";
+    h += '<button class="sr-btn sr-bunker' + (bunkerReady ? " ready" : "") + (dealPhase ? " locked" : "") + (state.bunkerActedThisTurn ? " acted" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card" style="--bp:' + Math.round(lv / 12 * 100) + "%;--vt:" + LD.vaultTint(state) + '" aria-label="Floor hatch to ' + esc(exec.compound || "the bunker") + ", " + r.ready + " of 4 rooms ready" + (dealPhase ? ". Opens after you sign a deal" : state.bunkerActedThisTurn ? ". Works ordered this quarter" : ". Tap to build") + '">' +
+      LD.bunkerIcon(state) + '<span class="sr-pips" aria-hidden="true">' + pips + "</span><small>Bunker</small>" + (dealPhase ? '<em class="sr-lock" aria-hidden="true">' + LD.vaultLockSvg + "</em>" : "") + "</button>";
     h += "</nav>";
     return h;
   }
   LD.renderSideRail = sideRail;
 
+  /* The deck, face down, always on the run screen: the hand is dealt from it when a fight starts (the fight bay docks its own
+     copy, counting the draw pile) and the cards go back to it after. Reward picks fly into it. Tap: the deck list. */
+  function runDeck(state) {
+    var f = state.fy; if (!f || !f.deck) return "";
+    var n = f.deck.length;
+    return '<button class="run-deck" id="run-deck" aria-label="Your deck, ' + n + ' cards. Open the deck list"><img src="assets/ui/card-back.webp" alt="" draggable="false"><i class="rd-stack" aria-hidden="true"></i><em class="rd-count">' + n + "</em></button>";
+  }
+  LD.runDeckHtml = runDeck;
   function renderDesk(state, ui) {
     ui = ui || {};
     var dealPhase = state.phase === "deal";
@@ -564,6 +591,7 @@
       state.offered.forEach(function (id) { h += '<li><button class="sr-deal" data-deal="' + id + '">' + esc(pinAria(state, id)) + "</button></li>"; });
       h += "</ul></div>";
     }
+    if (ui.globe) h += runDeck(state);
     h += '<div class="map-tip" id="map-tip" role="tooltip" hidden></div>';
     h += '<div class="fx" id="fx" aria-hidden="true"></div></main>';
 
@@ -585,7 +613,8 @@
     h += "</div></div></div>";
     h += "</aside>";
 
-    h += '<footer class="hand">';
+    h += '<footer class="hand' + (!ui.globe && state.fy && state.fy.deck ? " has-deck" : "") + '">';
+    if (!ui.globe) h += runDeck(state);
     var canEnd = !dealPhase;
     h += '<button class="end-q' + (canEnd ? " live" : "") + (ui.coach === "end" ? " coach" : "") + '" id="btn-endq">' +
       '<span class="eq-ico">✓</span><span class="eq-t">END QUARTER<small>' + (ui.hidePins ? "Dealing Q" + state.turn + " opportunities…" : canEnd ? "Ride the upside. Own the future." : "Pick 1 of " + state.offered.length + " deals on the map first") + "</small></span></button>";

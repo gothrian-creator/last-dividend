@@ -40,7 +40,7 @@ for(const [w,h] of sizes){const tag=w+"x"+h+"-"+RUN.exec;const R=all[tag]={q:[],
    if(!entShot&&await p.$(".o4-stage.o4-open")){entShot=true;if(process.env.SHOTS)await p.screenshot({path:`${OUT}/${tag}-q${info.turn}-entrance.png`});}
    if(await vis(p,"#door.on")){fight=true; if(await tap(p,"#door .df-hand .dc:not(.no)"))continue; for(const s of ["#df-end","#df-close","#rw-skip","#rw-keep","#door [data-asset]","#door [data-card]","#door [data-isell]","#door [data-areplace]","#rw-take:not([disabled])","#rw-apass"]){if(await tap(p,s))break;} continue;}
    if(await vis(p,"#overlay.on")){if(await tap(p,"#fy-boss-ok")||await tap(p,"#fy-m-a")||await tap(p,"#ov-ok"))continue;}
-   const st=await p.evaluate(()=>{const b=document.querySelector("#bunker-card");return !!(b&&!b.classList.contains("locked")&&!b.classList.contains("acted"))||!!document.querySelector("#btn-endq:not(.ld-dim)")});if(st&&(fight||i>12))break;}
+   const st=await p.evaluate(()=>{const b=document.querySelector("#bunker-card");return !!(b&&!b.classList.contains("locked")&&!b.classList.contains("acted"))||!!document.querySelector("#btn-endq:not(.ld-dim)")});if(st&&(fight||i>12)){await p.waitForTimeout(900); if(await vis(p,"#door.on")) continue; break;}}
   Q.fight=fight; await p.waitForTimeout(2500);
   Q.afterFight=await p.evaluate(()=>{const s=document.querySelector(".o4-stage"),e=document.querySelector(".o4-ex");return {hidden:e&&e.style.opacity==="0",cls:s&&s.className};});
   if(await tap(p,"#bunker-card:not(.locked)")){await p.waitForTimeout(1200);

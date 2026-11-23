@@ -275,6 +275,8 @@
   API.mount = function (state) {
     var slot = document.querySelector(".desk .office .of-room.o4 .o4-slot");
     if (!slot || !state) return;
+    /* in-scene fight: the room is on loan to the fight bay; leave the desk's slot empty until the fight hands it back */
+    if (O.fightOn) return;
     if (!O.stage) build();
     var room = slot.parentNode;
     var era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)), exec = exKey(state.executiveId);
@@ -342,12 +344,84 @@
     })();
     return { skip: function () { O.skip = true; O.token++; finish(true); } };
   };
+  /* ---------- In-scene fights: the fight bay borrows the whole room (visitor fights), or paints the executive full-body
+     on someone else's turf (away fights). The fight UI re-renders on every play, so the bay calls adopt() after each paint. ---------- */
+  function placeFoe(foe, full) {
+    var R = O.R, sp = R.S.oppIn, H = heightAt(sp[1]), h = H * (full ? 1 : 0.86), ar = parseFloat(foe.style.getPropertyValue("--ar")) || 0.55, w = h * ar;
+    foe.style.position = "absolute"; foe.style.height = h.toFixed(1) + "px"; foe.style.width = w.toFixed(1) + "px";
+    foe.style.left = (sp[0] - w / 2).toFixed(1) + "px"; foe.style.top = (sp[1] - h + (full ? 0 : H * 0.04)).toFixed(1) + "px";
+    foe.style.bottom = "auto"; foe.style.transform = "none"; foe.style.zIndex = 5;
+  }
+  function placeYou(you) {
+    var h = heightAt(O.st.y);
+    you.style.position = "absolute"; you.style.left = (-h * 0.2).toFixed(1) + "px"; you.style.top = (-h * 0.98).toFixed(1) + "px";
+    you.style.width = (h * 0.4).toFixed(1) + "px"; you.style.height = (h * 0.98).toFixed(1) + "px"; you.style.bottom = "auto";
+  }
+  API.adopt = function (slot, state, o) {
+    o = o || {};
+    if (!slot || !state) return false;
+    if (!O.stage) build();
+    var room = slot.parentNode, era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)), exec = exKey(state.executiveId);
+    var lay = room.clientWidth / Math.max(1, room.clientHeight) < 1 ? "P" : "L";
+    var first = !O.fightOn;
+    O.fightOn = true;
+    setEra(era, exec, lay);
+    slot.parentNode.replaceChild(O.stage, slot);
+    if (O.ro) { try { O.ro.disconnect(); O.ro.observe(room); } catch (e) {} }
+    O.stage.classList.add("o4-fight");
+    API.setMeters(state);
+    layout();
+    if (O.foe && O.foe !== o.foe && O.foe.parentNode) O.foe.parentNode.removeChild(O.foe);
+    O.foe = o.foe || null;
+    if (O.foe) { O.world.appendChild(O.foe); O.foeFull = !!o.full; placeFoe(O.foe, O.foeFull); }
+    if (O.you && O.you !== o.you && O.you.parentNode) O.you.parentNode.removeChild(O.you);
+    O.you = o.you || null;
+    if (O.you) { O.ex.appendChild(O.you); placeYou(O.you); }
+    if (o.entering) return true;
+    if (first || o.settle) {
+      /* the visitor is in: the executive goes back behind the desk and squares up to them */
+      O.st.hidden = false;
+      if (!atDesk()) { O.q.length = 0; enqueue("fightdesk", async function () { await go("desk", true, 900); hold("idle", -1); }); }
+      else if (!O.busy) hold("idle", -1);
+    }
+    return true;
+  };
+  API.setMeters = function (state) {
+    if (!O.face || !state) return;
+    var fm = LD.formatMoney || function (v) { return "$" + v + "M"; }, lv = LD.resLevel || function () { return "ok"; };
+    setFace("U", state.unrest, String(state.unrest), lv("unrest", state.unrest), "UNREST");
+    setFace("C", state.collapse, String(state.collapse), lv("collapse", state.collapse), "COLLAPSE");
+    setFace("K", Math.min(100, state.cash), fm(state.cash), lv("cash", state.cash), "");
+  };
+  /* a short reaction from the executive during a fight: snap (played a card), panic (took a hit), nervous (blocked) */
+  API.fightPose = function (pose, ms) {
+    if (!O.fightOn || !O.stage || O.st.hidden || O.busy) return;
+    clearTimeout(API.fpT); hold(pose, -1);
+    API.fpT = setTimeout(function () { if (O.fightOn && !O.busy) hold("idle", -1); }, ms || 700);
+  };
+  API.exitFight = function () {
+    if (!O.fightOn) return;
+    O.fightOn = false; clearTimeout(API.fpT);
+    if (O.foe && O.foe.parentNode) O.foe.parentNode.removeChild(O.foe); O.foe = null;
+    if (O.you && O.you.parentNode) O.you.parentNode.removeChild(O.you); O.you = null;
+    if (O.stage) { O.stage.classList.remove("o4-fight"); if (O.stage.parentNode) O.stage.parentNode.removeChild(O.stage); }
+    if (!O.st.hidden) { O.st.face = 1; if (!O.busy) O.st.pose = poseFor(); }
+  };
+  API.inFight = function () { return !!O.fightOn; };
+  /* the executive full-body, standing in someone else's room (away fights): one atlas frame as a CSS-only sprite, sized in % of the stage */
+  API.figureHtml = function (execId, era, pose, pct, flip) {
+    var key = exKey(execId) + "-e" + Math.max(1, Math.min(3, era || 1)), A = LD.O4_ATLAS && LD.O4_ATLAS[key]; if (!A) return "";
+    var f = A.f[pose] || A.f.idle, r = f.r, k = r[3] / A.h;
+    var bx = A.w > r[2] ? r[0] / (A.w - r[2]) * 100 : 0, by = A.ht > r[3] ? r[1] / (A.ht - r[3]) * 100 : 0;
+    return '<span class="o4-fig' + (flip ? " flip" : "") + '" data-pose="' + pose + '" style="height:' + ((pct || 78) * k).toFixed(2) + "%;aspect-ratio:" + r[2] + "/" + r[3] +
+      ";background-image:url(" + BASE + key + ".webp);background-size:" + (A.w / r[2] * 100).toFixed(3) + "% " + (A.ht / r[3] * 100).toFixed(3) + "%;background-position:" + bx.toFixed(3) + "% " + by.toFixed(3) + '%"></span>';
+  };
   /* test hook (real-input placement shots): stand at a named spot in a pose */
   API.debugSpot = function (spot, pose) { if (!O.R || !O.R.S[spot]) return false; O.frozen = true; O.token++; O.q.length = 0; O.st.hidden = false; O.st.x = O.R.S[spot][0]; O.st.y = O.R.S[spot][1]; O.st.pose = pose || "idle"; draw(); if (spot === "hatch") O.hatch.classList.add("on"); else O.hatch.classList.remove("on"); return true; };
   API.afterFight = function () { if (!O.stage) return; if (!O.st.hidden) enqueue("back", home); };
   /* idle life: small fidgets by mood; pacing in a panic */
   setInterval(function () {
-    if (!API.active() || O.busy || O.q.length || document.hidden || rm() || O.frozen) return;
+    if (!API.active() || O.busy || O.q.length || document.hidden || rm() || O.frozen || O.fightOn) return;
     var desk = document.querySelector(".desk"); if (!desk || desk.closest(".screen[hidden]")) return;
     var idle = Date.now() - O.lastAct;
     if (O.mood === "panic") { if (idle > 2500) enqueue("pace", async function () { await go(Math.random() < 0.5 ? "p1" : "p2", true); hold("panic"); say(Math.random() < 0.3 ? pick(SAY.panic) : "", 1100); await wait(1200); }); return; }

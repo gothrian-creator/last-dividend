@@ -9,6 +9,14 @@
   function execOf(state) { return LD.execById ? LD.execById(state.executiveId) : null; }
 
   LD.isHouse = function (state) { return !!(state && state.ruleset === "house"); };
+  /* Keep costs scale with the float so a rich quarter cannot shrug them off. */
+  LD.houseKeepCash = function (state, base) {
+    return Math.max(base | 0, Math.round((state && state.cash || 0) * 0.16));
+  };
+  LD.houseContractorTurn = function (state) {
+    if (state && state.house && state.house.contractorFrom) return state.house.contractorFrom;
+    return 6;
+  };
 
   /* ---------- Roster ---------- */
   LD.HOUSE_RESIDENTS = [
@@ -36,49 +44,49 @@
   LD.HOUSE_PROMISES = [
     { id: "helen-parts", residentId: "helen", dueIn: 2,
       text: "The generator gets its bearings by the due quarter. You pay for the crate.",
-      keep: function () { return { cash: 8 }; },
+      keep: function (state) { return { cash: LD.houseKeepCash(state, 12) }; },
       brk: function () { return { unrest: 4, cheap: "power" }; } },
     { id: "helen-nights", residentId: "helen", dueIn: 2,
-      text: "Helen has one quiet night a week. The plant can wait.",
-      keep: function () { return { unrest: -2 }; },
+      text: "Helen has one quiet night a week. You pay the cover shift; the plant can wait.",
+      keep: function (state) { return { cash: LD.houseKeepCash(state, 10) }; },
       brk: function () { return { unrest: 3 }; } },
     { id: "tom-sister", residentId: "tom", dueIn: 3,
-      text: "When a bunk comes free, it is for Rosa, not a new hire.",
-      keep: function () { return { reserve: true }; },
+      text: "When a bunk comes free, it is for Rosa, not a new hire. You put a ticket aside.",
+      keep: function (state) { return { cash: LD.houseKeepCash(state, 8), reserve: true }; },
       brk: function () { return { unrest: 5 }; } },
     { id: "tom-well", residentId: "tom", dueIn: 2,
-      text: "The next water contract leaves the town well alone.",
+      text: "The next water contract leaves the town well alone. If you already drew from it, you buy it back.",
       keep: function (state, p) {
-        return waterExtractiveSince(state, p) ? { cash: 6 } : { unrest: -2 };
+        return { cash: LD.houseKeepCash(state, waterExtractiveSince(state, p) ? 16 : 8) };
       },
       brk: function () { return { unrest: 4 }; } },
     { id: "nia-plate", residentId: "nia", dueIn: 2,
       text: "There is a plate for whoever is already in the house, even when the street is in the lobby.",
-      keep: function () { return { stores: -2, unrest: -3 }; },
+      keep: function () { return { stores: -3 }; },
       brk: function () { return { unrest: 4, blockBonus: true }; } },
     { id: "nia-door", residentId: "nia", dueIn: 2,
-      text: "You do not ask her to turn people away at the kitchen door.",
+      text: "You do not ask her to turn people away at the kitchen door. The kitchen still has to be paid.",
       keep: function (state, p) {
-        return turnedAwaySince(state, p) ? { blocked: true } : { unrest: -2 };
+        return turnedAwaySince(state, p) ? { blocked: true } : { stores: -1, cash: LD.houseKeepCash(state, 6) };
       },
       brk: function () { return { unrest: 6, blockBonus: true }; } },
     { id: "lila-notes", residentId: "lila", dueIn: 2,
-      text: "What she sees in here stays in the house.",
-      keep: function () { return { hush: true }; },
+      text: "What she sees in here stays in the house. You pay to keep it that way.",
+      keep: function (state) { return { cash: LD.houseKeepCash(state, 14), hush: true }; },
       brk: function () { return { leak: true, unrest: 3 }; } },
     { id: "lila-file", residentId: "lila", dueIn: 3,
-      text: "She files the story when you seal, not before.",
-      keep: function () { return {}; },
+      text: "She files the story when you seal, not before. The hold costs.",
+      keep: function (state) { return { cash: LD.houseKeepCash(state, 15) }; },
       brk: function () { return { leak: true, unrest: 5 }; } },
     { id: "eli-filter", residentId: "eli", dueIn: 2,
-      text: "The intake gets a real filter before the next dirty job.",
+      text: "The intake gets a real filter before the next dirty job. You buy the part.",
       keep: function (state, p) {
-        return extractiveSince(state, p) ? { cash: 6 } : { unrest: -1 };
+        return { cash: LD.houseKeepCash(state, extractiveSince(state, p) ? 14 : 8) };
       },
       brk: function () { return { unrest: 3, cheap: "air" }; } },
     { id: "eli-hours", residentId: "eli", dueIn: 3,
-      text: "He gets off the night shift before the doors close.",
-      keep: function () { return { unrest: -1 }; },
+      text: "He gets off the night shift before the doors close. You pay the cover.",
+      keep: function (state) { return { cash: LD.houseKeepCash(state, 10) }; },
       brk: function () { return { unrest: 3 }; } }
   ];
   var PROM_BY = {};
@@ -88,7 +96,8 @@
   function emptyHouse() {
     return {
       residents: [],
-      stores: 3,
+      stores: 4,
+      contractorFrom: 6,
       rooms: {
         air: { on: false, by: null, base: null, quality: "sound" },
         water: { on: false, by: null, base: null, quality: "sound" },
@@ -195,6 +204,8 @@
       }
     });
     if (h.rooms.water.on || h.rooms.food.on) h.stores += 2;
+    var started = LD.SYSTEMS.some(function (sys) { return h.rooms[sys.id].base === "start"; });
+    h.contractorFrom = started ? 6 : 5;
     applyHousePerks(state);
     syncBunker(state);
     return state;
@@ -242,7 +253,7 @@
   }
   function drainFor(n, withNia) {
     if (n <= 0) return 0;
-    return withNia ? Math.floor(n / 2) : n;
+    return withNia ? Math.floor(n / 2) : Math.floor((n + 1) / 2);
   }
   function incomeFor(state) {
     var inc = 0;
@@ -477,7 +488,8 @@
     state = clone(state);
     var err = houseGuard(state);
     if (err) return { ok: false, error: err, state: state };
-    if (state.turn < 7) return { ok: false, error: "The late contractor is not available before Q7.", state: state };
+    var fromQ = LD.houseContractorTurn(state);
+    if (state.turn < fromQ) return { ok: false, error: "The late contractor is not available before Q" + fromQ + ".", state: state };
     if (state.house.contractorUsed) return { ok: false, error: "The late contractor already came once.", state: state };
     if (!state.house.rooms[systemId]) return { ok: false, error: "Unknown system.", state: state };
     if (state.house.rooms[systemId].on) return { ok: false, error: "That room is already running.", state: state };
@@ -608,35 +620,46 @@
   LD.houseDuePromise = function (state) { return LD.isHouse(state) ? duePromise(state) : null; };
   LD.houseArrival = function (state) { return LD.isHouse(state) && state.house ? state.house.arrival : null; };
 
-  function nextArrivalId(state, rng) {
-    var used = {};
-    state.house.residents.forEach(function (r) { used[r.id] = true; });
-    (state.house.paidOff || []).forEach(function (x) { used[x.id] = true; });
-    (state.house.turnedAway || []).forEach(function (x) { used[x.id] = true; });
-    var pool = LD.HOUSE_RESIDENTS.filter(function (r) { return !used[r.id]; }).map(function (r) { return r.id; });
-    if (!pool.length) return null;
-    return rng.pick(pool);
-  }
 
+  function seenId(state, id) {
+    var h = state.house;
+    if (h.residents.some(function (r) { return r.id === id; })) return true;
+    if ((h.paidOff || []).some(function (x) { return x.id === id; })) return true;
+    if ((h.turnedAway || []).some(function (x) { return x.id === id; })) return true;
+    if ((h.askedToLeave || []).some(function (x) { return x.id === id; })) return true;
+    return false;
+  }
+  function systemPool(state) {
+    return ["helen", "tom", "nia", "eli"].filter(function (id) { return !seenId(state, id); });
+  }
   function maybeArrive(state) {
     var h = state.house;
     if (h.arrival) return;
     if (h.reserveNext) { h.reserveNext = false; log(state, "The free bunk stays for Rosa. No one else comes this quarter."); return; }
     if (state.turn < 2) return;
-    var arrived = h.arrivalsTotal || 0;
-    var remainQ = 13 - state.turn;
-    var needed = 6 - arrived;
-    if (needed <= 0) return;
     var rng = LD.createRng(LD.hashString("house-arrive:" + state.seed + ":" + state.turn));
-    var p = 0.42 + (state.unrest || 0) / 400;
-    if (state.turn <= 2) p = Math.max(p, 0.55);
-    if (remainQ <= needed) p = 1;
-    if (rng() >= p) return;
-    var id = nextArrivalId(state, rng);
+    var sys = systemPool(state);
+    var lilaOk = !seenId(state, "lila") && state.turn >= 3;
+    var id = null;
+    /* System residents fill rooms and do not share the target with Lila. Pace: about one from Q2, all four by seal time. */
+    if (sys.length) {
+      var sysSeen = 4 - sys.length;
+      var p = 0.78 + (state.unrest || 0) / 500;
+      if (state.turn === 2) p = 1;
+      if ((13 - state.turn) <= sys.length) p = 1;
+      if (sysSeen < state.turn - 2) p = 1;
+      if (rng() < p) id = rng.pick(sys);
+    }
+    /* Lila arrives on her own track, and only when the door is free. She is usually in by Q7. */
+    if (!id && lilaOk) {
+      var lp = 0.55 + (state.unrest || 0) / 400;
+      if (state.turn >= 6) lp = 1;
+      if (rng() < lp) id = "lila";
+    }
     if (!id) return;
     h.arrival = { id: id, q: state.turn };
     h.arrivalsQ = state.turn;
-    h.arrivalsTotal = arrived + 1;
+    h.arrivalsTotal = (h.arrivalsTotal || 0) + 1;
     log(state, RES_BY[id].name + " is at the door.");
   }
 

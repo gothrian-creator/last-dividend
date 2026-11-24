@@ -956,7 +956,12 @@
     }
     if (state.collapse >= LD.MAX_COLLAPSE) {
       var result = evacuationResult(state);
-      if (result.kind === "win") {
+      result.forced = true;
+      if (LD.isHouse && LD.isHouse(state)) {
+        result.body = (result.kind === "win"
+          ? "Collapse reached the door. Your house held. "
+          : "Collapse reached 100 before you were ready. ") + result.body;
+      } else if (result.kind === "win") {
         result.title = "The sirens started during the ribbon-cutting";
         result.body = "Collapse reached the door. Your bunker held. " + result.body;
       } else if (result.reason === "unfinished") {

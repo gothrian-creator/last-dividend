@@ -38,7 +38,7 @@
       apply: function (m) { m.crisisDiscount = 5; m.startDelta.collapse += 3; } },
     { id: "permits", name: "Pre-Approved Permits", price: 120, up: "First bunker order ignores public-network surcharges and delays", down: "Discount rooms cost +$2M",
       apply: function (m) { m.permitWaivers += 1; m.cheapExtra += 2; } },
-    { id: "offshore", name: "Offshore Account", price: 140, up: "Go private keeps 70% of deal cash", down: "Going private costs $10M paperwork",
+    { id: "offshore", name: "Offshore Account", price: 140, up: "House pay-offs 20% cheaper; going private keeps 70% of deal cash", down: "Going private costs $10M paperwork",
       apply: function (m) { m.conversionRate = Math.max(m.conversionRate, 0.7); m.conversionFee += 10; } },
     { id: "retainer", name: "Retainer Engineer", price: 150, up: "Engineer costs $14M", down: "Cannot be hired before Q3",
       apply: function (m) { m.engineerCost = 14; m.engineerMinTurn = 3; } },
@@ -143,8 +143,13 @@
     var bosses = state.fy ? state.fy.bosses : 0;
     add("Bosses beaten", 10 * bosses, bosses + " × 10");
     if (win && LD.fyHas && LD.fyHas(state, "penthouse")) {
-      var l3 = LD.SYSTEMS.filter(function (s) { return state.bunker[s.id].level >= 3; }).length;
-      if (l3) add("Penthouse Suite", 3 * l3, l3 + " Lv 3 room" + (l3 === 1 ? "" : "s") + " × 3", "win");
+      if (LD.isHouse && LD.isHouse(state)) {
+        var held = LD.SYSTEMS.filter(function (s) { return LD.systemReliable(state, s.id); }).length;
+        if (held) add("Penthouse Suite", 3 * held, held + " reliable room" + (held === 1 ? "" : "s") + " × 3", "win");
+      } else {
+        var l3 = LD.SYSTEMS.filter(function (s) { return state.bunker[s.id].level >= 3; }).length;
+        if (l3) add("Penthouse Suite", 3 * l3, l3 + " Lv 3 room" + (l3 === 1 ? "" : "s") + " × 3", "win");
+      }
     }
     if (win) {
       var sb = LD.sealBonus ? LD.sealBonus(state) : sealBonus(state);

@@ -118,7 +118,7 @@ ok((picker.match(/assets\/exec\/exec-(mara|reid|imani|julian|soren|cassius)(-loc
 ok(/exec-reid-locked\.webp/.test(picker) && /exec-mara\.webp/.test(picker), "locked seats use the ink silhouette, open ones the portrait");
 ok(/cx-title/.test(picker) && /AquaTerra Holdings/.test(picker) && /Yield &amp; Residue PLC/.test(picker), "title and firm render on posters");
 ok((picker.match(/class="cx-kit-i"/g) || []).length === 18, "three painted starting-kit badges per executive");
-ok(/Water room built/.test(picker) && /Private keeps 80%/.test(picker) && /Sound Water already in/.test(picker), "starting kit and traits render");
+ok(/Water room built/.test(picker) && /pay-offs 20% cheaper/.test(picker) && /Sound Water already in/.test(picker), "starting kit and traits render");
 ok(/She already owns a cistern/.test(picker) && /Buy the seat · ◈ 450/.test(picker), "blurb and unlock conditions render");
 ok(/cx-pip/.test(picker) && /cx-stamp/.test(picker) && /Lv 1/.test(picker), "rating stamp, ladder and XP/level show");
 ok((picker.match(/class="cx-tag[ "]/g) || []).length === LD.PERKS.length && /◈120/.test(picker), "every perk shows as a luggage tag, locked ones with a price");
@@ -356,14 +356,14 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   {
     const st = houseRun();
     ok(st.ruleset === "house" && st.house && st.house.rooms.water.on && st.house.rooms.water.by === "start" &&
-      st.bunker.water.level === LD.WIN_LEVEL && !st.house.rooms.air.on && st.house.stores === 5 &&
+      st.bunker.water.level === LD.WIN_LEVEL && !st.house.rooms.air.on && st.house.stores === 6 &&
       st.house.residents.length === 0,
-      "Mara house: Water on empty but running at seal level, stores 3+2, no face");
+      "Mara house: Water on empty but running at seal level, stores 4+2, no face");
     const ju = houseRun({ executiveId: "julian", seed: "house-ju" });
     const ca = houseRun({ executiveId: "cassius", seed: "house-ca" });
-    ok(!ju.house.rooms.water.on && !ju.house.rooms.power.on && ju.house.stores === 3 &&
-      !ca.house.rooms.air.on && ca.house.stores === 3,
-      "Julian and Cassius start with no rooms on and stores 3");
+    ok(!ju.house.rooms.water.on && !ju.house.rooms.power.on && ju.house.stores === 4 &&
+      !ca.house.rooms.air.on && ca.house.stores === 4 && ju.house.contractorFrom === 5 && ca.house.contractorFrom === 5,
+      "Julian and Cassius start with no rooms on, stores 4, and the contractor from Q5");
   }
   {
     const shop = LD.createRun({ seed: "adopt-shop", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 });
@@ -470,9 +470,10 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     st.turn = pr.dueQ; st.phase = "bunker"; st.dealPickedThisTurn = true; st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP;
     st.house.promiseDueThisQ = pr.id;
     const cash0 = st.cash;
+    const dueCost = LD.houseKeepCash(st, 12);
     const keep = LD.houseKeepPromise(st);
-    ok(keep.ok && keep.state.cash === cash0 - 8 && keep.state.house.promises[0].status === "kept" && keep.state.house.wordKept.length === 1,
-      "Keep Helen's parts promise costs $8M");
+    ok(keep.ok && dueCost >= 12 && keep.state.cash === cash0 - dueCost && keep.state.house.promises[0].status === "kept" && keep.state.house.wordKept.length === 1,
+      "Keep Helen's parts promise costs scaled cash (min $12M, got $" + dueCost + "M)");
   }
   {
     let st = openBunker(houseRun({ seed: "word-2" }));
@@ -503,10 +504,10 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   {
     let st = openBunker(houseRun({ seed: "con-1", executiveId: "julian" }));
     const early = LD.houseContractor(st, "air");
-    ok(!early.ok && /Q7/.test(early.error), "contractor is locked before Q7");
-    st.turn = 7;
+    ok(!early.ok && /Q5/.test(early.error), "Julian's contractor is locked before Q5");
+    st.turn = 5;
     const cost = LD.houseContractorCost(st);
-    ok(cost === 36, "late contractor costs $36M");
+    ok(cost === 36, "late contractor still costs $36M");
     st.cash = 80;
     const c1 = LD.houseContractor(st, "air");
     ok(c1.ok && c1.state.house.rooms.air.on && c1.state.house.rooms.air.by === "contractor" &&
@@ -518,6 +519,10 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     const ca = openBunker(houseRun({ seed: "con-ca", executiveId: "cassius" }));
     ca.turn = 7; ca.cash = 80;
     ok(LD.houseContractorCost(ca) === Math.round(36 * 0.92), "Cassius privateWorks shaves the contractor");
+    const mara = openBunker(houseRun({ seed: "con-mara" }));
+    mara.turn = 5; mara.cash = 80;
+    const mEarly = LD.houseContractor(mara, "air");
+    ok(!mEarly.ok && /Q6/.test(mEarly.error) && LD.houseContractorTurn(mara) === 6, "an exec who starts with a room waits until Q6 for the contractor");
   }
   {
     let st = openBunker(houseRun({ seed: "shop-closed" }));
@@ -541,7 +546,7 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     const s1 = st.house.stores;
     LD.houseBeforeClose(st);
     /* Tom +1 income, 2 residents drain 2, net -1 */
-    ok(st.house.stores === s1 + 1 - 2, "Tom +1/Q income, −1 stores per resident without Nia (got " + st.house.stores + " from " + s1 + ")");
+    ok(st.house.stores === s1 + 1 - 1, "Tom +1/Q income, slower drain without Nia (2 residents drain 1) (got " + st.house.stores + " from " + s1 + ")");
     st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
     st = LD.houseAdmit(st, { id: "nia" }).state;
     const s2 = st.house.stores;
@@ -628,6 +633,45 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   {
     const shop = LD.createRun({ seed: "shop-intact-2", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 });
     ok(shop.bunker.water.level === 1 && shop.ruleset === "shop" && LD.HOUSE_RULES === false, "flag still off after house tests; shop math unchanged");
+  }
+  {
+    let st = houseRun({ seed: "titles-1" });
+    LD.SYSTEMS.forEach((s) => { st.house.rooms[s.id].on = true; st.house.rooms[s.id].quality = "sound"; st.house.rooms[s.id].base = "start"; });
+    st.house.residents = [{ id: "nia", sinceQ: 2 }];
+    st.house.rooms.food.by = "nia";
+    st.house.stores = 5;
+    LD.houseSync(st);
+    st.collapse = LD.MAX_COLLAPSE;
+    const ev = LD.evacuationResult(st);
+    st.ending = ev;
+    /* maybeEnd is not exported; reproduce the house preserve path by checking evac title stays, and a shop forced title still exists in game.js. */
+    ok(/well-stocked house/.test(ev.title), "house well-stocked title is set before any collapse override");
+    const src = fs.readFileSync(path.join(ROOT, "src/js/game.js"), "utf8");
+    ok(/LD.isHouse\(state\)/.test(src) && /Collapse reached the door. Your house held/.test(src) &&
+      /sirens started during the ribbon-cutting/.test(src),
+      "collapse-forced exits keep house titles and only overwrite shop titles");
+  }
+  {
+    let st = houseRun({ seed: "pent-1" });
+    LD.SYSTEMS.forEach((s) => { st.house.rooms[s.id].on = true; st.house.rooms[s.id].quality = "sound"; st.house.rooms[s.id].base = "start"; });
+    LD.houseSync(st);
+    st.ending = { kind: "win", reason: "evacuated" };
+    st.fy = st.fy || {};
+    const has = LD.fyHas;
+    LD.fyHas = function (state, id) { return id === "penthouse" || (has && has(state, id)); };
+    const pay = LD.computeDividends(st);
+    LD.fyHas = has;
+    const pent = pay.lines.find((x) => x.label === "Penthouse Suite");
+    ok(pent && pent.amount === 12, "Penthouse Suite on a house run pays 3 ◈ per reliable room (got " + (pent && pent.amount) + ")");
+  }
+  {
+    const cass = LD.execById("cassius");
+    const off = (LD.PERKS || []).filter((p) => p.id === "offshore")[0];
+    ok(/Pay-offs cost 20% less/.test(cass.blurb) && /late contractor/.test(cass.blurb) && /Engineers are outsourced/.test(cass.blurb) &&
+      /pay-offs 20% cheaper/.test(cass.trait) && !/Going private keeps 80%/.test(cass.blurb),
+      "Cassius blurb and trait no longer sell going private");
+    ok(off && /House pay-offs 20% cheaper/.test(off.up) && /going private keeps 70%/.test(off.up),
+      "Offshore Account text covers the house retarget and still names the shop effect");
   }
   {
     let st = openBunker(houseRun({ seed: "fight-nia" }));

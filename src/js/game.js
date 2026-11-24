@@ -90,6 +90,7 @@
       lastBunkerAction: null,
       dealPickedThisTurn: false,
       bunkerActedThisTurn: false,
+      ruleset: opts.ruleset || (LD.HOUSE_RULES ? "house" : "shop"),
       log: [],
       ended: false,
       ending: null,
@@ -103,6 +104,7 @@
     if (LD.initWorld) LD.initWorld(state);
     if (LD.applyStartWorldMods) LD.applyStartWorldMods(state);
     if (LD.fyInit) LD.fyInit(state, opts);
+    if (LD.houseInit) LD.houseInit(state);
     pushLog(state, "Q" + state.turn + " opens. " + exec.name + ", " + exec.firm + (LD.ratingName ? " · rated " + LD.ratingName(rating) : "") + ".");
     return state;
   }
@@ -360,8 +362,10 @@
       }
     }
     if (payload.unrest) {
-      state.unrest = clamp(state.unrest + payload.unrest, 0, LD.MAX_UNREST);
-      notes.push((payload.unrest >= 0 ? "+" : "") + payload.unrest + " unrest");
+      var unrestAmt = payload.unrest;
+      if (LD.houseAdjustUnrest) unrestAmt = LD.houseAdjustUnrest(state, unrestAmt, deal);
+      state.unrest = clamp(state.unrest + unrestAmt, 0, LD.MAX_UNREST);
+      notes.push((unrestAmt >= 0 ? "+" : "") + unrestAmt + " unrest");
     }
     if (payload.collapse) {
       state.collapse = clamp(state.collapse + payload.collapse, 0, LD.MAX_COLLAPSE);
@@ -369,7 +373,9 @@
     }
     if (payload.flags) setFlags(state, payload.flags);
     if (payload.special === "divertFilters") {
-      if (state.bunker.air.level < 1) {
+      if (LD.isHouse && LD.isHouse(state) && LD.houseGrantSystem) {
+        LD.houseGrantSystem(state, { id: "air", level: 1, quality: "cheap" }, notes);
+      } else if (state.bunker.air.level < 1) {
         state.bunker.air.level = 1;
         state.bunker.air.quality = "cheap";
         notes.push("Air L1 installed (discount crates)");
@@ -385,6 +391,7 @@
   }
 
   function grantSystem(state, grant, notes) {
+    if (LD.houseGrantSystem && LD.houseGrantSystem(state, grant, notes)) return;
     var sys = state.bunker[grant.id];
     if (!sys) return;
     if (sys.level < grant.level) {
@@ -400,7 +407,7 @@
     }
   }
 
-  function scheduleDelay(state, delay, sourceTitle) {
+  function scheduleDelay(state, delay, sourceTitle, deal) {
     if (!delay) return null;
     var exec = execById(state.executiveId);
     var bonus = delay.noBonus ? 0 : ((exec.perks && exec.perks.delayBonus) || 0);
@@ -421,7 +428,8 @@
       effectsIf: delay.effectsIf || null,
       strain: delay.strain || null,
       ease: delay.ease || null,
-      install: delay.install || null
+      install: delay.install || null,
+      tags: (delay.tags || (deal && deal.tags) || null)
     };
     state.pending.push(item);
     return item;
@@ -493,7 +501,7 @@
       state.unrest = clamp(state.unrest - m.calmBonus, 0, LD.MAX_UNREST);
       notes.push("−" + m.calmBonus + " unrest (media darling)");
     }
-    if (payload.delay) scheduleDelay(state, payload.delay, deal.title);
+    if (payload.delay) scheduleDelay(state, payload.delay, deal.title, deal);
     var supply = defaultSupply(deal, payload);
     if (supply.ease) applyGridMap(state, supply.ease, -1, notes);
     if (supply.strain) {
@@ -503,7 +511,7 @@
         turns: 0 + bonusS,
         strain: supply.strain,
         log: "Public networks you still buy from have tightened."
-      }, deal.title);
+      }, deal.title, deal);
       Object.keys(supply.strain).forEach(function (g) {
         var next = Math.min(LD.GRID_DISRUPTED, gridLevel(state, g) + supply.strain[g]);
         notes.push(g + " supply will be " + gridLabel(next) + " at close");
@@ -638,6 +646,7 @@
 
   function buyUpgrade(state, systemId, quality) {
     state = deepClone(state);
+    if (LD.isHouse && LD.isHouse(state)) return { ok: false, error: LD.HOUSE_SHOP_CLOSED || "The house is not a shop.", state: state };
     var err = bunkerGuard(state);
     if (err) return { ok: false, error: err, state: state };
     if (quality !== "sound" && quality !== "cheap") {
@@ -699,6 +708,7 @@
 
   function hireEngineer(state) {
     state = deepClone(state);
+    if (LD.isHouse && LD.isHouse(state)) return { ok: false, error: LD.HOUSE_ENGINEER_CLOSED || "Helen Cho is the engineer, if you let her in.", state: state };
     var err = bunkerGuard(state);
     if (err) return { ok: false, error: err, state: state };
     if (state.engineer) return { ok: false, error: "A chief engineer is already retained.", state: state };
@@ -717,11 +727,12 @@
   }
 
   function canBeginConversion(state) {
-    return !(LD.fyBusy && LD.fyBusy(state)) && !state.ended && state.phase === "bunker" && !state.bunkerActedThisTurn && !state.converting && state.ap >= LD.BUNKER_AP;
+    return !(LD.isHouse && LD.isHouse(state)) && !(LD.fyBusy && LD.fyBusy(state)) && !state.ended && state.phase === "bunker" && !state.bunkerActedThisTurn && !state.converting && state.ap >= LD.BUNKER_AP;
   }
 
   function beginConversion(state, systemId, quality) {
     state = deepClone(state);
+    if (LD.isHouse && LD.isHouse(state)) return { ok: false, error: LD.HOUSE_SHOP_CLOSED || "The house is not a shop.", state: state };
     var err = bunkerGuard(state);
     if (err) return { ok: false, error: err, state: state };
     if (state.converting) return { ok: false, error: "You have already converted to private supply.", state: state };
@@ -780,6 +791,10 @@
   }
 
   function systemReliable(state, systemId) {
+    if (LD.houseReliable) {
+      var hr = LD.houseReliable(state, systemId);
+      if (hr !== null && hr !== undefined) return hr;
+    }
     var sys = state.bunker[systemId];
     if (!sys || sys.level < LD.WIN_LEVEL) return false;
     var fyRel = LD.fyReliable ? LD.fyReliable(state, sys) : null;
@@ -791,6 +806,10 @@
   }
 
   function evacuationResult(state) {
+    if (LD.houseEvacuation) {
+      var he = LD.houseEvacuation(state);
+      if (he) return he;
+    }
     var missing = [];
     var unreliable = [];
     LD.SYSTEMS.forEach(function (s) {
@@ -864,6 +883,7 @@
         /* Imani only relieves collapse on food-tagged delayed pain if we stored it; keep simple: small relief always on delayed collapse. */
       }
       if (unrest) {
+        if (LD.houseAdjustUnrest) unrest = LD.houseAdjustUnrest(state, unrest, item);
         state.unrest = clamp(state.unrest + unrest, 0, LD.MAX_UNREST);
         notes.push((unrest >= 0 ? "+" : "") + unrest + " unrest");
       }
@@ -992,6 +1012,7 @@
     pushLog(state, "Quarter closes. Collapse drifts +" + tick + ".");
     maybeEnd(state);
     if (!state.ended && LD.fyYearEnd) LD.fyYearEnd(state);
+    if (!state.ended && LD.houseBeforeClose) LD.houseBeforeClose(state);
     trackQuarter(state);
     if (state.ended) return { ok: true, state: state, fired: fired, ended: true, tick: tick, world: worldEvents };
 
@@ -1011,6 +1032,7 @@
     var arrivals = applyIncomingInstalls(state);
     if (arrivals.length) fired = fired.concat(arrivals);
     pushLog(state, "Q" + state.turn + " opens.");
+    if (LD.houseAfterClose) LD.houseAfterClose(state);
     var draft = LD.fyAfterClose ? LD.fyAfterClose(state) : null;
     return { ok: true, state: state, fired: fired, ended: false, tick: tick, world: worldEvents, draft: draft };
   }

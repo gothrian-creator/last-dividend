@@ -29,6 +29,7 @@ JS_NAMES = [
     "meta.js",
     "rivals.js",
     "fy.js",
+    "house.js",
     "eras.js",
     "lore.js",
     "missions.js",

@@ -169,8 +169,15 @@
         if (f.fight && !f.fight.done) { var gu = gone.map(function (c) { return c.u; }); ["hand", "draw", "disc"].forEach(function (p) { f.fight[p] = f.fight[p].filter(function (x) { return gu.indexOf(x) === -1; }); }); }
         msg = "Settled out of court: " + gone.length + " curse" + (gone.length === 1 ? "" : "s") + " gone."; break;
       case "pod": var low = LD.SYSTEMS.map(function (x) { return x.id; }).sort(function (a, b) { return state.bunker[a].level - state.bunker[b].level; })[0];
-        var b0 = state.bunker[low]; b0.level += 1; if (b0.level === 1 || !b0.quality) b0.quality = "cheap";
-        msg = "A prefab pod docks. Your " + low + " room reaches Lv " + b0.level + "."; syncRoomCards(state); break;
+        if (LD.isHouse && LD.isHouse(state) && LD.houseGrantSystem) {
+          var notesP = [];
+          LD.houseGrantSystem(state, { id: low, level: (state.bunker[low].level || 0) + 1, quality: "cheap" }, notesP);
+          msg = "A prefab pod docks. " + (notesP[0] || ("Your " + low + " room is unchanged."));
+        } else {
+          var b0 = state.bunker[low]; b0.level += 1; if (b0.level === 1 || !b0.quality) b0.quality = "cheap";
+          msg = "A prefab pod docks. Your " + low + " room reaches Lv " + b0.level + "."; syncRoomCards(state);
+        }
+        break;
     }
     d.used = it.per === "act" ? f.act : true;
     f.itemsUsed = (f.itemsUsed || 0) + 1;
@@ -1440,6 +1447,8 @@
   function handSize(state) { return LD.DOOR.HAND + (has(state, "rolodex") ? 1 : 0); }
   function startRound(state, fg) {
     fg.block = 0;
+    fg.playedBlock = 0;
+    if (LD.houseFightStart) LD.houseFightStart(state, fg);
     var carry = fg.round > 1 && trait(state, "patience") && fg.inf > 0 ? 1 : 0;
     fg.inf = LD.DOOR.INF + carry + (fg.flags.nextInf || 0) + (fg.round === 1 && has(state, "chief") ? 1 : 0);
     fg.flags.nextInf = 0; fg.flags.cancel = false; fg.flags.whisper = false; fg.flags.defer = false; fg.flags.payCash = 0;
@@ -1563,7 +1572,7 @@
     if (o.sp === "cut30") fg.scrut = Math.max(0, fg.scrut - Math.round(fg.scrut * 0.3));
     if (fg.scrut < before) fx.push({ k: "pressure", n: before - fg.scrut });
     tally(fg, info.pres, before - fg.scrut);
-    if (info.d) { fg.block += info.d; fx.push({ k: "deny", n: info.d }); }
+    if (info.d) { fg.block += info.d; fg.playedBlock = (fg.playedBlock || 0) + info.d; fx.push({ k: "deny", n: info.d }); }
     if (info.d && info.pres === "legal") fg.flags.legalUsed = true;
     /* Social pressure: card flags, the Gallery, the hidden marker. */
     if (o.gfloor) { fg.gfloor = true; if (fg.gal < 0) fg.gal = 0; }
@@ -1649,7 +1658,7 @@
       if (I.rider === "leak") { addCurse(state, "c_leak", "the story ran"); out.riders.push("A Leak joins your deck."); }
       if (I.rider === "claim" && fg.claimed && fg.region && state.world.regions[fg.region]) { state.world.regions[fg.region].owned = false; fg.claimed = false; out.riders.push("Outbid: you lose the claim on " + LD.REGION_NAMES[fg.region] + "."); }
       if (I.rider === "asset") { var nw = null; for (var i = f0(state).hand.length - 1; i >= 0; i--) { var ac = cardById(f0(state).hand[i].id); if (ac && !ac.liability) { nw = ac; break; } } if (nw) { removeCard(state, nw.id); out.riders.push(nw.name + " is exposed and written off."); } }
-      if (I.rider === "strip") { var rooms = LD.SYSTEMS.map(function (s) { return s.id; }).sort(function (a, b) { return state.bunker[b].level - state.bunker[a].level; }); var b = state.bunker[rooms[0]]; if (b.level > 0) { b.level -= 1; out.riders.push("The raider strips your " + rooms[0] + " room to Lv " + b.level + "."); } }
+      if (I.rider === "strip") { var rooms = LD.SYSTEMS.map(function (s) { return s.id; }).sort(function (a, b) { return state.bunker[b].level - state.bunker[a].level; }); var b = state.bunker[rooms[0]]; if (LD.isHouse && LD.isHouse(state) && state.house && state.house.rooms[rooms[0]]) { var hr = state.house.rooms[rooms[0]]; if (hr.on && hr.quality === "sound") { hr.quality = "cheap"; if (LD.houseSync) LD.houseSync(state); out.riders.push("The raider cracks your " + rooms[0] + " room."); } else if (hr.on) { out.riders.push("The raider works over your " + rooms[0] + " room, already cheap."); } } else if (b.level > 0) { b.level -= 1; out.riders.push("The raider strips your " + rooms[0] + " room to Lv " + b.level + "."); } }
       if (I.rider === "drain") { var lost = Math.round(state.cash * 0.15); state.cash -= lost; fg.leaks.cash += lost; out.riders.push("The drain takes another $" + lost + "M."); }
     }
     if (I.grow && !fg.flags.noswell) fg.swell += I.grow;
@@ -1659,7 +1668,9 @@
   LD.fightEndRound = function (state) {
     state = clone(state);
     var why = fightCheck(state); if (why) return { ok: false, error: why, state: state };
-    var f = fy(state), fg = f.fight, it = intentNow(state, fg);
+    var f = fy(state), fg = f.fight;
+    if (LD.houseFightBeforeHit) LD.houseFightBeforeHit(state, fg);
+    var it = intentNow(state, fg);
     var hit = applyThrough(state, fg, it), I1 = LD.INTENTS[it.k];
     if (it.through > 0) { fg.hits = (fg.hits || 0) + 1; if (it.through >= 4 && !trait(state, "equanimity")) hit.gal = galMove(state, fg, -1); } /* a hit the room can see */
     if (I1.ramp && it.through) { fg.ramp = (fg.ramp || 0) + I1.ramp; hit.ramp = I1.ramp; }
@@ -1754,6 +1765,7 @@
     f.fights = f.fights || { won: 0, lost: 0, settled: 0 };
     f.fights[win ? "won" : settled ? "settled" : "lost"] += 1;
     state.log.unshift({ turn: t, text: fg.name + ": " + (win ? "you win" : settled ? "settled for $" + cost + "M" : "they got through") + (notes.length ? " (" + notes.join(", ") + ")" : "") + "." });
+    if (LD.houseAfterFight) LD.houseAfterFight(state, fg);
     rebuildMods(state);
   }
   /* Leave the door: back to the desk (the deal is already signed). */
@@ -1909,6 +1921,7 @@
 
   /* ---------- Bunker room cards, going private ---------- */
   function syncRoomCards(state) {
+    if (LD.isHouse && LD.isHouse(state)) return [];
     var f = fy(state); if (!f || !f.deck) return [];
     f.roomCards = f.roomCards || {};
     var added = [];

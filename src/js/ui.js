@@ -305,6 +305,7 @@
         var mr = loadMeta().midRun;
         jyDepart({ label: "Return ticket", stamp: "Resumed", era: mr && LD.actOf ? LD.actOf(Math.min(12, mr.turn || 1)) : 1, sub: mr ? "Q" + mr.turn : "" }, function () {
           state = loadMeta().midRun;
+          if (state && LD.adoptRun) LD.adoptRun(state);
           if (state && LD.ensureSupply) LD.ensureSupply(state);
           if (state && LD.ensureWorld) LD.ensureWorld(state);
           if (state && LD.ensureFY) LD.ensureFY(state);

@@ -147,15 +147,23 @@
       if (l3) add("Penthouse Suite", 3 * l3, l3 + " Lv 3 room" + (l3 === 1 ? "" : "s") + " × 3", "win");
     }
     if (win) {
-      var sb = sealBonus(state);
-      if (sb.n) add("Overbuilt rooms", sb.n * sb.perRoom, sb.rooms.map(function (r) { return r.name; }).join(", ") + " at Lv 3 × " + sb.perRoom, "win");
-      if (sb.full) add("Fortress seal", sb.fullDiv, "All 4 rooms at Lv 3", "win");
+      var sb = LD.sealBonus ? LD.sealBonus(state) : sealBonus(state);
+      if (LD.isHouse && LD.isHouse(state)) {
+        if (sb.full) add("Well-stocked house", sb.fullDiv, "Four rooms on, Nia in, stores at 5+", "win");
+      } else {
+        if (sb.n) add("Overbuilt rooms", sb.n * sb.perRoom, sb.rooms.map(function (r) { return r.name; }).join(", ") + " at Lv 3 × " + sb.perRoom, "win");
+        if (sb.full) add("Fortress seal", sb.fullDiv, "All 4 rooms at Lv 3", "win");
+      }
       add("Successful exit", 25, "The doors closed with you inside", "win");
       add("Headroom", Math.max(0, Math.floor((90 - state.collapse) / 2)), "Sealed at collapse " + state.collapse, "win");
     }
     var md = mandateById(state.mandate);
     var met = mandateMet(state);
-    if (md) add("Board mandate", met ? LD.MANDATE_BONUS : 0, md.text + (met ? " · met" : win ? " · missed" : " · needs a win"), "win");
+    if (md) {
+      var mdText = md.text;
+      if (LD.isHouse && LD.isHouse(state) && state.mandate === "public") mdText = "Never use the late contractor";
+      add("Board mandate", met ? LD.MANDATE_BONUS : 0, mdText + (met ? " · met" : win ? " · missed" : " · needs a win"), "win");
+    }
     var baseSub = 0, winSub = 0;
     lines.forEach(function (l) { if (l.kind === "win") winSub += l.amount; else baseSub += l.amount; });
     var rating = state.rating | 0;
@@ -241,7 +249,7 @@
     /* Fortress seal: the first one unlocks the Gilded Vault fit-out (an existing Portfolio cosmetic). */
     payout.sealUnlock = null;
     if (payout.win) {
-      var fsb = sealBonus(state), ck = LD.SEAL_BONUS.full.cosmetic;
+      var fsb = LD.sealBonus ? LD.sealBonus(state) : sealBonus(state), ck = LD.SEAL_BONUS.full.cosmetic;
       if (fsb.full && meta.owned.indexOf(ck) === -1) { meta.owned.push(ck); payout.sealUnlock = ck; }
     }
     var before = LD.levelFromXp((meta.xp[ex] | 0));

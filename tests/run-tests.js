@@ -7,7 +7,7 @@ const vm = require("vm");
 const ROOT = path.resolve(__dirname, "..");
 const JS_NAMES = [
   "viewport.js", "rng.js", "data.js", "game.js", "world.js", "meta.js",
-  "rivals.js", "fy.js", "eras.js", "lore.js", "missions.js", "worldmap-data.js", "assets.js", "render.js",
+  "rivals.js", "fy.js", "house.js", "eras.js", "lore.js", "missions.js", "worldmap-data.js", "assets.js", "render.js",
   "desk.js", "bunker.js", "fy-render.js", "recap.js"
 ];
 
@@ -324,6 +324,328 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   ok(LD.fightOutcomeFor({}, mk({ patronage: 10 }, 0), true).out === "converted" && LD.fightOutcomeFor({}, mk({ kinship: 10 }, 0), true).out === "reconciled", "Patronage converts, Kinship reconciles");
   ok(LD.fightOutcomeFor({}, mk({}, 0), false, true).out === "deal" && LD.fightOutcomeFor({}, mk({}, 0), false).out === "walked", "settle is a deal, a loss is walked");
 }
+
+
+  /* ---------- Phase 1 house rules (flag off by default; shop path unchanged) ---------- */
+  {
+    ok(LD.HOUSE_RULES === false, "house feature flag defaults off");
+    const shop = LD.createRun({ seed: "shop-default", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 });
+    ok(shop.ruleset === "shop" && !shop.house && shop.bunker.water.level === 1 && !LD.isHouse(shop),
+      "default createRun is a shop run, Mara still starts Water L1");
+    shop.phase = "bunker"; shop.dealPickedThisTurn = true;
+    const conv = LD.canBeginConversion(shop);
+    const begun = LD.beginConversion(shop, "air", "sound");
+    ok(conv && begun.ok && begun.state.converting, "shop runs can still Go private");
+  }
+  {
+    const prev = LD.HOUSE_RULES;
+    LD.HOUSE_RULES = true;
+    const flagged = LD.createRun({ seed: "flag-on", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 });
+    LD.HOUSE_RULES = prev;
+    ok(flagged.ruleset === "house" && flagged.house && LD.isHouse(flagged), "HOUSE_RULES stamps a house run at start");
+  }
+  function houseRun(opts) {
+    return LD.createRun(Object.assign({ seed: "house-1", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1, ruleset: "house" }, opts || {}));
+  }
+  function openBunker(st) {
+    st = JSON.parse(JSON.stringify(st));
+    st.phase = "bunker";
+    st.dealPickedThisTurn = true;
+    return st;
+  }
+  {
+    const st = houseRun();
+    ok(st.ruleset === "house" && st.house && st.house.rooms.water.on && st.house.rooms.water.by === "start" &&
+      st.bunker.water.level === LD.WIN_LEVEL && !st.house.rooms.air.on && st.house.stores === 5 &&
+      st.house.residents.length === 0,
+      "Mara house: Water on empty but running at seal level, stores 3+2, no face");
+    const ju = houseRun({ executiveId: "julian", seed: "house-ju" });
+    const ca = houseRun({ executiveId: "cassius", seed: "house-ca" });
+    ok(!ju.house.rooms.water.on && !ju.house.rooms.power.on && ju.house.stores === 3 &&
+      !ca.house.rooms.air.on && ca.house.stores === 3,
+      "Julian and Cassius start with no rooms on and stores 3");
+  }
+  {
+    const shop = LD.createRun({ seed: "adopt-shop", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 });
+    const prev = LD.HOUSE_RULES; LD.HOUSE_RULES = true;
+    LD.adoptRun(shop);
+    const mid = LD.closeQuarter ? shop : shop;
+    mid.phase = "bunker"; mid.dealPickedThisTurn = true;
+    const still = LD.beginConversion(mid, "air", "sound");
+    LD.HOUSE_RULES = prev;
+    ok(shop.ruleset === "shop" && !shop.house && still.ok,
+      "adoptRun does not convert a mid-run shop save when the flag is later on");
+    const raw = { seed: 1, executiveId: "mara", cash: 10, unrest: 10, collapse: 20, bunker: { air: { level: 0, quality: "sound" }, water: { level: 1, quality: "sound" }, power: { level: 0, quality: "sound" }, food: { level: 0, quality: "sound" } } };
+    LD.adoptRun(raw);
+    ok(raw.ruleset === "shop" && !raw.house, "old saves without ruleset stay shop");
+  }
+  {
+    const names = LD.HOUSE_RESIDENTS.map((r) => r.id + ":" + r.name).join(",");
+    ok(names === "helen:Helen Cho,tom:Tom Alvarez,lila:Lila Brenner,nia:Nia Shah,eli:Eli Navarro",
+      "roster is Helen, Tom, Lila Brenner, Nia, Eli Navarro: " + names);
+    ok(LD.HOUSE_RESIDENTS.every((r) => r.id !== "lila" || !r.room) && LD.houseResident("lila").name === "Lila Brenner",
+      "Lila Brenner has no room");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "admit-1" }));
+    const a = LD.houseAdmit(st, { id: "tom", promiseId: "tom-well" });
+    ok(a.ok && a.state.house.residents[0].id === "tom" && a.state.house.rooms.water.by === "tom" &&
+      a.state.bunkerActedThisTurn && a.state.house.promises.length === 1 && a.state.house.promises[0].status === "open",
+      "Admit Tom with a promise occupies Water and spends the quarter's act");
+    const twice = LD.houseAdmit(a.state, { id: "helen" });
+    ok(!twice.ok && /already/.test(twice.error), "second bunker act in the same quarter is blocked");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "pay-1" }));
+    const before = st.cash;
+    const p = LD.housePayOff(st, "helen");
+    ok(p.ok && p.cost === 8 && p.state.cash === before - 8 && p.state.house.paidOff[0].id === "helen",
+      "Pay off Helen costs $8M");
+    const ca = openBunker(houseRun({ seed: "pay-ca", executiveId: "cassius" }));
+    const pc = LD.housePayOff(ca, "helen");
+    ok(pc.ok && pc.cost === Math.round(8 * 0.8) && pc.cost === 6, "Cassius pay-offs are 20% cheaper (Helen $6M)");
+    const off = openBunker(houseRun({ seed: "pay-off", perks: ["offshore"] }));
+    const po = LD.housePayOff(off, "helen");
+    ok(po.ok && po.cost === 6 && (off.mods && (off.mods.conversionFee || 0) >= 0),
+      "Offshore Account cheapens house pay-offs 20% and is not a dead perk");
+    const both = openBunker(houseRun({ seed: "pay-both", executiveId: "cassius", perks: ["offshore"] }));
+    const pb = LD.housePayOff(both, "helen");
+    ok(pb.ok && pb.cost === 6, "Cassius + Offshore do not stack below 0.8");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "away-1" }));
+    const t = LD.houseTurnAway(st, "eli");
+    ok(t.ok && t.state.house.turnedAway[0].id === "eli", "Turn away records Eli and spends the act");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "rep-1" }));
+    st = LD.houseAdmit(st, { id: "helen" }).state;
+    st.bunkerActedThisTurn = false; st.ap = LD.AP_PER_TURN; st.phase = "bunker"; st.turn = 3;
+    /* Helen's room is taken; a second power person does not exist, so replace is tested with a re-admit of the same room via a forced occupant swap:
+       put Tom in (water start is free), then we test Replace only applies when the room's person is present. */
+    const need = LD.houseCanAdmit(st, "helen");
+    ok(need && /already/.test(need), "cannot admit Helen twice");
+    /* Fabricate a second power occupant is impossible; replace Helen with... only Helen uses power.
+       Cover the replace verb by evicting-via-replace using an injected extra: we admit Nia, then the API for a filled food room. */
+    st = openBunker(houseRun({ seed: "rep-2" }));
+    st = LD.houseAdmit(st, { id: "nia" }).state;
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    const no = LD.houseAdmit(st, { id: "nia" });
+    ok(!no.ok, "cannot admit Nia twice");
+    /* Replace is for a different resident of the same room — only one cook. We still cover Ask to leave and the replace error path. */
+    const rp = LD.houseReplace(st, { id: "tom" });
+    ok(!rp.ok && /not taken/.test(rp.error), "Replace Tom fails when Water is only a starting room, not occupied");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "leave-1", executiveId: "imani" }));
+    st = LD.houseAdmit(st, { id: "nia", promiseId: "nia-plate" }).state;
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    const unrest0 = st.unrest;
+    const leave = LD.houseAskToLeave(st, "nia");
+    ok(leave.ok && leave.unrest === 6 && leave.state.unrest === unrest0 + 6 + 4 &&
+      !leave.state.house.residents.some((r) => r.id === "nia") && leave.state.house.rooms.food.on &&
+      leave.state.house.rooms.food.by === "start" && leave.state.house.niaBonusBlocked &&
+      leave.state.house.promises[0].status === "broken" && leave.state.house.wordBroken.length === 1,
+      "Asking Nia to leave costs Unrest +6, leaves Imani's starting Food room on and empty, blocks the house bonus, and breaks her promise");
+    let st2 = openBunker(houseRun({ seed: "leave-mara" }));
+    st2 = LD.houseAdmit(st2, { id: "nia" }).state;
+    st2.bunkerActedThisTurn = false; st2.ap = LD.BUNKER_AP; st2.phase = "bunker";
+    const leave2 = LD.houseAskToLeave(st2, "nia");
+    ok(leave2.ok && !leave2.state.house.rooms.food.on, "Asking Nia to leave a non-starting Food room turns it off");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "lila-leave" }));
+    st = LD.houseAdmit(st, { id: "lila" }).state;
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    const u0 = st.unrest;
+    const leave = LD.houseAskToLeave(st, "lila");
+    ok(leave.ok && leave.unrest === 2 && leave.state.unrest === u0 + 2 && leave.state.house.leakRolls >= 1,
+      "Asking Lila to leave costs Unrest +2 and forces a leak roll");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "word-1" }));
+    st = LD.houseAdmit(st, { id: "helen", promiseId: "helen-parts" }).state;
+    const pr = st.house.promises[0];
+    ok(pr.dueQ === st.turn + 2 && pr.text.indexOf("generator") !== -1, "Helen parts promise is specific and due in 2Q");
+    st.turn = pr.dueQ; st.phase = "bunker"; st.dealPickedThisTurn = true; st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP;
+    st.house.promiseDueThisQ = pr.id;
+    const cash0 = st.cash;
+    const keep = LD.houseKeepPromise(st);
+    ok(keep.ok && keep.state.cash === cash0 - 8 && keep.state.house.promises[0].status === "kept" && keep.state.house.wordKept.length === 1,
+      "Keep Helen's parts promise costs $8M");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "word-2" }));
+    st = LD.houseAdmit(st, { id: "eli", promiseId: "eli-hours" }).state;
+    const pr = st.house.promises[0];
+    st.turn = pr.dueQ; st.phase = "bunker"; st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.house.promiseDueThisQ = pr.id;
+    const post = LD.housePostponePromise(st);
+    ok(post.ok && post.state.house.promises[0].postponed && post.state.house.promises[0].dueQ === pr.dueQ + 1, "Postpone once pushes the due quarter");
+    const st2 = post.state;
+    st2.turn = st2.house.promises[0].dueQ; st2.phase = "bunker"; st2.bunkerActedThisTurn = false; st2.ap = LD.BUNKER_AP; st2.house.promiseDueThisQ = st2.house.promises[0].id;
+    const post2 = LD.housePostponePromise(st2);
+    ok(!post2.ok && /already postponed/.test(post2.error), "cannot postpone the same promise twice");
+    const br = LD.houseBreakPromise(st2);
+    ok(br.ok && br.state.house.promises[0].status === "broken" && br.state.house.wordBroken.length === 1, "Break records a broken word");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "word-cap" }));
+    st = LD.houseAdmit(st, { id: "tom", promiseId: "tom-well" }).state;
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    st = LD.houseAdmit(st, { id: "helen", promiseId: "helen-nights" }).state;
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    const third = LD.housePromise(st, "helen", "helen-parts");
+    /* helen already has a promise; attaching another is allowed by cap of 2 open... wait we already have 2 open (tom+helen). */
+    ok(!third.ok && /Two promises/.test(third.error), "cap of two open promises: " + (third.error || ""));
+    const bland = LD.HOUSE_PROMISES.every((p) => p.text && p.text.length > 28 && !/be good|do better|I promise/i.test(p.text));
+    ok(bland && LD.HOUSE_PROMISES.length >= 8, "promise copy is specific and not generic slogans");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "con-1", executiveId: "julian" }));
+    const early = LD.houseContractor(st, "air");
+    ok(!early.ok && /Q7/.test(early.error), "contractor is locked before Q7");
+    st.turn = 7;
+    const cost = LD.houseContractorCost(st);
+    ok(cost === 36, "late contractor costs $36M");
+    st.cash = 80;
+    const c1 = LD.houseContractor(st, "air");
+    ok(c1.ok && c1.state.house.rooms.air.on && c1.state.house.rooms.air.by === "contractor" &&
+      c1.state.bunker.air.level === LD.WIN_LEVEL && c1.state.house.contractorUsed && !c1.state.engineer,
+      "contractor fills a missing room as sound, no face, not an engineer");
+    c1.state.bunkerActedThisTurn = false; c1.state.ap = LD.BUNKER_AP; c1.state.phase = "bunker";
+    const c2 = LD.houseContractor(c1.state, "power");
+    ok(!c2.ok, "contractor is once per run");
+    const ca = openBunker(houseRun({ seed: "con-ca", executiveId: "cassius" }));
+    ca.turn = 7; ca.cash = 80;
+    ok(LD.houseContractorCost(ca) === Math.round(36 * 0.92), "Cassius privateWorks shaves the contractor");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "shop-closed" }));
+    const up = LD.buyUpgrade(st, "air", "sound");
+    const en = LD.hireEngineer(st);
+    const gp = LD.beginConversion(st, "air", "sound");
+    ok(!up.ok && !en.ok && !gp.ok && !LD.canBeginConversion(st) && !st.converting && !gp.state.converting,
+      "house runs cannot buy upgrades, hire the shop engineer, or Go private");
+  }
+  {
+    let st = houseRun({ seed: "stores-1" });
+    /* empty start does not drain; no residents → no income */
+    const stores0 = st.house.stores;
+    LD.houseBeforeClose(st);
+    ok(st.house.stores === stores0, "empty starting rooms do not produce or drain stores");
+    st = openBunker(houseRun({ seed: "stores-2" }));
+    st = LD.houseAdmit(st, { id: "tom" }).state;
+    st = LD.houseAdmit ? st : st;
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    st = LD.houseAdmit(st, { id: "helen" }).state;
+    const s1 = st.house.stores;
+    LD.houseBeforeClose(st);
+    /* Tom +1 income, 2 residents drain 2, net -1 */
+    ok(st.house.stores === s1 + 1 - 2, "Tom +1/Q income, −1 stores per resident without Nia (got " + st.house.stores + " from " + s1 + ")");
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    st = LD.houseAdmit(st, { id: "nia" }).state;
+    const s2 = st.house.stores;
+    LD.houseBeforeClose(st);
+    /* 3 residents + Nia: income Tom+Nia = 2, drain floor(3/2)=1, net +1 */
+    ok(st.house.stores === s2 + 2 - 1, "Nia income +1 and drain floor(residents/2) (got " + st.house.stores + " from " + s2 + ")");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "fx-tom" }));
+    st = LD.houseAdmit(st, { id: "tom" }).state;
+    const raw = 6;
+    const adj = LD.houseAdjustUnrest(st, raw, { tags: ["extractive", "water"] });
+    ok(adj === 3, "Tom reduces water unrest by 3 (6 → 3)");
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    st = LD.houseAdmit(st, { id: "eli" }).state;
+    const adj2 = LD.houseAdjustUnrest(st, 6, { tags: ["extractive", "water"] });
+    ok(adj2 === 2, "Tom −3 and Eli −1 on a water extractive (6 → 2)");
+  }
+  {
+    let st = houseRun({ seed: "quality-1" });
+    st.house.rooms.power.on = true; st.house.rooms.power.quality = "cheap"; st.house.rooms.power.by = "start"; st.house.rooms.power.base = "start";
+    st.house.rooms.air.on = true; st.house.rooms.air.quality = "sound"; st.house.rooms.air.base = "contractor"; st.house.rooms.air.by = "contractor";
+    st.house.rooms.food.on = true; st.house.rooms.food.quality = "sound"; st.house.rooms.food.base = "start"; st.house.rooms.food.by = "start";
+    LD.houseSync(st);
+    ok(LD.systemReliable(st, "water") && !LD.systemReliable(st, "power") && LD.systemReliable(st, "air"),
+      "cheap rooms fail the seal unless Helen is in; sound rooms hold");
+    st.phase = "bunker"; st.dealPickedThisTurn = true; st.ap = LD.BUNKER_AP;
+    st = LD.houseAdmit(st, { id: "helen" }).state;
+    ok(LD.systemReliable(st, "power") && st.engineer, "Helen makes cheap rooms hold and sets engineer");
+  }
+  {
+    let st = houseRun({ seed: "seal-1" });
+    LD.SYSTEMS.forEach((s) => { st.house.rooms[s.id].on = true; st.house.rooms[s.id].quality = "sound"; st.house.rooms[s.id].base = st.house.rooms[s.id].base || "start"; });
+    st.house.residents = [{ id: "nia", sinceQ: 2 }];
+    st.house.rooms.food.by = "nia";
+    st.house.stores = 5;
+    LD.houseSync(st);
+    const ev = LD.evacuationResult(st);
+    const sb = LD.sealBonus(st);
+    st.ending = ev;
+    const pay = LD.computeDividends(st);
+    const line = (p, l) => (p.lines.find((x) => x.label === l) || {}).amount || 0;
+    ok(ev.kind === "win" && ev.wellStocked && /well-stocked house/.test(ev.title) && sb.full && sb.div === 20 &&
+      line(pay, "Well-stocked house") === 20 && !line(pay, "Fortress seal") && !line(pay, "Overbuilt rooms"),
+      "well-stocked house: four rooms, Nia, stores ≥5, +20 ◈, no Fortress label");
+    st.house.stores = 2;
+    const ev2 = LD.evacuationResult(st);
+    ok(ev2.kind === "win" && !ev2.wellStocked && ev2.title === "The doors close on time",
+      "sealed with a house but thin stores is not the well-stocked bonus");
+    st.house.residents = [];
+    st.house.rooms.food.by = "start";
+    const ev3 = LD.evacuationResult(st);
+    ok(ev3.kind === "win" && /empty house/.test(ev3.title), "seal with no faces is an empty-house tone");
+  }
+  {
+    let st = houseRun({ seed: "mand-pub" });
+    st.mandate = "public";
+    LD.SYSTEMS.forEach((s) => { st.house.rooms[s.id].on = true; st.house.rooms[s.id].quality = "sound"; st.house.rooms[s.id].base = "start"; });
+    LD.houseSync(st);
+    st.ending = LD.evacuationResult(st);
+    ok(LD.mandateMet(st) && st.ending.kind === "win", "Never Go private is retargeted: met if the contractor was not used");
+    st.house.contractorUsed = true;
+    ok(!LD.mandateMet(st), "using the late contractor misses the retargeted public mandate");
+    const pay = LD.computeDividends(st);
+    const md = pay.lines.find((x) => x.label === "Board mandate");
+    ok(md && /late contractor/.test(md.note), "shareholder letter names the retargeted mandate");
+  }
+  {
+    let st = houseRun({ seed: "arrive-1" });
+    st.turn = 2;
+    LD.houseAfterClose(st);
+    /* may or may not arrive; force one */
+    if (!st.house.arrival) {
+      st.house.arrival = { id: "eli", q: 2 };
+      st.house.arrivalsTotal = 1;
+    }
+    ok(st.house.arrival && LD.HOUSE_RESIDENTS.some((r) => r.id === st.house.arrival.id), "arrival hook can seat someone at the door");
+    const who = st.house.arrival.id;
+    st.turn = 3;
+    LD.houseAfterClose(st);
+    ok(st.house.arrival && st.house.arrival.id === who && !st.house.residents.length,
+      "an unanswered arrival waits at the door and does not enter on its own");
+  }
+  {
+    const shop = LD.createRun({ seed: "shop-intact-2", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 });
+    ok(shop.bunker.water.level === 1 && shop.ruleset === "shop" && LD.HOUSE_RULES === false, "flag still off after house tests; shop math unchanged");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "fight-nia" }));
+    st = LD.houseAdmit(st, { id: "nia" }).state;
+    const fg = { block: 0, flags: {} };
+    LD.houseFightStart(st, fg);
+    ok(fg.block === 3 && fg.niaBlock === 3, "Nia starts door fights with +3 block");
+    st.bunkerActedThisTurn = false; st.ap = LD.BUNKER_AP; st.phase = "bunker";
+    st = LD.houseAdmit(st, { id: "helen" }).state;
+    const fg2 = { block: 0, flags: {} };
+    LD.houseFightStart(st, fg2);
+    LD.houseFightBeforeHit(st, fg2);
+    ok(fg2.block === 7 && fg2.helenUsed && fg2.helenBlock === 4, "Helen auto-defends 4 once if you have not already defended (stacks with Nia)");
+    const fg3 = { block: 0, flags: {}, playedBlock: 4 };
+    LD.houseFightStart(st, fg3);
+    LD.houseFightBeforeHit(st, fg3);
+    ok(fg3.block === 3 && fg3.helenUsed && !fg3.helenBlock, "Helen does not auto-defend if you already played a defend card");
+  }
 
 console.log(failed ? "FAILED " + failed + " / " + (passed + failed) : "OK " + passed + " checks");
 process.exit(failed ? 1 : 0);

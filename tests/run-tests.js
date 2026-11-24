@@ -7,7 +7,7 @@ const vm = require("vm");
 const ROOT = path.resolve(__dirname, "..");
 const JS_NAMES = [
   "viewport.js", "rng.js", "data.js", "game.js", "world.js", "meta.js",
-  "rivals.js", "fy.js", "house.js", "eras.js", "lore.js", "missions.js", "worldmap-data.js", "assets.js", "render.js",
+  "rivals.js", "fy.js", "house.js", "house-view.js", "eras.js", "lore.js", "missions.js", "worldmap-data.js", "assets.js", "render.js",
   "desk.js", "bunker.js", "fy-render.js", "recap.js"
 ];
 
@@ -690,6 +690,96 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     LD.houseFightBeforeHit(st, fg3);
     ok(fg3.block === 3 && fg3.helenUsed && !fg3.helenBlock, "Helen does not auto-defend if you already played a defend card");
   }
+
+
+  /* ---- Phase 2 house view (flag still off by default) ---- */
+  {
+    ok(LD.HOUSE_RULES === false, "HOUSE_RULES stays off in Node tests");
+    ok(typeof LD.applyDevHouseFlag === "function" && LD.applyDevHouseFlag() === false, "applyDevHouseFlag is a no-op without a query or storage");
+    ok(typeof LD.renderHouseStage === "function" && typeof LD.houseCanPeek === "function", "house-view APIs load in Node");
+  }
+  {
+    const st = houseRun();
+    ok(LD.houseCanPeek(st) === true, "peek is legal on a fresh house run (deal phase, at home)");
+    ok(LD.houseCanAutoTurn(st) === false, "auto-turn waits until the deal is signed");
+    const open = openBunker(st);
+    ok(LD.houseCanAutoTurn(open) === true, "auto-turn is ready at home after the deal, out of table moves");
+    const fight = JSON.parse(JSON.stringify(open));
+    fight.fy = fight.fy || {};
+    fight.fy.fight = { done: false, venue: "home" };
+    ok(LD.houseCanPeek(fight) === false && LD.houseCanAutoTurn(fight) === false, "peek and auto-turn are off mid-fight");
+    const away = JSON.parse(JSON.stringify(open));
+    away.fy = away.fy || {};
+    away.fy.fight = { done: false, venue: "away" };
+    ok(LD.houseCanPeek(away) === false, "peek is off when the fight is away");
+  }
+  {
+    const house = LD.renderDesk(houseRun(), {});
+    const shop = LD.renderDesk(LD.createRun({ seed: "shop-desk", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 }), {});
+    ok(!/id="bunker-card"/.test(house), "house desk render omits the rail Bunker button");
+    ok(/id="bunker-card"/.test(shop), "shop desk render still has the rail Bunker button");
+  }
+  {
+    const st = houseRun();
+    const items = LD.houseBandItems(st);
+    ok(items.some((x) => x.id === "water" && /cistern is on, empty/.test(x.line)), "Mara's starting Water shows as an empty-running cistern on the band");
+    ok(!items.some((x) => x.kind === "person"), "no faces on the band at the start");
+    let full = openBunker(houseRun({ seed: "band-full" }));
+    ["helen", "tom", "lila", "nia", "eli"].forEach((id) => {
+      full.bunkerActedThisTurn = false; full.ap = LD.BUNKER_AP;
+      const r = LD.houseAdmit(full, { id: id });
+      if (!r.ok) throw new Error("admit " + id + ": " + r.error);
+      full = r.state;
+    });
+    const names = LD.houseBandItems(full).map((x) => x.name).join(" ");
+    ok(/Helen/.test(names) && /Tom/.test(names) && /Lila/.test(names) && /Nia/.test(names) && /Eli/.test(names),
+      "band lists Helen, Tom, Lila, Nia and Eli once they are in");
+  }
+  {
+    const html = LD.renderHouseStage(houseRun(), { mode: "after" });
+    ok(/turn-1-before\.webp/.test(html) && /turn-6-after\.webp/.test(html) && (html.match(/class="hv-plate"/g) || []).length === 6,
+      "stage paints the six 1978 turn plates");
+    ok(/hv-screen/.test(html) && /feed\/water-empty\.webp/.test(html) && /feed\/power-dark\.webp/.test(html),
+      "feed maps Mara's empty-running Water and the dark rooms");
+    ok(/class="hv-band/.test(html) && /hv-band-k/.test(html) && /This run/.test(html) && !/Cinzel/.test(html) && !/Libre Franklin/.test(html),
+      "This run band is in the stage and does not use Cinzel or Libre Franklin");
+    ok(/Stores/.test(html), "band shows Stores");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "door-ui", turn: 4 }));
+    st.turn = 4;
+    st.house.arrival = { id: "helen", q: 4 };
+    const card = LD.renderHouseArrival(st);
+    ok(/Admit/.test(card) && /Pay off/.test(card) && /Turn away/.test(card) && /Helen Cho/.test(card) && /The Word/.test(card),
+      "arrival card has Admit, Pay off, Turn away and an optional promise");
+    st.house.rooms.power.by = "helen";
+    st.house.residents = [{ id: "helen" }];
+    st.house.arrival = { id: "eli", q: 4 };
+    /* power taken does not block Eli (air). Fill air instead. */
+    st.house.rooms.air.on = true; st.house.rooms.air.by = "eli";
+    st.house.residents = [{ id: "eli" }];
+    st.house.arrival = { id: "helen", q: 4 };
+    const rep = LD.renderHouseArrival(st);
+    ok(/Replace/.test(rep) && !/>Admit</.test(rep), "Admit becomes Replace when that room is filled");
+  }
+  {
+    let st = openBunker(houseRun({ seed: "word-ui" }));
+    st.house.promises = [{ id: "p1", defId: "helen-parts", residentId: "helen", text: "The generator gets its bearings by the due quarter. You pay for the crate.", sinceQ: 2, dueQ: st.turn, postponed: false, status: "open" }];
+    const word = LD.renderHouseWord(st);
+    ok(/A promise comes due/.test(word) && /Keep/.test(word) && /Postpone/.test(word) && /Break/.test(word) && /generator gets its bearings/.test(word),
+      "Word due card has Keep, Postpone once and Break, and the specific promise text");
+  }
+  {
+    const st = openBunker(houseRun());
+    const nia = LD.houseLeaveCopy(st, "nia");
+    const helen = LD.houseLeaveCopy(st, "helen");
+    ok(/Ask Nia Shah to leave/.test(nia.line) && /Unrest \+6/.test(nia.line) && /house bonus/.test(nia.line),
+      "asking Nia to leave names the Unrest cost and the lost house bonus");
+    ok(/Power goes dark/.test(helen.line) || /Power stays on/.test(helen.line), "leave copy says whether the room goes dark or stays on");
+    const sheet = LD.renderHouseLeave(st, "nia");
+    ok(/hv-sheet/.test(sheet) && /Ask to leave/.test(sheet) && /Close/.test(sheet), "leave confirm is a lower-third sheet");
+  }
+
 
 console.log(failed ? "FAILED " + failed + " / " + (passed + failed) : "OK " + passed + " checks");
 process.exit(failed ? 1 : 0);

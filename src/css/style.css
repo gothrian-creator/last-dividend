@@ -5672,3 +5672,226 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
 .dc:not(.chip):has(.dc-cost.cash) .dc-name,
 #door.fb-mode .fb-dock .df-hand .dc:has(.dc-cost.cash) .dc-name,
 #door.disc-mode .rw-cards .dc:has(.dc-cost.cash) .dc-name { padding-left: 34px; }
+
+/* ===== Phase 2 house view (1978 Mara chair-turn). Hidden unless a house run opens it. ===== */
+#house-root { position: fixed; inset: 0; z-index: 82; pointer-events: none; }
+#house-root.is-open { pointer-events: auto; }
+.hv-root { position: absolute; inset: 0; background: #1a120c; color: #2a1c12; }
+.hv-clip { position: absolute; inset: 0; overflow: hidden; }
+.hv-root.is-landscape .hv-clip { left: 300px; }
+.hv-rig { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; transform-origin: 0 0; }
+.hv-plates { position: absolute; inset: 0; }
+.hv-plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; opacity: 0; pointer-events: none; }
+.hv-root.is-before .hv-plate[data-frame="0"],
+.hv-root.is-after .hv-plate[data-frame="5"] { opacity: 1; }
+.hv-root.is-back .hv-plate[data-frame="0"] { opacity: 1; }
+
+/* CRT glass, % of the 720×1280 rig (inner glass of after-final). */
+.hv-screen {
+  position: absolute;
+  left: 13.89%; top: 24.84%; width: 48.89%; height: 25.31%;
+  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+  overflow: hidden; border-radius: 2px; background: #0a0806;
+  box-shadow: inset 0 0 0 1px rgba(40, 28, 16, 0.55);
+  opacity: 0; pointer-events: none;
+}
+.hv-root.is-after .hv-screen, .hv-root.is-warming .hv-screen { opacity: 1; pointer-events: auto; }
+.hv-root.is-turning .hv-screen { pointer-events: none; }
+.hv-cell { position: relative; padding: 0; border: 0; background: #0a0806; overflow: hidden; cursor: default; }
+.hv-cell[data-leave] { cursor: pointer; }
+.hv-cell img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.hv-cell.is-dark img { filter: brightness(0.45) saturate(0.4); }
+.hv-cell.is-failing img { filter: saturate(0.55) contrast(1.05); }
+.hv-static {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.55;
+  background: url("assets/house/1978/feed/static.webp") center / 64px 64px repeat;
+  animation: hvStatic 0.18s steps(2) infinite;
+  mix-blend-mode: soft-light;
+}
+@keyframes hvStatic { from { transform: translate(0,0); } to { transform: translate(-8px, 4px); } }
+.hv-pip {
+  position: absolute; left: 4px; bottom: 4px; padding: 1px 6px;
+  background: rgba(36, 24, 14, 0.72); color: #f4e6c8;
+  font: 600 10px/1.2 var(--font-sans); letter-spacing: 0.04em;
+  border-radius: 2px; pointer-events: none;
+}
+.hv-lila {
+  position: absolute; left: 64.2%; top: 38.5%; width: 10.5%; height: 10.5%;
+  padding: 0; border: 2px solid #6a4a28; border-radius: 3px;
+  overflow: hidden; background: #1a1008; cursor: pointer; z-index: 2;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+}
+.hv-lila img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* This run — floor band in portrait; left column on landscape. Never over the map, her, or the TV. */
+.hv-band {
+  position: absolute; left: 2.6%; top: 74.2%; width: 44%; max-width: 340px;
+  z-index: 3; pointer-events: none;
+  background: rgba(248, 236, 214, 0.88);
+  border: 1px solid rgba(140, 100, 48, 0.35);
+  box-shadow: 0 1px 0 rgba(255, 250, 240, 0.4) inset;
+  padding: 8px 10px 7px; border-radius: 2px;
+  opacity: 0;
+}
+.hv-root.is-after .hv-band { opacity: 1; }
+.hv-band-k {
+  margin: 0 0 4px; font-family: var(--font-sans); font-weight: 600;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a4a22;
+}
+.hv-band-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px 10px; }
+.hv-band-item { margin: 0; min-width: 0; }
+.hv-band-item b {
+  display: block; font-family: var(--font-serif); font-weight: 600;
+  font-size: 14px; line-height: 1.15; color: #2a1c12; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.hv-band-item span {
+  display: block; font-family: var(--font-sans); font-weight: 400;
+  font-size: 11px; line-height: 1.25; color: #4a3828;
+  letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hv-stores {
+  margin: 5px 0 0; font-family: var(--font-sans); font-size: 11px; color: #4a3828;
+}
+.hv-stores b { font-family: var(--font-serif); font-weight: 600; color: #2a1c12; }
+
+/* 800 portrait: 2×2 when four or more lines. */
+@media (min-width: 700px) and (min-height: 1100px) {
+  .hv-band-list { grid-template-columns: 1fr 1fr; }
+  .hv-band { width: 48%; }
+}
+
+/* 412 / 360: stacked card, slightly smaller, stay in the lower-left floor. */
+@media (max-width: 500px) {
+  .hv-band { left: 3%; top: auto; bottom: 11%; width: 58%; max-width: 240px; padding: 7px 8px 6px; }
+  .hv-band-list { grid-template-columns: 1fr; }
+  .hv-band-k { font-size: 11px; }
+  .hv-band-item b { font-size: 13px; }
+  .hv-band-item span { font-size: 10px; white-space: normal; }
+}
+
+/* Landscape 1280×800: band is a left column, not a floor plaque. */
+@media (orientation: landscape) and (min-width: 900px) {
+  .hv-band {
+    left: 16px; top: 56px; bottom: 72px; width: 268px; max-width: none;
+    right: auto; opacity: 1;
+    display: flex; flex-direction: column;
+  }
+  .hv-root.is-before .hv-band, .hv-root.is-turning .hv-band, .hv-root.is-back .hv-band { opacity: 0; }
+  .hv-root.is-after .hv-band { opacity: 1; }
+  .hv-band-list { grid-template-columns: 1fr; overflow: auto; }
+  .hv-band-item span { white-space: normal; }
+}
+
+.hv-hud {
+  position: absolute; left: 0; right: 0; top: 0; z-index: 6;
+  display: flex; gap: 10px; align-items: flex-end;
+  padding: 8px 12px 8px; background: linear-gradient(180deg, rgba(248,236,214,0.92), rgba(248,236,214,0));
+  pointer-events: none; font-family: var(--font-sans);
+}
+.hv-m { display: flex; flex-direction: column; min-width: 64px; }
+.hv-m small { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #6a4a22; }
+.hv-m b { font-family: var(--font-serif); font-size: 16px; color: #2a1c12; font-weight: 600; }
+
+.hv-dock {
+  position: absolute; right: 12px; bottom: 12px; z-index: 6;
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.hv-root.is-turning .hv-dock, .hv-root.is-before .hv-dock, .hv-root.is-back .hv-dock { display: none; }
+.hv-skip {
+  position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);
+  z-index: 7; min-height: 44px; padding: 0 22px;
+  border: 1px solid rgba(200, 160, 90, 0.7); border-radius: 12px;
+  background: rgba(28, 18, 10, 0.72); color: #f4e6c8;
+  font: 700 16px var(--font-sans); cursor: pointer;
+}
+
+/* Discover-style dimmed cards */
+.hv-card {
+  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+  z-index: 8; width: min(92vw, 420px); max-height: 72vh; overflow: auto;
+  background: linear-gradient(180deg, #f7ecd6, #ecd9b4);
+  border: 1px solid rgba(140, 100, 48, 0.45);
+  box-shadow: 0 18px 48px rgba(20, 10, 4, 0.45), 0 0 0 100vmax rgba(20, 12, 6, 0.45);
+  padding: 16px 16px 14px; border-radius: 4px; color: #2a1c12;
+}
+.hv-card header small {
+  font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #6a4a22;
+}
+.hv-card h2 { margin: 2px 0 0; font-family: var(--font-serif); font-size: 26px; font-weight: 600; color: #2a1c12; }
+.hv-role { margin: 2px 0 0; font-family: var(--font-sans); font-size: 12px; color: #6a4a22; }
+.hv-blurb { margin: 10px 0 0; font-family: var(--font-sans); font-size: 15px; line-height: 1.35; color: #3a2a1c; }
+.hv-note { margin: 8px 0 0; font-family: var(--font-sans); font-size: 13px; color: #6a4a22; }
+.hv-verbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.hv-verbs .btn { min-height: 44px; }
+.hv-prom-k { margin: 12px 0 4px; font-family: var(--font-serif); font-size: 13px; color: #6a4a22; }
+.hv-prom-k small { font-family: var(--font-sans); font-weight: 400; letter-spacing: 0.04em; }
+.hv-prom { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 4px; padding: 6px 8px; border-radius: 3px; cursor: pointer; font-family: var(--font-sans); font-size: 13px; line-height: 1.3; }
+.hv-prom input { margin-top: 3px; }
+.hv-prom.on { background: rgba(180, 130, 60, 0.18); }
+
+/* Ask-to-leave: lower third, over the floor band, never the TV. */
+.hv-sheet {
+  position: absolute; left: 4%; right: 4%; bottom: 8%; z-index: 9;
+  background: linear-gradient(180deg, #f7ecd6, #ecd9b4);
+  border: 1px solid rgba(140, 100, 48, 0.45);
+  box-shadow: 0 12px 32px rgba(20, 10, 4, 0.4);
+  padding: 14px 14px 12px; border-radius: 4px; color: #2a1c12;
+  font-family: var(--font-sans); font-size: 15px; line-height: 1.35;
+}
+.hv-sheet p { margin: 0; }
+@media (min-width: 700px) {
+  .hv-sheet { left: 8%; right: auto; width: min(520px, 70%); }
+}
+
+/* Peek glow on the live office (office40 is a side-view, not the v6 chair). */
+.dash-meters.office { position: relative; }
+.house-peek {
+  position: absolute; left: 14%; bottom: 14%; z-index: 12;
+  width: 44px; height: 44px; border: 0; padding: 0; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffe9a8 0%, #d4a24a 45%, rgba(160, 100, 30, 0.2) 68%, transparent 72%);
+  box-shadow: 0 0 16px 6px rgba(232, 180, 70, 0.7);
+  color: transparent; font-size: 0; cursor: pointer;
+  animation: hvPeek 2.4s ease-in-out infinite;
+}
+.house-peek:focus-visible { outline: 2px solid #d4a24a; outline-offset: 3px; }
+@keyframes hvPeek { 0%, 100% { opacity: 0.72; transform: scale(1); } 50% { opacity: 1; transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) {
+  .house-peek, .hv-static { animation: none; }
+}
+
+.jy-dev-house {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin: 8px 0 0; font: 500 12px var(--font-sans); color: #6a7a70; cursor: pointer;
+}
+.jy-dev-house input { width: 16px; height: 16px; }
+
+.hv-root.has-card .hv-dock { opacity: 0.35; pointer-events: none; }
+
+.hv-band-side { display: none; }
+@media (orientation: landscape) and (min-width: 900px) {
+  .hv-band-plate { display: none !important; }
+  .hv-band-side { display: flex; }
+}
+
+@media (max-width: 500px) {
+  .hv-band-plate { display: none !important; }
+  .hv-band-side {
+    display: block; left: 10px; top: auto; bottom: 76px; right: auto;
+    width: min(70vw, 260px); max-width: 260px; z-index: 5;
+  }
+  .hv-root.has-card .hv-band-side, .hv-root.has-sheet .hv-band-side { opacity: 0; pointer-events: none; }
+}
+.hv-root.is-landscape::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 300px;
+  background: linear-gradient(180deg, #f3e6cc, #e4d0a8);
+  box-shadow: inset -1px 0 0 rgba(120, 80, 30, 0.28);
+  z-index: 2; pointer-events: none;
+}
+.hv-root.is-landscape .hv-clip { z-index: 1; }
+.hv-root.is-landscape .hv-hud { right: auto; width: 300px; background: none; z-index: 4; }
+.hv-root.is-landscape .hv-band-side { z-index: 4; }
+.hv-root.is-landscape .hv-dock { z-index: 6; }
+
+.hv-root.has-card .hv-band-plate, .hv-root.has-sheet .hv-band-plate { opacity: 0; pointer-events: none; }

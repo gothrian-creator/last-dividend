@@ -329,6 +329,14 @@
       snd.innerHTML = LD.radioSvg(on);
     });
     $("btn-history").addEventListener("click", function () { tick(); show("history"); renderHistory(); });
+    var devH = $("dev-house");
+    if (devH) {
+      devH.checked = !!LD.HOUSE_RULES;
+      devH.addEventListener("change", function () {
+        if (LD.setDevHouseFlag) LD.setDevHouseFlag(devH.checked);
+        else LD.HOUSE_RULES = devH.checked;
+      });
+    }
     $("btn-boardroom").addEventListener("click", function () { tick(); openBoardroom("title"); });
   }
 
@@ -712,7 +720,7 @@
       state.offered.forEach(function (id) { if (LD.dealKind(LD.dealById(id)) === "claim") pick = id; });
       return { coach: "pin", coachDeal: pick, coachText: "Tap the glowing pin to open a deal" };
     }
-    if (!state.bunkerActedThisTurn) return { coach: "bunker", coachText: "Build your bunker (optional)" };
+    if (!(LD.isHouse && LD.isHouse(state)) && !state.bunkerActedThisTurn) return { coach: "bunker", coachText: "Build your bunker (optional)" };
     return { coach: "end", coachText: "End the quarter and watch the world react" };
   }
 
@@ -731,6 +739,11 @@
     if (LD.O4) LD.O4.mount(state);
     armTicker();
     if (from) animateMeters(from);
+    if (LD.isHouse && LD.isHouse(state)) {
+      preloadHousePlates();
+      attachHousePeek();
+      if (HV.facing && !HV.turning) refreshHouseChrome();
+    }
   }
   var tickerTimer = null;
   function armTicker() {
@@ -917,7 +930,8 @@
     Array.prototype.forEach.call(document.querySelectorAll(".desk .tick-item"), function (n) {
       n.addEventListener("click", function () { tick(); flashRegion(n.getAttribute("data-region")); });
     });
-    $("bunker-card").addEventListener("click", function (e) {
+    var bunkerBtn = $("bunker-card");
+    if (bunkerBtn) bunkerBtn.addEventListener("click", function (e) {
       tick();
       if (document.body.classList.contains("in-fight") || doorOpen()) { flash("Finish the fight first."); return; }
       var rm = e.target && e.target.closest ? e.target.closest("[data-room]") : null;
@@ -1145,6 +1159,7 @@
     var dcash = state.cash - prev.cash, dun = state.unrest - prev.unrest, dco = state.collapse - prev.collapse;
     if (dcash >= 15) officeReact("glee"); else if (dun >= 8 || dco >= 5) officeReact("shock");
     if (state.fy && state.fy.fight) { DF.start = prev; setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight && !doorOpen() && !FI.on) { setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight) startFight(); }, reduced() ? 120 : 200); } }, reduced() ? 200 : 450); }
+    else setTimeout(function () { maybeAutoHouse(); }, reduced() ? 80 : 400);
     var rid = res.region ? res.region.regionId : (prev.world && prev.world.pins[id]);
     if (rid) {
       var dc = state.cash - prev.cash;
@@ -1172,6 +1187,7 @@
   }
 
   function openBunker(focus) {
+    if (LD.isHouse && LD.isHouse(state)) { openHouse({ peek: true }); return; }
     bk.focus = focus || null;
     bk.justBuilt = null;
     if (state.converting) bk.mode = "install";
@@ -1234,6 +1250,288 @@
     panel.classList.add("pop");
     bindBunkerPanel();
   }
+
+
+  /* ---------- Phase 2 house view (1978 Mara chair-turn) ---------- */
+  var HV = { open: false, facing: false, turning: false, dir: "to", auto: false, leaveId: null, card: null, promiseId: null, raf: 0, t0: 0 };
+
+  function houseCardKind() {
+    if (!state || !(LD.isHouse && LD.isHouse(state)) || state.ended) return null;
+    if (state.phase !== "bunker") return null;
+    if (!state.bunkerActedThisTurn && LD.houseDuePromise && LD.houseDuePromise(state)) return "word";
+    if (!state.bunkerActedThisTurn && LD.houseArrival && LD.houseArrival(state)) return "arrival";
+    return null;
+  }
+  function houseCanEndQ() {
+    return !!(state && !state.ended && state.phase === "bunker" && !(LD.fyBusy && LD.fyBusy(state)));
+  }
+  function preloadHousePlates() {
+    (LD.HOUSE_FRAMES || []).forEach(function (f) { var img = new Image(); img.src = f.src; });
+  }
+  function sizeHouseRig() {
+    var clip = document.querySelector("#house-root .hv-clip");
+    var rig = document.querySelector("#house-root .hv-rig");
+    if (!clip || !rig) return;
+    var r = clip.getBoundingClientRect();
+    var s = Math.max(r.width / 720, r.height / 1280);
+    var left = (r.width - 720 * s) * 0.32;
+    var top = (r.height - 1280 * s) * 0.38;
+    rig.style.transform = "translate(" + left + "px," + top + "px) scale(" + s + ")";
+  }
+  function houseModeNow() {
+    if (HV.turning) return HV.dir === "back" ? "back" : "turning";
+    return HV.facing ? "after" : "before";
+  }
+  function paintHouse(mode) {
+    var root = $("house-root");
+    if (!root || !state) return;
+    Array.prototype.forEach.call(document.querySelectorAll(".boss-banner"), function (b) { if (b.parentNode) b.parentNode.removeChild(b); });
+    HV.card = houseCardKind();
+    var land = window.matchMedia && window.matchMedia("(orientation: landscape) and (min-width: 900px)").matches;
+    root.hidden = false;
+    root.classList.add("is-open");
+    root.innerHTML = LD.renderHouseStage(state, {
+      mode: mode || houseModeNow(),
+      auto: HV.auto,
+      card: (HV.facing && !HV.turning) ? HV.card : null,
+      leaveId: (HV.facing && !HV.turning) ? HV.leaveId : null,
+      promiseId: HV.promiseId,
+      canEnd: houseCanEndQ()
+    });
+    var stage = root.querySelector(".hv-root");
+    if (stage && land) stage.classList.add("is-landscape");
+    sizeHouseRig();
+    bindHouseChrome();
+  }
+  function setPlateOpacities(t) {
+    /* t 0 = before, 1 = after. Frame 4 (spin23) is short and blended into 3 and 5. */
+    var keys = [0, 0.14, 0.32, 0.48, 0.58, 0.72, 1];
+    var frames = document.querySelectorAll("#house-root .hv-plate");
+    var n = frames.length;
+    if (!n) return;
+    if (t <= 0) { for (var i = 0; i < n; i++) frames[i].style.opacity = i === 0 ? "1" : "0"; return; }
+    if (t >= 1) { for (var j = 0; j < n; j++) frames[j].style.opacity = j === n - 1 ? "1" : "0"; return; }
+    var a = 0;
+    for (var k = 0; k < keys.length - 1; k++) if (t >= keys[k]) a = k;
+    var u = (t - keys[a]) / (keys[a + 1] - keys[a]);
+    /* keys: 0,1,2,3,4,5, after. 6 keys for 6 frames plus a hold at 1.
+       Map a=0..5 to frame a blending to a+1, with a=5 blending to frame 5 held. */
+    for (var f = 0; f < n; f++) {
+      var op = 0;
+      if (a >= n - 1) op = f === n - 1 ? 1 : 0;
+      else if (f === a) op = 1 - u;
+      else if (f === a + 1) op = u;
+      frames[f].style.opacity = String(op);
+    }
+    var screen = document.querySelector("#house-root .hv-screen");
+    var band = document.querySelectorAll("#house-root .hv-band");
+    var show = t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0;
+    if (screen) { screen.style.opacity = String(show); screen.style.filter = "brightness(" + (0.45 + 0.55 * show) + ")"; }
+    for (var b = 0; b < band.length; b++) band[b].style.opacity = String(show);
+  }
+  function stopHouseAnim() {
+    if (HV.raf) { cancelAnimationFrame(HV.raf); HV.raf = 0; }
+  }
+  function finishHouseTurn() {
+    stopHouseAnim();
+    HV.turning = false;
+    if (HV.dir === "to") {
+      HV.facing = true;
+      setPlateOpacities(1);
+      paintHouse("after");
+    } else {
+      HV.facing = false;
+      HV.open = false;
+      HV.auto = false;
+      HV.leaveId = null;
+      var root = $("house-root");
+      if (root) { root.innerHTML = ""; root.hidden = true; root.classList.remove("is-open"); }
+      attachHousePeek();
+    }
+  }
+  function runHouseTurn(dir) {
+    HV.dir = dir || "to";
+    HV.turning = true;
+    HV.open = true;
+    stopHouseAnim();
+    if (reduced()) { setPlateOpacities(HV.dir === "to" ? 1 : 0); finishHouseTurn(); return; }
+    paintHouse(HV.dir === "back" ? "back" : "turning");
+    setPlateOpacities(HV.dir === "to" ? 0 : 1);
+    HV.t0 = performance.now();
+    var dur = LD.HOUSE_TURN_MS || 1000;
+    function step(now) {
+      var t = Math.min(1, (now - HV.t0) / dur);
+      setPlateOpacities(HV.dir === "to" ? t : 1 - t);
+      if (t >= 1) finishHouseTurn();
+      else HV.raf = requestAnimationFrame(step);
+    }
+    HV.raf = requestAnimationFrame(step);
+  }
+  function openHouse(opts) {
+    opts = opts || {};
+    if (!state || !(LD.isHouse && LD.isHouse(state))) return;
+    if (document.body.classList.contains("in-fight") || (typeof doorOpen === "function" && doorOpen())) return;
+    if (HV.facing && !HV.turning) { paintHouse("after"); return; }
+    if (HV.turning) return;
+    preloadHousePlates();
+    Array.prototype.forEach.call(document.querySelectorAll(".boss-banner"), function (b) { if (b.parentNode) b.parentNode.removeChild(b); });
+    HV.open = true;
+    HV.auto = !!opts.auto;
+    HV.leaveId = null;
+    HV.promiseId = null;
+    paintHouse("before");
+    setPlateOpacities(0);
+    runHouseTurn("to");
+  }
+  function closeHouse() {
+    if (!HV.open && !HV.facing) return;
+    if (HV.turning && HV.dir === "back") return;
+    if (!HV.facing && !HV.turning) { finishHouseTurn(); return; }
+    HV.leaveId = null;
+    runHouseTurn("back");
+  }
+  function skipHouseTurn() {
+    if (!HV.turning) return;
+    setPlateOpacities(HV.dir === "to" ? 1 : 0);
+    finishHouseTurn();
+  }
+  function refreshHouseChrome() {
+    if (HV.facing && !HV.turning) paintHouse("after");
+  }
+  function maybeAutoHouse() {
+    if (!state || !(LD.isHouse && LD.isHouse(state)) || state.ended) return;
+    if (HV.facing || HV.turning || HV.open) return;
+    if (document.body.classList.contains("in-fight") || (typeof doorOpen === "function" && doorOpen())) return;
+    var ov = $("overlay");
+    if (ov && ov.classList.contains("on")) return;
+    if (!(LD.houseCanAutoTurn && LD.houseCanAutoTurn(state))) return;
+    openHouse({ auto: true });
+  }
+  function attachHousePeek() {
+    Array.prototype.forEach.call(document.querySelectorAll("#house-peek"), function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+    if (!state || !(LD.isHouse && LD.isHouse(state)) || HV.open || HV.facing || HV.turning) return;
+    if (!(LD.houseCanPeek && LD.houseCanPeek(state))) return;
+    var host = document.querySelector(".dash-meters.office") || document.querySelector(".of-room") || document.querySelector("#screen-desk .desk") || $("screen-desk");
+    if (!host) return;
+    if (window.getComputedStyle(host).position === "static") host.style.position = "relative";
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "house-peek";
+    b.id = "house-peek";
+    b.setAttribute("aria-label", "Look back at the house");
+    b.textContent = "Look back";
+    b.addEventListener("click", function (e) { e.stopPropagation(); tick(); openHouse({ peek: true }); });
+    host.appendChild(b);
+  }
+  function applyHouseVerb(res, okMsg) {
+    if (!res || !res.ok) { if (res && res.error) flash(res.error); return; }
+    state = res.state;
+    persistRun();
+    HV.leaveId = null;
+    HV.promiseId = null;
+    refreshHouseChrome();
+    if (okMsg) flash(okMsg);
+  }
+  function selectedPromiseId() {
+    var on = document.querySelector("#house-root input[name='hv-prom']:checked");
+    return on && on.value ? on.value : null;
+  }
+  function bindHouseChrome() {
+    var skip = $("hv-skip");
+    if (skip) skip.addEventListener("click", function () { tick(); skipHouseTurn(); });
+    var back = $("hv-back");
+    if (back) back.addEventListener("click", function () { tick(); closeHouse(); });
+    var endq = $("hv-endq");
+    if (endq) endq.addEventListener("click", function () {
+      tick();
+      stopHouseAnim();
+      HV.facing = false; HV.open = false; HV.turning = false; HV.auto = false;
+      var hr = $("house-root");
+      if (hr) { hr.innerHTML = ""; hr.hidden = true; hr.classList.remove("is-open"); }
+      endQuarter();
+    });
+    var admit = $("hv-admit");
+    if (admit) admit.addEventListener("click", function () {
+      tick();
+      var arr = LD.houseArrival(state);
+      if (!arr) return;
+      var verb = admit.getAttribute("data-verb");
+      var fn = verb === "replace" ? LD.houseReplace : LD.houseAdmit;
+      applyHouseVerb(fn(state, { id: arr.id, promiseId: selectedPromiseId() }));
+    });
+    var pay = $("hv-payoff");
+    if (pay) pay.addEventListener("click", function () {
+      tick();
+      var arr = LD.houseArrival(state);
+      if (!arr) return;
+      applyHouseVerb(LD.housePayOff(state, { id: arr.id }));
+    });
+    var away = $("hv-turnaway");
+    if (away) away.addEventListener("click", function () {
+      tick();
+      var arr = LD.houseArrival(state);
+      if (!arr) return;
+      applyHouseVerb(LD.houseTurnAway(state, { id: arr.id }));
+    });
+    var keep = $("hv-keep");
+    if (keep) keep.addEventListener("click", function () { tick(); applyHouseVerb(LD.houseKeepPromise(state)); });
+    var post = $("hv-postpone");
+    if (post) post.addEventListener("click", function () { tick(); applyHouseVerb(LD.housePostponePromise(state)); });
+    var brk = $("hv-break");
+    if (brk) brk.addEventListener("click", function () { tick(); applyHouseVerb(LD.houseBreakPromise(state)); });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-prom input"), function (inp) {
+      inp.addEventListener("change", function () {
+        HV.promiseId = selectedPromiseId();
+        Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-prom"), function (lab) {
+          lab.classList.toggle("on", !!(lab.querySelector("input") && lab.querySelector("input").checked));
+        });
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root [data-leave]"), function (n) {
+      n.addEventListener("click", function (e) {
+        e.stopPropagation();
+        tick();
+        if (state.phase !== "bunker") { flash("Choose a deal first."); return; }
+        if (state.bunkerActedThisTurn) { flash("Bunker action already taken this quarter."); return; }
+        HV.leaveId = n.getAttribute("data-leave");
+        refreshHouseChrome();
+      });
+    });
+    var ok = $("hv-leave-ok");
+    if (ok) ok.addEventListener("click", function () {
+      tick();
+      var id = HV.leaveId;
+      applyHouseVerb(LD.houseAskToLeave(state, { id: id }));
+    });
+    var no = $("hv-leave-no");
+    if (no) no.addEventListener("click", function () { tick(); HV.leaveId = null; refreshHouseChrome(); });
+    var stage = $("hv-stage");
+    if (stage) stage.addEventListener("click", function (e) {
+      if (HV.turning) { tick(); skipHouseTurn(); }
+    });
+  }
+  function removeHousePeek() {
+    Array.prototype.forEach.call(document.querySelectorAll("#house-peek"), function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+  }
+  window.addEventListener("resize", function () { if (HV.open || HV.facing) sizeHouseRig(); });
+  LD.houseUi = {
+    open: openHouse, close: closeHouse, skip: skipHouseTurn, refresh: refreshHouseChrome,
+    facing: function () { return HV.facing; }, turning: function () { return HV.turning; },
+    seek: function (t) {
+      stopHouseAnim();
+      HV.open = true; HV.auto = true; HV.leaveId = null;
+      t = Number(t);
+      if (isNaN(t)) t = 0;
+      t = Math.max(0, Math.min(1, t));
+      if (t <= 0) { HV.facing = false; HV.turning = false; HV.dir = "to"; paintHouse("before"); setPlateOpacities(0); sizeHouseRig(); return; }
+      if (t >= 1) { HV.facing = true; HV.turning = false; HV.dir = "to"; paintHouse("after"); setPlateOpacities(1); sizeHouseRig(); return; }
+      HV.facing = false; HV.turning = true; HV.dir = "to";
+      paintHouse("turning");
+      setPlateOpacities(t);
+      sizeHouseRig();
+    }
+  };
+
 
   function bindBunkerView() {
     var x = $("bs-close");
@@ -1469,6 +1767,7 @@
     if (state.fy.memo) { openMemo(); return; }
     if (state.fy.actIntro) { showActIntro(); return; }
     if (LD.bossInfo(state, state.turn) && state.fy.bannerQ !== state.turn) { state.fy.bannerQ = state.turn; persistRun(); bossBanner(LD.bossInfo(state, state.turn)); }
+    maybeAutoHouse();
   }
   function fyNext(ms) { setTimeout(function () { if (screen === "desk" && state && !state.ended && !$("overlay").classList.contains("on") && !doorOpen()) fyAfterOpen(); }, ms || 700); }
   function bossBanner(info) {
@@ -2590,7 +2889,7 @@
       act: function () { var a = pq("#door [data-asset]"); if (a) { clickEl(a); return; } var k = pq("#rw-keep"); if (k) { clickEl(k); return; } var c = pq("#door [data-card]"); if (c) { clickEl(c); setTimeout(function () { clickEl(pq("#rw-take")); }, 80); } } },
     { id: "bunker", n: 5, face: "wink", on: "bunker-open", label: "Open it ▸",
       text: function () { var x = pennyExec(); return "Back at the desk. That hatch on the side is your way down to <b>" + LD.escapeHtml(x.compound || "your bunker") + "</b>. One bunker order per quarter: open it up!"; },
-      skip: function () { return state.phase !== "bunker" || state.bunkerActedThisTurn; },
+      skip: function () { return (LD.isHouse && LD.isHouse(state)) || state.phase !== "bunker" || state.bunkerActedThisTurn; },
       wait: function () { return bunkerOpen() || !!pq("#overlay.on") || doorOpen(); },
       target: function () { return pq("#bunker-card"); },
       act: function () { clickEl(pq("#bunker-card")); } },

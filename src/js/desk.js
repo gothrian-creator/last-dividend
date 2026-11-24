@@ -551,9 +551,11 @@
     if (state.fy) h += '<button class="sr-btn sr-case' + (rd ? " has-ready" : "") + '" id="btn-portfolio" aria-label="Briefcase, ' + LD.fySlotsUsed(state) + " of " + f.cap + " wall slots" + (rd ? ", " + rd + " drawer item" + (rd > 1 ? "s" : "") + " ready" : "") + '"><span class="sr-ic">' + (LD.tok ? LD.tok("case") : "💼") + '</span><small>Case</small><em class="sr-badge">' + (rd ? "⚡" + rd : LD.fySlotsUsed(state) + "/" + f.cap) + "</em></button>";
     h += '<button class="sr-btn sr-phone' + (ring ? " ringing" : " quiet") + '" id="btn-phone" aria-label="' + esc(ring ? (ERA ? ERA.phone : "The phone is ringing") : "Phone: no calls right now") + '"' + '><span class="sr-ic">' + RAIL_SVG.phone + "</span><small>" + (ring ? "Call!" : "Phone") + "</small>" + (ring ? '<em class="sr-badge sr-ring">1</em>' : "") + "</button>";
     h += '</div><span class="sr-gap" aria-hidden="true"></span>';
-    var pips = ""; for (var pi = 0; pi < 4; pi++) pips += '<i class="' + (pi < r.ready ? "on" : "") + '"></i>';
-    h += '<button class="sr-btn sr-bunker' + (bunkerReady ? " ready" : "") + (dealPhase ? " locked" : "") + (state.bunkerActedThisTurn ? " acted" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card" style="--bp:' + Math.round(lv / 12 * 100) + "%;--vt:" + LD.vaultTint(state) + '" aria-label="Floor hatch to ' + esc(exec.compound || "the bunker") + ", " + r.ready + " of 4 rooms ready" + (dealPhase ? ". Opens after you sign a deal" : state.bunkerActedThisTurn ? ". Works ordered this quarter" : ". Tap to build") + '">' +
-      LD.bunkerIcon(state) + '<span class="sr-pips" aria-hidden="true">' + pips + "</span><small>Bunker</small>" + (dealPhase ? '<em class="sr-lock" aria-hidden="true">' + LD.vaultLockSvg + "</em>" : "") + "</button>";
+    if (!(LD.isHouse && LD.isHouse(state))) {
+      var pips = ""; for (var pi = 0; pi < 4; pi++) pips += '<i class="' + (pi < r.ready ? "on" : "") + '"></i>';
+      h += '<button class="sr-btn sr-bunker' + (bunkerReady ? " ready" : "") + (dealPhase ? " locked" : "") + (state.bunkerActedThisTurn ? " acted" : "") + (ui.coach === "bunker" ? " coach" : "") + '" id="bunker-card" style="--bp:' + Math.round(lv / 12 * 100) + "%;--vt:" + LD.vaultTint(state) + '" aria-label="Floor hatch to ' + esc(exec.compound || "the bunker") + ", " + r.ready + " of 4 rooms ready" + (dealPhase ? ". Opens after you sign a deal" : state.bunkerActedThisTurn ? ". Works ordered this quarter" : ". Tap to build") + '">' +
+        LD.bunkerIcon(state) + '<span class="sr-pips" aria-hidden="true">' + pips + "</span><small>Bunker</small>" + (dealPhase ? '<em class="sr-lock" aria-hidden="true">' + LD.vaultLockSvg + "</em>" : "") + "</button>";
+    }
     h += "</nav>";
     return h;
   }

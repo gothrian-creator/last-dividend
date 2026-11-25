@@ -7,7 +7,7 @@ const SIZES=(process.env.SIZES||"412x915,360x800,800x1280,1280x800").split(",");
 const STOP=process.env.STOP||"deal:3", SEED=+(process.env.SEED||13);
 (async()=>{const env=await H.start(process.env.DIST||"/workspace/last-dividend-v3/dist");
  for(const sz of SIZES){const [w,h]=sz.split("x").map(Number);
-  const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:SEED,stop:STOP,exec:"mara",smart:true});
+  const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:SEED,stop:STOP,exec:process.env.EXEC||"mara",smart:true});
   await p.waitForTimeout(500);
   const info=await p.evaluate(()=>({sd:!!document.querySelector(".desk.sd"),turn:JSON.parse(localStorage.getItem(LD.HOUSE_SAVE_KEY)).midRun.turn}));
   console.log(sz,JSON.stringify(info));

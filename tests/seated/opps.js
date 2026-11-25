@@ -8,6 +8,8 @@ const SIZES=(process.env.SIZES||"412x915").split(",");let bad=0,n=0;function ok(
  for(const sz of SIZES){const [w,h]=sz.split("x").map(Number);
   const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:13,stop:"deal:3",exec:"mara",smart:true});await p.waitForTimeout(500);
   await (await p.$(".sd-tag")).click();await p.waitForTimeout(500);await p.click("#btn-sign");await p.waitForTimeout(1700);
+  /* NOSEAT=1 shows the old standing cut-outs (for before/after shots) */
+  if(process.env.NOSEAT)await p.evaluate(()=>{for(const k of Object.keys(LD.SEAT.opp))if(/-seat$/.test(k))delete LD.SEAT.opp[k];});
   const arts=await p.evaluate(()=>Object.keys(LD.SEAT.opp));
   for(const art of (process.env.ARTS?process.env.ARTS.split(","):arts)){
    const r=await p.evaluate(async(art)=>{const old=document.getElementById("sc-opp");const tmp=document.createElement("div");tmp.innerHTML=LD.seatOppHtml(art,"idle",["idle","attack","hit","block","defeated"]);old.replaceWith(tmp.firstChild);

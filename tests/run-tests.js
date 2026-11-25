@@ -8,7 +8,7 @@ const ROOT = path.resolve(__dirname, "..");
 const JS_NAMES = [
   "viewport.js", "rng.js", "data.js", "game.js", "world.js", "meta.js",
   "rivals.js", "fy.js", "house.js", "house-view.js", "eras.js", "lore.js", "missions.js", "worldmap-data.js", "assets.js", "render.js",
-  "desk.js", "bunker.js", "fy-render.js", "recap.js"
+  "desk.js", "bunker.js", "fy-render.js", "seated.js", "recap.js"
 ];
 
 const styleStub = { setProperty() {}, getPropertyValue() { return ""; } };
@@ -800,6 +800,40 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
       "Lila's inset is a strip inside the TV glass");
     const dark = LD.renderHouseFeed(openBunker(houseRun({ seed: "dark-ui" })));
     ok(/feed\/power-dark/.test(dark) && !/power-on/.test(dark), "dark rooms never show a resident plate");
+  }
+
+  /* ---------- seated desk (B, house rules + Mara) ---------- */
+  {
+    const hm = houseRun({ seed: "seat-1" });
+    ok(LD.seatedOn(hm), "house run with Mara sits at the 1978 desk");
+    ok(!LD.seatedOn(LD.createRun({ seed: "seat-shop", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 })), "shop run never uses the seated desk");
+    const ex = LD.EXECUTIVES || [], other = Array.isArray(ex) ? (ex.find((e) => e && e.id && e.id !== "mara") || {}).id : Object.keys(ex).find((id) => id !== "mara");
+    if (other) ok(!LD.seatedOn(houseRun({ seed: "seat-2", executiveId: other })), "house run with another exec keeps the old desk (" + other + ")");
+    [[360, 800], [412, 915], [800, 1280], [1280, 800]].forEach(([W, H]) => {
+      const f = LD.seatFrame(W, H), r = LD.seatRigFrame(W, H);
+      if (!f.land) ok(f.tx <= 0.5 && f.tx + 720 * f.s >= W - 0.5 && f.ty <= 0.5 && f.ty + 1280 * f.s >= H - 0.5, "desk frame covers the screen at " + W + "x" + H);
+      else ok(260 * f.s + f.ty >= 120 && f.ty + 1280 * f.s >= H - 0.5 && f.ty <= 0, "landscape desk frame keeps a visitor's head under the HUD at " + W + "x" + H);
+      const a = LD.seatLerpFrame(f, r, 0), b = LD.seatLerpFrame(f, r, 1);
+      ok(Math.abs(a.s - f.s) < 1e-9 && Math.abs(b.s - r.s) < 1e-9 && Math.abs(b.tx - r.tx) < 1e-9 && Math.abs(b.ty - r.ty) < 1e-9, "pull-back lands exactly on the turn rig at " + W + "x" + H);
+      const c = LD.seatColumn(W, H); if (f.land) ok(c[0] >= -0.5 && c[1] <= W + 0.5 && c[1] > c[0], "stage column inside the screen at " + W + "x" + H);
+    });
+    const p0 = LD.seatPullAt(0), p1 = LD.seatPullAt(1);
+    ok(p0.mara.a === 0 && p0.hands.a === 1 && p0.e === 0, "pull t=0 is first person: no Mara, hands in");
+    ok(p1.mara.a === 1 && Math.abs(p1.mara.k - 1) < 1e-9 && p1.mara.dy === 0 && p1.mara.blur === 0 && p1.hands.a === 0 && p1.e === 1, "pull t=1 is turn frame 1: Mara exact, hands out");
+    let mono = true, prevE = -1; for (let t = 0; t <= 1.0001; t += 0.05) { const e = LD.seatPullAt(Math.min(1, t)).e; if (e < prevE - 1e-9) mono = false; prevE = e; }
+    ok(mono, "pull-back easing never runs backwards");
+    const html = LD.renderSeatedDesk(hm, { land: false });
+    const pins = (html.match(/class="sd-pin /g) || []).length, tags = (html.match(/class="sd-tag /g) || []).length;
+    ok(hm.phase === "deal" && pins === hm.offered.length && tags === hm.offered.length, "every offered deal gets a pin and a tag on the table map (" + pins + ")");
+    ok(/id="house-peek"/.test(html) && /id="sd-tab"/.test(html) && /id="sd-fan"/.test(html) && /id="fx"/.test(html) && /id="dossier"/.test(html), "seated desk has bunker swivel, deck tab, fan, fx layer and dossier");
+    ok(!/desk-head|class="board/.test(html), "seated desk does not pull in the old dashboard header or board");
+    ok(/sd-quarter/.test(LD.renderSeatedDesk(hm, { land: true })) && !/sd-quarter/.test(html), "landscape gets the This quarter panel, portrait does not");
+    ok(/is-closing/.test(LD.renderSeatedDesk(hm, { closing: true })), "end-of-quarter hides the next quarter's deals");
+    Object.keys(LD.OPPONENTS).forEach((id) => { const art = LD.OPPONENTS[id].art; ok(!!LD.SEAT.opp[art], "seated box for " + art); });
+    const assets = path.join(__dirname, "..", "assets");
+    ["sd-room", "sd-table", "sd-hands-rest-mara", "sd-hands-dip-mara", "sd-mara-ots"].forEach((n) => ok(fs.existsSync(path.join(assets, "house/1978", n + ".webp")), "seated layer " + n + " ships"));
+    const shopHtml = LD.renderDesk ? LD.renderDesk(LD.createRun({ seed: "seat-shop2", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 }), {}) : "";
+    if (shopHtml) ok(!/class="desk sd/.test(shopHtml) && !/sd-hud/.test(shopHtml), "shop desk render is the old desk");
   }
 
 console.log(failed ? "FAILED " + failed + " / " + (passed + failed) : "OK " + passed + " checks");

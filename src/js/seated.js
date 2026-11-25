@@ -59,6 +59,24 @@
     tx = W / 2 - 410 * s; tx = Math.min(-x0 * s, Math.max(W - 720 * s, tx)); ty = H - y1 * s;
     return { s: s, tx: tx, ty: ty, land: false };
   };
+  /* Each visitor's head across their box: [left, right, top] as fractions of the box (measured off the idle art's alpha),
+     so the Next-move column can stand clear of hair, hats and headscarves, not just the face. */
+  SEAT.head = {"ashby":[0.241,0.773,0.061],"benny":[0.345,0.668,0.0],"brennan":[0.315,0.627,0.0],"crowe":[0.353,0.703,0.0],"dana":[0.364,0.684,0.0],"delacroix":[0.346,0.658,0.0],"dunn":[0.314,0.734,0.0],"gil":[0.323,0.634,0.005],"grace":[0.312,0.684,0.0],"gray":[0.352,0.663,0.0],"hale":[0.321,0.665,0.0],"harrow":[0.33,0.764,0.0],"honoria":[0.285,0.787,0.0],"june":[0.279,0.745,0.026],"mickey":[0.458,0.831,0.007],"mina":[0.291,0.615,0.003],"moretti":[0.414,0.775,0.013],"odell":[0.314,0.675,0.0],"okafor":[0.361,0.68,0.0],"pip":[0.352,0.648,0.0],"pops":[0.322,0.663,0.003],"rosa":[0.348,0.74,0.038],"sorel":[0.317,0.705,0.0],"theo":[0.345,0.716,0.0],"ticker":[0.261,0.798,0.0],"varga":[0.356,0.6,0.038],"mina-seat":[0.291,0.615,0.003],"pops-seat":[0.322,0.663,0.003]};
+  /* The fight framing: the desk frame, nudged so a seated visitor's whole head (box top, plate px) stands below the name bar
+     (screen y `top`). Bottom-anchored portrait plates lose their top on short tablets (a browser bar eats ~130px of an
+     800x1280 tab): slide the plate down into its spare bottom first, then pull the camera back (never narrower than the plate). */
+  LD.seatFightFrame = function (W, H, box, top) {
+    var f = LD.seatFrame(W, H);
+    if (f.land || !box || !(top > 0)) return f;
+    var want = top + 10, need = want - (box[1] * f.s + f.ty);
+    if (need <= 0) return f;
+    var room = 1280 * f.s + f.ty - H;
+    if (need <= room) return { s: f.s, tx: f.tx, ty: f.ty + need, land: false };
+    var s = Math.max(W / 720, (H - want) / (1280 - box[1]));
+    var tx = Math.min(0, Math.max(W - 720 * s, W / 2 - 410 * s));
+    var ty = Math.max(H - 1280 * s, want - box[1] * s);
+    return { s: s, tx: tx, ty: Math.min(0, ty), land: false };
+  };
   /* The live turn rig (ui.js sizeHouseRig) for the same viewport: the end of the pull-back. */
   LD.seatRigFrame = function (W, H) {
     var s, tx, ty;

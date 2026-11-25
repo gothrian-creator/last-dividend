@@ -1031,8 +1031,11 @@
   /* the fight uses the same framing as the desk, so the room does not move when the visitor sits down */
   function placeSeatFight() {
     var d = doorEl(); if (!d || !d.classList.contains("sd-fight")) return;
-    var W = window.innerWidth, H = window.innerHeight, f = LD.seatFrame(W, H), col = LD.seatColumn(W, H);
+    var W = window.innerWidth, H = window.innerHeight, col = LD.seatColumn(W, H);
     d.style.setProperty("--k", seatK(W, H));
+    /* frame the visitor's head below the name bar (the bar sits under the HUD, not on the rig, so measure it first) */
+    var op0 = d.querySelector("#sc-opp"), fh0 = d.querySelector(".sd-fhead");
+    var f = LD.seatFightFrame(W, H, op0 && LD.SEAT.opp[op0.getAttribute("data-art")], fh0 ? fh0.getBoundingClientRect().bottom : 0);
     d.style.setProperty("--col-l", Math.round(col[0]) + "px"); d.style.setProperty("--col-r", Math.round(W - col[1]) + "px");
     d.classList.toggle("is-land", f.land);
     var rig = d.querySelector(".sd-rig"); if (rig) rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
@@ -1043,7 +1046,8 @@
     var op = d.querySelector("#sc-opp"), box = op && LD.SEAT.opp[op.getAttribute("data-art")], it = $("df-intent"), talk = d.querySelector(".sd-talk");
     if (!f.land && box) {
       var hx = LD.seatToScreen(f, box[0] + box[2] * 0.5, 0)[0], right = LD.seatToScreen(f, box[0] + box[2] * 0.82, 0)[0];
-      var cl = Math.round(Math.max(W * 0.46, hx + 34, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
+      var hd = (LD.SEAT.head || {})[op.getAttribute("data-art")], headR = hd ? LD.seatToScreen(f, box[0] + box[2] * hd[1], 0)[0] : hx + 34;
+      var cl = Math.round(Math.max(W * 0.46, hx + 34, headR + 8, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
       d.style.setProperty("--tcol", cl + "px"); d.style.setProperty("--headx", Math.round(hx) + "px");
       var head = LD.seatToScreen(f, 0, box[1] + 40)[1]; d.style.setProperty("--heady", Math.round(head) + "px");
       /* the Next move stands beside them (under the name bar); their speech hangs under them on the table, tail up */

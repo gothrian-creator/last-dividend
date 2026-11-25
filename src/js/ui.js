@@ -2214,7 +2214,7 @@
     var d = doorEl(); d.hidden = false;
     var fb = mode === "df-mode", keep = d.classList.contains("lifting") && !fb ? " lifting" : "";
     var seat = fb && LD.seatedOn && LD.seatedOn(state);
-    d.className = "door-screen on " + (mode || "") + (seat ? " sd-fight" : fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" : "") + keep;
+    d.className = "door-screen on " + (mode || "") + (seat ? " sd-fight" : fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" + (LD.seatedOn && LD.seatedOn(state) ? " sd-rw" : "") : "") + keep;
     d.setAttribute("aria-label", fb ? "Fight" : mode === "rw-mode" ? "Pick a reward" : "At the door");
     d.setAttribute("aria-modal", fb ? "false" : "true");
     d.innerHTML = html;

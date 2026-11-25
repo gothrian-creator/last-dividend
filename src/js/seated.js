@@ -53,9 +53,10 @@
   /* Pull-back curves (t 0 = desk, 1 = turn frame 1). Mara rises in from below as a near object; the hands drop out. */
   LD.seatPullAt = function (t) {
     var e = t * t * (3 - 2 * t), ma = Math.max(0, Math.min(1, (t - 0.18) / 0.14)); ma = ma * ma * (3 - 2 * ma);
-    var hu = Math.max(0, Math.min(1, (t - 0.12) / 0.2)); hu = hu * hu * (3 - 2 * hu);
+    /* the hands never go see-through: they drop away opaque and are gone (below the frame) by t 0.42 */
+    var hu = Math.max(0, Math.min(1, t / 0.42)); hu = hu * hu * (3 - 2 * hu);
     return { e: e, mara: { a: ma, k: 1 + 0.55 * Math.pow(1 - t, 2), dy: 760 * Math.pow(1 - t, 2.2), blur: 5 * Math.pow(1 - t, 2) },
-      hands: { a: 1 - hu, dy: 1100 * Math.pow(t, 1.3), blur: 5 * Math.min(1, t * 4) } };
+      hands: { a: t < 0.42 ? 1 : 0, dy: 580 * hu, blur: 2.5 * Math.sin(Math.PI * hu) } };
   };
   /* Pin tags: where each tag sits relative to its pin, in screen px at scale 1 (tag centre). */
   var TAG_AT = { na: [-62, -118], sam: [-58, 92], eu: [-6, -150], me: [58, -128], ea: [76, -96], af: [6, 104], sa: [74, 82], oc: [70, 106] };

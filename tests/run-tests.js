@@ -822,6 +822,9 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     ok(p1.mara.a === 1 && Math.abs(p1.mara.k - 1) < 1e-9 && p1.mara.dy === 0 && p1.mara.blur === 0 && p1.hands.a === 0 && p1.e === 1, "pull t=1 is turn frame 1: Mara exact, hands out");
     let mono = true, prevE = -1; for (let t = 0; t <= 1.0001; t += 0.05) { const e = LD.seatPullAt(Math.min(1, t)).e; if (e < prevE - 1e-9) mono = false; prevE = e; }
     ok(mono, "pull-back easing never runs backwards");
+    let opaque = true, goneOk = true; for (let t = 0; t <= 1.0001; t += 0.01) { const q = LD.seatPullAt(Math.min(1, t)); if (q.hands.a !== 0 && q.hands.a !== 1) opaque = false; if (q.hands.a === 0 && LD.SEAT.hands.rest.box[1] + q.hands.dy < 1280) goneOk = false; }
+    ok(opaque, "pull-back hands are never see-through (opacity only 1 or 0)");
+    ok(goneOk, "pull-back hands are below the plate before they switch off");
     const html = LD.renderSeatedDesk(hm, { land: false });
     const pins = (html.match(/class="sd-pin /g) || []).length, tags = (html.match(/class="sd-tag /g) || []).length;
     ok(hm.phase === "deal" && pins === hm.offered.length && tags === hm.offered.length, "every offered deal gets a pin and a tag on the table map (" + pins + ")");

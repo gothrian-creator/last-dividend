@@ -808,7 +808,21 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     ok(LD.seatedOn(hm), "house run with Mara sits at the 1978 desk");
     ok(!LD.seatedOn(LD.createRun({ seed: "seat-shop", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 })), "shop run never uses the seated desk");
     const ex = LD.EXECUTIVES || [], other = Array.isArray(ex) ? (ex.find((e) => e && e.id && e.id !== "mara") || {}).id : Object.keys(ex).find((id) => id !== "mara");
-    if (other) ok(!LD.seatedOn(houseRun({ seed: "seat-2", executiveId: other })), "house run with another exec keeps the old desk (" + other + ")");
+    if (other) ok(!!LD.seatedOn(houseRun({ seed: "seat-2", executiveId: other })), "house run with another exec sits at the desk too (" + other + ")");
+    {
+      const fs = require("fs"), path = require("path");
+      const execs = (LD.EXECUTIVES || []).map((e) => e.id);
+      ok(execs.length === 6 && execs.every((id) => LD.SEAT_EXECS.indexOf(id) >= 0), "all six execs have a seated set");
+      execs.forEach((id) => {
+        ok(LD.seatedOn(houseRun({ seed: "seat-x", executiveId: id })), id + " is seated in house mode");
+        const own = id === "mara" ? null : "exec/" + id + "/";
+        const srcs = [LD.SEAT.mara.src, LD.SEAT.hands.rest.src, LD.SEAT.hands.dip.src].concat(LD.HOUSE_FRAMES.map((f) => f.src));
+        ok(own ? srcs.every((s) => s.indexOf(own) >= 0) : srcs.every((s) => s.indexOf("/exec/") < 0), id + " uses its own desk layers and turn plates");
+        ok(srcs.every((s) => fs.existsSync(path.join(__dirname, "..", s))), id + " seated files all exist");
+      });
+      LD.seatUseExec("mara");
+      ok(LD.SEAT.mara.src.indexOf("sd-mara-ots") >= 0 && LD.HOUSE_FRAMES[3].src.indexOf("turn-4-spin2b") >= 0, "back to Mara restores the original layers");
+    }
     [[360, 800], [412, 915], [800, 1280], [1280, 800]].forEach(([W, H]) => {
       const f = LD.seatFrame(W, H), r = LD.seatRigFrame(W, H);
       if (!f.land) ok(f.tx <= 0.5 && f.tx + 720 * f.s >= W - 0.5 && f.ty <= 0.5 && f.ty + 1280 * f.s >= H - 0.5, "desk frame covers the screen at " + W + "x" + H);

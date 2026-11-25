@@ -1,5 +1,5 @@
 /* Last Dividend — house rules seated desk (B: first person at the 1978 desk). Render + framing maths only; ui.js drives it.
-   Only for house runs with Mara (her 1978 turn set is the only one painted). Shop runs never call this. */
+   House runs, every exec (Mara has the original 1978 set; the others have person-only repaints of it). Shop runs never call this. */
 (function (root) {
   var LD = root.LD || (root.LD = {});
   var BASE = "assets/house/1978/";
@@ -23,7 +23,28 @@
     table_card: [345, 772],
     bunkerAt: [632, 1000]
   };
-  LD.seatedOn = function (state) { return !!(state && LD.isHouse && LD.isHouse(state) && state.executiveId === "mara"); };
+  /* Every exec sits at the same 1978 desk. Mara's layers are the originals; the other five have their own set under exec/<id>/
+     (their turn plates are Mara's plates with only the person repainted, so the room never moves between execs). */
+  var EXEC_OTS = { reid: [180, 390, 540, 890], imani: [161, 301, 559, 979], julian: [170, 389, 550, 891], soren: [177, 386, 543, 894], cassius: [174, 387, 546, 893] };
+  var MARA_SET = { mara: SEAT.mara, rest: SEAT.hands.rest.src, dip: SEAT.hands.dip.src }, curExec = "mara", plateSrc = null;
+  LD.SEAT_EXECS = ["mara"].concat(Object.keys(EXEC_OTS));
+  LD.seatUseExec = function (id) {
+    if (!EXEC_OTS[id]) id = "mara";
+    if (!plateSrc && LD.HOUSE_FRAMES) plateSrc = LD.HOUSE_FRAMES.map(function (f) { return f.src; });
+    if (id === curExec && (plateSrc || !LD.HOUSE_FRAMES)) return id;
+    curExec = id;
+    var d = BASE + "exec/" + id + "/";
+    SEAT.mara = id === "mara" ? MARA_SET.mara : { src: d + "sd-ots.webp", box: EXEC_OTS[id] };
+    SEAT.hands.rest.src = id === "mara" ? MARA_SET.rest : d + "sd-hands-rest.webp";
+    SEAT.hands.dip.src = id === "mara" ? MARA_SET.dip : d + "sd-hands-dip.webp";
+    if (LD.HOUSE_FRAMES && plateSrc) LD.HOUSE_FRAMES.forEach(function (f, i) { f.src = id === "mara" ? plateSrc[i] : d + "turn-" + (i + 1) + ".webp"; });
+    return id;
+  };
+  LD.seatedOn = function (state) {
+    var on = !!(state && LD.isHouse && LD.isHouse(state) && LD.SEAT_EXECS.indexOf(state.executiveId) >= 0);
+    if (on) LD.seatUseExec(state.executiveId);
+    return on;
+  };
   /* how many card kinds the fan shows before a +N: phones keep it to a hand you can read */
   LD.seatFanCap = function (W, H) { return W >= H * 1.2 ? 9 : W > 500 ? 10 : 6; };
   LD.seatLandscape = function (W, H) { return W >= H * 1.2; };

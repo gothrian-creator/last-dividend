@@ -8,7 +8,7 @@ function ok(c,m){n++;if(!c){bad++;console.log("FAIL",m);}}
 const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right,b:r.bottom,w:r.width,h:r.height};};
 (async()=>{const env=await H.start(process.env.DIST||"/workspace/last-dividend-v3/dist");
  for(const sz of SIZES){const [w,h]=sz.split("x").map(Number);
-  const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:13,stop:"deal:3",exec:"mara",smart:true});await p.waitForTimeout(700);
+  const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:13,stop:"deal:3",exec:process.env.EXEC||"mara",smart:true});await p.waitForTimeout(700);
   const d=await p.evaluate(()=>{const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right,b:r.bottom};};
     const hud=R(document.querySelector(".desk.sd .sd-hud"));const tags=[...document.querySelectorAll(".sd-tag")].map(R);
     const ov=(a,b)=>Math.min(a.r,b.r)-Math.max(a.l,b.l)>1&&Math.min(a.b,b.b)-Math.max(a.t,b.t)>1;let tagOv=0;

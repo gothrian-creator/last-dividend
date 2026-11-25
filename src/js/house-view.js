@@ -266,6 +266,7 @@
      ui.card: "arrival" | "word" | null; ui.leaveId; ui.auto; ui.canEnd */
   LD.renderHouseStage = function (state, ui) {
     ui = ui || {};
+    if (LD.seatUseExec) LD.seatUseExec(state && state.executiveId);
     var mode = ui.mode || "after";
     var cls = "hv-root is-" + mode + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
     var frames = LD.HOUSE_FRAMES.map(function (f, i) {

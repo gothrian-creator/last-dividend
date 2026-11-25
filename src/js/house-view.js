@@ -7,7 +7,8 @@
     { id: "turn-1-before", src: BASE + "turn-1-before.webp", at: 0 },
     { id: "turn-2-push", src: BASE + "turn-2-push.webp", at: 0.14 },
     { id: "turn-3-spin1", src: BASE + "turn-3-spin1.webp", at: 0.32 },
-    { id: "turn-4-spin2", src: BASE + "turn-4-spin2.webp", at: 0.52 },
+    /* spin2b: a repaint at the same camera distance as 3 and 5 (the old turn-4-spin2 used a wider camera and is kept, unused) */
+    { id: "turn-4-spin2b", src: BASE + "turn-4-spin2b.webp", at: 0.5 },
     { id: "turn-5-warm", src: BASE + "turn-5-warm.webp", at: 0.68 },
     { id: "turn-6-after", src: BASE + "turn-6-after.webp", at: 0.86 }
   ];

@@ -1592,8 +1592,7 @@
     bindHouseChrome();
   }
   function setPlateOpacities(t) {
-    /* t 0 = before, 1 = after. Frame 4 (spin23) used a much wider camera, so it is only a faint bridge between 3 and 5;
-       the pass is masked by a short blur and a tiny push so the orbit reads as one move. */
+    /* t 0 = before, 1 = after. Six plates at one camera distance, crossfaded in order; no blur needed to hide a jump. */
     var frames = document.querySelectorAll("#house-root .hv-plate");
     var n = frames.length;
     if (!n) return;
@@ -1601,23 +1600,17 @@
     var i, op;
     if (t <= 0) { for (i = 0; i < n; i++) frames[i].style.opacity = i === 0 ? "1" : "0"; if (group) { group.style.filter = ""; group.style.transform = ""; } return; }
     if (t >= 1) { for (i = 0; i < n; i++) frames[i].style.opacity = i === n - 1 ? "1" : "0"; if (group) { group.style.filter = ""; group.style.transform = ""; } return; }
-    /* stops: frame index and the t at which it is fully shown. 3 holds, then a quick 3 to 5 crossfade at peak blur. */
-    var stops = [[0, 0], [1, 0.14], [2, 0.34], [2, 0.44], [4, 0.58], [5, 0.84]];
+    /* stops: frame index and the t at which it is fully shown (LD.HOUSE_FRAMES[].at) */
+    var stops = LD.HOUSE_FRAMES.map(function (f, ix) { return [ix, f.at]; });
     var a = 0;
     for (var k = 0; k < stops.length - 1; k++) if (t >= stops[k][1]) a = k;
     var lo = stops[a], hi = stops[a + 1];
-    var u = (t - lo[1]) / (hi[1] - lo[1]);
+    var u = Math.max(0, Math.min(1, (t - lo[1]) / (hi[1] - lo[1])));
     u = u * u * (3 - 2 * u);
     for (i = 0; i < n; i++) frames[i].style.opacity = "0";
     if (lo[0] === hi[0]) frames[lo[0]].style.opacity = "1";
     else { frames[lo[0]].style.opacity = String(1 - u); frames[hi[0]].style.opacity = String(u); }
-    /* the wide frame is a faint bridge only across the 3 to 5 crossfade */
-    if (a === 3) frames[3].style.opacity = String(0.22 * Math.sin(Math.PI * u));
-    if (group) {
-      var d = (t - 0.46) / 0.2, m = Math.exp(-d * d);
-      group.style.filter = m > 0.03 ? "blur(" + (9 * m).toFixed(2) + "px)" : "";
-      group.style.transform = m > 0.03 ? "scale(" + (1 + 0.05 * m).toFixed(4) + ")" : "";
-    }
+    if (group) { group.style.filter = ""; group.style.transform = ""; }
     var screen = document.querySelector("#house-root .hv-screen");
     var band = document.querySelectorAll("#house-root .hv-band");
     var show = t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0;

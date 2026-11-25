@@ -730,6 +730,7 @@
 
   function renderDesk(from) {
     syncEra("desk");
+    if (LD.seatedOn && LD.seatedOn(state)) { renderSeatedDesk(from); return; }
     var el = $("screen-desk");
     el.innerHTML = LD.renderDesk(state, uiOpts());
     bindDesk();
@@ -798,6 +799,232 @@
     });
   }
 
+
+  /* ---------- House rules, seated desk (B): first person at the 1978 desk. Only LD.seatedOn(state) runs reach this. ---------- */
+  var SD = { fan: false, t: 0, raf: 0, pull: null };
+  function seatedNow() { return !!(state && LD.seatedOn && LD.seatedOn(state) && document.querySelector("#screen-desk .desk.sd")); }
+  function seatK(W, H) { return W <= 500 ? 1 : LD.seatLandscape(W, H) ? 1.15 : 1.25; }
+  function seatedUi() {
+    return { sel: { deal: sel.deal, region: sel.region, net: sel.net }, fan: SD.fan, closing: hidePins, land: LD.seatLandscape(window.innerWidth, window.innerHeight),
+      dossier: LD.renderDossier(state, uiOpts()), peek: !!(LD.houseCanPeek && LD.houseCanPeek(state)), badge: state.phase === "bunker" && !state.bunkerActedThisTurn && houseCardKind() ? "!" : "" };
+  }
+  function renderSeatedDesk(from) {
+    var el = $("screen-desk");
+    if (tickerTimer) { clearInterval(tickerTimer); tickerTimer = null; }
+    el.innerHTML = LD.renderSeatedDesk(state, seatedUi());
+    bindSeated();
+    placeSeated();
+    if (from) seatDeltas(from);
+    preloadHousePlates();
+    if (HV.facing && !HV.turning) refreshHouseChrome();
+  }
+  /* cash / unrest / collapse changes float off the HUD */
+  function seatDeltas(from) {
+    [["cash", state.cash - from.cash, true], ["unrest", state.unrest - from.unrest, false], ["collapse", state.collapse - from.collapse, false]].forEach(function (x, i) {
+      if (!x[1]) return;
+      var host = document.querySelector(".desk.sd .sd-hud " + (x[0] === "cash" ? ".sd-cash" : ".m-" + x[0]));
+      if (!host) return;
+      var pop = document.createElement("span"), good = x[2] ? x[1] > 0 : x[1] < 0;
+      pop.className = "sd-pop " + (good ? "up" : "down");
+      pop.textContent = (x[1] > 0 ? "+" : "−") + (x[0] === "cash" ? LD.formatMoney(Math.abs(x[1])) : Math.abs(x[1]));
+      pop.style.animationDelay = i * 140 + "ms";
+      host.appendChild(pop);
+      setTimeout(function () { if (pop.parentNode) pop.parentNode.removeChild(pop); }, 1900);
+      if (x[0] === "cash" && x[1] > 0) SFX.play("coin");
+    });
+  }
+  /* Plate -> screen for the rig and every data-plate element; tags placed beside their pins without overlaps. */
+  function placeSeated() {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    var W = window.innerWidth, H = window.innerHeight, k = seatK(W, H), f = LD.seatFrame(W, H), land = f.land;
+    desk.style.setProperty("--k", k);
+    desk.classList.toggle("is-land", land);
+    var col = LD.seatColumn(W, H);
+    desk.style.setProperty("--col-l", Math.round(col[0]) + "px"); desk.style.setProperty("--col-r", Math.round(W - col[1]) + "px");
+    var hud = desk.querySelector(".sd-hud"), hb = hud ? hud.getBoundingClientRect().bottom : 0;
+    desk.style.setProperty("--hud", Math.round(hb) + "px");
+    seatApplyPose(desk, SD.t);
+    layoutFan(desk);
+    var ui = desk.querySelector(".sd-ui"); if (!ui) return;
+    Array.prototype.forEach.call(ui.querySelectorAll("[data-plate]"), function (n) {
+      var p = n.getAttribute("data-plate").split(",").map(Number), q = LD.seatToScreen(f, p[0], p[1]);
+      n.style.left = q[0].toFixed(1) + "px"; n.style.top = q[1].toFixed(1) + "px";
+      var r = n.getAttribute("data-r");
+      if (r) { r = r.split(",").map(Number); n.style.width = (2 * r[0] * f.s).toFixed(1) + "px"; n.style.height = (2 * r[1] * f.s).toFixed(1) + "px"; }
+    });
+    /* tags: start at the region's preferred offset, clamp to the stage, push apart */
+    var x0 = land ? col[0] + 8 : 8, x1 = land ? col[1] - 8 : W - 8, yTop = hb + (land ? 44 : 44 * k), yBot = H - 96 * k;
+    var boxes = [];
+    Array.prototype.forEach.call(ui.querySelectorAll(".sd-tag"), function (t) {
+      var pin = ui.querySelector('.sd-pin[data-deal="' + t.getAttribute("data-deal") + '"]'); if (!pin) return;
+      var px = parseFloat(pin.style.left), py = parseFloat(pin.style.top), o = LD.seatTagAt(t.getAttribute("data-rid"), k);
+      var w = t.offsetWidth, h = t.offsetHeight;
+      var cx = Math.max(x0 + w / 2, Math.min(x1 - w / 2, px + o[0])), cy = Math.max(yTop + h / 2, Math.min(yBot - h / 2, py + o[1]));
+      boxes.push({ t: t, px: px, py: py, cx: cx, cy: cy, w: w, h: h });
+    });
+    for (var it = 0; it < 24; it++) {
+      var moved = false;
+      for (var i = 0; i < boxes.length; i++) for (var j = i + 1; j < boxes.length; j++) {
+        var a = boxes[i], b = boxes[j], ox = (a.w + b.w) / 2 + 6 - Math.abs(a.cx - b.cx), oy = (a.h + b.h) / 2 + 6 - Math.abs(a.cy - b.cy);
+        if (ox > 0 && oy > 0) {
+          moved = true;
+          if (ox < oy) { var sx = a.cx < b.cx ? -1 : 1; a.cx += sx * ox / 2; b.cx -= sx * ox / 2; }
+          else { var sy = a.cy < b.cy ? -1 : 1; a.cy += sy * oy / 2; b.cy -= sy * oy / 2; }
+          [a, b].forEach(function (c) { c.cx = Math.max(x0 + c.w / 2, Math.min(x1 - c.w / 2, c.cx)); c.cy = Math.max(yTop + c.h / 2, Math.min(yBot - c.h / 2, c.cy)); });
+        }
+      }
+      if (!moved) break;
+    }
+    var svg = ui.querySelector(".sd-lines"), lines = "";
+    boxes.forEach(function (b) {
+      b.t.style.left = (b.cx - b.w / 2).toFixed(1) + "px"; b.t.style.top = (b.cy - b.h / 2).toFixed(1) + "px";
+      var ex = Math.max(b.cx - b.w / 2 + 10, Math.min(b.cx + b.w / 2 - 10, b.px)), ey = b.py < b.cy ? b.cy - b.h / 2 : b.cy + b.h / 2;
+      if (Math.abs(b.py - b.cy) < b.h / 2) { ey = b.cy; ex = b.px < b.cx ? b.cx - b.w / 2 : b.cx + b.w / 2; }
+      lines += '<line x1="' + b.px.toFixed(1) + '" y1="' + b.py.toFixed(1) + '" x2="' + ex.toFixed(1) + '" y2="' + ey.toFixed(1) + '" data-deal="' + b.t.getAttribute("data-deal") + '"/>';
+    });
+    if (svg) { svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("width", W); svg.setAttribute("height", H); svg.innerHTML = lines; }
+  }
+  /* Pose of the desk rig: t 0 = first person, 1 = the turn rig's frame 1 (Mara in, hands out). */
+  function seatApplyPose(root, t) {
+    if (!root) return;
+    var W = window.innerWidth, H = window.innerHeight, a = LD.seatFrame(W, H), b = LD.seatRigFrame(W, H), P = LD.seatPullAt(t);
+    var f = t <= 0 ? a : t >= 1 ? b : LD.seatLerpFrame(a, b, P.e);
+    var rig = root.querySelector(".sd-rig"); if (!rig) return;
+    rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    var m = rig.querySelector(".sd-mara"), hs = rig.querySelectorAll(".sd-hands");
+    if (m) {
+      if (P.mara.a <= 0.001) { m.style.opacity = "0"; m.style.transform = ""; m.style.filter = ""; }
+      else { m.style.opacity = P.mara.a.toFixed(3); m.style.transform = "translate(0," + P.mara.dy.toFixed(1) + "px) scale(" + P.mara.k.toFixed(4) + ")"; m.style.filter = P.mara.blur > 0.05 ? "blur(" + (P.mara.blur / f.s).toFixed(2) + "px)" : ""; }
+    }
+    Array.prototype.forEach.call(hs, function (n) {
+      if (t <= 0) { n.style.transform = ""; n.style.filter = ""; n.style.removeProperty("--ha"); return; }
+      n.style.setProperty("--ha", P.hands.a.toFixed(3));
+      n.style.transform = "translate(0," + P.hands.dy.toFixed(1) + "px)"; n.style.filter = P.hands.blur > 0.05 ? "blur(" + (P.hands.blur / f.s).toFixed(2) + "px)" : "";
+    });
+    root.classList.toggle("is-pulling", t > 0);
+    root.style.setProperty("--pull", t.toFixed(3));
+  }
+  LD.seatPose = function (t) { SD.t = t; seatApplyPose(document.querySelector("#screen-desk .desk.sd"), t); };
+  /* Animate the pose. dir "out" 0 -> 1 (into the chair turn), "in" 1 -> 0 (back to the desk). Tap skips. */
+  function seatPull(dir, done) {
+    if (SD.raf) { cancelAnimationFrame(SD.raf); SD.raf = 0; }
+    var from = dir === "out" ? 0 : 1, to = 1 - from, dur = LD.SEAT_PULL_MS || 620;
+    if (reduced() || !seatedNow()) { SD.t = to; seatApplyPose(document.querySelector("#screen-desk .desk.sd"), to); if (done) done(); return; }
+    var t0 = performance.now(), finished = false;
+    var shield = document.createElement("div"); shield.id = "sd-shield"; document.body.appendChild(shield);
+    function end() { if (finished) return; finished = true; if (SD.raf) cancelAnimationFrame(SD.raf); SD.raf = 0; SD.t = to; seatApplyPose(document.querySelector("#screen-desk .desk.sd"), to); if (shield.parentNode) shield.parentNode.removeChild(shield); SD.pull = null; if (done) done(); }
+    shield.addEventListener("pointerdown", function (e) { e.preventDefault(); end(); });
+    SD.pull = { end: end };
+    function step(now) {
+      var u = Math.min(1, (now - t0) / dur);
+      SD.t = from + (to - from) * u;
+      seatApplyPose(document.querySelector("#screen-desk .desk.sd"), SD.t);
+      if (u >= 1) end(); else SD.raf = requestAnimationFrame(step);
+    }
+    SD.raf = requestAnimationFrame(step);
+  }
+  LD.SEAT_PULL_MS = 620;
+  function seatSetFan(on) {
+    SD.fan = !!on;
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    var fan = $("sd-fan"), tab = $("sd-tab"), all = $("run-deck");
+    if (SD.fan && fan && !fan.children.length) {
+      fan.innerHTML = state.fy && state.fy.deck ? state.fy.deck.map(function (c, i) { return LD.cardFace(c.id, c.up, { attrs: ' data-deck="' + i + '" style="--c:' + i + '"', cls: "sd-fc" }); }).join("") : "";
+      fan.style.setProperty("--n", Math.max(1, fan.children.length));
+      Array.prototype.forEach.call(fan.querySelectorAll("[data-deck]"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); }); });
+    }
+    desk.classList.toggle("is-fan", SD.fan);
+    layoutFan(desk);
+    if (tab) { tab.setAttribute("aria-expanded", SD.fan ? "true" : "false"); var ic = tab.querySelector(".sd-tabl i"); if (ic) ic.textContent = SD.fan ? "▼" : "▲"; }
+    if (all) all.hidden = !SD.fan;
+  }
+  /* The fan as an arc held in the hand: total spread up to 56deg, radius chosen so the outer cards just fit the stage width. */
+  function layoutFan(desk) {
+    var fan = desk && desk.querySelector(".sd-fan"); if (!fan) return;
+    var W = window.innerWidth, H = window.innerHeight, k = seatK(W, H), land = LD.seatLandscape(W, H);
+    var col = LD.seatColumn(W, H), l = land ? col[0] : 0, r = land ? W - col[1] : 0, avail = W - l - r - 16;
+    var cards = fan.querySelectorAll(".dc"), n = cards.length, cw = 96 * k, ch = 134 * k;
+    /* like a hand held low: the outermost cards may tuck a corner past the edge, every card keeps most of itself on screen */
+    var span = Math.max(0, Math.min(avail - cw * (W > 500 ? 2.4 : 1.1), (n - 1) * cw * 0.62)), A = Math.min(40, (n - 1) * 6, span * 0.16) * Math.PI / 180;
+    /* keep the outer cards from sinking more than a quarter card: half * tan(A/4) = drop */
+    var maxDrop = ch * 0.24; if (span > 0 && (span / 2) * Math.tan(A / 4) > maxDrop) A = 4 * Math.atan(maxDrop / (span / 2));
+    var R = n > 1 && A > 0 ? (span / 2) / Math.sin(A / 2) : 0, drop = R * (1 - Math.cos(A / 2));
+    Array.prototype.forEach.call(cards, function (c, i) {
+      var ph = n > 1 ? -A / 2 + (A * i) / (n - 1) : 0;
+      c.style.setProperty("--x", (R * Math.sin(ph)).toFixed(1) + "px");
+      c.style.setProperty("--y", (R * (1 - Math.cos(ph))).toFixed(1) + "px");
+      c.style.setProperty("--r", (ph * 180 / Math.PI).toFixed(2) + "deg");
+      c.style.zIndex = String(i + 1);
+    });
+    desk.style.setProperty("--fan-l", l + "px"); desk.style.setProperty("--fan-r", r + "px");
+    var base = 10 * k + (W > 500 ? drop * 0.8 : 0);
+    desk.style.setProperty("--fan-b", Math.round(base) + "px");
+    desk.style.setProperty("--fan-h", Math.round(ch + base + 8) + "px");
+    var lab = desk.querySelector(".sd-tabl"); if (lab) desk.style.setProperty("--tab-hw", Math.round(lab.offsetWidth / 2) + "px");
+  }
+  function seatSelSync() {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    Array.prototype.forEach.call(desk.querySelectorAll("[data-deal]"), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === sel.deal); });
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-region"), function (n) { n.classList.toggle("sel", n.getAttribute("data-region") === sel.region); });
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-net"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
+    var dz = $("dossier"); if (dz) dz.classList.toggle("on", !!(sel.deal || sel.region || sel.net));
+    if (sel.deal || sel.region || sel.net) seatSetFan(false);
+  }
+  function bindSeated() {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    function on(selr, fn) { Array.prototype.forEach.call(desk.querySelectorAll(selr), function (n) { n.addEventListener("click", function (e) { e.stopPropagation(); fn(n, e); }); }); }
+    on(".sd-pin, .sd-tag, .sd-qrow", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
+    on(".sd-region", function (n) { tick(); selectRegion(n.getAttribute("data-region")); });
+    on(".sd-net[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
+    on("#btn-menu", function () { tick(); openMenu(); });
+    on("#btn-endq", function () { tick(); endQuarter(); });
+    on("#house-peek", function () { tick(); if (document.body.classList.contains("in-fight") || doorOpen()) { flash("Finish the fight first."); return; } openHouse({ peek: true }); });
+    on("#sd-tab", function () { tick(); seatSetFan(!SD.fan); });
+    var stage = desk.querySelector(".sd-clip"), bg = desk.querySelector(".sd-ui");
+    [stage, bg].forEach(function (n) { if (n) n.addEventListener("click", function (e) {
+      if (e.target.closest && e.target.closest("button")) return;
+      if (SD.fan) { seatSetFan(false); return; }
+      if (sel.deal || sel.region || sel.net) { clearSel(); refreshSelection(); }
+    }); });
+    /* swipe up on the tab opens the fan; down closes */
+    var hand = $("sd-hand"), y0 = null;
+    if (hand) {
+      hand.addEventListener("pointerdown", function (e) { y0 = e.clientY; });
+      hand.addEventListener("pointerup", function (e) { if (y0 == null) return; var dy = e.clientY - y0; y0 = null; if (dy < -24 && !SD.fan) seatSetFan(true); else if (dy > 24 && SD.fan) seatSetFan(false); });
+    }
+    bindFyDesk();
+    bindDossier();
+    if (SD.fan) { SD.fan = false; seatSetFan(true); }
+  }
+  window.addEventListener("resize", function () { if (seatedNow()) placeSeated(); if (document.querySelector("#door.sd-fight")) placeSeatFight(); });
+  /* the fight uses the same framing as the desk, so the room does not move when the visitor sits down */
+  function placeSeatFight() {
+    var d = doorEl(); if (!d || !d.classList.contains("sd-fight")) return;
+    var W = window.innerWidth, H = window.innerHeight, f = LD.seatFrame(W, H), col = LD.seatColumn(W, H);
+    d.style.setProperty("--k", seatK(W, H));
+    d.style.setProperty("--col-l", Math.round(col[0]) + "px"); d.style.setProperty("--col-r", Math.round(W - col[1]) + "px");
+    d.classList.toggle("is-land", f.land);
+    var rig = d.querySelector(".sd-rig"); if (rig) rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    var hud = d.querySelector(".sd-hud"); if (hud) d.style.setProperty("--hud", Math.round(hud.getBoundingClientRect().bottom) + "px");
+    var rim = LD.seatToScreen(f, 0, 548)[1]; d.style.setProperty("--rim", Math.round(rim) + "px");
+    /* portrait: speech and intent stand in a column beside the visitor, never over their face; captions lie on the table */
+    var op = d.querySelector("#sc-opp"), box = op && LD.SEAT.opp[op.getAttribute("data-art")], it = $("df-intent"), talk = d.querySelector(".sd-talk");
+    if (!f.land && box) {
+      var hx = LD.seatToScreen(f, box[0] + box[2] * 0.5, 0)[0], right = LD.seatToScreen(f, box[0] + box[2] * 0.82, 0)[0];
+      var cl = Math.round(Math.max(W * 0.46, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
+      d.style.setProperty("--tcol", cl + "px"); d.style.setProperty("--headx", Math.round(hx) + "px");
+      var head = LD.seatToScreen(f, 0, box[1] + 40)[1]; d.style.setProperty("--heady", Math.round(head) + "px");
+      if (it) { var tb = talk && talk.children.length ? talk.getBoundingClientRect().bottom : (d.querySelector(".sd-fhead") || d).getBoundingClientRect().bottom; it.style.top = Math.round(tb + 8) + "px"; }
+      var ib = it ? it.getBoundingClientRect().bottom : talk ? talk.getBoundingClientRect().bottom : 0;
+      d.style.setProperty("--tbot", Math.round(Math.max(rim + 8, ib + 10)) + "px");
+    } else if (it) {
+      /* landscape: the intent stands under the speech in the left panel column */
+      var tb2 = talk && talk.children.length ? talk.getBoundingClientRect().bottom : (d.querySelector(".sd-fhead") || d).getBoundingClientRect().bottom;
+      it.style.top = Math.round(tb2 + 10) + "px";
+      d.style.setProperty("--tbot", Math.round(it.getBoundingClientRect().bottom + 10) + "px");
+    }
+  }
+
   /* In-place update: dossier, selection classes, map preview and rail. No map rebuild. */
   function refreshSelection() {
     var desk = document.querySelector(".desk");
@@ -820,6 +1047,7 @@
     dz.classList.remove("pop");
     void dz.offsetWidth;
     dz.classList.add("pop");
+    if (desk.classList.contains("sd")) { seatSelSync(); return; }
     if (isPhone() && (sel.deal || sel.region)) {
       var board = desk.querySelector(".board");
       if (board) window.scrollTo({ top: Math.max(0, board.getBoundingClientRect().top + window.scrollY - 8), behavior: reduced() ? "auto" : "smooth" });
@@ -1085,6 +1313,8 @@
   }
 
   function boardPoint(regionId) {
+    var sd = document.querySelector("#screen-desk .desk.sd");
+    if (sd) { var rg = LD.SEAT.regions[regionId], f0 = LD.seatFrame(window.innerWidth, window.innerHeight); if (!rg) return null; var q = LD.seatToScreen(f0, rg[0], rg[1]); return { x: q[0], y: q[1] }; }
     var board = document.querySelector(".desk .board");
     var a = document.querySelector('.desk .anc[data-anc="' + regionId + '"]');
     if (!board || !a) return null;
@@ -1107,6 +1337,7 @@
   }
   function floatCenter(text, cls, delay, dy) {
     var fx = $("fx");
+    if (document.querySelector("#screen-desk .desk.sd")) { if (!fx) return; var c0 = LD.seatToScreen(LD.seatFrame(window.innerWidth, window.innerHeight), 380, 600); placeFloat(fx, c0[0], c0[1] + (dy || 0), text, cls, delay); return; }
     var slab = document.querySelector(".desk .board-slab");
     var board = document.querySelector(".desk .board");
     if (!fx || !slab || !board) return;
@@ -1301,10 +1532,12 @@
       card: (HV.facing && !HV.turning) ? HV.card : null,
       leaveId: (HV.facing && !HV.turning) ? HV.leaveId : null,
       promiseId: HV.promiseId,
-      canEnd: houseCanEndQ()
+      canEnd: houseCanEndQ(),
+      seated: !!(LD.seatedOn && LD.seatedOn(state))
     });
     var stage = root.querySelector(".hv-root");
     if (stage && land) stage.classList.add("is-landscape");
+    if (stage && LD.seatedOn && LD.seatedOn(state)) stage.classList.add("is-seated");
     sizeHouseRig();
     bindHouseChrome();
   }
@@ -1359,6 +1592,7 @@
       var root = $("house-root");
       if (root) { root.innerHTML = ""; root.hidden = true; root.classList.remove("is-open"); }
       attachHousePeek();
+      if (seatedNow() && SD.t > 0) seatPull("in");
     }
   }
   function runHouseTurn(dir) {
@@ -1391,9 +1625,9 @@
     HV.auto = !!opts.auto;
     HV.leaveId = null;
     HV.promiseId = null;
-    paintHouse("before");
-    setPlateOpacities(0);
-    runHouseTurn("to");
+    function go() { paintHouse("before"); setPlateOpacities(0); runHouseTurn("to"); }
+    if (seatedNow() && SD.t < 1) { HV.turning = true; HV.dir = "to"; seatSetFan(false); seatPull("out", function () { HV.turning = false; go(); }); return; }
+    go();
   }
   function closeHouse() {
     if (!HV.open && !HV.facing) return;
@@ -1420,6 +1654,7 @@
     openHouse({ auto: true });
   }
   function attachHousePeek() {
+    if (seatedNow()) { var sb = $("house-peek"); if (sb) sb.hidden = !(LD.houseCanPeek && LD.houseCanPeek(state)) || HV.open || HV.facing || HV.turning; return; }
     Array.prototype.forEach.call(document.querySelectorAll("#house-peek"), function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
     if (!state || !(LD.isHouse && LD.isHouse(state)) || HV.open || HV.facing || HV.turning) return;
     if (!(LD.houseCanPeek && LD.houseCanPeek(state))) return;
@@ -1460,6 +1695,7 @@
       HV.facing = false; HV.open = false; HV.turning = false; HV.auto = false;
       var hr = $("house-root");
       if (hr) { hr.innerHTML = ""; hr.hidden = true; hr.classList.remove("is-open"); }
+      if (seatedNow() && SD.t > 0) seatPull("in");
       endQuarter();
     });
     var admit = $("hv-admit");
@@ -1685,8 +1921,9 @@
     var meta = loadMeta();
     if (!meta.coachDone) { meta.coachDone = true; saveMeta(meta); }
     var desk = document.querySelector(".desk");
-    desk.classList.add("closing");
+    if (desk) desk.classList.add("closing");
     var fx = $("fx");
+    if (!fx && desk) { fx = document.createElement("div"); fx.className = "fx"; fx.id = "fx"; desk.appendChild(fx); }
     var stamp = document.createElement("div");
     stamp.className = "stamp";
     stamp.innerHTML = "Q" + prev.turn + " <span>closed</span>";
@@ -1713,7 +1950,7 @@
       skip.id = "btn-skip-react";
       skip.textContent = "Skip ▸";
       skip.addEventListener("click", function () { tick(); finish(); });
-      var board = document.querySelector(isPhone() ? ".desk .board-tilt" : ".desk .board") || document.querySelector(".desk .board");
+      var board = document.querySelector(isPhone() ? ".desk .board-tilt" : ".desk .board") || document.querySelector(".desk .board") || document.querySelector("#screen-desk .desk.sd");
       if (board) board.appendChild(skip);
       var beats = [];
       /* 1. Delayed effects land (from the rail). */
@@ -1939,16 +2176,17 @@
   function showDoor(html, mode) {
     var d = doorEl(); d.hidden = false;
     var fb = mode === "df-mode", keep = d.classList.contains("lifting") && !fb ? " lifting" : "";
-    d.className = "door-screen on " + (mode || "") + (fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" : "") + keep;
+    var seat = fb && LD.seatedOn && LD.seatedOn(state);
+    d.className = "door-screen on " + (mode || "") + (seat ? " sd-fight" : fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" : "") + keep;
     d.setAttribute("aria-label", fb ? "Fight" : mode === "rw-mode" ? "Pick a reward" : "At the door");
     d.setAttribute("aria-modal", fb ? "false" : "true");
     d.innerHTML = html;
     document.body.classList.toggle("in-fight", fb);
-    if (fb) placeBay();
+    if (seat) placeSeatFight(); else if (fb) placeBay();
   }
   function hideDoor() {
     var d = doorEl(); if (!d) return;
-    var wasFight = d.classList.contains("fb-mode");
+    var wasFight = d.classList.contains("fb-mode") || d.classList.contains("sd-fight");
     d.className = "door-screen"; d.hidden = true; d.innerHTML = ""; d.removeAttribute("style");
     document.body.classList.remove("in-fight");
     if (wasFight && LD.O4 && LD.O4.exitFight) LD.O4.exitFight();
@@ -1996,6 +2234,7 @@
   }
   function dfFloat(text, cls, sel, delay) {
     var fx = $("df-fx"), a = document.querySelector(sel || ".df-scrut"), root = document.querySelector(".door-in");
+    if (!a && doorEl().classList.contains("sd-fight")) a = document.querySelector({ ".df-scrut": "#door .m-scrutiny", ".df-meters": "#door .sd-cash" }[sel || ".df-scrut"] || "#none");
     if (!fx || !a || !root) return;
     var r = a.getBoundingClientRect(), b = root.getBoundingClientRect();
     /* Scrutiny deltas float out below the panel's bar, never over its label or number. */
@@ -2073,6 +2312,19 @@
     };
     if (LD.O4 && LD.O4.fightPose) LD.O4.fightPose(hitPose === "block" ? "watch" : "snap", 650);
     if (you) { you.classList.remove("flick"); void you.offsetWidth; you.classList.add("flick"); }
+    var tc = $("sd-tcard");
+    if (tc) {
+      var land = function () { DF.landing = false; var t2 = $("sd-tcard"); if (t2) { t2.classList.remove("is-landing"); t2.classList.add("landed"); } };
+      if (reduced() || !rect || !cardHtml || !fx) { land(); react(); return; }
+      var tb = tc.getBoundingClientRect(), fl = document.createElement("div");
+      fl.className = "sc-fly sd-fly"; fl.innerHTML = cardHtml.replace(/^<button/, "<div").replace(/<\/button>$/, "</div>");
+      fl.style.left = rect.left + "px"; fl.style.top = rect.top + "px"; fl.style.width = rect.width + "px"; fl.style.height = rect.height + "px";
+      fx.appendChild(fl);
+      var ddx = (tb.left + tb.width / 2) - (rect.left + rect.width / 2), ddy = (tb.top + tb.height / 2) - (rect.top + rect.height / 2), k2 = tb.width / Math.max(1, rect.width);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { fl.classList.add("go"); fl.style.transform = "translate(" + ddx.toFixed(1) + "px," + ddy.toFixed(1) + "px) rotate(-5deg) scale(" + k2.toFixed(3) + ")"; }); });
+      setTimeout(function () { if (fl.parentNode) fl.parentNode.removeChild(fl); land(); react(); }, 300);
+      return;
+    }
     if (reduced() || !rect || !cardHtml || !opp || !root || !fx) { react(); return; }
     var b = { left: 0, top: 0 }, tr = (hitPose === "block" && you ? you : opp).getBoundingClientRect();
     var fly = document.createElement("div");
@@ -2109,7 +2361,7 @@
   function startFight() {
     if (FI.on) return;
     var want = false; try { want = fightIntroWanted(); } catch (e) { want = false; }
-    if (!want || reduced() || screen !== "desk") { if (want) FI.key = LD.fightIntroKey(state); openFight(); return; }
+    if (!want || reduced() || screen !== "desk" || (LD.seatedOn && LD.seatedOn(state))) { if (want) FI.key = LD.fightIntroKey(state); openFight(); return; }
     try {
       FI.on = true;
       var go = function () { FI.on = false; FI.key = LD.fightIntroKey(state); DF.settle = true; openFight(); };
@@ -2238,16 +2490,21 @@
   }
   function paintFight(flashU, enter) {
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
-    showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap }), "df-mode");
+    var seat = LD.seatedOn && LD.seatedOn(state), fgp = state.fy && state.fy.fight;
+    if (seat && fgp && !(fgp.rp > 0)) DF.lastCard = null;
+    var fui = { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap, lastCard: DF.lastCard, landing: !!DF.landing };
+    showDoor(seat ? LD.renderSeatedFight(state, fui) : LD.renderFight(state, fui), "df-mode");
     var root = doorEl();
-    adoptScene(DF.settle); DF.settle = false; placeBubble();
+    if (!seat) { adoptScene(DF.settle); placeBubble(); }
+    DF.settle = false;
     /* deal the hand out of the pile (fight start and each new round) */
     if (DF.deal && !reduced()) { var hand = root.querySelector(".df-hand"); if (hand) hand.classList.add("dealing"); }
     DF.deal = false;
     var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"), stg = cb && cb.parentNode; if (stg) stg.removeChild(cb);
       /* the familiar-face card held the stage; now show the opener caption it was covering */
       var fg1 = state.fy && state.fy.fight, op = fg1 && !fg1.played && !$("sc-cap") && !$("sc-why") && LD.fightOpener ? LD.fightOpener(state, fg1) : "";
-      if (stg && op) { var w = document.createElement("div"); w.className = "sc-cap sc-why e" + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)); w.id = "sc-why"; w.setAttribute("role", "note"); w.innerHTML = "<span>" + LD.escapeHtml(op) + "</span>"; stg.appendChild(w); } });
+      if (seat) { stg = document.querySelector("#door .sd-caps"); op = fg1 && !fg1.played && !$("sc-cap") && !$("sc-why") ? LD.fightOpener(state, fg1, "home") : ""; }
+      if (stg && op) { var w = document.createElement("div"); w.className = seat ? "sd-cap" : "sc-cap sc-why e" + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)); w.id = "sc-why"; w.setAttribute("role", "note"); w.innerHTML = "<span>" + LD.escapeHtml(op) + "</span>"; stg.appendChild(w); } });
     Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
       b.addEventListener("click", function () { playCard(+b.getAttribute("data-u")); });
     });
@@ -2271,6 +2528,7 @@
     var res = LD.fightPlay(state, u);
     if (!res.ok) { SFX.play("bad"); dfLog(res.error); return; }
     state = res.state; persistRun();
+    if (LD.seatedOn && LD.seatedOn(state)) { DF.lastCard = { id: ci.id, up: ci.up }; DF.landing = !reduced() && !!cardRect; }
     SFX.play("flip");
     var fg = state.fy.fight;
     var dS = s0 - Math.max(0, fg.scrut), dB = fg.block - b0;
@@ -2300,7 +2558,7 @@
     DF.busy = true; DF.cbHide = true;
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
     var bub = $("sc-bubble"), I0 = res.intent && LD.INTENTS[res.intent.k];
-    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); placeBubble(); }
+    if (bub && I0) { bub.className = (doorEl().classList.contains("sd-fight") ? "sd-bubble" : "sc-bubble") + " k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); placeBubble(); }
     DF.say = null; DF.cap = null;
     var cp = $("sc-cap"); if (cp && cp.parentNode) cp.parentNode.removeChild(cp);
     scAttackAnim(res.hit && res.hit.n);

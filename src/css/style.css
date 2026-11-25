@@ -6211,3 +6211,27 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .hv-root.is-seated.is-landscape.is-before::before, .hv-root.is-seated.is-landscape.is-before .hv-band { opacity: 0; }
 /* the fan's arc transform must beat the global .dc hover nudge (which would knock a card out of the arc) */
 #screen-desk .desk.sd .sd-fan .dc, #screen-desk .desk.sd .sd-fan .dc:not(.no):not(div):hover { transform: translate(calc(-50% + var(--x, 0px)), calc(var(--y, 0px) - var(--lift, 0px))) rotate(var(--r, 0deg)); }
+/* fight declutter (portrait): speech under the visitor across the table, tail up at them; Next move beside them; captions clamp to 3 lines */
+#door.sd-fight:not(.is-land) .sd-talk { left: 10px; right: 10px; width: auto; align-items: center; }
+#door.sd-fight:not(.is-land) .sd-bubble { max-width: 560px; box-sizing: border-box; width: 100%; font-size: 14px; line-height: 1.28; padding: 7px 12px 8px; }
+#door.sd-fight:not(.is-land) .sd-bubble b { display: inline; margin-right: 6px; }
+#door.sd-fight:not(.is-land) .sd-bubble::after { left: clamp(16px, calc(var(--headx, 50%) - 18px), calc(100% - 40px)); top: -16px; border: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 12px solid #30220f; }
+#door.sd-fight:not(.is-land) .sd-intent { padding: 5px 9px 6px; gap: 2px 6px; }
+#door.sd-fight:not(.is-land) .sd-isay { font-size: 13px; }
+#door.sd-fight:not(.is-land) .sd-ichip { font-size: 11px; padding: 0 5px; }
+.sd-caps .sd-cap { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; pointer-events: auto; cursor: pointer; }
+.sd-caps .sd-cap.open { -webkit-line-clamp: unset; display: block; }
+@media (min-width: 501px) { #door.sd-fight:not(.is-land) .sd-bubble { font-size: 16px; } #door.sd-fight:not(.is-land) .sd-isay { font-size: 15px; } #door.sd-fight:not(.is-land) .sd-ichip { font-size: 12.5px; } }
+/* fan: one card per kind, a count tab, a +N tile, and tap-to-lift so a phone hand is readable */
+#screen-desk .desk.sd .sd-fan .dc, #screen-desk .desk.sd .sd-fan .dc:not(.no):not(div):hover { transform-origin: 50% 100%; transform: translate(calc(-50% + var(--x, 0px)), calc(var(--y, 0px) - var(--lift, 0px))) rotate(var(--r, 0deg)) scale(var(--s, 1)); transition: transform 0.2s cubic-bezier(.3,.7,.2,1), filter 0.2s; }
+#screen-desk .desk.sd .sd-fan .dc.is-lift { --lift: calc(34px * var(--k)); box-shadow: 4px 8px 0 rgba(20, 12, 8, 0.42); }
+#screen-desk .desk.sd .sd-fan.has-lift .dc:not(.is-lift) { filter: brightness(0.82) saturate(0.85); }
+.sd-fan .sd-fcn { position: absolute; top: calc(-7px * var(--k)); right: calc(-7px * var(--k)); min-width: calc(24px * var(--k)); height: calc(22px * var(--k)); padding: 0 4px; box-sizing: border-box; border-radius: 11px; background: #30220f; color: #faf3e2; border: 2px solid #faf3e2; font: 800 calc(12px * var(--k))/calc(18px * var(--k)) var(--font-ui, system-ui), sans-serif; text-align: center; z-index: 3; box-shadow: 1px 2px 0 rgba(20,12,8,.35); }
+.sd-fan .sd-fmore { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: #3b2a16 repeating-linear-gradient(135deg, rgba(250,243,226,.06) 0 6px, transparent 6px 12px); border: 3px solid #faf3e2; border-radius: 8px; color: #faf3e2; cursor: pointer; padding: 0; }
+.sd-fan .sd-fmore b { font: 800 calc(26px * var(--k))/1 var(--font-display, Georgia), serif; }
+.sd-fan .sd-fmore span { font: 700 calc(11px * var(--k))/1 var(--font-ui, system-ui), sans-serif; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+#screen-desk .desk.sd .sd-fan .dc.is-lift .dc-type { display: none; }
+#screen-desk .desk.sd .sd-fan .dc.is-lift .dc-txt { -webkit-line-clamp: 6; font-size: calc(10.5px * var(--k)); line-height: 1.18; }
+#screen-desk .desk.sd .sd-fan .dc.sd-fmore { --s: 0.86; }
+.sd-caps .sd-cap > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.sd-caps .sd-cap.open > span { -webkit-line-clamp: unset; display: block; }

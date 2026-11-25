@@ -22,6 +22,8 @@
     bunkerAt: [632, 1000]
   };
   LD.seatedOn = function (state) { return !!(state && LD.isHouse && LD.isHouse(state) && state.executiveId === "mara"); };
+  /* how many card kinds the fan shows before a +N: phones keep it to a hand you can read */
+  LD.seatFanCap = function (W, H) { return W >= H * 1.2 ? 9 : W > 500 ? 10 : 6; };
   LD.seatLandscape = function (W, H) { return W >= H * 1.2; };
   /* First-person framing: the desk view. Portrait keeps both hands and the map near the centre; landscape stands the plate in the
      same 528px-tall column the live turn rig uses, so the pull-back lands on it exactly. */

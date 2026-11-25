@@ -929,10 +929,26 @@
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     var fan = $("sd-fan"), tab = $("sd-tab"), all = $("run-deck");
     if (SD.fan && fan && !fan.children.length) {
-      fan.innerHTML = state.fy && state.fy.deck ? state.fy.deck.map(function (c, i) { return LD.cardFace(c.id, c.up, { attrs: ' data-deck="' + i + '" style="--c:' + i + '"', cls: "sd-fc" }); }).join("") : "";
+      /* one card per kind with a count, so the fan stays small enough to read; past the cap a +N opens the full list */
+      var groups = [], byKey = {};
+      (state.fy && state.fy.deck || []).forEach(function (c, i) { var key = c.id + (c.up ? "+" : ""); if (!byKey[key]) { byKey[key] = { c: c, i: i, n: 0 }; groups.push(byKey[key]); } byKey[key].n++; });
+      var W0 = window.innerWidth, cap = LD.seatFanCap(W0, window.innerHeight), shown = groups.length > cap ? groups.slice(0, cap - 1) : groups, rest = groups.length - shown.length;
+      var restN = 0; groups.slice(shown.length).forEach(function (g) { restN += g.n; });
+      fan.innerHTML = shown.map(function (g, i) { return LD.cardFace(g.c.id, g.c.up, { attrs: ' data-deck="' + g.i + '" style="--c:' + i + '"', cls: "sd-fc" }).replace(/<\/(button|div)>$/, (g.n > 1 ? '<span class="sd-fcn">\u00d7' + g.n + "</span>" : "") + "</$1>"); }).join("") +
+        (rest > 0 ? '<button type="button" class="dc sd-fmore" data-more="1" aria-label="' + restN + ' more cards: open the deck list"><b>+' + restN + "</b><span>more</span></button>" : "");
       fan.style.setProperty("--n", Math.max(1, fan.children.length));
-      Array.prototype.forEach.call(fan.querySelectorAll("[data-deck]"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); }); });
+      Array.prototype.forEach.call(fan.querySelectorAll(".dc"), function (b) {
+        b.addEventListener("click", function (e) {
+          e.stopPropagation(); tick();
+          if (b.hasAttribute("data-more")) { openDeck(); return; }
+          var was = b.classList.contains("is-lift");
+          Array.prototype.forEach.call(fan.querySelectorAll(".dc.is-lift"), function (o) { o.classList.remove("is-lift"); });
+          if (!was) b.classList.add("is-lift"); layoutFan(desk);
+        });
+      });
     }
+    if (fan && !fan._dropBound) { fan._dropBound = true; desk.addEventListener("click", function (e) { if (fan.contains(e.target)) return; var lf = fan.querySelectorAll(".dc.is-lift"); if (lf.length) { Array.prototype.forEach.call(lf, function (o) { o.classList.remove("is-lift"); }); layoutFan(desk); } }, true); }
+    if (!SD.fan && fan) Array.prototype.forEach.call(fan.querySelectorAll(".dc.is-lift"), function (o) { o.classList.remove("is-lift"); });
     desk.classList.toggle("is-fan", SD.fan);
     layoutFan(desk);
     if (tab) { tab.setAttribute("aria-expanded", SD.fan ? "true" : "false"); var ic = tab.querySelector(".sd-tabl i"); if (ic) ic.textContent = SD.fan ? "▼" : "▲"; }
@@ -944,20 +960,22 @@
     var W = window.innerWidth, H = window.innerHeight, k = seatK(W, H), land = LD.seatLandscape(W, H);
     var col = LD.seatColumn(W, H), l = land ? col[0] : 0, r = land ? W - col[1] : 0, avail = W - l - r - 16;
     var cards = fan.querySelectorAll(".dc"), n = cards.length, cw = 96 * k, ch = 134 * k;
-    /* like a hand held low: the outermost cards may tuck a corner past the edge, every card keeps most of itself on screen */
-    var span = Math.max(0, Math.min(avail - cw * (W > 500 ? 2.4 : 1.1), (n - 1) * cw * 0.62)), A = Math.min(40, (n - 1) * 6, span * 0.16) * Math.PI / 180;
-    /* keep the outer cards from sinking more than a quarter card: half * tan(A/4) = drop */
-    var maxDrop = ch * 0.24; if (span > 0 && (span / 2) * Math.tan(A / 4) > maxDrop) A = 4 * Math.atan(maxDrop / (span / 2));
-    var R = n > 1 && A > 0 ? (span / 2) / Math.sin(A / 2) : 0, drop = R * (1 - Math.cos(A / 2));
+    /* every card whole on screen: the outer corners of the tilted end cards stay inside the stage */
+    var A = Math.min(26, Math.max(0, (n - 1) * 4.5)) * Math.PI / 180, ext = (cw / 2) * Math.cos(A / 2) + ch * Math.sin(A / 2);
+    var span = Math.max(0, Math.min(avail - 2 * ext, (n - 1) * cw * 0.7)), R = n > 1 && A > 0 ? (span / 2) / Math.sin(A / 2) : 0, drop = R * (1 - Math.cos(A / 2));
+    var lifted = -1, LS = W > 500 ? 1.25 : 1.4;
     Array.prototype.forEach.call(cards, function (c, i) {
-      var ph = n > 1 ? -A / 2 + (A * i) / (n - 1) : 0;
-      c.style.setProperty("--x", (R * Math.sin(ph)).toFixed(1) + "px");
-      c.style.setProperty("--y", (R * (1 - Math.cos(ph))).toFixed(1) + "px");
-      c.style.setProperty("--r", (ph * 180 / Math.PI).toFixed(2) + "deg");
-      c.style.zIndex = String(i + 1);
+      var ph = n > 1 ? -A / 2 + (A * i) / (n - 1) : 0, x = R * Math.sin(ph), y = R * (1 - Math.cos(ph)), up = c.classList.contains("is-lift");
+      if (up) { lifted = i; var lim = Math.max(0, avail / 2 - (cw * LS) / 2); x = Math.max(-lim, Math.min(lim, x)); y = 0; }
+      c.style.setProperty("--x", x.toFixed(1) + "px");
+      c.style.setProperty("--y", y.toFixed(1) + "px");
+      c.style.setProperty("--r", (up ? 0 : ph * 180 / Math.PI).toFixed(2) + "deg");
+      c.style.setProperty("--s", up ? String(LS) : "1");
+      c.style.zIndex = String(up ? 60 : i + 1);
     });
+    fan.classList.toggle("has-lift", lifted >= 0);
     desk.style.setProperty("--fan-l", l + "px"); desk.style.setProperty("--fan-r", r + "px");
-    var base = 10 * k + (W > 500 ? drop * 0.8 : 0);
+    var base = 10 * k + drop * 1.1 + 4;
     desk.style.setProperty("--fan-b", Math.round(base) + "px");
     desk.style.setProperty("--fan-h", Math.round(ch + base + 8) + "px");
     var lab = desk.querySelector(".sd-tabl"); if (lab) desk.style.setProperty("--tab-hw", Math.round(lab.offsetWidth / 2) + "px");
@@ -1014,9 +1032,12 @@
       var cl = Math.round(Math.max(W * 0.46, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
       d.style.setProperty("--tcol", cl + "px"); d.style.setProperty("--headx", Math.round(hx) + "px");
       var head = LD.seatToScreen(f, 0, box[1] + 40)[1]; d.style.setProperty("--heady", Math.round(head) + "px");
-      if (it) { var tb = talk && talk.children.length ? talk.getBoundingClientRect().bottom : (d.querySelector(".sd-fhead") || d).getBoundingClientRect().bottom; it.style.top = Math.round(tb + 8) + "px"; }
-      var ib = it ? it.getBoundingClientRect().bottom : talk ? talk.getBoundingClientRect().bottom : 0;
-      d.style.setProperty("--tbot", Math.round(Math.max(rim + 8, ib + 10)) + "px");
+      /* the Next move stands beside them (under the name bar); their speech hangs under them on the table, tail up */
+      var fh = d.querySelector(".sd-fhead"), fhb = fh ? fh.getBoundingClientRect().bottom : rim * 0.4;
+      if (it) it.style.top = Math.round(fhb + 8) + "px";
+      if (talk) talk.style.top = Math.round(rim + 10) + "px";
+      var tbb = talk && talk.children.length ? talk.getBoundingClientRect().bottom : rim;
+      d.style.setProperty("--tbot", Math.round(tbb + 8) + "px");
     } else if (it) {
       /* landscape: the intent stands under the speech in the left panel column */
       var tb2 = talk && talk.children.length ? talk.getBoundingClientRect().bottom : (d.querySelector(".sd-fhead") || d).getBoundingClientRect().bottom;
@@ -2513,6 +2534,7 @@
     var c = $("df-close"); if (c) { c.addEventListener("click", function () { tick(); closeFight(); }); try { c.focus({ preventScroll: true }); } catch (x) {} }
     var hp = $("df-help"); if (hp) hp.addEventListener("click", function () { tick(); showFy(LD.fightHelpHtml(state), '<button class="btn btn-coral" id="fy-ex-back">Back to the door</button>', function () { $("fy-ex-back").addEventListener("click", function () { tick(); hideOverlay(); }); }, true); });
     var dk = $("df-deck"); if (dk) dk.addEventListener("click", function () { tick(); openDeck(); });
+    var caps = root.querySelector(".sd-caps"); if (caps) caps.addEventListener("click", function (e) { var c = e.target.closest && e.target.closest(".sd-cap"); if (c) { tick(); c.classList.toggle("open"); } });
   }
   function playCard(u) {
     if (DF.busy || !state.fy.fight || state.fy.fight.done) return;

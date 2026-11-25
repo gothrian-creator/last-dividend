@@ -3,6 +3,7 @@
 // a full deal -> fight -> settle -> desk loop, and the default (shop) game untouched. Exit 1 on any failure.
 const H=require("../real-input/h.js");const {seedHouse}=require("./probe.js");
 const SIZES=(process.env.SIZES||"360x800,412x915,800x1280,1280x800").split(",");let bad=0,n=0;
+function LD_CAP(sz){const [w,h]=sz.split("x").map(Number);return w>=h*1.2?9:w>500?10:6;}
 function ok(c,m){n++;if(!c){bad++;console.log("FAIL",m);}}
 const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right,b:r.bottom,w:r.width,h:r.height};};
 (async()=>{const env=await H.start(process.env.DIST||"/workspace/last-dividend-v3/dist");
@@ -24,8 +25,13 @@ const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right
     const ov=(a,b)=>Math.min(a.r,b.r)-Math.max(a.l,b.l)>1&&Math.min(a.b,b.b)-Math.max(a.t,b.t)>1;
     const L=document.querySelector(".desk.sd").classList.contains("is-land"),col=L?LD.seatColumn(innerWidth,innerHeight):[0,innerWidth];
     const vis=c=>Math.max(0,Math.min(c.r,col[1])-Math.max(c.l,col[0]))/(c.r-c.l);
-    return {n:cards.length,off:cards.filter(c=>(c.l+c.r)/2<col[0]||(c.l+c.r)/2>col[1]||vis(c)<0.75||c.b>innerHeight+40).length,allBk:bk&&!bk.hidden?ov(all,R(bk.querySelector("small"))):false,allTab:ov(all,tab),allOff:all.r>innerWidth||all.l<0};});
-  ok(f.n>0&&!f.off,sz+" fan cards mostly on the stage "+JSON.stringify(f));ok(!f.allBk&&!f.allTab&&!f.allOff,sz+" Deck list clear of the Bunker label and the tab "+JSON.stringify(f));
+    return {n:cards.length,off:cards.filter(c=>(c.l+c.r)/2<col[0]||(c.l+c.r)/2>col[1]||c.l<col[0]-1||c.r>col[1]+1||c.b>innerHeight+1).length,allBk:bk&&!bk.hidden?ov(all,R(bk.querySelector("small"))):false,allTab:ov(all,tab),allOff:all.r>innerWidth||all.l<0};});
+  ok(f.n>0&&!f.off,sz+" every fan card whole on screen "+JSON.stringify(f));ok(!f.allBk&&!f.allTab&&!f.allOff,sz+" Deck list clear of the Bunker label and the tab "+JSON.stringify(f));
+  ok(f.n<=LD_CAP(sz)+1,sz+" fan shows at most the cap of kinds plus a +N "+f.n);
+  { const c=await p.$("#sd-fan .dc:nth-child(2)");const bb=await c.boundingBox();await p.mouse.click(bb.x+10,bb.y+bb.height*0.4);await p.waitForTimeout(350);
+    const L=await p.evaluate(()=>{const c=document.querySelector("#sd-fan .dc.is-lift");if(!c)return null;const r=c.getBoundingClientRect();return {l:r.left,r:r.right,t:r.top,b:r.bottom,W:innerWidth,H:innerHeight,top:document.elementFromPoint((r.left+r.right)/2,r.top+r.height*0.75)===c||c.contains(document.elementFromPoint((r.left+r.right)/2,r.top+r.height*0.75))};});
+    ok(L&&L.l>=0&&L.r<=L.W&&L.b<=L.H+1&&L.top,sz+" tapped card lifts whole and on top "+JSON.stringify(L));
+    await p.mouse.click((L.l+L.r)/2,L.t+(L.b-L.t)*0.6);await p.waitForTimeout(300);ok(!(await p.$("#sd-fan .dc.is-lift")),sz+" tapping the lifted card sets it back"); }
   await p.click("#sd-tab");await p.waitForTimeout(400);
   // dossier
   await (await p.$(".sd-tag")).click();await p.waitForTimeout(500);
@@ -41,9 +47,11 @@ const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right
     const ov=(a,b)=>a&&b&&Math.min(a.r,b.r)-Math.max(a.l,b.l)>2&&Math.min(a.b,b.b)-Math.max(a.t,b.t)>2;
     const cover=["#sc-bubble","#df-intent",".sd-fhead",".sd-hud",".sd-caps .sd-cap"].filter(s=>ov(R(d.querySelector(s)),face));
     const it=R(document.getElementById("df-intent")),cap=R(d.querySelector(".sd-caps .sd-cap"));
-    return {fight:true,cover,capIt:ov(it,cap),face};});
+    const bub=d.querySelector("#sc-bubble"),bcs=bub&&getComputedStyle(bub),bl=bub?Math.floor((bub.getBoundingClientRect().height-parseFloat(bcs.paddingTop)-parseFloat(bcs.paddingBottom)-parseFloat(bcs.borderTopWidth)-parseFloat(bcs.borderBottomWidth))/parseFloat(bcs.lineHeight)+0.4):0;
+    const bubIt=ov(R(bub),it),bubCap=ov(R(bub),cap),capDock=[...d.querySelectorAll(".sd-fdock .dc, .sd-fdock button")].some(e=>ov(cap,R(e)));
+    return {fight:true,cover,capIt:ov(it,cap),face,bl,bubIt,bubCap,capDock};});
   ok(g.fight,sz+" signing seats the visitor across the table");
-  if(g.fight){ok(!g.cover.length,sz+" nothing covers the visitor's face "+JSON.stringify(g));ok(!g.capIt,sz+" opener caption clear of the intent");
+  if(g.fight){ok(!g.cover.length,sz+" nothing covers the visitor's face "+JSON.stringify(g));ok(!g.capIt,sz+" opener caption clear of the intent");ok(!g.bubIt&&!g.bubCap&&!g.capDock,sz+" speech, next move, caption and hand do not overlap "+JSON.stringify(g));if(sz.startsWith("360"))ok(g.bl>0&&g.bl<=3,sz+" speech is 3 lines or fewer "+g.bl);
     const s0=await p.evaluate(()=>+document.getElementById("df-scrut-n").textContent);
     const c=await p.$(".sd-fhand .dc:not(.no)");if(c){await c.click();await p.waitForTimeout(1000);}
     const s1=await p.evaluate(()=>({n:+document.getElementById("df-scrut-n").textContent,card:!!document.querySelector("#sd-tcard .dc"),cls:(document.getElementById("sc-bubble")||{}).className||""}));

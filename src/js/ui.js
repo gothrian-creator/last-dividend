@@ -1365,7 +1365,22 @@
     var b = board.getBoundingClientRect(), r = slab.getBoundingClientRect();
     placeFloat(fx, r.left - b.left + r.width / 2, r.top - b.top + r.height * 0.18 + (dy || 0), text, cls, delay);
   }
+  /* Seated quarter close: the beats file into a short ledger under the HUD instead of piling up on the map. */
+  function seatLedger(fx, text, cls, delay) {
+    var lg = fx.querySelector(".sd-ledger");
+    if (!lg) { lg = document.createElement("div"); lg.className = "sd-ledger"; var hud = document.querySelector("#screen-desk .desk.sd .sd-hud"); var sk = document.getElementById("btn-skip-react"), top0 = Math.max(hud ? hud.getBoundingClientRect().bottom : 110, sk ? sk.getBoundingClientRect().bottom : 0); lg.style.top = Math.round(top0 + 10) + "px"; fx.appendChild(lg); }
+    var n = document.createElement("div");
+    n.className = "sd-lrow " + (cls || "");
+    n.textContent = text;
+    setTimeout(function () {
+      lg.appendChild(n);
+      var rows = lg.querySelectorAll(".sd-lrow:not(.out)"), cap = window.innerHeight < 700 ? 3 : 4;
+      for (var i = 0; i < rows.length - cap; i++) { (function (o) { o.classList.add("out"); setTimeout(function () { if (o.parentNode) o.parentNode.removeChild(o); }, 260); })(rows[i]); }
+      setTimeout(function () { n.classList.add("out"); setTimeout(function () { if (n.parentNode) n.parentNode.removeChild(n); }, 260); }, 3200);
+    }, delay || 0);
+  }
   function placeFloat(fx, x, y, text, cls, delay) {
+    if (closing && document.querySelector("#screen-desk .desk.sd")) { seatLedger(fx, text, cls, delay); return; }
     var n = document.createElement("div");
     n.className = "float " + (cls || "");
     n.textContent = text;
@@ -2006,6 +2021,7 @@
     showOverlay("", body,
       '<button class="btn btn-coral" id="ov-ok">' + (state.ended ? "See how it ends" : "Open Q" + state.turn) + "</button>",
       function () {
+        if (document.querySelector("#screen-desk .desk.sd")) $("overlay").classList.add("sd-ov");
         $("ov-ok").addEventListener("click", function () {
           tick();
           hideOverlay();

@@ -40,6 +40,7 @@ JS_NAMES = [
     "desk.js",
     "bunker.js",
     "fy-render.js",
+    "seated.js",
     "office-data.js",
     "office.js",
     "recap.js",

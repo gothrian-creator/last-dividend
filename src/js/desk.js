@@ -873,6 +873,14 @@
   LD.renderDesk = renderDesk;
   LD.renderReport = renderReport;
   LD.renderDossier = renderDossier;
+  /* Seated desk (house rules): the short pin tag and the aria line for one offered deal. */
+  LD.dealTagInfo = function (state, dealId) {
+    var d = LD.dealById(dealId); if (!d) return null;
+    var kind = LD.dealKind(d), rid = state.world && state.world.pins ? state.world.pins[dealId] : null;
+    return { id: dealId, kind: kind, label: KIND_LABEL[kind], tag: d.choices ? d.choices.length + " responses" : cardTag(state, d), title: d.title,
+      region: rid, regionName: rid ? LD.REGION_NAMES[rid] : "", aria: pinAria(state, dealId) };
+  };
+  LD.renderExecDossier = renderExecDossier;
   LD.payloadChips = payloadChips;
   LD.deskAnchor = anchor;
   LD.deskAt = at;

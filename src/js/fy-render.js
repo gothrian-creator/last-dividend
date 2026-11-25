@@ -584,9 +584,9 @@
     away: ["Out the back stairs, collar up. Next stop: {p}.", "Out the service exit before the press sees. {p}.", "Out the back, phone face-down. {p}."]
   };
   LD.fightIntroKey = function (state) { var fg = state && state.fy && state.fy.fight; return fg ? (fg.q || 0) + ":" + (fg.enc || "") + ":" + (fg.opp || "") : ""; };
-  LD.fightOpener = function (state, fg) {
+  LD.fightOpener = function (state, fg, atVenue) {
     fg = fg || (state && state.fy && state.fy.fight); if (!fg) return "";
-    var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
+    var F = LD.fightFace(fg), venue = atVenue || LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
     return (F.opp && F.opp.why && LD.missionText ? LD.missionText(F.opp.why, fg) : F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
   };
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
@@ -674,6 +674,89 @@
     }
     h += "</div>";
     h += '<div class="df-log" id="df-log" aria-live="polite">' + esc(ui.log || "") + "</div>";
+    h += '<div class="fx" id="df-fx" aria-hidden="true"></div>';
+    return h + "</div>";
+  };
+  /* ---------- House rules, seated desk: the fight across the table (first person). Same ids and hooks as renderFight;
+     the visitor sits in the chair opposite, the played card lies on the table, the hand fans up over your own hands. ---------- */
+  LD.renderSeatedFight = function (state, ui) {
+    ui = ui || {};
+    var f = state.fy, fg = f.fight; if (!fg) return "";
+    var it = fg.done ? null : LD.fightIntent(state);
+    var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
+    var how = fg.done ? fg.done.how || (fg.done.win ? "crushed" : fg.done.settled ? "paid" : "walked") : null, out = fg.done ? fg.done.out : null;
+    var base = !fg.done ? "idle" : out === "martyred" || how === "walked" ? "attack" : out === "bought" || out === "converted" || out === "deal" || how === "paid" ? (F.paid ? "paid" : "idle") : "defeated";
+    var h = '<div class="door-in sd-fin' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + '" data-enc="' + fg.enc + '" data-venue="' + venue + '">';
+    h += '<div class="sd-bg" aria-hidden="true"></div>';
+    var card = "";
+    if (ui.lastCard && !fg.done) card = '<div class="sd-tcard' + (ui.landing ? " is-landing" : "") + '" id="sd-tcard">' + cardFace(ui.lastCard.id, ui.lastCard.up, { cls: "sd-tc" }).replace(/^<button/, "<div").replace(/<\/button>$/, "</div>") + "</div>";
+    else card = '<div class="sd-tcard is-empty" id="sd-tcard"></div>';
+    h += '<div class="df-stage sd-fstage' + (ui.enter ? " enter" : "") + '" data-venue="' + venue + '">' +
+      LD.seatStage({ opp: LD.seatOppHtml(F.art, base, POSES.concat(F.paid ? ["paid"] : [])), card: card, youId: "sc-you", hands: "dip" }) + "</div>";
+    h += LD.seatHud(state, { fight: fg, menu: false, nets: false }).replace('class="sd-menu"', 'class="sd-menu" id="df-help" aria-label="How fights work"').replace(' aria-label="Menu"', "");
+    /* who, round, gallery */
+    var g = Math.max(-3, Math.min(3, fg.gal | 0)), gal = '<span class="df-gal sd-gal" role="meter" aria-label="Gallery ' + (g > 0 ? "+" : "") + g + '" aria-valuemin="-3" aria-valuemax="3" aria-valuenow="' + g + '"><small>Them</small>';
+    for (var gi = -3; gi <= 3; gi++) gal += '<i class="' + (gi === 0 ? "mid " : "") + (gi === g ? "on" : (gi < 0 && g <= gi) || (gi > 0 && g >= gi) ? "lit" : "") + '"></i>';
+    gal += "<small>You</small></span>";
+    h += '<div class="sd-fhead"><span class="sd-who"><small>' + esc(fg.boss ? "Boss" : fg.elite ? "Hearing" : "At your desk") + "</small><b>" + esc(F.who) + (fg.cb ? ' <i title="A familiar face">★</i>' : "") + "</b><em>" + esc(F.role) + "</em></span>" + gal +
+      '<span class="sd-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small><b>' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></b></span></div>";
+    var bt = F.opp && !(ui.cap && ui.cap.t && !fg.done) ? bubbleText(state, fg, ui) : null;
+    var capT = "";
+    if (fg.cb && !fg.done && fg.round === 1 && !fg.played && !ui.cbHide) {
+      var cb = fg.cb, im = cb.art ? "assets/fight/" + cb.art + ".webp" : "";
+      h += '<div class="sd-cb' + (cb.inset ? " is-witness" : "") + '" id="sc-cb" role="note"><small>★ A familiar face ★</small>' + (im ? '<img src="' + im + '" alt="" draggable="false">' : "") +
+        "<b>" + esc(cb.who) + "</b><q>" + esc(cb.line) + "</q><em>" + esc(cb.effect) + '</em><button type="button" class="sd-cb-ok" id="sc-cb-ok">Face them ▸</button></div>';
+    } else if (!fg.done && !fg.played && (fg.round | 0) <= 1 && !(ui.cap && ui.cap.t)) capT = LD.fightOpener(state, fg, "home");
+    h += '<div class="sd-talk">';
+    if (bt && bt.t) h += '<div class="sd-bubble k-' + bt.k + '" id="sc-bubble" role="status" aria-live="polite"><b>' + esc(F.who) + "</b>" + esc(bt.t) + "</div>";
+    h += '</div><div class="sd-caps">';
+    if (capT) h += '<div class="sd-cap" id="sc-why" role="note"><span>' + esc(capT) + "</span></div>";
+    if (ui.cap && ui.cap.t && !fg.done) h += '<div class="sd-cap" id="sc-cap" role="note"><span>' + esc(ui.cap.t) + "</span></div>";
+    h += "</div>";
+    if (it) {
+      var thr = it.through, pk = LD.fightPeek ? LD.fightPeek(state) : null;
+      h += '<div class="df-intent sd-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><span class="sd-ik">Next</span>' +
+        '<span class="sd-isay">' + esc(F.short) + " will <b>" + esc(it.label) + "</b>" + (F.opp && F.opp.sig === it.k ? ' <i title="Signature move">★</i>' : "") + "</span>" +
+        '<span class="sd-ichips"><span class="sd-ichip m-' + it.meter + '">' + it.n + " → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " ×½" : "") + "</span>" +
+        '<span class="sd-ichip">Block ' + it.block + " · <b>" + thr + "</b> through</span>" +
+        (it.rtext ? '<span class="sd-ichip' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</span>" : "") +
+        (it.notes.length ? '<span class="sd-ichip">' + esc(it.notes.join(" · ")) + "</span>" : "") +
+        (pk ? '<span class="sd-ichip">Then: ' + esc(pk.label) + " " + pk.n + "</span>" : "") + "</span></div>";
+    }
+    var pileN = fg.done ? f.deck.length : fg.draw.length;
+    h += '<div class="sd-fdock' + (fg.done ? " is-out" : "") + '">';
+    if (fg.done) {
+      var d = fg.done, L = d.leaks, bits = [];
+      if (L.cash) bits.push("−$" + L.cash + "M"); if (L.unrest) bits.push("unrest +" + L.unrest); if (L.collapse) bits.push("collapse +" + L.collapse); if (L.heat) bits.push("Heat +" + L.heat);
+      var O2 = F.opp, remember = O2 && !O2.boss && O2.act < 3 && how !== "walked", aside = LD.execAside ? LD.execAside(state) : null;
+      var stampT = (out && LD.OUT_LABEL && LD.OUT_LABEL[out]) || LD.HOW_LABEL[how] || (d.win ? "Deal closed" : d.settled ? "Settled" : "They got through");
+      var title = (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + (remember ? " · They'll remember this" : "");
+      var sub = O2 && out && LD.OUT_NOTE && LD.OUT_NOTE[out] ? LD.OUT_NOTE[out] : how === "walked" && O2 ? F.short + " walks out with what they came for." : "";
+      var notes = d.win ? (d.notes.length ? d.notes : ["The deal closes."]) : d.settled ? ["No bonus, no more damage."].concat(d.notes) : ["The deal still signs."].concat(d.notes);
+      h += '<div class="df-result sd-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status"><i class="sd-stamp h-' + (how || "lost") + (out ? " o-" + out : "") + '">' + esc(stampT) + "</i>" +
+        "<b>" + esc(title) + "</b>" + (sub ? "<em>" + esc(sub) + "</em>" : "") + (aside ? '<q class="sc-aside">' + esc(aside.t) + "</q>" : "") +
+        '<span class="sd-chips">' + notes.filter(Boolean).map(function (n) { return '<span class="sd-chip good">' + esc(n) + "</span>"; }).join("") +
+        (bits.length ? '<span class="sd-chip bad df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") + "</span>" +
+        '<span class="sd-rfoot"><button type="button" class="sd-pile" id="df-deck" aria-label="Your deck, ' + pileN + ' cards. Open the deck list"><img src="assets/ui/card-back.webp" alt="" draggable="false"><em>' + pileN + "</em></button>" +
+        '<button type="button" class="btn btn-coral df-close" id="df-close">Show them out ▸</button></span></div>';
+    } else {
+      var sc = LD.fightSettleCost(state);
+      h += '<div class="sd-acts"><button type="button" class="sd-pile" id="df-deck" aria-label="Draw pile, ' + pileN + ' cards left. Open the deck list"><img src="assets/ui/card-back.webp" alt="" draggable="false"><em>' + pileN + "</em></button>" +
+        '<span class="sd-inf" aria-label="Influence ' + fg.inf + " of " + LD.DOOR.INF + '">';
+      for (var i = 0; i < Math.max(fg.inf, LD.DOOR.INF); i++) h += '<i class="' + (i < fg.inf ? "on" : "") + '"></i>';
+      h += "<b>" + fg.inf + "/" + LD.DOOR.INF + "</b></span>" +
+        '<button type="button" class="sd-btn df-settle" id="df-settle"' + (state.cash < sc ? " disabled" : "") + "><b>Settle $" + sc + "M</b><small>" + (state.cash < sc ? "Not enough cash" : "Pay it off") + "</small></button>" +
+        '<button type="button" class="sd-btn hot df-end" id="df-end"><b>End round</b><small>' + (it ? (it.through ? esc(it.label) + " hits " + it.through : "Fully blocked") : "") + (fg.round >= fg.rounds ? " · last" : "") + "</small></button></div>";
+      h += '<div class="df-hand sd-fhand" role="group" aria-label="Your hand" style="--n:' + Math.max(1, fg.hand.length) + '">';
+      fg.hand.forEach(function (u, k) {
+        var ci = LD.fightCardInfo(state, u); if (!ci) return;
+        h += cardFace(ci.id, ci.up, { attrs: ' data-u="' + u + '" style="--c:' + k + '"', why: ci.why, cost: ci.o.cash ? (ci.cost || null) : ci.cost, p: ci.p, d: ci.d, cls: ui.flashU === u ? "pop" : "" });
+      });
+      if (!fg.hand.length) h += '<p class="sd-empty">No cards left. End the round.</p>';
+      h += "</div>";
+    }
+    h += "</div>";
+    h += '<div class="sd-log df-log" id="df-log" aria-live="polite">' + esc(ui.log || "") + "</div>";
     h += '<div class="fx" id="df-fx" aria-hidden="true"></div>';
     return h + "</div>";
   };

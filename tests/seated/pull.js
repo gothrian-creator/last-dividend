@@ -6,7 +6,7 @@ const SIZES=(process.env.SIZES||"412x915,360x800,800x1280,1280x800").split(",");
 function ok(c,m){if(!c){bad++;console.log("FAIL",m);}}
 (async()=>{const env=await H.start(process.env.DIST||"/workspace/last-dividend-v3/dist");
  for(const sz of SIZES){const [w,h]=sz.split("x").map(Number);
-  const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:13,stop:"deal:3",exec:"mara",smart:true});await p.waitForTimeout(500);
+  const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:13,stop:"deal:3",exec:process.env.EXEC||"mara",smart:true});await p.waitForTimeout(500);
   // static strip through the pose curve
   for(const t of [0,0.25,0.5,0.75,1]){await p.evaluate(t=>LD.seatPose(t),t);await p.waitForTimeout(80);await p.screenshot({path:`${OUT}/${sz}-pose-${t}.png`});}
   await p.evaluate(()=>LD.seatPose(0));

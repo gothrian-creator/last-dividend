@@ -1043,7 +1043,7 @@
     var op = d.querySelector("#sc-opp"), box = op && LD.SEAT.opp[op.getAttribute("data-art")], it = $("df-intent"), talk = d.querySelector(".sd-talk");
     if (!f.land && box) {
       var hx = LD.seatToScreen(f, box[0] + box[2] * 0.5, 0)[0], right = LD.seatToScreen(f, box[0] + box[2] * 0.82, 0)[0];
-      var cl = Math.round(Math.max(W * 0.46, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
+      var cl = Math.round(Math.max(W * 0.46, hx + 34, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
       d.style.setProperty("--tcol", cl + "px"); d.style.setProperty("--headx", Math.round(hx) + "px");
       var head = LD.seatToScreen(f, 0, box[1] + 40)[1]; d.style.setProperty("--heady", Math.round(head) + "px");
       /* the Next move stands beside them (under the name bar); their speech hangs under them on the table, tail up */

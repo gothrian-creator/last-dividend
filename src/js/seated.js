@@ -19,7 +19,7 @@
     /* region hit areas on the painted map (ellipses cx, cy, rx, ry) */
     regions: { na: [252, 650, 40, 28], sam: [296, 716, 22, 34], eu: [378, 640, 24, 18], af: [384, 704, 24, 32], me: [424, 666, 14, 14], sa: [452, 684, 14, 16], ea: [470, 650, 34, 22], oc: [508, 732, 24, 16] },
     /* seated visitor: each opponent's idle sprite scaled so the waist lands under the table rim (scripts/seated_assets.py). [x, y, w, h] */
-    opp: {"ashby":[205.3,254.1,283.4,492.9],"benny":[203.4,284.0,293.3,649.1],"brennan":[202.1,284.0,319.7,463.3],"crowe":[213.7,284.0,263.4,460.9],"dana":[191.0,284.0,303.5,671.9],"delacroix":[229.3,284.0,240.4,461.0],"dunn":[222.5,284.0,242.5,461.0],"gil":[220.2,280.5,270.0,648.8],"grace":[195.0,284.0,311.1,645.3],"gray":[228.4,284.0,240.5,462.7],"hale":[197.7,284.0,307.3,460.9],"harrow":[217.8,284.0,242.4,465.7],"honoria":[235.5,284.0,209.3,647.6],"june":[210.1,271.8,272.2,473.1],"mickey":[220.2,281.0,247.6,464.0],"mina":[190.2,284.0,311.4,483.6],"moretti":[214.6,278.1,244.3,467.9],"odell":[217.8,284.0,269.5,462.0],"okafor":[233.6,284.0,225.4,464.6],"pip":[202.5,284.0,297.4,643.0],"pops":[222.6,284.0,330.4,650.1],"rosa":[227.3,265.9,301.7,479.1],"sorel":[185.2,284.0,327.5,461.0],"theo":[203.5,284.0,284.9,651.2],"ticker":[201.5,284.0,279.5,461.0],"varga":[151.9,265.9,409.4,479.3]},
+    opp: {"ashby":[205.3,254.1,283.4,492.9],"benny":[203.4,284.0,293.3,649.1],"brennan":[202.1,284.0,319.7,463.3],"crowe":[213.7,284.0,263.4,460.9],"dana":[191.0,284.0,303.5,671.9],"delacroix":[229.3,284.0,240.4,461.0],"dunn":[222.5,284.0,242.5,461.0],"gil":[220.2,280.5,270.0,648.8],"grace":[195.0,284.0,311.1,645.3],"gray":[228.4,284.0,240.5,462.7],"hale":[197.7,284.0,307.3,460.9],"harrow":[217.8,284.0,242.4,465.7],"honoria":[235.5,284.0,209.3,647.6],"june":[210.1,271.8,272.2,473.1],"mickey":[220.2,281.0,247.6,464.0],"mina":[190.2,284.0,311.4,483.6],"moretti":[214.6,278.1,244.3,467.9],"odell":[217.8,284.0,269.5,462.0],"okafor":[233.6,284.0,225.4,464.6],"pip":[202.5,284.0,297.4,643.0],"pops":[222.6,284.0,330.4,650.1],"rosa":[227.3,265.9,301.7,479.1],"sorel":[185.2,284.0,327.5,461.0],"theo":[203.5,284.0,284.9,651.2],"ticker":[201.5,284.0,279.5,461.0],"varga":[151.9,265.9,409.4,479.3],"mina-seat":[203.1,282.6,294.4,407.9],"pops-seat":[213.1,282.6,276.7,433.4]},
     table_card: [345, 772],
     bunkerAt: [632, 1000]
   };
@@ -112,6 +112,8 @@
     return '<img class="' + cls + '" src="' + L.src + '" alt="" draggable="false" style="left:' + b[0] + "px;top:" + b[1] + "px;width:" + b[2] + "px;height:" + b[3] + 'px"' + (extra || "") + ">";
   }
   function oppHtml(art, base, poses, cls) {
+    /* a few standing cut-outs read badly behind the table; those have seated repaints (opp-<art>-seat-*), used here only */
+    if (SEAT.opp[art + "-seat"]) art = art + "-seat";
     var p = SEAT.opp[art] || SEAT.opp.pip;
     var h = '<div class="sd-opp ' + (cls || "") + '" id="sc-opp" data-art="' + esc(art) + '" data-base="' + base + '" data-pose="' + base + '" style="left:' + p[0] + "px;top:" + p[1] + "px;width:" + p[2] + "px;height:" + p[3] + 'px" aria-hidden="true">';
     poses.forEach(function (q) { h += '<img class="p-' + q + '" src="assets/fight/opp-' + art + "-" + q + '.webp" alt="" draggable="false">'; });

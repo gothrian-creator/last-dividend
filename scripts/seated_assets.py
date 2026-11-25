@@ -22,7 +22,8 @@ HEAD_Y = 284           # head top of a seated visitor (pip-seated: 276)
 WAIST_Y = 560          # waist just under the rim, hidden by the table
 # per-opponent tweaks found from the sheet: (waist fraction of the sprite's figure, dx, dy, scale)
 FULL = {"benny", "dana", "gil", "grace", "honoria", "pip", "pops", "theo"}
-TWEAK = {}
+# seated repaints (opp-<art>-seat-*): generated seated, head to lap; the belt sits at this fraction of the figure
+TWEAK = {"mina-seat": (0.68, -14, 0, 1.0), "pops-seat": (0.64, 0, 0, 1.0)}
 def table_front():
     room = Image.open(BF / "room-clean.png").convert("RGBA")
     W, H = room.size

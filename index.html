@@ -5638,7 +5638,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
 #door.disc-mode .rw-item { width: min(300px, 86%); display: grid; justify-items: center; gap: 4px; padding: 14px; text-align: center; background: linear-gradient(180deg, #f6ead0, #ead8b2); color: #1b2422; border: 3px solid #c9942a; border-radius: 8px; box-shadow: 0 14px 26px rgba(0, 0, 0, .55); animation: disc-float .45s both; }
 #door.disc-mode .rw-item .rw-ico { width: 96px; height: 96px; font-size: 56px; display: grid; place-items: center; }
 #door.disc-mode .rw-item .rw-ico .ia, #door.disc-mode .rw-item .rw-ico img { width: 100%; height: 100%; object-fit: contain; }
-#door.disc-mode .rw-item b { font: 700 18px var(--font-serif); } #door.disc-mode .rw-item span { font: 600 13px/1.3 var(--font-sans); } #door.disc-mode .rw-item em { font: 700 11px var(--font-sans); color: #6a5530; }
+#door.disc-mode .rw-item b { font: 700 18px var(--font-serif); color: #2a1c12; } #door.disc-mode .rw-item span { font: 600 13px/1.3 var(--font-sans); } #door.disc-mode .rw-item em { font: 700 11px var(--font-sans); color: #6a5530; }
 #door.disc-mode .rw-q { margin: 0; font: 700 14px var(--font-sans); color: #fbf3dc; text-shadow: 0 1px 2px #000; }
 #door.disc-mode .rw-minis, #door.disc-mode .rw-deck { width: min(100%, 760px); max-height: 52vh; overflow: auto; }
 #door.disc-mode .rw-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 0; margin: 0; background: none; border: 0; position: static; width: auto; }
@@ -6223,6 +6223,99 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .hv-root.is-seated.is-landscape.is-before::before, .hv-root.is-seated.is-landscape.is-before .hv-band { opacity: 0; }
 /* the fan's arc transform must beat the global .dc hover nudge (which would knock a card out of the arc) */
 #screen-desk .desk.sd .sd-fan .dc, #screen-desk .desk.sd .sd-fan .dc:not(.no):not(div):hover { transform: translate(calc(-50% + var(--x, 0px)), calc(var(--y, 0px) - var(--lift, 0px))) rotate(var(--r, 0deg)); }
+/* fight declutter (portrait): speech under the visitor across the table, tail up at them; Next move beside them; captions clamp to 3 lines */
+#door.sd-fight:not(.is-land) .sd-talk { left: 10px; right: 10px; width: auto; align-items: center; }
+#door.sd-fight:not(.is-land) .sd-bubble { max-width: 560px; box-sizing: border-box; width: 100%; font-size: 14px; line-height: 1.28; padding: 7px 12px 8px; }
+#door.sd-fight:not(.is-land) .sd-bubble b { display: inline; margin-right: 6px; }
+#door.sd-fight:not(.is-land) .sd-bubble::after { left: clamp(16px, calc(var(--headx, 50%) - 18px), calc(100% - 40px)); top: -16px; border: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 12px solid #30220f; }
+#door.sd-fight:not(.is-land) .sd-intent { padding: 5px 9px 6px; gap: 2px 6px; }
+#door.sd-fight:not(.is-land) .sd-isay { font-size: 13px; }
+#door.sd-fight:not(.is-land) .sd-ichip { font-size: 11px; padding: 0 5px; }
+.sd-caps .sd-cap { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; pointer-events: auto; cursor: pointer; }
+.sd-caps .sd-cap.open { -webkit-line-clamp: unset; display: block; }
+@media (min-width: 501px) { #door.sd-fight:not(.is-land) .sd-bubble { font-size: 16px; } #door.sd-fight:not(.is-land) .sd-isay { font-size: 15px; } #door.sd-fight:not(.is-land) .sd-ichip { font-size: 12.5px; } }
+/* fan: one card per kind, a count tab, a +N tile, and tap-to-lift so a phone hand is readable */
+#screen-desk .desk.sd .sd-fan .dc, #screen-desk .desk.sd .sd-fan .dc:not(.no):not(div):hover { transform-origin: 50% 100%; transform: translate(calc(-50% + var(--x, 0px)), calc(var(--y, 0px) - var(--lift, 0px))) rotate(var(--r, 0deg)) scale(var(--s, 1)); transition: transform 0.2s cubic-bezier(.3,.7,.2,1), filter 0.2s; }
+#screen-desk .desk.sd .sd-fan .dc.is-lift { --lift: calc(34px * var(--k)); box-shadow: 4px 8px 0 rgba(20, 12, 8, 0.42); }
+#screen-desk .desk.sd .sd-fan.has-lift .dc:not(.is-lift) { filter: brightness(0.82) saturate(0.85); }
+.sd-fan .sd-fcn { position: absolute; top: calc(-7px * var(--k)); right: calc(-7px * var(--k)); min-width: calc(24px * var(--k)); height: calc(22px * var(--k)); padding: 0 4px; box-sizing: border-box; border-radius: 11px; background: #30220f; color: #faf3e2; border: 2px solid #faf3e2; font: 800 calc(12px * var(--k))/calc(18px * var(--k)) var(--font-ui, system-ui), sans-serif; text-align: center; z-index: 3; box-shadow: 1px 2px 0 rgba(20,12,8,.35); }
+.sd-fan .sd-fmore { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: #3b2a16 repeating-linear-gradient(135deg, rgba(250,243,226,.06) 0 6px, transparent 6px 12px); border: 3px solid #faf3e2; border-radius: 8px; color: #faf3e2; cursor: pointer; padding: 0; }
+.sd-fan .sd-fmore b { font: 800 calc(26px * var(--k))/1 var(--font-display, Georgia), serif; }
+.sd-fan .sd-fmore span { font: 700 calc(11px * var(--k))/1 var(--font-ui, system-ui), sans-serif; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+#screen-desk .desk.sd .sd-fan .dc.is-lift .dc-type { display: none; }
+#screen-desk .desk.sd .sd-fan .dc.is-lift .dc-txt { -webkit-line-clamp: 6; font-size: calc(10.5px * var(--k)); line-height: 1.18; }
+#screen-desk .desk.sd .sd-fan .dc.sd-fmore { --s: 0.86; }
+.sd-caps .sd-cap > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.sd-caps .sd-cap.open > span { -webkit-line-clamp: unset; display: block; }
+/* ---- house seated: old leftovers restyled to the matte Level 1 look ---- */
+.hv-root.is-seated .hv-dock { background: linear-gradient(180deg, rgba(30, 18, 10, 0), rgba(30, 18, 10, 0.38)); gap: 10px; }
+.hv-root.is-seated .hv-dock .btn, .hv-root.is-seated .hv-verbs .btn, .hv-root.is-seated .hv-skip {
+  border-radius: 0; border: 2px solid var(--gold); background: #f4ecdc; color: var(--ink); text-shadow: none; filter: none;
+  box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.34); font: 700 16px/1.15 var(--font-serif); }
+.hv-root.is-seated .hv-dock .btn.btn-coral, .hv-root.is-seated .hv-verbs .btn.btn-coral { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.34); }
+.hv-root.is-seated .hv-dock .btn:active, .hv-root.is-seated .hv-verbs .btn:active { transform: translate(2px, 3px); box-shadow: inset 0 0 0 3px currentColor, 1px 1px 0 rgba(20, 12, 8, 0.34); }
+.hv-root.is-seated .hv-dock .btn:not(.btn-coral):active, .hv-root.is-seated .hv-verbs .btn:not(.btn-coral):active { box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 1px 1px 0 rgba(20, 12, 8, 0.34); }
+.hv-root.is-seated .hv-dock .btn { flex: 1; max-width: 260px; }
+.hv-root.is-seated:not(.is-landscape) .hv-dock { justify-content: center; }
+.hv-root.is-seated .hv-verbs .btn small { font: 500 11px/1.2 var(--font-sans); }
+.hv-root.is-seated .hv-verbs .btn[disabled] { opacity: 0.5; }
+.hv-root.is-seated .hv-card, .hv-root.is-seated .hv-sheet { border-radius: 0; background: #faf3e2; border: 2px solid var(--gold); box-shadow: inset 0 0 0 3px #faf3e2, inset 0 0 0 4px var(--gold-dk), 4px 6px 0 rgba(20, 12, 8, 0.4), 0 0 0 100vmax rgba(20, 12, 6, 0.42); }
+.hv-root.is-seated .hv-sheet { box-shadow: inset 0 0 0 3px #faf3e2, inset 0 0 0 4px var(--gold-dk), 4px 6px 0 rgba(20, 12, 8, 0.4); }
+.hv-root.is-seated .hv-prom.on { background: rgba(190, 140, 60, 0.18); box-shadow: inset 3px 0 0 #b8402f; }
+/* the quarter stamp: red rubber ink on a cream slip, not a pink sticker */
+.desk.sd .sd-fx .stamp { font-family: var(--font-serif); font-size: clamp(46px, 13vw, 80px); line-height: 0.95; color: #a8322a; background: #faf3e2; border: 0; border-radius: 0; padding: 12px 24px 10px; letter-spacing: 0.04em; text-align: center;
+  box-shadow: inset 0 0 0 4px #a8322a, inset 0 0 0 7px #faf3e2, inset 0 0 0 9px #a8322a, 5px 7px 0 rgba(20, 12, 8, 0.38); }
+.desk.sd .sd-fx .stamp span { display: block; font-family: var(--font-sans); font-weight: 800; font-size: 0.36em; letter-spacing: 0.32em; margin-top: 4px; }
+/* the quarter's beats: a short ledger under the HUD, newest at the bottom, oldest leave */
+.desk.sd .sd-fx .sd-ledger { position: absolute; left: 50%; transform: translateX(-50%); width: min(92vw, 440px); display: flex; flex-direction: column; gap: 6px; z-index: 30; pointer-events: none; }
+.desk.sd .sd-fx .sd-lrow { background: #faf3e2; color: var(--ink); font: 700 14px/1.25 var(--font-sans); padding: 7px 12px 7px 14px; box-shadow: inset 4px 0 0 var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.32); animation: sdLedgerIn 0.26s cubic-bezier(.3,.7,.2,1) both; transition: opacity 0.25s, transform 0.25s; }
+.desk.sd .sd-fx .sd-lrow.good { box-shadow: inset 4px 0 0 #3f7a3a, 3px 4px 0 rgba(20, 12, 8, 0.32); }
+.desk.sd .sd-fx .sd-lrow.bad, .desk.sd .sd-fx .sd-lrow[class*="bad"] { box-shadow: inset 4px 0 0 #b8402f, 3px 4px 0 rgba(20, 12, 8, 0.32); }
+.desk.sd .sd-fx .sd-lrow.cash { box-shadow: inset 4px 0 0 #2c6b66, 3px 4px 0 rgba(20, 12, 8, 0.32); }
+.desk.sd .sd-fx .sd-lrow.out { opacity: 0; transform: translateY(-6px); }
+@keyframes sdLedgerIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.desk.sd.is-land .sd-fx .sd-ledger { width: min(40vw, 440px); }
+/* the quarterly report, seated: cream paper, ink, red action */
+#overlay.sd-ov { background: rgba(28, 16, 8, 0.55); }
+#overlay.sd-ov .panel { background: #faf3e2; border: 2px solid var(--gold); border-radius: 0; color: var(--ink); box-shadow: inset 0 0 0 3px #faf3e2, inset 0 0 0 4px var(--gold-dk), 5px 7px 0 rgba(20, 12, 8, 0.4); background-image: none; }
+#overlay.sd-ov .panel h2, #overlay.sd-ov .report h3 { color: #2a1c12; }
+#overlay.sd-ov .dz-k, #overlay.sd-ov .panel-k { color: #8a5a12; }
+#overlay.sd-ov .dz-k::before { color: #b8402f; }
+#overlay.sd-ov .rd { background: #f1e5c9; border-radius: 0; box-shadow: inset 0 0 0 1px rgba(140, 100, 48, 0.45); }
+#overlay.sd-ov .rd span { color: #6a4a22; }
+#overlay.sd-ov .rd b { color: #2a1c12; }
+#overlay.sd-ov .rd.good em { color: #2f6b2a; } #overlay.sd-ov .rd.bad em { color: #a8322a; }
+#overlay.sd-ov .rep-list li { color: #2a1c12; }
+#overlay.sd-ov .rep-list i { background: #efe0bd; color: #6a4a22; border-radius: 0; }
+#overlay.sd-ov .panel p, #overlay.sd-ov .muted { color: #5a4026; }
+#overlay.sd-ov .btn-row .btn { border-radius: 0; border: 2px solid var(--gold); font: 700 17px/1.15 var(--font-serif); text-shadow: none; }
+#overlay.sd-ov .btn-row .btn.btn-coral { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.34); }
+.desk.sd.is-closing .sd-quarter { visibility: hidden; }
+.desk.sd.is-land > .skip-btn { right: calc(var(--fan-r, 0px) + 12px); }
+/* house seated reward: matte buttons, not the old teal */
+#door.disc-mode.sd-rw .rw-foot .btn { border-radius: 0; border: 2px solid var(--gold); background: #f4ecdc; color: var(--ink); font: 700 15px/1.1 var(--font-serif); box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.38); min-height: 46px; }
+#door.disc-mode.sd-rw .rw-foot .btn-coral { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.38); }
+#door.disc-mode.sd-rw .rw-item { border-radius: 0; background: #faf3e2; border: 2px solid var(--gold); box-shadow: inset 0 0 0 3px #faf3e2, inset 0 0 0 4px var(--gold-dk), 5px 7px 0 rgba(20, 12, 8, 0.45); }
+/* landscape: the wider room behind the side panels, replacing the stretched edge smears */
+.sd-bg .sd-wide { position: absolute; left: 0; top: 0; width: 2000px; height: 1280px; max-width: none; transform-origin: 0 0; pointer-events: none; }
+.sd.is-land .sd-bg::after, #door.sd-fight.is-land .sd-bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(40, 24, 12, 0.28), rgba(40, 24, 12, 0) 22%, rgba(40, 24, 12, 0) 78%, rgba(40, 24, 12, 0.28)); }
+/* landscape: the right panel runs the full height like the dossier; the networks by name fill its foot */
+.desk.sd.is-land .sd-quarter { bottom: 24px; display: flex; flex-direction: column; overflow: hidden; }
+.sd-nlist { margin-top: auto; padding-top: 12px; display: grid; gap: 6px; }
+.sd-nlist h5 { margin: 0 0 4px; padding-top: 10px; border-top: 1px solid var(--gold); text-align: center; font: 700 11px/1.2 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dk); }
+.sd-nrow { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 10px; min-height: 42px; padding: 6px 10px; border: 1px solid rgba(140, 100, 48, 0.4); background: #f4ecdc; color: var(--ink); cursor: pointer; text-align: left; }
+.sd-nrow b { font: 700 15px/1.1 var(--font-serif); }
+.sd-nrow em { font: 600 12px/1.2 var(--font-sans); font-style: normal; color: #2f6b2a; }
+.sd-nrow.g1 em { color: #8a5a12; } .sd-nrow.g2 em { color: #a8322a; }
+.sd-nrow .sd-net { pointer-events: none; }
+.sd-nrow.sel { box-shadow: inset 0 0 0 2px var(--teal); }
+@media (max-height: 640px) { .sd-nlist { display: none; } }
+/* the bunker swivel sits at the stage's right edge, like the case and phone on its left */
+.desk.sd.is-land .sd-bunker { right: calc(var(--col-r) + 14px * var(--k)); top: auto; bottom: calc(46px * var(--k)); }
+.desk.sd.is-land.is-fan .sd-bunker { bottom: calc(var(--fan-h, 190px) + 34px * var(--k)); }
+/* landscape: the side panels meet the stage edge, so the stage reads as framed and no seam of room shows between */
+.desk.sd.is-land .sd-dossier.dossier { width: calc(var(--col-l) - 24px); bottom: 24px; max-height: none; }
+.desk.sd.is-land .sd-quarter { width: calc(var(--col-r) - 24px); }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -11896,7 +11989,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     { id: "turn-1-before", src: BASE + "turn-1-before.webp", at: 0 },
     { id: "turn-2-push", src: BASE + "turn-2-push.webp", at: 0.14 },
     { id: "turn-3-spin1", src: BASE + "turn-3-spin1.webp", at: 0.32 },
-    { id: "turn-4-spin2", src: BASE + "turn-4-spin2.webp", at: 0.52 },
+    /* spin2b: a repaint at the same camera distance as 3 and 5 (the old turn-4-spin2 used a wider camera and is kept, unused) */
+    { id: "turn-4-spin2b", src: BASE + "turn-4-spin2b.webp", at: 0.5 },
     { id: "turn-5-warm", src: BASE + "turn-5-warm.webp", at: 0.68 },
     { id: "turn-6-after", src: BASE + "turn-6-after.webp", at: 0.86 }
   ];
@@ -12154,6 +12248,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
      ui.card: "arrival" | "word" | null; ui.leaveId; ui.auto; ui.canEnd */
   LD.renderHouseStage = function (state, ui) {
     ui = ui || {};
+    if (LD.seatUseExec) LD.seatUseExec(state && state.executiveId);
     var mode = ui.mode || "after";
     var cls = "hv-root is-" + mode + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
     var frames = LD.HOUSE_FRAMES.map(function (f, i) {
@@ -16525,7 +16620,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   };
 })(typeof globalThis !== "undefined" ? globalThis : this);
 </script><script>/* Last Dividend — house rules seated desk (B: first person at the 1978 desk). Render + framing maths only; ui.js drives it.
-   Only for house runs with Mara (her 1978 turn set is the only one painted). Shop runs never call this. */
+   House runs, every exec (Mara has the original 1978 set; the others have person-only repaints of it). Shop runs never call this. */
 (function (root) {
   var LD = root.LD || (root.LD = {});
   var BASE = "assets/house/1978/";
@@ -16535,6 +16630,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   var SEAT = LD.SEAT = {
     W: 720, H: 1280, FP: [100, 40, 720, 1142],
     room: BASE + "sd-room.webp",
+    /* the same room painted wider (outpainted from sd-room, lined up by feature match); plate x 0 sits at x0 */
+    roomWide: { src: BASE + "sd-room-wide.webp", x0: 640, w: 2000 },
     table: { src: BASE + "sd-table.webp", box: [0, 545, 720, 597] },
     hands: { rest: { src: BASE + "sd-hands-rest-mara.webp", box: [100, 770, 614, 372] }, dip: { src: BASE + "sd-hands-dip-mara.webp", box: [100, 879, 620, 263] } },
     mara: { src: BASE + "sd-mara-ots.webp", box: [181, 389, 539, 891] },
@@ -16543,11 +16640,34 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     /* region hit areas on the painted map (ellipses cx, cy, rx, ry) */
     regions: { na: [252, 650, 40, 28], sam: [296, 716, 22, 34], eu: [378, 640, 24, 18], af: [384, 704, 24, 32], me: [424, 666, 14, 14], sa: [452, 684, 14, 16], ea: [470, 650, 34, 22], oc: [508, 732, 24, 16] },
     /* seated visitor: each opponent's idle sprite scaled so the waist lands under the table rim (scripts/seated_assets.py). [x, y, w, h] */
-    opp: {"ashby":[205.3,254.1,283.4,492.9],"benny":[203.4,284.0,293.3,649.1],"brennan":[202.1,284.0,319.7,463.3],"crowe":[213.7,284.0,263.4,460.9],"dana":[191.0,284.0,303.5,671.9],"delacroix":[229.3,284.0,240.4,461.0],"dunn":[222.5,284.0,242.5,461.0],"gil":[220.2,280.5,270.0,648.8],"grace":[195.0,284.0,311.1,645.3],"gray":[228.4,284.0,240.5,462.7],"hale":[197.7,284.0,307.3,460.9],"harrow":[217.8,284.0,242.4,465.7],"honoria":[235.5,284.0,209.3,647.6],"june":[210.1,271.8,272.2,473.1],"mickey":[220.2,281.0,247.6,464.0],"mina":[190.2,284.0,311.4,483.6],"moretti":[214.6,278.1,244.3,467.9],"odell":[217.8,284.0,269.5,462.0],"okafor":[233.6,284.0,225.4,464.6],"pip":[202.5,284.0,297.4,643.0],"pops":[222.6,284.0,330.4,650.1],"rosa":[227.3,265.9,301.7,479.1],"sorel":[185.2,284.0,327.5,461.0],"theo":[203.5,284.0,284.9,651.2],"ticker":[201.5,284.0,279.5,461.0],"varga":[151.9,265.9,409.4,479.3]},
+    opp: {"ashby":[205.3,254.1,283.4,492.9],"benny":[203.4,284.0,293.3,649.1],"brennan":[202.1,284.0,319.7,463.3],"crowe":[213.7,284.0,263.4,460.9],"dana":[191.0,284.0,303.5,671.9],"delacroix":[229.3,284.0,240.4,461.0],"dunn":[222.5,284.0,242.5,461.0],"gil":[220.2,280.5,270.0,648.8],"grace":[195.0,284.0,311.1,645.3],"gray":[228.4,284.0,240.5,462.7],"hale":[197.7,284.0,307.3,460.9],"harrow":[217.8,284.0,242.4,465.7],"honoria":[235.5,284.0,209.3,647.6],"june":[210.1,271.8,272.2,473.1],"mickey":[220.2,281.0,247.6,464.0],"mina":[190.2,284.0,311.4,483.6],"moretti":[214.6,278.1,244.3,467.9],"odell":[217.8,284.0,269.5,462.0],"okafor":[233.6,284.0,225.4,464.6],"pip":[202.5,284.0,297.4,643.0],"pops":[222.6,284.0,330.4,650.1],"rosa":[227.3,265.9,301.7,479.1],"sorel":[185.2,284.0,327.5,461.0],"theo":[203.5,284.0,284.9,651.2],"ticker":[201.5,284.0,279.5,461.0],"varga":[151.9,265.9,409.4,479.3],"mina-seat":[203.1,282.6,294.4,407.9],"pops-seat":[213.1,282.6,276.7,433.4]},
     table_card: [345, 772],
     bunkerAt: [632, 1000]
   };
-  LD.seatedOn = function (state) { return !!(state && LD.isHouse && LD.isHouse(state) && state.executiveId === "mara"); };
+  /* Every exec sits at the same 1978 desk. Mara's layers are the originals; the other five have their own set under exec/<id>/
+     (their turn plates are Mara's plates with only the person repainted, so the room never moves between execs). */
+  var EXEC_OTS = { reid: [180, 390, 540, 890], imani: [161, 301, 559, 979], julian: [170, 389, 550, 891], soren: [177, 386, 543, 894], cassius: [174, 387, 546, 893] };
+  var MARA_SET = { mara: SEAT.mara, rest: SEAT.hands.rest.src, dip: SEAT.hands.dip.src }, curExec = "mara", plateSrc = null;
+  LD.SEAT_EXECS = ["mara"].concat(Object.keys(EXEC_OTS));
+  LD.seatUseExec = function (id) {
+    if (!EXEC_OTS[id]) id = "mara";
+    if (!plateSrc && LD.HOUSE_FRAMES) plateSrc = LD.HOUSE_FRAMES.map(function (f) { return f.src; });
+    if (id === curExec && (plateSrc || !LD.HOUSE_FRAMES)) return id;
+    curExec = id;
+    var d = BASE + "exec/" + id + "/";
+    SEAT.mara = id === "mara" ? MARA_SET.mara : { src: d + "sd-ots.webp", box: EXEC_OTS[id] };
+    SEAT.hands.rest.src = id === "mara" ? MARA_SET.rest : d + "sd-hands-rest.webp";
+    SEAT.hands.dip.src = id === "mara" ? MARA_SET.dip : d + "sd-hands-dip.webp";
+    if (LD.HOUSE_FRAMES && plateSrc) LD.HOUSE_FRAMES.forEach(function (f, i) { f.src = id === "mara" ? plateSrc[i] : d + "turn-" + (i + 1) + ".webp"; });
+    return id;
+  };
+  LD.seatedOn = function (state) {
+    var on = !!(state && LD.isHouse && LD.isHouse(state) && LD.SEAT_EXECS.indexOf(state.executiveId) >= 0);
+    if (on) LD.seatUseExec(state.executiveId);
+    return on;
+  };
+  /* how many card kinds the fan shows before a +N: phones keep it to a hand you can read */
+  LD.seatFanCap = function (W, H) { return W >= H * 1.2 ? 9 : W > 500 ? 10 : 6; };
   LD.seatLandscape = function (W, H) { return W >= H * 1.2; };
   /* First-person framing: the desk view. Portrait keeps both hands and the map near the centre; landscape stands the plate in the
      same 528px-tall column the live turn rig uses, so the pull-back lands on it exactly. */
@@ -16577,9 +16697,10 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   /* Pull-back curves (t 0 = desk, 1 = turn frame 1). Mara rises in from below as a near object; the hands drop out. */
   LD.seatPullAt = function (t) {
     var e = t * t * (3 - 2 * t), ma = Math.max(0, Math.min(1, (t - 0.18) / 0.14)); ma = ma * ma * (3 - 2 * ma);
-    var hu = Math.max(0, Math.min(1, (t - 0.12) / 0.2)); hu = hu * hu * (3 - 2 * hu);
+    /* the hands never go see-through: they drop away opaque and are gone (below the frame) by t 0.42 */
+    var hu = Math.max(0, Math.min(1, t / 0.42)); hu = hu * hu * (3 - 2 * hu);
     return { e: e, mara: { a: ma, k: 1 + 0.55 * Math.pow(1 - t, 2), dy: 760 * Math.pow(1 - t, 2.2), blur: 5 * Math.pow(1 - t, 2) },
-      hands: { a: 1 - hu, dy: 1100 * Math.pow(t, 1.3), blur: 5 * Math.min(1, t * 4) } };
+      hands: { a: t < 0.42 ? 1 : 0, dy: 580 * hu, blur: 2.5 * Math.sin(Math.PI * hu) } };
   };
   /* Pin tags: where each tag sits relative to its pin, in screen px at scale 1 (tag centre). */
   var TAG_AT = { na: [-62, -118], sam: [-58, 92], eu: [-6, -150], me: [58, -128], ea: [76, -96], af: [6, 104], sa: [74, 82], oc: [70, 106] };
@@ -16633,6 +16754,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     return '<img class="' + cls + '" src="' + L.src + '" alt="" draggable="false" style="left:' + b[0] + "px;top:" + b[1] + "px;width:" + b[2] + "px;height:" + b[3] + 'px"' + (extra || "") + ">";
   }
   function oppHtml(art, base, poses, cls) {
+    /* a few standing cut-outs read badly behind the table; those have seated repaints (opp-<art>-seat-*), used here only */
+    if (SEAT.opp[art + "-seat"]) art = art + "-seat";
     var p = SEAT.opp[art] || SEAT.opp.pip;
     var h = '<div class="sd-opp ' + (cls || "") + '" id="sc-opp" data-art="' + esc(art) + '" data-base="' + base + '" data-pose="' + base + '" style="left:' + p[0] + "px;top:" + p[1] + "px;width:" + p[2] + "px;height:" + p[3] + 'px" aria-hidden="true">';
     poses.forEach(function (q) { h += '<img class="p-' + q + '" src="assets/fight/opp-' + art + "-" + q + '.webp" alt="" draggable="false">'; });
@@ -16683,6 +16806,13 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     }
     var canEnd = state.phase === "bunker" && !(LD.fyBusy && LD.fyBusy(state));
     h += '<button type="button" class="sd-endq" id="btn-endq"' + (canEnd ? "" : " disabled") + "><b>End quarter</b><small>" + (canEnd ? "Close Q" + state.turn + " and read the report" : "Pick a deal on the map first") + "</small></button>";
+    /* landscape has the room for words: the four public networks, by name and state (the HUD only has room for jewels) */
+    h += '<div class="sd-nlist"><h5>Public networks</h5>';
+    ["air", "water", "power", "food"].forEach(function (id) {
+      var lvl = LD.gridLevel ? LD.gridLevel(state, id) : 0, lab = LD.gridLabel ? LD.gridLabel(lvl) : "";
+      h += '<button type="button" class="sd-nrow g' + lvl + '" data-net="' + id + '"><i class="sd-net g' + lvl + '" aria-hidden="true">' + ico(id) + "</i><b>" + NET_NAME[id] + "</b><em>" + esc(lab) + "</em></button>";
+    });
+    h += "</div>";
     return h + "</section>";
   }
   /* ui: { sel: {deal, region, net}, fan: bool, land: bool, dossier: html, peek: bool, memo: bool } */
@@ -18597,6 +18727,17 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     });
     if (svg) { svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("width", W); svg.setAttribute("height", H); svg.innerHTML = lines; }
   }
+  /* Landscape: the room carries on behind the side panels (a wider painting of the same office, lined up with the plate). */
+  function seatWide(root, f, t) {
+    var bg = root && root.querySelector(".sd-bg"); if (!bg) return;
+    var im = bg.querySelector(".sd-wide");
+    if (!f.land) { if (im) im.style.display = "none"; return; }
+    if (!im) { im = document.createElement("img"); im.className = "sd-wide"; im.alt = ""; im.draggable = false; im.src = LD.SEAT.roomWide.src; bg.appendChild(im); }
+    var X0 = LD.SEAT.roomWide.x0;
+    im.style.display = "";
+    im.style.transform = "translate(" + (f.tx - X0 * f.s).toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    im.style.opacity = String(Math.max(0, 1 - (t || 0) * 1.4).toFixed(3));
+  }
   /* Pose of the desk rig: t 0 = first person, 1 = the turn rig's frame 1 (Mara in, hands out). */
   function seatApplyPose(root, t) {
     if (!root) return;
@@ -18604,6 +18745,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var f = t <= 0 ? a : t >= 1 ? b : LD.seatLerpFrame(a, b, P.e);
     var rig = root.querySelector(".sd-rig"); if (!rig) return;
     rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    seatWide(root, { land: a.land, tx: f.tx, ty: f.ty, s: f.s }, t);
     var m = rig.querySelector(".sd-mara"), hs = rig.querySelectorAll(".sd-hands");
     if (m) {
       if (P.mara.a <= 0.001) { m.style.opacity = "0"; m.style.transform = ""; m.style.filter = ""; }
@@ -18642,10 +18784,26 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     var fan = $("sd-fan"), tab = $("sd-tab"), all = $("run-deck");
     if (SD.fan && fan && !fan.children.length) {
-      fan.innerHTML = state.fy && state.fy.deck ? state.fy.deck.map(function (c, i) { return LD.cardFace(c.id, c.up, { attrs: ' data-deck="' + i + '" style="--c:' + i + '"', cls: "sd-fc" }); }).join("") : "";
+      /* one card per kind with a count, so the fan stays small enough to read; past the cap a +N opens the full list */
+      var groups = [], byKey = {};
+      (state.fy && state.fy.deck || []).forEach(function (c, i) { var key = c.id + (c.up ? "+" : ""); if (!byKey[key]) { byKey[key] = { c: c, i: i, n: 0 }; groups.push(byKey[key]); } byKey[key].n++; });
+      var W0 = window.innerWidth, cap = LD.seatFanCap(W0, window.innerHeight), shown = groups.length > cap ? groups.slice(0, cap - 1) : groups, rest = groups.length - shown.length;
+      var restN = 0; groups.slice(shown.length).forEach(function (g) { restN += g.n; });
+      fan.innerHTML = shown.map(function (g, i) { return LD.cardFace(g.c.id, g.c.up, { attrs: ' data-deck="' + g.i + '" style="--c:' + i + '"', cls: "sd-fc" }).replace(/<\/(button|div)>$/, (g.n > 1 ? '<span class="sd-fcn">\u00d7' + g.n + "</span>" : "") + "</$1>"); }).join("") +
+        (rest > 0 ? '<button type="button" class="dc sd-fmore" data-more="1" aria-label="' + restN + ' more cards: open the deck list"><b>+' + restN + "</b><span>more</span></button>" : "");
       fan.style.setProperty("--n", Math.max(1, fan.children.length));
-      Array.prototype.forEach.call(fan.querySelectorAll("[data-deck]"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); }); });
+      Array.prototype.forEach.call(fan.querySelectorAll(".dc"), function (b) {
+        b.addEventListener("click", function (e) {
+          e.stopPropagation(); tick();
+          if (b.hasAttribute("data-more")) { openDeck(); return; }
+          var was = b.classList.contains("is-lift");
+          Array.prototype.forEach.call(fan.querySelectorAll(".dc.is-lift"), function (o) { o.classList.remove("is-lift"); });
+          if (!was) b.classList.add("is-lift"); layoutFan(desk);
+        });
+      });
     }
+    if (fan && !fan._dropBound) { fan._dropBound = true; desk.addEventListener("click", function (e) { if (fan.contains(e.target)) return; var lf = fan.querySelectorAll(".dc.is-lift"); if (lf.length) { Array.prototype.forEach.call(lf, function (o) { o.classList.remove("is-lift"); }); layoutFan(desk); } }, true); }
+    if (!SD.fan && fan) Array.prototype.forEach.call(fan.querySelectorAll(".dc.is-lift"), function (o) { o.classList.remove("is-lift"); });
     desk.classList.toggle("is-fan", SD.fan);
     layoutFan(desk);
     if (tab) { tab.setAttribute("aria-expanded", SD.fan ? "true" : "false"); var ic = tab.querySelector(".sd-tabl i"); if (ic) ic.textContent = SD.fan ? "▼" : "▲"; }
@@ -18657,20 +18815,22 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var W = window.innerWidth, H = window.innerHeight, k = seatK(W, H), land = LD.seatLandscape(W, H);
     var col = LD.seatColumn(W, H), l = land ? col[0] : 0, r = land ? W - col[1] : 0, avail = W - l - r - 16;
     var cards = fan.querySelectorAll(".dc"), n = cards.length, cw = 96 * k, ch = 134 * k;
-    /* like a hand held low: the outermost cards may tuck a corner past the edge, every card keeps most of itself on screen */
-    var span = Math.max(0, Math.min(avail - cw * (W > 500 ? 2.4 : 1.1), (n - 1) * cw * 0.62)), A = Math.min(40, (n - 1) * 6, span * 0.16) * Math.PI / 180;
-    /* keep the outer cards from sinking more than a quarter card: half * tan(A/4) = drop */
-    var maxDrop = ch * 0.24; if (span > 0 && (span / 2) * Math.tan(A / 4) > maxDrop) A = 4 * Math.atan(maxDrop / (span / 2));
-    var R = n > 1 && A > 0 ? (span / 2) / Math.sin(A / 2) : 0, drop = R * (1 - Math.cos(A / 2));
+    /* every card whole on screen: the outer corners of the tilted end cards stay inside the stage */
+    var A = Math.min(26, Math.max(0, (n - 1) * 4.5)) * Math.PI / 180, ext = (cw / 2) * Math.cos(A / 2) + ch * Math.sin(A / 2);
+    var span = Math.max(0, Math.min(avail - 2 * ext, (n - 1) * cw * 0.7)), R = n > 1 && A > 0 ? (span / 2) / Math.sin(A / 2) : 0, drop = R * (1 - Math.cos(A / 2));
+    var lifted = -1, LS = W > 500 ? 1.25 : 1.4;
     Array.prototype.forEach.call(cards, function (c, i) {
-      var ph = n > 1 ? -A / 2 + (A * i) / (n - 1) : 0;
-      c.style.setProperty("--x", (R * Math.sin(ph)).toFixed(1) + "px");
-      c.style.setProperty("--y", (R * (1 - Math.cos(ph))).toFixed(1) + "px");
-      c.style.setProperty("--r", (ph * 180 / Math.PI).toFixed(2) + "deg");
-      c.style.zIndex = String(i + 1);
+      var ph = n > 1 ? -A / 2 + (A * i) / (n - 1) : 0, x = R * Math.sin(ph), y = R * (1 - Math.cos(ph)), up = c.classList.contains("is-lift");
+      if (up) { lifted = i; var lim = Math.max(0, avail / 2 - (cw * LS) / 2); x = Math.max(-lim, Math.min(lim, x)); y = 0; }
+      c.style.setProperty("--x", x.toFixed(1) + "px");
+      c.style.setProperty("--y", y.toFixed(1) + "px");
+      c.style.setProperty("--r", (up ? 0 : ph * 180 / Math.PI).toFixed(2) + "deg");
+      c.style.setProperty("--s", up ? String(LS) : "1");
+      c.style.zIndex = String(up ? 60 : i + 1);
     });
+    fan.classList.toggle("has-lift", lifted >= 0);
     desk.style.setProperty("--fan-l", l + "px"); desk.style.setProperty("--fan-r", r + "px");
-    var base = 10 * k + (W > 500 ? drop * 0.8 : 0);
+    var base = 10 * k + drop * 1.1 + 4;
     desk.style.setProperty("--fan-b", Math.round(base) + "px");
     desk.style.setProperty("--fan-h", Math.round(ch + base + 8) + "px");
     var lab = desk.querySelector(".sd-tabl"); if (lab) desk.style.setProperty("--tab-hw", Math.round(lab.offsetWidth / 2) + "px");
@@ -18679,7 +18839,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     Array.prototype.forEach.call(desk.querySelectorAll("[data-deal]"), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === sel.deal); });
     Array.prototype.forEach.call(desk.querySelectorAll(".sd-region"), function (n) { n.classList.toggle("sel", n.getAttribute("data-region") === sel.region); });
-    Array.prototype.forEach.call(desk.querySelectorAll(".sd-net"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-net[data-net], .sd-nrow"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
     var dz = $("dossier"); if (dz) dz.classList.toggle("on", !!(sel.deal || sel.region || sel.net));
     if (sel.deal || sel.region || sel.net) seatSetFan(false);
   }
@@ -18689,6 +18849,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     on(".sd-pin, .sd-tag, .sd-qrow", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
     on(".sd-region", function (n) { tick(); selectRegion(n.getAttribute("data-region")); });
     on(".sd-net[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
+    on(".sd-nrow[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
     on("#btn-menu", function () { tick(); openMenu(); });
     on("#btn-endq", function () { tick(); endQuarter(); });
     on("#house-peek", function () { tick(); if (document.body.classList.contains("in-fight") || doorOpen()) { flash("Finish the fight first."); return; } openHouse({ peek: true }); });
@@ -18718,18 +18879,22 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     d.style.setProperty("--col-l", Math.round(col[0]) + "px"); d.style.setProperty("--col-r", Math.round(W - col[1]) + "px");
     d.classList.toggle("is-land", f.land);
     var rig = d.querySelector(".sd-rig"); if (rig) rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    seatWide(d, f, 0);
     var hud = d.querySelector(".sd-hud"); if (hud) d.style.setProperty("--hud", Math.round(hud.getBoundingClientRect().bottom) + "px");
     var rim = LD.seatToScreen(f, 0, 548)[1]; d.style.setProperty("--rim", Math.round(rim) + "px");
     /* portrait: speech and intent stand in a column beside the visitor, never over their face; captions lie on the table */
     var op = d.querySelector("#sc-opp"), box = op && LD.SEAT.opp[op.getAttribute("data-art")], it = $("df-intent"), talk = d.querySelector(".sd-talk");
     if (!f.land && box) {
       var hx = LD.seatToScreen(f, box[0] + box[2] * 0.5, 0)[0], right = LD.seatToScreen(f, box[0] + box[2] * 0.82, 0)[0];
-      var cl = Math.round(Math.max(W * 0.46, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
+      var cl = Math.round(Math.max(W * 0.46, hx + 34, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
       d.style.setProperty("--tcol", cl + "px"); d.style.setProperty("--headx", Math.round(hx) + "px");
       var head = LD.seatToScreen(f, 0, box[1] + 40)[1]; d.style.setProperty("--heady", Math.round(head) + "px");
-      if (it) { var tb = talk && talk.children.length ? talk.getBoundingClientRect().bottom : (d.querySelector(".sd-fhead") || d).getBoundingClientRect().bottom; it.style.top = Math.round(tb + 8) + "px"; }
-      var ib = it ? it.getBoundingClientRect().bottom : talk ? talk.getBoundingClientRect().bottom : 0;
-      d.style.setProperty("--tbot", Math.round(Math.max(rim + 8, ib + 10)) + "px");
+      /* the Next move stands beside them (under the name bar); their speech hangs under them on the table, tail up */
+      var fh = d.querySelector(".sd-fhead"), fhb = fh ? fh.getBoundingClientRect().bottom : rim * 0.4;
+      if (it) it.style.top = Math.round(fhb + 8) + "px";
+      if (talk) talk.style.top = Math.round(rim + 10) + "px";
+      var tbb = talk && talk.children.length ? talk.getBoundingClientRect().bottom : rim;
+      d.style.setProperty("--tbot", Math.round(tbb + 8) + "px");
     } else if (it) {
       /* landscape: the intent stands under the speech in the left panel column */
       var tb2 = talk && talk.children.length ? talk.getBoundingClientRect().bottom : (d.querySelector(".sd-fhead") || d).getBoundingClientRect().bottom;
@@ -19057,7 +19222,22 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var b = board.getBoundingClientRect(), r = slab.getBoundingClientRect();
     placeFloat(fx, r.left - b.left + r.width / 2, r.top - b.top + r.height * 0.18 + (dy || 0), text, cls, delay);
   }
+  /* Seated quarter close: the beats file into a short ledger under the HUD instead of piling up on the map. */
+  function seatLedger(fx, text, cls, delay) {
+    var lg = fx.querySelector(".sd-ledger");
+    if (!lg) { lg = document.createElement("div"); lg.className = "sd-ledger"; var hud = document.querySelector("#screen-desk .desk.sd .sd-hud"); var sk = document.getElementById("btn-skip-react"), top0 = Math.max(hud ? hud.getBoundingClientRect().bottom : 110, sk ? sk.getBoundingClientRect().bottom : 0); lg.style.top = Math.round(top0 + 10) + "px"; fx.appendChild(lg); }
+    var n = document.createElement("div");
+    n.className = "sd-lrow " + (cls || "");
+    n.textContent = text;
+    setTimeout(function () {
+      lg.appendChild(n);
+      var rows = lg.querySelectorAll(".sd-lrow:not(.out)"), cap = window.innerHeight < 700 ? 3 : 4;
+      for (var i = 0; i < rows.length - cap; i++) { (function (o) { o.classList.add("out"); setTimeout(function () { if (o.parentNode) o.parentNode.removeChild(o); }, 260); })(rows[i]); }
+      setTimeout(function () { n.classList.add("out"); setTimeout(function () { if (n.parentNode) n.parentNode.removeChild(n); }, 260); }, 3200);
+    }, delay || 0);
+  }
   function placeFloat(fx, x, y, text, cls, delay) {
+    if (closing && document.querySelector("#screen-desk .desk.sd")) { seatLedger(fx, text, cls, delay); return; }
     var n = document.createElement("div");
     n.className = "float " + (cls || "");
     n.textContent = text;
@@ -19255,8 +19435,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     bindHouseChrome();
   }
   function setPlateOpacities(t) {
-    /* t 0 = before, 1 = after. Frame 4 (spin23) used a much wider camera, so it is only a faint bridge between 3 and 5;
-       the pass is masked by a short blur and a tiny push so the orbit reads as one move. */
+    /* t 0 = before, 1 = after. Six plates at one camera distance, crossfaded in order; no blur needed to hide a jump. */
     var frames = document.querySelectorAll("#house-root .hv-plate");
     var n = frames.length;
     if (!n) return;
@@ -19264,23 +19443,17 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var i, op;
     if (t <= 0) { for (i = 0; i < n; i++) frames[i].style.opacity = i === 0 ? "1" : "0"; if (group) { group.style.filter = ""; group.style.transform = ""; } return; }
     if (t >= 1) { for (i = 0; i < n; i++) frames[i].style.opacity = i === n - 1 ? "1" : "0"; if (group) { group.style.filter = ""; group.style.transform = ""; } return; }
-    /* stops: frame index and the t at which it is fully shown. 3 holds, then a quick 3 to 5 crossfade at peak blur. */
-    var stops = [[0, 0], [1, 0.14], [2, 0.34], [2, 0.44], [4, 0.58], [5, 0.84]];
+    /* stops: frame index and the t at which it is fully shown (LD.HOUSE_FRAMES[].at) */
+    var stops = LD.HOUSE_FRAMES.map(function (f, ix) { return [ix, f.at]; });
     var a = 0;
     for (var k = 0; k < stops.length - 1; k++) if (t >= stops[k][1]) a = k;
     var lo = stops[a], hi = stops[a + 1];
-    var u = (t - lo[1]) / (hi[1] - lo[1]);
+    var u = Math.max(0, Math.min(1, (t - lo[1]) / (hi[1] - lo[1])));
     u = u * u * (3 - 2 * u);
     for (i = 0; i < n; i++) frames[i].style.opacity = "0";
     if (lo[0] === hi[0]) frames[lo[0]].style.opacity = "1";
     else { frames[lo[0]].style.opacity = String(1 - u); frames[hi[0]].style.opacity = String(u); }
-    /* the wide frame is a faint bridge only across the 3 to 5 crossfade */
-    if (a === 3) frames[3].style.opacity = String(0.22 * Math.sin(Math.PI * u));
-    if (group) {
-      var d = (t - 0.46) / 0.2, m = Math.exp(-d * d);
-      group.style.filter = m > 0.03 ? "blur(" + (9 * m).toFixed(2) + "px)" : "";
-      group.style.transform = m > 0.03 ? "scale(" + (1 + 0.05 * m).toFixed(4) + ")" : "";
-    }
+    if (group) { group.style.filter = ""; group.style.transform = ""; }
     var screen = document.querySelector("#house-root .hv-screen");
     var band = document.querySelectorAll("#house-root .hv-band");
     var show = t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0;
@@ -19698,6 +19871,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     showOverlay("", body,
       '<button class="btn btn-coral" id="ov-ok">' + (state.ended ? "See how it ends" : "Open Q" + state.turn) + "</button>",
       function () {
+        if (document.querySelector("#screen-desk .desk.sd")) $("overlay").classList.add("sd-ov");
         $("ov-ok").addEventListener("click", function () {
           tick();
           hideOverlay();
@@ -19890,7 +20064,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var d = doorEl(); d.hidden = false;
     var fb = mode === "df-mode", keep = d.classList.contains("lifting") && !fb ? " lifting" : "";
     var seat = fb && LD.seatedOn && LD.seatedOn(state);
-    d.className = "door-screen on " + (mode || "") + (seat ? " sd-fight" : fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" : "") + keep;
+    d.className = "door-screen on " + (mode || "") + (seat ? " sd-fight" : fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" + (LD.seatedOn && LD.seatedOn(state) ? " sd-rw" : "") : "") + keep;
     d.setAttribute("aria-label", fb ? "Fight" : mode === "rw-mode" ? "Pick a reward" : "At the door");
     d.setAttribute("aria-modal", fb ? "false" : "true");
     d.innerHTML = html;
@@ -20226,6 +20400,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var c = $("df-close"); if (c) { c.addEventListener("click", function () { tick(); closeFight(); }); try { c.focus({ preventScroll: true }); } catch (x) {} }
     var hp = $("df-help"); if (hp) hp.addEventListener("click", function () { tick(); showFy(LD.fightHelpHtml(state), '<button class="btn btn-coral" id="fy-ex-back">Back to the door</button>', function () { $("fy-ex-back").addEventListener("click", function () { tick(); hideOverlay(); }); }, true); });
     var dk = $("df-deck"); if (dk) dk.addEventListener("click", function () { tick(); openDeck(); });
+    var caps = root.querySelector(".sd-caps"); if (caps) caps.addEventListener("click", function (e) { var c = e.target.closest && e.target.closest(".sd-cap"); if (c) { tick(); c.classList.toggle("open"); } });
   }
   function playCard(u) {
     if (DF.busy || !state.fy.fight || state.fy.fight.done) return;

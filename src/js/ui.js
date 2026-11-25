@@ -884,6 +884,17 @@
     });
     if (svg) { svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("width", W); svg.setAttribute("height", H); svg.innerHTML = lines; }
   }
+  /* Landscape: the room carries on behind the side panels (a wider painting of the same office, lined up with the plate). */
+  function seatWide(root, f, t) {
+    var bg = root && root.querySelector(".sd-bg"); if (!bg) return;
+    var im = bg.querySelector(".sd-wide");
+    if (!f.land) { if (im) im.style.display = "none"; return; }
+    if (!im) { im = document.createElement("img"); im.className = "sd-wide"; im.alt = ""; im.draggable = false; im.src = LD.SEAT.roomWide.src; bg.appendChild(im); }
+    var X0 = LD.SEAT.roomWide.x0;
+    im.style.display = "";
+    im.style.transform = "translate(" + (f.tx - X0 * f.s).toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    im.style.opacity = String(Math.max(0, 1 - (t || 0) * 1.4).toFixed(3));
+  }
   /* Pose of the desk rig: t 0 = first person, 1 = the turn rig's frame 1 (Mara in, hands out). */
   function seatApplyPose(root, t) {
     if (!root) return;
@@ -891,6 +902,7 @@
     var f = t <= 0 ? a : t >= 1 ? b : LD.seatLerpFrame(a, b, P.e);
     var rig = root.querySelector(".sd-rig"); if (!rig) return;
     rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    seatWide(root, { land: a.land, tx: f.tx, ty: f.ty, s: f.s }, t);
     var m = rig.querySelector(".sd-mara"), hs = rig.querySelectorAll(".sd-hands");
     if (m) {
       if (P.mara.a <= 0.001) { m.style.opacity = "0"; m.style.transform = ""; m.style.filter = ""; }
@@ -984,7 +996,7 @@
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     Array.prototype.forEach.call(desk.querySelectorAll("[data-deal]"), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === sel.deal); });
     Array.prototype.forEach.call(desk.querySelectorAll(".sd-region"), function (n) { n.classList.toggle("sel", n.getAttribute("data-region") === sel.region); });
-    Array.prototype.forEach.call(desk.querySelectorAll(".sd-net"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-net[data-net], .sd-nrow"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
     var dz = $("dossier"); if (dz) dz.classList.toggle("on", !!(sel.deal || sel.region || sel.net));
     if (sel.deal || sel.region || sel.net) seatSetFan(false);
   }
@@ -994,6 +1006,7 @@
     on(".sd-pin, .sd-tag, .sd-qrow", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
     on(".sd-region", function (n) { tick(); selectRegion(n.getAttribute("data-region")); });
     on(".sd-net[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
+    on(".sd-nrow[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
     on("#btn-menu", function () { tick(); openMenu(); });
     on("#btn-endq", function () { tick(); endQuarter(); });
     on("#house-peek", function () { tick(); if (document.body.classList.contains("in-fight") || doorOpen()) { flash("Finish the fight first."); return; } openHouse({ peek: true }); });
@@ -1023,6 +1036,7 @@
     d.style.setProperty("--col-l", Math.round(col[0]) + "px"); d.style.setProperty("--col-r", Math.round(W - col[1]) + "px");
     d.classList.toggle("is-land", f.land);
     var rig = d.querySelector(".sd-rig"); if (rig) rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    seatWide(d, f, 0);
     var hud = d.querySelector(".sd-hud"); if (hud) d.style.setProperty("--hud", Math.round(hud.getBoundingClientRect().bottom) + "px");
     var rim = LD.seatToScreen(f, 0, 548)[1]; d.style.setProperty("--rim", Math.round(rim) + "px");
     /* portrait: speech and intent stand in a column beside the visitor, never over their face; captions lie on the table */

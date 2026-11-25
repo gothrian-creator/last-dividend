@@ -9,6 +9,8 @@
   var SEAT = LD.SEAT = {
     W: 720, H: 1280, FP: [100, 40, 720, 1142],
     room: BASE + "sd-room.webp",
+    /* the same room painted wider (outpainted from sd-room, lined up by feature match); plate x 0 sits at x0 */
+    roomWide: { src: BASE + "sd-room-wide.webp", x0: 640, w: 2000 },
     table: { src: BASE + "sd-table.webp", box: [0, 545, 720, 597] },
     hands: { rest: { src: BASE + "sd-hands-rest-mara.webp", box: [100, 770, 614, 372] }, dip: { src: BASE + "sd-hands-dip-mara.webp", box: [100, 879, 620, 263] } },
     mara: { src: BASE + "sd-mara-ots.webp", box: [181, 389, 539, 891] },
@@ -160,6 +162,13 @@
     }
     var canEnd = state.phase === "bunker" && !(LD.fyBusy && LD.fyBusy(state));
     h += '<button type="button" class="sd-endq" id="btn-endq"' + (canEnd ? "" : " disabled") + "><b>End quarter</b><small>" + (canEnd ? "Close Q" + state.turn + " and read the report" : "Pick a deal on the map first") + "</small></button>";
+    /* landscape has the room for words: the four public networks, by name and state (the HUD only has room for jewels) */
+    h += '<div class="sd-nlist"><h5>Public networks</h5>';
+    ["air", "water", "power", "food"].forEach(function (id) {
+      var lvl = LD.gridLevel ? LD.gridLevel(state, id) : 0, lab = LD.gridLabel ? LD.gridLabel(lvl) : "";
+      h += '<button type="button" class="sd-nrow g' + lvl + '" data-net="' + id + '"><i class="sd-net g' + lvl + '" aria-hidden="true">' + ico(id) + "</i><b>" + NET_NAME[id] + "</b><em>" + esc(lab) + "</em></button>";
+    });
+    h += "</div>";
     return h + "</section>";
   }
   /* ui: { sel: {deal, region, net}, fan: bool, land: bool, dossier: html, peek: bool, memo: bool } */

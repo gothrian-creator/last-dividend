@@ -6284,3 +6284,23 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 #door.disc-mode.sd-rw .rw-foot .btn { border-radius: 0; border: 2px solid var(--gold); background: #f4ecdc; color: var(--ink); font: 700 15px/1.1 var(--font-serif); box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.38); min-height: 46px; }
 #door.disc-mode.sd-rw .rw-foot .btn-coral { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.38); }
 #door.disc-mode.sd-rw .rw-item { border-radius: 0; background: #faf3e2; border: 2px solid var(--gold); box-shadow: inset 0 0 0 3px #faf3e2, inset 0 0 0 4px var(--gold-dk), 5px 7px 0 rgba(20, 12, 8, 0.45); }
+/* landscape: the wider room behind the side panels, replacing the stretched edge smears */
+.sd-bg .sd-wide { position: absolute; left: 0; top: 0; width: 2000px; height: 1280px; max-width: none; transform-origin: 0 0; pointer-events: none; }
+.sd.is-land .sd-bg::after, #door.sd-fight.is-land .sd-bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(40, 24, 12, 0.28), rgba(40, 24, 12, 0) 22%, rgba(40, 24, 12, 0) 78%, rgba(40, 24, 12, 0.28)); }
+/* landscape: the right panel runs the full height like the dossier; the networks by name fill its foot */
+.desk.sd.is-land .sd-quarter { bottom: 24px; display: flex; flex-direction: column; overflow: hidden; }
+.sd-nlist { margin-top: auto; padding-top: 12px; display: grid; gap: 6px; }
+.sd-nlist h5 { margin: 0 0 4px; padding-top: 10px; border-top: 1px solid var(--gold); text-align: center; font: 700 11px/1.2 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dk); }
+.sd-nrow { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 10px; min-height: 42px; padding: 6px 10px; border: 1px solid rgba(140, 100, 48, 0.4); background: #f4ecdc; color: var(--ink); cursor: pointer; text-align: left; }
+.sd-nrow b { font: 700 15px/1.1 var(--font-serif); }
+.sd-nrow em { font: 600 12px/1.2 var(--font-sans); font-style: normal; color: #2f6b2a; }
+.sd-nrow.g1 em { color: #8a5a12; } .sd-nrow.g2 em { color: #a8322a; }
+.sd-nrow .sd-net { pointer-events: none; }
+.sd-nrow.sel { box-shadow: inset 0 0 0 2px var(--teal); }
+@media (max-height: 640px) { .sd-nlist { display: none; } }
+/* the bunker swivel sits at the stage's right edge, like the case and phone on its left */
+.desk.sd.is-land .sd-bunker { right: calc(var(--col-r) + 14px * var(--k)); top: auto; bottom: calc(46px * var(--k)); }
+.desk.sd.is-land.is-fan .sd-bunker { bottom: calc(var(--fan-h, 190px) + 34px * var(--k)); }
+/* landscape: the side panels meet the stage edge, so the stage reads as framed and no seam of room shows between */
+.desk.sd.is-land .sd-dossier.dossier { width: calc(var(--col-l) - 24px); bottom: 24px; max-height: none; }
+.desk.sd.is-land .sd-quarter { width: calc(var(--col-r) - 24px); }

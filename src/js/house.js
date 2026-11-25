@@ -2,24 +2,20 @@
    New runs stamp state.ruleset at createRun. Shop runs are unchanged, including Go private. */
 (function () {
   LD.HOUSE_RULES = false;
-  LD.HOUSE_FLAG_KEY = "lastDividend.houseRules";
+  LD.HOUSE_SAVE_KEY = "lastDividend.house.v1";
+  function devQuery() { try { return (typeof location !== "undefined" && location && location.search) ? String(location.search) : ""; } catch (e) { return ""; } }
+  /* The test link (?house=1) turns house rules on for that page load only, and keeps its run in its own save slot so a phone's
+     real save is never touched. Nothing in the game links to it. */
   LD.applyDevHouseFlag = function () {
     try {
-      var q = (typeof location !== "undefined" && location && location.search) ? String(location.search) : "";
-      var ls = null;
-      try { ls = (typeof localStorage !== "undefined" && localStorage) ? localStorage.getItem(LD.HOUSE_FLAG_KEY) : null; } catch (e2) { ls = null; }
-      if (/[?&]house=1(?:&|$)/.test(q)) LD.HOUSE_RULES = true;
+      var q = devQuery();
+      if (/[?&]house=1(?:&|$)/.test(q)) { LD.HOUSE_RULES = true; LD.SAVE_KEY = LD.HOUSE_SAVE_KEY; }
       else if (/[?&]house=0(?:&|$)/.test(q)) LD.HOUSE_RULES = false;
-      else if (ls === "1" || ls === "true") LD.HOUSE_RULES = true;
-      else if (ls === "0" || ls === "false") LD.HOUSE_RULES = false;
     } catch (e) {}
     return LD.HOUSE_RULES;
   };
-  LD.setDevHouseFlag = function (on) {
-    LD.HOUSE_RULES = !!on;
-    try { if (typeof localStorage !== "undefined" && localStorage) localStorage.setItem(LD.HOUSE_FLAG_KEY, on ? "1" : "0"); } catch (e) {}
-    return LD.HOUSE_RULES;
-  };
+  LD.devHouseVisible = function () { return /[?&]house=/.test(devQuery()); };
+  LD.setDevHouseFlag = function (on) { LD.HOUSE_RULES = !!on; return LD.HOUSE_RULES; };
   if (typeof document !== "undefined") LD.applyDevHouseFlag();
 
   function clone(x) { return JSON.parse(JSON.stringify(x)); }

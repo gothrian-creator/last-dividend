@@ -334,7 +334,7 @@
     html += '<button type="button" class="jy-stub" id="btn-prosp"><span class="st-ico" aria-hidden="true">' + guideIco() + '</span><span class="st-t"><b>Guidebook</b><em>The collection</em></span></button>';
     html += "</div></nav>";
     html += '<p class="jy-foot">Browser demo' + (meta.finished ? " · " + meta.finished + " climb" + (meta.finished === 1 ? "" : "s") + " · " + (meta.wins | 0) + " evacuated" : "") + "</p>";
-    html += '<label class="jy-dev-house"><input type="checkbox" id="dev-house"' + (LD.HOUSE_RULES ? " checked" : "") + "> Dev: house rules</label>";
+    if (LD.devHouseVisible && LD.devHouseVisible()) html += '<label class="jy-dev-house"><input type="checkbox" id="dev-house"' + (LD.HOUSE_RULES ? " checked" : "") + "> Dev: house rules</label>";
     html += "</div>";
     return html;
   }

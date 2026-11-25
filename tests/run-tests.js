@@ -722,7 +722,7 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   {
     const st = houseRun();
     const items = LD.houseBandItems(st);
-    ok(items.some((x) => x.id === "water" && /cistern is on, empty/.test(x.line)), "Mara's starting Water shows as an empty-running cistern on the band");
+    ok(items.some((x) => x.id === "water" && /Full tank/.test(x.line)), "Mara's starting Water shows as an empty-running cistern on the band");
     ok(!items.some((x) => x.kind === "person"), "no faces on the band at the start");
     let full = openBunker(houseRun({ seed: "band-full" }));
     ["helen", "tom", "lila", "nia", "eli"].forEach((id) => {
@@ -750,8 +750,10 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     st.turn = 4;
     st.house.arrival = { id: "helen", q: 4 };
     const card = LD.renderHouseArrival(st);
-    ok(/Admit/.test(card) && /Pay off/.test(card) && /Turn away/.test(card) && /Helen Cho/.test(card) && /The Word/.test(card),
-      "arrival card has Admit, Pay off, Turn away and an optional promise");
+    ok(/Admit/.test(card) && /Pay off/.test(card) && /Turn away/.test(card) && /Helen Cho/.test(card) && /Give your word/.test(card) && /A crate for the generator/.test(card),
+      "arrival card has Admit, Pay off, Turn away and an optional short promise");
+    ok(card.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").length < 420, "arrival card is terse (under 420 characters of text)");
+    ok(!/She keeps the cheap work holding/.test(card) && /Knows which fixes were cheap/.test(card), "arrival card uses the one-line door copy");
     st.house.rooms.power.by = "helen";
     st.house.residents = [{ id: "helen" }];
     st.house.arrival = { id: "eli", q: 4 };
@@ -766,8 +768,10 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     let st = openBunker(houseRun({ seed: "word-ui" }));
     st.house.promises = [{ id: "p1", defId: "helen-parts", residentId: "helen", text: "The generator gets its bearings by the due quarter. You pay for the crate.", sinceQ: 2, dueQ: st.turn, postponed: false, status: "open" }];
     const word = LD.renderHouseWord(st);
-    ok(/A promise comes due/.test(word) && /Keep/.test(word) && /Postpone/.test(word) && /Break/.test(word) && /generator gets its bearings/.test(word),
-      "Word due card has Keep, Postpone once and Break, and the specific promise text");
+    ok(/The Word/.test(word) && /Keep/.test(word) && /Postpone/.test(word) && /Break/.test(word) && /A crate for the generator/.test(word),
+      "Word due card has Keep, Postpone and Break, and the short promise");
+    ok(/id="hv-keep"><b>Keep<\/b><small>\$12M<\/small>/.test(word), "Keep shows its cost on the button");
+    ok(/id="hv-break"><b>Break<\/b><small>Unrest \+4, Power cheap<\/small>/.test(word), "Break shows its cost on the button");
   }
   {
     const st = openBunker(houseRun());
@@ -780,6 +784,23 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     ok(/hv-sheet/.test(sheet) && /Ask to leave/.test(sheet) && /Close/.test(sheet), "leave confirm is a lower-third sheet");
   }
 
+
+
+  {
+    const st = openBunker(houseRun({ seed: "copy-ui" }));
+    st.house.rooms.air.on = true; st.house.rooms.air.by = "start";
+    const html = LD.renderHouseStage(st, { mode: "after" });
+    ok(!/hv-pip/.test(html) && /feed\/air-empty\.webp/.test(html), "empty-running Air uses the empty plate and no name pip");
+    const admitted = LD.houseAdmit(st, { id: "eli" }).state;
+    const eli = LD.renderHouseStage(admitted, { mode: "after" });
+    ok(/feed\/air-on\.webp/.test(eli) && /Dirty jobs sting less/.test(eli), "Eli has his own Air plate and a real This run line");
+    const all = ["helen", "tom", "lila", "nia", "eli"].reduce((s, id) => { s.bunkerActedThisTurn = false; s.ap = LD.BUNKER_AP; return LD.houseAdmit(s, { id: id }).state; }, openBunker(houseRun({ seed: "lila-in" })));
+    const lh = LD.renderHouseFeed(all);
+    ok(/hv-screen has-lila/.test(lh) && lh.indexOf("hv-lila") > lh.indexOf("hv-cell is-") && (lh.match(/<div class="hv-screen/g) || []).length === 1 && lh.lastIndexOf("</div>") > lh.indexOf("hv-lila"),
+      "Lila's inset is a strip inside the TV glass");
+    const dark = LD.renderHouseFeed(openBunker(houseRun({ seed: "dark-ui" })));
+    ok(/feed\/power-dark/.test(dark) && !/power-on/.test(dark), "dark rooms never show a resident plate");
+  }
 
 console.log(failed ? "FAILED " + failed + " / " + (passed + failed) : "OK " + passed + " checks");
 process.exit(failed ? 1 : 0);

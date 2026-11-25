@@ -81,10 +81,9 @@ function makeStates(LD) {
     await page.goto(origin + "?house=1&cb=" + Date.now(), { waitUntil: "networkidle0" });
     await page.evaluate((mid, save) => {
       localStorage.clear();
-      localStorage.setItem("lastDividend.houseRules", "1");
       if (window.LD && LD.setDevHouseFlag) LD.setDevHouseFlag(true);
       else if (window.LD) LD.HOUSE_RULES = true;
-      localStorage.setItem("lastDividend.v1", JSON.stringify(Object.assign({}, save, { midRun: mid })));
+      localStorage.setItem("lastDividend.house.v1", JSON.stringify(Object.assign({}, save, { midRun: mid })));
     }, midRun, SAVE);
     await page.goto(origin + "?house=1&cb=" + Date.now(), { waitUntil: "networkidle0" });
     await page.evaluate(() => {
@@ -150,8 +149,29 @@ function makeStates(LD) {
     await page.screenshot({ path: path.join(OUT, tag + "-peek.png") });
   }
 
+
+  // Flow: continue into a signed-deal house run, expect the auto-turn, admit someone, end the quarter.
+  {
+    await boot([412, 915], pack.arrival);
+    await sleep(1800);
+    const f1 = await page.evaluate(() => ({ facing: !!(LD.houseUi && LD.houseUi.facing()), admit: !!document.getElementById("hv-admit"), rail: !!document.getElementById("bunker-card") }));
+    if (!f1.facing) errors.push("auto-turn did not run on continue (signed deal, no moves left)");
+    if (!f1.admit) errors.push("arrival card not shown after auto-turn");
+    await page.evaluate(() => document.getElementById("hv-admit") && document.getElementById("hv-admit").click());
+    await sleep(300);
+    const f2 = await page.evaluate(() => ({ card: !!document.getElementById("hv-admit"), band: /Helen/.test((document.querySelector(".hv-band") || {}).textContent || ""), endq: !!document.getElementById("hv-endq") }));
+    if (f2.card || !f2.band) errors.push("admit did not update the set (card " + f2.card + ", band " + f2.band + ")");
+    await page.screenshot({ path: path.join(OUT, "412x915-after-admit-helen.png") });
+    await page.evaluate(() => document.getElementById("hv-endq") && document.getElementById("hv-endq").click());
+    await sleep(2500);
+    const f3 = await page.evaluate(() => ({ q: (JSON.parse(localStorage.getItem("lastDividend.house.v1") || "{}").midRun || {}).turn, open: !!document.querySelector("#house-root .hv-root") }));
+    if (!(f3.q >= 5)) errors.push("end quarter from the house did not advance (turn " + f3.q + ")");
+    if (f3.open) errors.push("house view still open after End quarter");
+    console.log("flow", JSON.stringify([f1, f2, f3]));
+  }
+
   await boot([800, 1280], pack.full);
-  const frames = [0, 0.2, 0.4, 0.58, 0.8, 1];
+  const frames = [0, 0.14, 0.28, 0.42, 0.56, 0.7, 0.85, 1];
   for (let i = 0; i < frames.length; i++) {
     await page.evaluate((t) => { LD.houseUi.seek(t); }, frames[i]);
     await sleep(80);

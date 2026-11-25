@@ -42,19 +42,57 @@
   };
 
   var BAND = {
-    helen: { name: "Helen", role: "Power", line: "A block can play itself" },
-    tom: { name: "Tom", role: "Water", line: "Water deals raise less Unrest" },
-    lila: { name: "Lila", role: "", line: "Unrest eases a little each quarter" },
-    nia: { name: "Nia", role: "Food", line: "Stores last; a little more door defence" },
-    eli: { name: "Eli", role: "Air", line: "Extractive deals raise less Unrest" }
+    helen: { name: "Helen", role: "Power", line: "Lights on once a fight. Unthanked." },
+    tom: { name: "Tom", role: "Water", line: "Water deals soften. Tank \u201cis fine\u201d." },
+    lila: { name: "Lila", role: "Press", line: "Eases the street. Writes it all down." },
+    nia: { name: "Nia", role: "Food", line: "Stores stretch. Door starts guarded." },
+    eli: { name: "Eli", role: "Air", line: "Dirty jobs sting less. Unpaid overtime." }
   };
   var ROOM_EMPTY = {
-    power: { name: "Power", line: "The generator is on, empty" },
-    water: { name: "Water", line: "The cistern is on, empty" },
-    air: { name: "Air", line: "The intake is on, empty" },
-    food: { name: "Food", line: "The kitchen is on, empty" }
+    power: { name: "Power", line: "Hums along. Nobody home." },
+    water: { name: "Water", line: "Full tank. Nobody to blame." },
+    air: { name: "Air", line: "Fans turning. Nobody home." },
+    food: { name: "Food", line: "Pantry stocked. Nobody hungry." }
   };
   var ROOM_OF_RES = { helen: "power", tom: "water", nia: "food", eli: "air" };
+  var DOOR_LINE = {
+    helen: "Knows which fixes were cheap.",
+    tom: "Says the cistern is fine.",
+    lila: "Reporter. Brought a notebook.",
+    nia: "Cook. Keeps the pantry honest.",
+    eli: "Junior tech. Has read the dials."
+  };
+  var PROM_SHORT = {
+    "helen-parts": "A crate for the generator",
+    "helen-nights": "Cover her quiet night",
+    "tom-sister": "A bunk saved for Rosa",
+    "tom-well": "Leave the town well alone",
+    "nia-plate": "A plate for whoever is in",
+    "nia-door": "Nobody turned from her door",
+    "lila-notes": "Her notes stay in the house",
+    "lila-file": "She files at the seal, not before",
+    "eli-filter": "A real filter for the intake",
+    "eli-hours": "Off nights before the doors close"
+  };
+  LD.houseBreakCost = function (state, rec) {
+    var def = LD.housePromiseDef && LD.housePromiseDef(rec.defId);
+    var fx = def && def.brk ? def.brk(state, rec) : { unrest: 4 };
+    var parts = [];
+    if (fx.unrest) parts.push("Unrest +" + fx.unrest);
+    if (fx.cheap) parts.push(cap(fx.cheap) + " cheap");
+    if (fx.leak) parts.push("a leak");
+    if (fx.blockBonus) parts.push("no house bonus");
+    return parts.join(", ");
+  };
+  LD.houseKeepCost = function (state, rec) {
+    var def = LD.housePromiseDef && LD.housePromiseDef(rec.defId);
+    var fx = def && def.keep ? def.keep(state, rec) : {};
+    var parts = [];
+    if (fx.cash) parts.push("$" + fx.cash + "M");
+    if (fx.stores) parts.push(fx.stores < 0 ? (-fx.stores) + " Stores" : "+" + fx.stores + " Stores");
+    if (fx.reserve && !parts.length) parts.push("a bunk held");
+    return { text: parts.join(" + "), blocked: !!fx.blocked };
+  };
 
   LD.houseBandItems = function (state) {
     var items = [], seen = {};
@@ -82,55 +120,57 @@
     var src = BASE + "feed/" + systemId + "-" + kind + ".webp";
     var label = occupied ? (LD.houseResident(resId) || {}).name : room.on ? (ROOM_EMPTY[systemId] || {}).name : systemId;
     var cls = "hv-cell is-" + kind + (failing ? " is-failing" : "") + (room.on ? " is-lit" : "");
-    /* Lit rooms (occupied or empty-running start/contractor) can be tapped to ask a person to leave, if someone is in them. */
     var tap = occupied ? " data-leave=\"" + resId + "\"" : "";
     return '<button type="button" class="' + cls + '" data-feed="' + systemId + '"' + tap + ' aria-label="' + esc(label || systemId) + '">' +
       '<img src="' + src + '" alt="" draggable="false">' +
       (failing ? '<i class="hv-static" aria-hidden="true"></i>' : "") +
-      (occupied && resId === "eli" ? '<em class="hv-pip"><b>Eli</b></em>' : "") +
       "</button>";
   }
 
+  /* Lila is not a system room: she gets a tall strip of the feed, inside the glass, only once she is in. */
   LD.renderHouseFeed = function (state) {
-    var h = '<div class="hv-screen" aria-label="Bunker feed">';
+    var lila = hasRes(state, "lila");
+    var h = '<div class="hv-screen' + (lila ? " has-lila" : "") + '" aria-label="Bunker feed">';
     h += feedCell(state, "power", "helen");
     h += feedCell(state, "water", "tom");
     h += feedCell(state, "air", "eli");
     h += feedCell(state, "food", "nia");
-    h += "</div>";
-    if (hasRes(state, "lila")) {
-      var lila = LD.houseResident("lila") || { name: "Lila Brenner" };
-      h += '<button type="button" class="hv-lila is-on" data-leave="lila" aria-label="' + esc(lila.name) + '">' +
-        '<img src="' + BASE + 'feed/lila.webp" alt="" draggable="false"><em class="hv-pip"><b>Lila</b></em></button>';
+    if (lila) {
+      var lr = LD.houseResident("lila") || { name: "Lila Brenner" };
+      h += '<button type="button" class="hv-cell hv-lila is-on is-lit" data-leave="lila" aria-label="' + esc(lr.name) + '">' +
+        '<img src="' + BASE + 'feed/lila.webp" alt="" draggable="false"></button>';
     }
+    h += "</div>";
     return h;
   };
 
   LD.renderHouseBand = function (state) {
     var items = LD.houseBandItems(state);
-    if (!items.length) return '<aside class="hv-band is-empty" hidden></aside>';
+    if (!items.length) return "";
     var stores = state.house && state.house.stores != null ? state.house.stores : 0;
+    var mood = stores >= 6 ? "comfortable" : stores >= 4 ? "holding" : "tight";
     var h = '<aside class="hv-band" aria-label="This run">';
     h += '<p class="hv-band-k">This run</p>';
     h += '<ul class="hv-band-list">';
     items.forEach(function (it) {
-      h += '<li class="hv-band-item hv-' + it.kind + '"><b>' + esc(it.name) + (it.role ? " · " + esc(it.role) : "") + "</b><span>" + esc(it.line) + "</span></li>";
+      h += '<li class="hv-band-item hv-' + it.kind + '"><b>' + esc(it.name) + (it.role ? " \u00b7 " + esc(it.role) : "") + "</b><span>" + esc(it.line) + "</span></li>";
     });
     h += "</ul>";
-    h += '<p class="hv-stores">Stores <b>' + stores + "</b></p>";
+    h += '<p class="hv-stores">Stores <b>' + stores + "</b> \u00b7 " + mood + "</p>";
     h += "</aside>";
     return h;
   };
 
-  function promiseChoices(residentId, selected) {
+  function promiseChoices(state, residentId, selected) {
     var list = (LD.HOUSE_PROMISES || []).filter(function (p) { return p.residentId === residentId; });
     if (!list.length) return "";
-    var h = '<div class="hv-promises" role="group" aria-label="Give your word, optional">';
-    h += '<p class="hv-prom-k">The Word <small>optional</small></p>';
+    var h = '<div class="hv-promises" role="radiogroup" aria-label="Give your word, optional">';
+    h += '<p class="hv-prom-k">Give your word <small>optional</small></p>';
     list.forEach(function (p) {
       var on = selected === p.id;
+      var due = Math.min(12, (state.turn | 0) + (p.dueIn || 2));
       h += '<label class="hv-prom' + (on ? " on" : "") + '"><input type="radio" name="hv-prom" value="' + esc(p.id) + '"' + (on ? " checked" : "") + ">" +
-        "<span>" + esc(p.text) + "</span></label>";
+        "<span>" + esc(PROM_SHORT[p.id] || p.text) + "<small> \u00b7 Q" + due + "</small></span></label>";
     });
     h += '<label class="hv-prom' + (!selected ? " on" : "") + '"><input type="radio" name="hv-prom" value=""' + (!selected ? " checked" : "") + "><span>No promise</span></label>";
     h += "</div>";
@@ -141,30 +181,25 @@
     opts = opts || {};
     var arr = LD.houseArrival && LD.houseArrival(state);
     if (!arr) return "";
-    var res = LD.houseResident(arr.id) || { id: arr.id, name: arr.id, blurb: "" };
+    var res = LD.houseResident(arr.id) || { id: arr.id, name: arr.id };
     var can = LD.houseCanAdmit ? LD.houseCanAdmit(state, arr.id) : null;
     var replace = can === "replace";
     var blocked = can && can !== "replace";
     var cost = LD.housePayOffCost ? LD.housePayOffCost(state, arr.id) : 0;
     var occupant = null;
-    if (replace && res.room && state.house.rooms[res.room]) {
-      var by = state.house.rooms[res.room].by;
-      occupant = LD.houseResident(by);
-    }
+    if (replace && res.room && state.house.rooms[res.room]) occupant = LD.houseResident(state.house.rooms[res.room].by);
     var h = '<article class="hv-card hv-arrival" role="dialog" aria-label="Someone at the door">';
-    h += "<header><small>At the door</small><h2>" + esc(res.name) + "</h2>";
-    if (res.role) h += "<p class=\"hv-role\">" + esc(res.role) + "</p>";
-    h += "</header>";
-    if (res.blurb) h += "<p class=\"hv-blurb\">" + esc(res.blurb) + "</p>";
-    if (replace && occupant) h += "<p class=\"hv-note\">" + esc(occupant.name) + " leaves. Unrest +3.</p>";
-    if (blocked) h += "<p class=\"hv-note\">" + esc(can) + "</p>";
+    h += "<header><small>At the door</small><h2>" + esc(res.name) + "</h2></header>";
+    h += '<p class="hv-line">' + esc(DOOR_LINE[res.id] || "") + "</p>";
+    if (replace && occupant) h += '<p class="hv-note">' + esc(occupant.name.split(" ")[0]) + " leaves. Unrest +3.</p>";
+    if (blocked) h += '<p class="hv-note">' + esc(can) + "</p>";
     var openN = (state.house.promises || []).filter(function (p) { return p.status === "open"; }).length;
-    if (openN < 2) h += promiseChoices(res.id, opts.promiseId || null);
-    h += '<div class="hv-verbs">';
-    if (replace) h += '<button type="button" class="btn btn-coral" id="hv-admit" data-verb="replace">Replace</button>';
-    else h += '<button type="button" class="btn btn-coral" id="hv-admit" data-verb="admit"' + (blocked ? " disabled" : "") + ">Admit</button>";
-    h += '<button type="button" class="btn" id="hv-payoff">Pay off $' + cost + "M</button>";
-    h += '<button type="button" class="btn" id="hv-turnaway">Turn away</button>';
+    if (openN < 2) h += promiseChoices(state, res.id, opts.promiseId || null);
+    h += '<div class="hv-verbs v3">';
+    if (replace) h += '<button type="button" class="btn btn-coral" id="hv-admit" data-verb="replace"><b>Replace</b></button>';
+    else h += '<button type="button" class="btn btn-coral" id="hv-admit" data-verb="admit"' + (blocked ? " disabled" : "") + "><b>Admit</b></button>";
+    h += '<button type="button" class="btn" id="hv-payoff"><b>Pay off</b><small>$' + cost + "M</small></button>";
+    h += '<button type="button" class="btn" id="hv-turnaway"><b>Turn away</b></button>';
     h += "</div></article>";
     return h;
   };
@@ -173,21 +208,16 @@
     var rec = LD.houseDuePromise && LD.houseDuePromise(state);
     if (!rec) return "";
     var who = LD.houseResident(rec.residentId) || { name: "them" };
-    var def = LD.housePromiseDef && LD.housePromiseDef(rec.defId);
-    var fx = def && def.keep ? def.keep(state, rec) : {};
-    var cost = [];
-    if (fx.cash) cost.push("$" + fx.cash + "M");
-    if (fx.stores) cost.push((fx.stores < 0 ? "spend " + (-fx.stores) : "+" + fx.stores) + " Stores");
-    if (fx.reserve) cost.push("the next bunk is reserved");
-    if (fx.blocked) cost.push("you cannot keep this as things stand");
+    var keep = LD.houseKeepCost(state, rec);
+    var brk = LD.houseBreakCost(state, rec);
     var h = '<article class="hv-card hv-word" role="dialog" aria-label="A promise comes due">';
-    h += "<header><small>The Word</small><h2>A promise comes due</h2></header>";
-    h += "<p class=\"hv-blurb\">" + esc(rec.text) + "</p>";
-    h += "<p class=\"hv-note\">" + esc(who.name) + (cost.length ? " · Keep: " + cost.join(", ") : "") + "</p>";
-    h += '<div class="hv-verbs">';
-    h += '<button type="button" class="btn btn-coral" id="hv-keep"' + (fx.blocked ? " disabled" : "") + ">Keep</button>";
-    h += '<button type="button" class="btn" id="hv-postpone"' + (rec.postponed ? " disabled" : "") + ">Postpone once</button>";
-    h += '<button type="button" class="btn" id="hv-break">Break</button>';
+    h += "<header><small>The Word \u00b7 due</small><h2>" + esc(who.name) + "</h2></header>";
+    h += '<p class="hv-line">' + esc(PROM_SHORT[rec.defId] || rec.text) + ".</p>";
+    if (keep.blocked) h += '<p class="hv-note">You turned someone away. This one cannot be kept.</p>';
+    h += '<div class="hv-verbs v3">';
+    h += '<button type="button" class="btn btn-coral" id="hv-keep"' + (keep.blocked ? " disabled" : "") + "><b>Keep</b>" + (keep.text ? "<small>" + esc(keep.text) + "</small>" : "") + "</button>";
+    h += '<button type="button" class="btn" id="hv-postpone"' + (rec.postponed ? " disabled" : "") + "><b>Postpone</b><small>" + (rec.postponed ? "used" : "once") + "</small></button>";
+    h += '<button type="button" class="btn" id="hv-break"><b>Break</b><small>' + esc(brk) + "</small></button>";
     h += "</div></article>";
     return h;
   };
@@ -232,26 +262,23 @@
   };
 
   /* ui.mode: "before" | "turning" | "after" | "back"
-     ui.card: "arrival" | "word" | null
-     ui.leaveId: resident id or null
-     ui.auto, ui.canEnd */
+     ui.card: "arrival" | "word" | null; ui.leaveId; ui.auto; ui.canEnd */
   LD.renderHouseStage = function (state, ui) {
     ui = ui || {};
     var mode = ui.mode || "after";
-    var items = LD.houseBandItems(state);
     var cls = "hv-root is-" + mode + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
     var frames = LD.HOUSE_FRAMES.map(function (f, i) {
       return '<img class="hv-plate" data-frame="' + i + '" src="' + f.src + '" alt="" draggable="false">';
     }).join("");
-    var band = (items.length && (mode === "after" || mode === "turning")) ? LD.renderHouseBand(state) : "";
+    var showSet = mode === "after" || mode === "turning";
     var h = '<div class="' + cls + '" id="hv-stage" role="dialog" aria-label="The house">';
+    h += '<div class="hv-bg" aria-hidden="true"><img src="' + BASE + 'turn-bg.webp" alt="" draggable="false"><i class="e l"></i><i class="e r"></i></div>';
     h += LD.renderHouseHud(state);
     h += '<div class="hv-clip"><div class="hv-rig">';
     h += '<div class="hv-plates" aria-hidden="true">' + frames + "</div>";
-    if (mode === "after" || mode === "turning") h += LD.renderHouseFeed(state);
-    if (band) h += band.replace('class="hv-band"', 'class="hv-band hv-band-plate"');
+    if (showSet) h += LD.renderHouseFeed(state);
     h += "</div></div>";
-    if (band) h += band.replace('class="hv-band"', 'class="hv-band hv-band-side"');
+    if (showSet) h += LD.renderHouseBand(state);
     if (mode === "turning") h += '<button type="button" class="hv-skip" id="hv-skip">Skip</button>';
     h += '<div class="hv-dock">';
     if (mode === "after") {

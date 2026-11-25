@@ -332,10 +332,7 @@
     var devH = $("dev-house");
     if (devH) {
       devH.checked = !!LD.HOUSE_RULES;
-      devH.addEventListener("change", function () {
-        if (LD.setDevHouseFlag) LD.setDevHouseFlag(devH.checked);
-        else LD.HOUSE_RULES = devH.checked;
-      });
+      devH.addEventListener("change", function () { LD.HOUSE_RULES = devH.checked; });
     }
     $("btn-boardroom").addEventListener("click", function () { tick(); openBoardroom("title"); });
   }
@@ -1268,15 +1265,23 @@
   function preloadHousePlates() {
     (LD.HOUSE_FRAMES || []).forEach(function (f) { var img = new Image(); img.src = f.src; });
   }
+  /* The plate is 720x1280 portrait. Phones show the whole width bar a sliver of left bezel (Mara's head stays in), with the top blended into
+     the backdrop when the screen is taller than the plate. Landscape shows the full chair base and trims only the ceiling. */
+  function houseIsLandscape() { return window.innerWidth >= window.innerHeight * 1.2; }
   function sizeHouseRig() {
     var clip = document.querySelector("#house-root .hv-clip");
     var rig = document.querySelector("#house-root .hv-rig");
     if (!clip || !rig) return;
     var r = clip.getBoundingClientRect();
-    var s = Math.max(r.width / 720, r.height / 1280);
-    var left = (r.width - 720 * s) * 0.32;
-    var top = (r.height - 1280 * s) * 0.38;
-    rig.style.transform = "translate(" + left + "px," + top + "px) scale(" + s + ")";
+    var w = r.width, h = r.height, s, tx, ty;
+    if (houseIsLandscape()) {
+      s = h / 1090; tx = (w - 720 * s) / 2; ty = -190 * s;
+    } else {
+      s = Math.min(w / 658, Math.max(w / 720, h / 1280));
+      tx = Math.max(w - 720 * s, Math.min(0, w - 713 * s));
+      ty = h - 1280 * s;
+    }
+    rig.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + s + ")";
   }
   function houseModeNow() {
     if (HV.turning) return HV.dir === "back" ? "back" : "turning";
@@ -1287,7 +1292,7 @@
     if (!root || !state) return;
     Array.prototype.forEach.call(document.querySelectorAll(".boss-banner"), function (b) { if (b.parentNode) b.parentNode.removeChild(b); });
     HV.card = houseCardKind();
-    var land = window.matchMedia && window.matchMedia("(orientation: landscape) and (min-width: 900px)").matches;
+    var land = houseIsLandscape();
     root.hidden = false;
     root.classList.add("is-open");
     root.innerHTML = LD.renderHouseStage(state, {
@@ -1304,30 +1309,37 @@
     bindHouseChrome();
   }
   function setPlateOpacities(t) {
-    /* t 0 = before, 1 = after. Frame 4 (spin23) is short and blended into 3 and 5. */
-    var keys = [0, 0.14, 0.32, 0.48, 0.58, 0.72, 1];
+    /* t 0 = before, 1 = after. Frame 4 (spin23) used a much wider camera, so it is only a faint bridge between 3 and 5;
+       the pass is masked by a short blur and a tiny push so the orbit reads as one move. */
     var frames = document.querySelectorAll("#house-root .hv-plate");
     var n = frames.length;
     if (!n) return;
-    if (t <= 0) { for (var i = 0; i < n; i++) frames[i].style.opacity = i === 0 ? "1" : "0"; return; }
-    if (t >= 1) { for (var j = 0; j < n; j++) frames[j].style.opacity = j === n - 1 ? "1" : "0"; return; }
+    var group = document.querySelector("#house-root .hv-plates");
+    var i, op;
+    if (t <= 0) { for (i = 0; i < n; i++) frames[i].style.opacity = i === 0 ? "1" : "0"; if (group) { group.style.filter = ""; group.style.transform = ""; } return; }
+    if (t >= 1) { for (i = 0; i < n; i++) frames[i].style.opacity = i === n - 1 ? "1" : "0"; if (group) { group.style.filter = ""; group.style.transform = ""; } return; }
+    /* stops: frame index and the t at which it is fully shown. 3 holds, then a quick 3 to 5 crossfade at peak blur. */
+    var stops = [[0, 0], [1, 0.14], [2, 0.34], [2, 0.44], [4, 0.58], [5, 0.84]];
     var a = 0;
-    for (var k = 0; k < keys.length - 1; k++) if (t >= keys[k]) a = k;
-    var u = (t - keys[a]) / (keys[a + 1] - keys[a]);
-    /* keys: 0,1,2,3,4,5, after. 6 keys for 6 frames plus a hold at 1.
-       Map a=0..5 to frame a blending to a+1, with a=5 blending to frame 5 held. */
-    for (var f = 0; f < n; f++) {
-      var op = 0;
-      if (a >= n - 1) op = f === n - 1 ? 1 : 0;
-      else if (f === a) op = 1 - u;
-      else if (f === a + 1) op = u;
-      frames[f].style.opacity = String(op);
+    for (var k = 0; k < stops.length - 1; k++) if (t >= stops[k][1]) a = k;
+    var lo = stops[a], hi = stops[a + 1];
+    var u = (t - lo[1]) / (hi[1] - lo[1]);
+    u = u * u * (3 - 2 * u);
+    for (i = 0; i < n; i++) frames[i].style.opacity = "0";
+    if (lo[0] === hi[0]) frames[lo[0]].style.opacity = "1";
+    else { frames[lo[0]].style.opacity = String(1 - u); frames[hi[0]].style.opacity = String(u); }
+    /* the wide frame is a faint bridge only across the 3 to 5 crossfade */
+    if (a === 3) frames[3].style.opacity = String(0.22 * Math.sin(Math.PI * u));
+    if (group) {
+      var d = (t - 0.46) / 0.2, m = Math.exp(-d * d);
+      group.style.filter = m > 0.03 ? "blur(" + (9 * m).toFixed(2) + "px)" : "";
+      group.style.transform = m > 0.03 ? "scale(" + (1 + 0.05 * m).toFixed(4) + ")" : "";
     }
     var screen = document.querySelector("#house-root .hv-screen");
     var band = document.querySelectorAll("#house-root .hv-band");
     var show = t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0;
     if (screen) { screen.style.opacity = String(show); screen.style.filter = "brightness(" + (0.45 + 0.55 * show) + ")"; }
-    for (var b = 0; b < band.length; b++) band[b].style.opacity = String(show);
+    for (var b2 = 0; b2 < band.length; b2++) band[b2].style.opacity = String(show);
   }
   function stopHouseAnim() {
     if (HV.raf) { cancelAnimationFrame(HV.raf); HV.raf = 0; }

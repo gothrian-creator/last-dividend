@@ -5840,6 +5840,389 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
 
 .jy-dev-house { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 8px 0 0; font: 500 12px var(--font-sans); color: #6a7a70; cursor: pointer; }
 .jy-dev-house input { width: 16px; height: 16px; }
+
+/* ===== House rules · seated desk (B): first person at the 1978 desk. Only LD.seatedOn(state) runs render .desk.sd / #door.sd-fight. ===== */
+body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none; }
+#screen-desk .desk.sd, #door.sd-fight {
+  --k: 1; --hud: 112px; --ink: #2a241c; --ink2: #382e22; --cream: #faf3e2; --cream2: #ece2d0; --gold: #ba9448; --gold-dk: #785a2a; --gold-lt: #dcc080;
+  --teal: #1f5f63; --teal-dk: #1c4e52; --bark: #30220f;
+}
+#screen-desk .desk.sd { position: fixed; inset: 0; display: block; min-height: 0; padding: 0; margin: 0; gap: 0; overflow: hidden; background: #d8bd8a; color: var(--ink);
+  font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.sd-bg { position: absolute; inset: 0; background: url("assets/house/1978/turn-bg.webp") 0 0 / 100% 100% no-repeat; }
+.sd.is-land .sd-bg, #door.sd-fight.is-land .sd-bg { background: url("assets/house/1978/turn-edge-l.webp") 0 -17.43% / 50% 117.43% no-repeat, url("assets/house/1978/turn-edge-r.webp") 100% -17.43% / 50% 117.43% no-repeat, #6a4a2a; }
+.sd-clip { position: absolute; inset: 0; overflow: hidden; }
+.sd.is-land .sd-clip, #door.sd-fight.is-land .sd-clip { clip-path: inset(0 var(--col-r, 0) 0 var(--col-l, 0)); }
+.sd-rig { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; transform-origin: 0 0; --pull: 0;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, calc(1 - var(--pull))) 0, #000 90px); mask-image: linear-gradient(to bottom, rgba(0, 0, 0, calc(1 - var(--pull))) 0, #000 90px); }
+.sd.is-land .sd-rig { -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, calc(1 - var(--pull))) 0, #000 70px, #000 calc(100% - 70px), rgba(0, 0, 0, calc(1 - var(--pull))) 100%);
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, calc(1 - var(--pull))) 0, #000 70px, #000 calc(100% - 70px), rgba(0, 0, 0, calc(1 - var(--pull))) 100%); }
+.desk.sd .sd-rig { --pull: inherit; }
+.sd-rig > img { position: absolute; display: block; pointer-events: none; max-width: none; }
+.sd-room { left: 0; top: 0; width: 720px; height: 1280px; }
+.sd-mara { opacity: 0; transform-origin: 339px -139px; will-change: transform, opacity, filter; } /* anchor (520,250) in plate space, relative to the layer box */
+.sd-hands { opacity: var(--ha, 1); will-change: transform, opacity; transition: opacity 0.22s ease, transform 0.26s cubic-bezier(.3,.7,.2,1); }
+.desk.sd.is-pulling .sd-hands { transition: none; }
+.desk.sd .sd-hands-dip { opacity: 0; transform: translateY(40px); }
+.desk.sd.is-fan:not(.is-pulling) .sd-hands-rest { opacity: 0; transform: translateY(60px); }
+.desk.sd.is-fan:not(.is-pulling) .sd-hands-dip { opacity: 1; transform: none; }
+
+/* HUD: the locked MG-1 bar. Phone: two rows. Wider: one row. */
+.sd-hud { position: absolute; left: 0; right: 0; top: 0; z-index: 20; height: 112px; --hud-bg: #faf3e2; box-sizing: border-box; padding: 0 12px; display: grid;
+  grid-template-columns: 32px auto 1fr auto; grid-template-rows: 52px 44px; padding-bottom: 16px; grid-template-areas: "menu cash . q" "meters meters nets nets"; column-gap: 12px; align-items: center;
+  background: #faf3e2; color: var(--ink); border-top: 2px solid var(--gold);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 6px) calc(100% - 18px), calc(100% - 6px) calc(100% - 12px), calc(100% - 12px) calc(100% - 12px), calc(100% - 12px) calc(100% - 6px), calc(100% - 18px) calc(100% - 6px), calc(100% - 18px) 100%, 18px 100%, 18px calc(100% - 6px), 12px calc(100% - 6px), 12px calc(100% - 12px), 6px calc(100% - 12px), 6px calc(100% - 18px), 0 calc(100% - 18px));
+  pointer-events: auto; }
+.sd-hud::before { content: ""; position: absolute; left: 16px; right: 16px; top: 51px; height: 3px; border-top: 1px solid rgba(31, 95, 99, 0.47); border-bottom: 1px solid rgba(120, 90, 42, 0.55); pointer-events: none; }
+.sd-hud::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 4px; height: 2px; background: rgba(186, 148, 72, 0.86); pointer-events: none; }
+.sd-menu { grid-area: menu; width: 32px; height: 32px; padding: 0; border-radius: 4px; background: var(--cream2); border: 2px solid var(--gold); display: grid; place-items: center; cursor: pointer; }
+.sd-menu::after { content: ""; position: absolute; width: 44px; height: 44px; } /* touch target */
+.sd-sun { width: 22px; height: 22px; stroke: var(--teal-dk); stroke-width: 2; fill: var(--teal-dk); stroke-linecap: round; }
+.sd-cash { grid-area: cash; display: flex; flex-direction: column; line-height: 1; position: relative; }
+.sd-cash small, .sd-mv small, .sd-q small { font: 700 11px/1 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-dk); }
+.sd-cash b { font: 700 24px/1.05 var(--font-serif); color: var(--teal-dk); margin-top: 2px; }
+.sd-q { grid-area: q; display: flex; flex-direction: column; align-items: center; line-height: 1; padding-right: 8px; }
+.sd-q b { font: 700 16px/1.1 var(--font-serif); color: var(--ink); } .sd-q b i { font-style: normal; }
+.sd-q small { letter-spacing: 0.02em; font-weight: 600; margin-top: 3px; }
+.sd-meters { grid-area: meters; display: flex; gap: 10px; align-items: center; min-width: 0; }
+.sd-meter { display: flex; align-items: center; gap: 6px; position: relative; outline: none; }
+.sd-vial { position: relative; width: 20px; height: 34px; border-radius: 3px; background: #e4d8c4; box-shadow: inset 0 0 0 1px var(--gold-dk), inset 0 0 0 2px rgba(186, 148, 72, 0.6); overflow: hidden; flex: none; }
+.sd-vial i { position: absolute; left: 2px; right: 2px; bottom: 2px; height: calc((100% - 4px) * var(--f)); border-radius: 2px; background: var(--mc, #a85630); }
+.sd-vial .sd-ic { position: absolute; left: 50%; top: 50%; width: 15px; height: 15px; transform: translate(-50%, -50%); stroke: #f4ecdc; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 1px rgba(40, 20, 10, 0.7)); }
+.m-unrest { --mc: #a85630; } .m-collapse { --mc: #7a2c28; } .m-scrutiny { --mc: #b02e28; }
+.sd-mv { display: flex; flex-direction: column; line-height: 1; min-width: 40px; }
+.sd-mv b { font: 700 18px/1 var(--font-sans); color: var(--ink); } .sd-mv b i { font-style: normal; }
+.sd-mv small { margin-top: 3px; }
+.sd-nets { grid-area: nets; display: flex; gap: 5px; justify-content: flex-end; }
+.sd-net { width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 1px solid var(--gold); background: #ece2d0; display: grid; place-items: center; cursor: pointer; position: relative; }
+.sd-net::before { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: var(--nc, #488a4c); }
+.sd-net::after { content: ""; position: absolute; inset: -9px; }
+.sd-net.g1 { --nc: #c48c30; } .sd-net.g2 { --nc: #a0342a; }
+.sd-net .sd-ic { position: relative; width: 14px; height: 14px; stroke: #f4ecdc; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.sd-net.sel { box-shadow: 0 0 0 2px var(--teal); }
+.sd-net[disabled] { cursor: default; }
+@media (min-width: 501px) {
+  .sd-hud { height: 100px; grid-template-rows: 84px; padding-bottom: 16px; grid-template-columns: 36px auto auto 1fr auto auto; grid-template-areas: "menu cash meters . nets q"; column-gap: 18px; padding: 0 16px; }
+  .sd-hud::before { display: none; }
+  .sd-menu { width: 36px; height: 36px; } .sd-sun { width: 24px; height: 24px; }
+  .sd-cash small { font-size: 12px; } .sd-cash b { font-size: 32px; }
+  .sd-q { min-width: 70px; } .sd-q b { font-size: 20px; } .sd-q small { font-size: 12px; }
+  .sd-meters { gap: 14px; }
+  .sd-net { width: 28px; height: 28px; } .sd-nets { gap: 7px; }
+}
+.sd-pop { position: absolute; left: 100%; top: 0; margin-left: 4px; padding: 1px 6px; border-radius: 3px; font: 700 14px/1.3 var(--font-sans); white-space: nowrap; pointer-events: none;
+  animation: sdPop 1.8s ease-out both; background: var(--cream); box-shadow: 0 0 0 1px var(--gold); }
+.sd-pop.up { color: #2f6b2f; } .sd-pop.down { color: #a0342a; }
+@keyframes sdPop { 0% { opacity: 0; transform: translateY(6px); } 12% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(-10px); } }
+
+/* screen-space UI over the desk */
+.sd-ui { position: absolute; inset: 0; z-index: 4; pointer-events: none; transition: opacity 0.16s ease; }
+.desk.sd.is-pulling .sd-ui, .desk.sd.is-pulling .sd-ribbon, .desk.sd.is-pulling .sd-left, .desk.sd.is-pulling .sd-bunker, .desk.sd.is-pulling .sd-hand,
+.desk.sd.is-pulling .sd-quarter, .desk.sd.is-pulling .sd-dossier { opacity: 0; pointer-events: none !important; transition: opacity 0.14s ease; }
+.sd-lines { position: absolute; left: 0; top: 0; overflow: visible; }
+.sd-lines line { stroke: rgba(250, 243, 226, 0.92); stroke-width: 2; filter: drop-shadow(0 1px 1px rgba(20, 12, 8, 0.5)); }
+.sd-pin { position: absolute; width: calc(44px * var(--k)); height: calc(44px * var(--k)); margin: calc(-22px * var(--k)) 0 0 calc(-22px * var(--k)); padding: 0; border: 0; border-radius: 50%; background: none; pointer-events: auto; cursor: pointer; }
+.sd-pin i { position: absolute; left: 50%; top: 50%; width: calc(20px * var(--k)); height: calc(20px * var(--k)); transform: translate(-50%, -50%); border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(255, 226, 140, 0.5), 0 0 0 7px rgba(255, 226, 140, 0.26), 0 0 0 11px rgba(255, 226, 140, 0.12); animation: sdGlow 2.4s ease-in-out infinite; animation-delay: calc(var(--i) * 0.4s); }
+.sd-pin.add i { background: radial-gradient(circle at 38% 32%, #f8e6b0 0, #d0a450 38%, #7a5420 72%, #4a3010 100%); width: calc(13px * var(--k)); height: calc(13px * var(--k)); }
+.sd-pin.sel i, .sd-tag.sel { box-shadow: 0 0 0 3px #1f5f63, 0 0 0 7px rgba(255, 226, 140, 0.55); }
+@keyframes sdGlow { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+.sd-tag { position: absolute; left: 0; top: 0; min-width: calc(104px * var(--k)); min-height: 46px; padding: calc(5px * var(--k)) calc(10px * var(--k)); box-sizing: border-box; pointer-events: auto; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; text-align: center;
+  background: #faf3e2; border: 2px solid var(--gold); border-radius: 0; box-shadow: inset 0 0 0 3px #faf3e2, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.35); color: var(--ink);
+  animation: sdTagIn 0.36s cubic-bezier(.3,.8,.3,1.2) both; animation-delay: calc(0.1s + var(--i) * 0.08s); }
+.sd-tag b { font: 700 calc(13px * var(--k))/1.1 var(--font-serif); }
+.sd-tag em { font: 700 calc(12px * var(--k))/1.1 var(--font-sans); font-style: normal; color: var(--teal-dk); }
+.sd-tag.k-crisis { border-color: #a0342a; } .sd-tag.k-crisis em { color: #a0342a; }
+.sd-tag:active { transform: translateY(1px); }
+@keyframes sdTagIn { from { opacity: 0; transform: translateY(6px) scale(0.96); } to { opacity: 1; transform: none; } }
+.sd-region { position: absolute; transform: translate(-50%, -50%); padding: 0; border: 0; background: none; border-radius: 50%; pointer-events: auto; cursor: pointer; min-width: 30px; min-height: 30px; }
+.sd-region.sel { box-shadow: 0 0 0 2px rgba(31, 95, 99, 0.9), inset 0 0 18px rgba(255, 226, 140, 0.35); }
+.desk.sd.is-bunker .sd-region { pointer-events: none; }
+/* stress reads as heat on the painted land (no dots: they read as stray pins). Only strike and revolt show. */
+.sd-region.s-strike, .sd-region.s-revolt { background: radial-gradient(closest-side, rgba(176, 46, 40, 0.34), rgba(176, 46, 40, 0.16) 62%, rgba(176, 46, 40, 0) 100%); mix-blend-mode: multiply; }
+.sd-region.s-revolt { background: radial-gradient(closest-side, rgba(150, 24, 20, 0.5), rgba(150, 24, 20, 0.22) 62%, rgba(150, 24, 20, 0) 100%); animation: sdGlow 1.6s ease-in-out infinite; }
+.sd-flag { position: absolute; left: 30%; top: 22%; width: 2px; height: 12px; background: #3a2a18; }
+.sd-flag::after { content: ""; position: absolute; left: 2px; top: 0; border-left: 8px solid #b8402f; border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+.sd-ribbon { position: absolute; left: 50%; top: calc(var(--hud) + 8px); transform: translateX(-50%); z-index: 5; padding: calc(4px * var(--k)) calc(14px * var(--k)); white-space: nowrap; pointer-events: none;
+  background: rgba(48, 34, 18, 0.86); box-shadow: inset 0 2px 0 -1px var(--gold); color: #faf3e2; font: 600 calc(13px * var(--k))/1.4 var(--font-sans); }
+
+/* chair-arm buttons */
+.sd-bunker { position: absolute; z-index: 8; right: calc(14px * var(--k)); bottom: calc(46px * var(--k)); width: calc(64px * var(--k)); padding: 0; border: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: bottom 0.26s cubic-bezier(.3,.7,.2,1), opacity 0.2s; }
+.sd-swivel { width: calc(54px * var(--k)); height: calc(54px * var(--k)); border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, #f0d696 0 58%, #dab464 60% 100%);
+  box-shadow: 0 0 0 2px var(--gold-dk), inset 0 0 0 5px #dab464, inset 0 0 0 6px #785a2a, 3px 5px 0 rgba(20, 12, 8, 0.42); }
+.sd-swivel svg { width: 55%; height: 55%; fill: none; stroke: #3c2812; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.sd-bunker small, .sd-brass small { padding: 1px 7px; background: rgba(48, 34, 18, 0.92); border: 1px solid var(--gold); color: var(--gold-lt); font: 700 calc(11px * var(--k))/1.3 var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; border-radius: 3px; }
+.sd-bunker em, .sd-brass em { position: absolute; top: -4px; right: 2px; min-width: 20px; height: 20px; border-radius: 10px; background: #b02e28; color: #fff4d6; border: 2px solid #faf3e2; font: 700 12px/16px var(--font-sans); font-style: normal; text-align: center; }
+.sd-bunker[hidden] { display: none; }
+.sd-bunker:not([hidden]) .sd-swivel { animation: sdBreath 2.6s ease-in-out infinite; }
+@keyframes sdBreath { 0%, 100% { transform: none; } 50% { transform: scale(1.04); } }
+.desk.sd.is-fan .sd-bunker { bottom: calc(var(--fan-h, 190px) + 34px * var(--k)); }
+.sd-left { position: absolute; z-index: 8; left: calc(12px * var(--k)); bottom: calc(46px * var(--k)); display: flex; flex-direction: column; gap: 10px; align-items: flex-start; transition: bottom 0.26s cubic-bezier(.3,.7,.2,1); }
+.desk.sd.is-fan .sd-left { bottom: calc(var(--fan-h, 190px) + 6px); }
+.sd-brass { position: relative; width: calc(48px * var(--k)); padding: 0; border: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.sd-brass svg { width: calc(38px * var(--k)); height: calc(38px * var(--k)); padding: calc(7px * var(--k)); box-sizing: border-box; border-radius: 50%; fill: none; stroke: #3c2812; stroke-width: 1.8; stroke-linejoin: round;
+  background: radial-gradient(circle, #ecd08c 0 60%, #c9a254 62%); box-shadow: 0 0 0 1.5px var(--gold-dk), 2px 3px 0 rgba(20, 12, 8, 0.4); }
+.sd-brass small { font-size: calc(10px * var(--k)); padding: 0 5px; }
+.sd-phone.ringing svg { animation: sdRing 0.9s ease-in-out infinite; }
+@keyframes sdRing { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-12deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-6deg); } }
+.sd-endq { min-height: 48px; padding: 4px 14px; border: 2px solid var(--gold); background: #faf3e2; color: var(--ink); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 0 3px #faf3e2, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.35); }
+.sd-endq b { font: 700 calc(15px * var(--k))/1.15 var(--font-serif); } .sd-endq small { font: 400 12px/1.2 var(--font-sans); color: var(--ink2); }
+.sd-endq[disabled] { background: #ded4c0; color: #8c7e68; cursor: default; box-shadow: inset 0 0 0 3px #ded4c0, inset 0 0 0 4px rgba(120, 90, 42, 0.6); }
+.sd-endq[disabled] small { color: #8c7e68; }
+.sd-endq-p { background: #b8402f; border-color: #e3c26a; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.35); color: #fff4dc; }
+
+/* the hand: closed tab (cards down) and the fan (cards up) */
+.sd-hand { position: absolute; left: 0; right: 0; bottom: 0; z-index: 7; height: 0; }
+.sd-tab { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: calc(170px * var(--k)); height: calc(64px * var(--k)); padding: 0; border: 0; background: none; cursor: pointer; transition: opacity 0.2s, transform 0.26s; }
+.sd-backs { position: absolute; left: 0; right: 0; bottom: 0; height: calc(34px * var(--k)); overflow: hidden; }
+.sd-backs img { position: absolute; bottom: calc(-56px * var(--k)); width: calc(64px * var(--k)); height: calc(90px * var(--k)); border-radius: 5px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45); }
+.sd-backs img[style*="--c:0"] { left: calc(50% - 77px * var(--k)); transform: rotate(-4.5deg); } .sd-backs img[style*="--c:1"] { left: calc(50% - 47px * var(--k)); transform: rotate(-1.5deg); }
+.sd-backs img[style*="--c:2"] { left: calc(50% - 17px * var(--k)); transform: rotate(1.5deg); } .sd-backs img[style*="--c:3"] { left: calc(50% + 13px * var(--k)); transform: rotate(4.5deg); }
+.sd-tabl { position: absolute; left: 50%; bottom: calc(30px * var(--k)); transform: translateX(-50%); padding: 3px 12px; white-space: nowrap; background: rgba(48, 34, 18, 0.94); border: 1px solid var(--gold); color: var(--gold-lt);
+  font: 700 calc(12px * var(--k))/1.4 var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; box-shadow: 2px 3px 0 rgba(20, 12, 8, 0.35); }
+.sd-tabl i { font-style: normal; font-size: 10px; margin-left: 4px; }
+.desk.sd.is-fan .sd-tab { transform: translateX(-50%) translateY(calc(-1 * var(--fan-h, 190px) + 30px)); }
+.desk.sd.is-fan .sd-backs { opacity: 0; }
+/* the fan: an arc held in the hand. ui.js layoutFan sets each card's --x/--y/--r and the fan height. */
+.sd-fan { position: absolute; left: var(--fan-l, 0px); right: var(--fan-r, 0px); bottom: 0; height: var(--fan-h, 190px); overflow: visible; transform: translateY(100%); transition: transform 0.28s cubic-bezier(.3,.7,.2,1); pointer-events: none; }
+.desk.sd.is-fan .sd-fan { transform: none; pointer-events: auto; }
+.sd-fan .dc { position: absolute; left: 50%; bottom: var(--fan-b, calc(10px * var(--k))); margin: 0; width: calc(96px * var(--k)); height: calc(134px * var(--k)); box-shadow: 3px 5px 0 rgba(20, 12, 8, 0.38);
+  transform-origin: 50% 100%; transform: translate(calc(-50% + var(--x, 0px)), calc(var(--y, 0px) - var(--lift, 0px))) rotate(var(--r, 0deg)); transition: transform 0.16s ease; }
+.sd-fan .dc:focus-visible, .sd-fan .dc:active { --lift: calc(16px * var(--k)); }
+@media (hover: hover) and (pointer: fine) { .sd-fan .dc:hover { --lift: calc(16px * var(--k)); } }
+.sd-all { position: absolute; left: calc(50% + var(--tab-hw, 60px) + 6px); bottom: calc(var(--fan-h, 190px) - 2px); height: calc(24px * var(--k)); padding: 0 10px; border: 1px solid var(--gold); background: rgba(48, 34, 18, 0.94); color: var(--gold-lt); font: 700 calc(11px * var(--k)) var(--font-sans); box-shadow: 2px 3px 0 rgba(20, 12, 8, 0.35); letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.sd-all[hidden] { display: none; }
+.desk.sd { --fan-h: calc(150px * var(--k)); }
+
+/* dossier: a bottom sheet on phones (portrait), the left panel in landscape */
+.sd-dossier.dossier { position: absolute; z-index: 12; left: 8px; right: 8px; bottom: 8px; max-height: min(64vh, calc(100% - var(--hud) - 24px)); overflow: auto; margin: 0; padding: 0;
+  background: #faf3e2; color: var(--ink); border: 2px solid var(--gold); box-shadow: inset 0 0 0 4px #faf3e2, inset 0 0 0 5px var(--gold-dk), 0 10px 30px rgba(20, 12, 8, 0.45);
+  transform: translateY(calc(100% + 16px)); transition: transform 0.28s cubic-bezier(.3,.7,.2,1); }
+.sd-dossier.dossier.on { transform: none; }
+.desk.sd:not(.is-land) .sd-dossier:not(.on) { visibility: hidden; transition: transform 0.28s, visibility 0s 0.28s; }
+@media (min-width: 700px) { .desk.sd:not(.is-land) .sd-dossier.dossier { left: 50%; right: auto; width: min(560px, 80vw); transform: translate(-50%, calc(100% + 16px)); } .desk.sd:not(.is-land) .sd-dossier.dossier.on { transform: translate(-50%, 0); } }
+.sd-dossier .dz { padding: 14px 16px 16px; background: none; border: 0; box-shadow: none; color: var(--ink); }
+.sd-dossier .dz h3 { font: 700 21px/1.15 var(--font-serif); color: var(--ink); margin: 2px 0 6px; }
+.sd-dossier .dz-k, .sd-dossier .dz-k span { font: 700 11px/1.3 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dk); }
+.sd-dossier .dz-body, .sd-dossier .fine, .sd-dossier .dz-note, .sd-dossier .quote { color: var(--ink2); font-size: 14.5px; line-height: 1.35; }
+.sd-dossier .dz-x { position: absolute; right: 6px; top: 6px; width: 44px; height: 44px; border: 0; background: none; color: var(--gold-dk); font-size: 18px; cursor: pointer; }
+.sd-dossier .btn-sign, .sd-dossier .dz-act, .sd-dossier .dz-choice { width: 100%; min-height: 50px; margin-top: 10px; border-radius: 0; border: 2px solid var(--gold); background: #b8402f; color: #fff4dc; font: 700 17px/1.2 var(--font-serif); cursor: pointer;
+  box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.3); }
+.sd-dossier .dz-choice, .sd-dossier .dz-act { background: #f4ecdc; color: var(--ink); box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.25); text-align: left; padding: 8px 12px; font-size: 15px; }
+.sd-dossier .btn-sign[disabled], .sd-dossier .dz-choice[disabled], .sd-dossier .dz-act[disabled] { opacity: 0.55; cursor: default; }
+.sd-dossier .dz-art { border-radius: 2px; box-shadow: 0 0 0 2px var(--gold-dk); }
+.sd-dossier .exec-dz .avatar { background: var(--teal); color: #faf3e2; }
+.sd-dossier .dz-enc { background: rgba(186, 148, 72, 0.16); border: 1px solid rgba(186, 148, 72, 0.5); border-radius: 0; color: var(--ink); }
+.sd-dossier .target { color: var(--ink); }
+/* landscape: side panels */
+.desk.sd.is-land .sd-dossier.dossier { left: 24px; right: auto; top: calc(var(--hud) + 26px); bottom: auto; width: calc(var(--col-l) - 48px); max-height: calc(100% - var(--hud) - 50px); transform: none; }
+.sd-panel { position: absolute; z-index: 10; background: #faf3e2; border: 2px solid var(--gold); box-shadow: inset 0 0 0 4px #faf3e2, inset 0 0 0 5px var(--gold-dk), 4px 5px 0 rgba(20, 12, 8, 0.35); color: var(--ink); padding: 14px 16px 16px; box-sizing: border-box; }
+.sd-panel h4 { margin: 4px 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--gold); text-align: center; font: 700 12px/1.2 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dk); }
+.sd-quarter { right: 24px; top: calc(var(--hud) + 26px); width: calc(var(--col-r) - 48px); }
+.sd-qlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.sd-qrow { width: 100%; box-sizing: border-box; min-height: 56px; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 6px 12px; text-align: left; background: #f4ecdc; border: 1px solid var(--gold); cursor: pointer; color: var(--ink); }
+.sd-qrow b { display: block; font: 700 18px/1.15 var(--font-serif); } .sd-qrow small { display: block; font: 400 13px/1.25 var(--font-sans); color: var(--ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sd-qrow em { font: 700 17px var(--font-sans); font-style: normal; color: var(--teal-dk); }
+.sd-qpin { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #f0d696, #ce a654 50%, #8a6428); background: radial-gradient(circle at 38% 32%, #f0d696 0, #cea654 50%, #8a6428 100%); box-shadow: 0 0 0 2px var(--gold-dk); }
+.sd-qrow.sel { box-shadow: 0 0 0 2px var(--teal); background: #fff8e6; }
+.sd-quarter .sd-endq { width: 100%; margin-top: 12px; }
+.sd-signed { margin: 0; font: 400 15px/1.35 var(--font-sans); } .sd-signed b { font-family: var(--font-serif); }
+.desk.sd.is-land .sd-ribbon { display: none; }
+.desk.sd.is-land .sd-bunker { right: calc(var(--col-r) / 2 - 32px * var(--k)); bottom: auto; top: calc(var(--hud) + 380px); }
+.desk.sd.is-land .sd-left { left: calc(var(--col-l) + 12px); }
+
+#sd-shield { position: fixed; inset: 0; z-index: 81; cursor: pointer; }
+
+/* ---------- the fight across the table ---------- */
+#door.sd-fight { position: fixed; inset: 0; z-index: 30; background: #d8bd8a; color: var(--ink); overflow: hidden; font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; }
+#door.sd-fight .door-in.sd-fin { position: absolute; inset: 0; display: block; height: auto; max-width: none; margin: 0; padding: 0; gap: 0; grid-template-rows: none; }
+#door.sd-fight .df-stage.sd-fstage { position: absolute; inset: 0; display: block; padding: 0; margin: 0; border: 0; border-radius: 0; background: none; overflow: hidden; box-shadow: none; grid-template-columns: none; }
+#door.sd-fight .sd-rig { -webkit-mask-image: none; mask-image: none; }
+#door.sd-fight.is-land .sd-rig { -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0, #000 100%); }
+.sd-opp { position: absolute; transform-origin: 50% 80%; }
+.sd-opp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; opacity: 0; pointer-events: none; }
+.sd-opp[data-pose="idle"] .p-idle, .sd-opp[data-pose="attack"] .p-attack, .sd-opp[data-pose="hit"] .p-hit, .sd-opp[data-pose="block"] .p-block,
+.sd-opp[data-pose="defeated"] .p-defeated, .sd-opp[data-pose="paid"] .p-paid { opacity: 1; }
+.sd-fstage.enter .sd-opp { animation: sdSit 0.6s cubic-bezier(.3,.7,.2,1) both; }
+@keyframes sdSit { from { opacity: 0; transform: translateY(-46px) scale(1.04); } 60% { opacity: 1; } to { opacity: 1; transform: none; } }
+.sd-opp.shake { animation: sdShake 0.42s ease-out; } .sd-opp.lunge { animation: sdLunge 0.46s ease-out; } .sd-opp.brace { animation: sdBrace 0.4s ease-out; }
+@keyframes sdShake { 0%, 100% { transform: none; } 20% { transform: translateX(-8px) rotate(-1.2deg); } 40% { transform: translateX(7px) rotate(1deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+@keyframes sdLunge { 0%, 100% { transform: none; } 35% { transform: translateY(10px) scale(1.07); } }
+@keyframes sdBrace { 0%, 100% { transform: none; } 40% { transform: translateY(4px) scale(0.98); } }
+#door.sd-fight .sd-hands-dip { transform-origin: 50% 100%; }
+#door.sd-fight .sd-hands-dip.flick { animation: sdFlick 0.3s ease-out; } #door.sd-fight .sd-hands-dip.recoil { animation: sdRecoil 0.4s ease-out; }
+@keyframes sdFlick { 40% { transform: translateY(-14px); } } @keyframes sdRecoil { 25% { transform: translate(-6px, 10px); } 55% { transform: translate(5px, 4px); } }
+.sd-tcard { position: absolute; left: 279px; top: 680px; width: 132px; height: 185px; transform: rotate(-5deg); }
+.sd-tcard.is-empty { visibility: hidden; }
+.sd-tcard.is-landing { opacity: 0; }
+.sd-tcard.landed { animation: sdLand 0.3s ease-out; }
+@keyframes sdLand { 0% { transform: rotate(-5deg) scale(1.08); } 100% { transform: rotate(-5deg); } }
+.sd-tcard .dc { width: 100%; height: 100%; box-sizing: border-box; pointer-events: none; box-shadow: 6px 9px 0 rgba(20, 12, 8, 0.35); transform: none !important; }
+.sd-tcard .dc .dc-txt { display: none; }
+.sd-fly { position: fixed; z-index: 61; transition: transform 0.28s cubic-bezier(.4,.1,.3,1); transform-origin: 50% 50%; pointer-events: none; }
+.sd-fly .dc { width: 100%; height: 100%; box-sizing: border-box; }
+#door.sd-fight .sd-hud { position: absolute; }
+#door.sd-fight .sd-menu { font: 700 18px var(--font-serif); color: var(--teal-dk); }
+.sd-fhead { position: absolute; z-index: 12; left: 8px; right: 8px; top: calc(var(--hud) + 6px); display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; align-items: center; padding: 5px 10px; box-sizing: border-box;
+  background: rgba(250, 243, 226, 0.94); border: 1px solid var(--gold); box-shadow: inset 0 0 0 2px rgba(250, 243, 226, 0.94), inset 0 0 0 3px rgba(120, 90, 42, 0.5), 2px 3px 0 rgba(20, 12, 8, 0.28); }
+.sd-who { display: flex; flex-direction: column; min-width: 0; line-height: 1.1; }
+.sd-who small { font: 700 9.5px/1.2 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dk); }
+.sd-who b { font: 700 16px/1.15 var(--font-serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .sd-who b i { font-style: normal; color: var(--gold); }
+.sd-who em { font: 400 11.5px/1.2 var(--font-sans); font-style: normal; color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sd-gal { display: flex; align-items: center; gap: 3px; } .sd-gal small { font: 700 9px var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold-dk); margin: 0 2px; }
+.sd-gal i { width: 7px; height: 12px; background: #e4d8c4; box-shadow: inset 0 0 0 1px rgba(120, 90, 42, 0.6); } .sd-gal i.mid { width: 3px; }
+.sd-gal i.lit, .sd-gal i.on { background: var(--teal); } .sd-gal i.on { box-shadow: 0 0 0 1.5px var(--ink); }
+.sd-round { display: flex; flex-direction: column; align-items: center; line-height: 1; } .sd-round small { font: 700 9.5px var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dk); }
+.sd-round b { font: 700 17px var(--font-serif); } .sd-round b i { font-style: normal; font-size: 12px; color: var(--gold-dk); }
+.sd-talk { position: absolute; z-index: 11; left: 12px; top: calc(var(--hud) + 66px); width: min(64%, 300px); display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.sd-bubble { position: relative; padding: 9px 14px 10px; background: #f4ecdc; color: var(--ink); font: 600 14px/1.3 var(--font-sans); border: 5px solid #30220f; outline: 2px solid var(--gold); outline-offset: -3px;
+  box-shadow: 4px 5px 0 rgba(20, 12, 8, 0.32); animation: sdTagIn 0.3s ease-out both; }
+.sd-bubble::before { content: ""; position: absolute; inset: 1px; border: 1px solid var(--gold-dk); pointer-events: none; }
+.sd-bubble b { display: block; font: 700 10px/1.3 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: #a0342a; margin-bottom: 1px; }
+.sd-bubble.k-hit { background: #f6e2d4; } .sd-bubble.k-block { background: #e6efe4; }
+.sd-cap { padding: 6px 12px; background: rgba(48, 34, 18, 0.88); box-shadow: inset 0 2px 0 -1px var(--gold); color: #faf3e2; font: 600 13px/1.35 var(--font-sans); font-style: italic; animation: sdTagIn 0.3s ease-out both; }
+.sd-cb { position: absolute; z-index: 25; left: 50%; top: 46%; transform: translate(-50%, -50%); width: min(86vw, 340px); padding: 14px 16px 16px; box-sizing: border-box; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  background: #faf3e2; border: 2px solid var(--gold); box-shadow: inset 0 0 0 4px #faf3e2, inset 0 0 0 5px var(--gold-dk), 0 0 0 100vmax rgba(20, 12, 8, 0.35), 0 14px 40px rgba(20, 12, 8, 0.5); }
+.sd-cb small { font: 700 11px var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dk); }
+.sd-cb img { width: 92px; height: 92px; object-fit: cover; object-position: 50% 12%; border: 2px solid var(--gold-dk); background: #e4d8c4; }
+.sd-cb b { font: 700 19px var(--font-serif); } .sd-cb q { font: 400 15px/1.35 var(--font-sans); color: var(--ink2); } .sd-cb em { font: 700 13px/1.3 var(--font-sans); font-style: normal; color: var(--teal-dk); }
+.sd-cb-ok, .sd-btn { min-height: 48px; padding: 4px 14px; border: 2px solid var(--gold); background: #f4ecdc; color: var(--ink); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.3); font: 700 16px/1.15 var(--font-serif); }
+.sd-cb-ok, .sd-btn.hot { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.3); }
+.sd-btn b { font: 700 15px/1.1 var(--font-serif); } .sd-btn small { font: 400 11px/1.2 var(--font-sans); opacity: 0.9; max-width: 128px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sd-btn[disabled] { opacity: 0.5; cursor: default; }
+.sd-btn.armed { background: #e3c26a; color: var(--ink); box-shadow: inset 0 0 0 3px #e3c26a, inset 0 0 0 4px var(--gold-dk); animation: shake 0.35s; }
+.sd-intent { position: absolute; z-index: 11; left: 50%; top: calc(var(--rim, 420px) - 14px); transform: translate(-50%, -100%); width: max-content; max-width: calc(100% - 20px); box-sizing: border-box; padding: 5px 12px 6px; text-align: center;
+  background: rgba(48, 34, 18, 0.9); box-shadow: inset 0 2px 0 -1px var(--gold), 2px 3px 0 rgba(20, 12, 8, 0.3); color: #faf3e2; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 2px 8px; }
+.sd-ik { font: 700 10px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-lt); }
+.sd-isay { font: 600 14px/1.3 var(--font-sans); } .sd-isay b { color: #ffd9a0; } .sd-isay i { font-style: normal; color: var(--gold-lt); }
+.sd-ichips { flex-basis: 100%; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.sd-ichip { padding: 1px 7px; border: 1px solid rgba(220, 192, 128, 0.6); font: 600 11.5px/1.4 var(--font-sans); color: #f4ecdc; } .sd-ichip b { color: #fff; }
+.sd-ichip.m-unrest { background: rgba(168, 86, 48, 0.55); } .sd-ichip.m-collapse { background: rgba(122, 44, 40, 0.6); } .sd-ichip.m-cash { background: rgba(61, 107, 47, 0.6); } .sd-ichip.m-heat { background: rgba(176, 46, 40, 0.55); }
+.sd-ichip.live { background: #b02e28; }
+.sd-intent.blocked { background: rgba(28, 78, 82, 0.92); }
+.sd-intent.firing { animation: df-fire 0.42s ease-in; }
+.sd-fdock { position: absolute; z-index: 14; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: stretch; pointer-events: none; }
+.sd-acts { display: flex; align-items: center; gap: 8px; padding: 0 10px 8px; pointer-events: auto; }
+.sd-acts .sd-btn { flex: 1; min-width: 0; }
+.sd-pile { position: relative; flex: none; width: 40px; height: 56px; padding: 0; border: 0; background: none; cursor: pointer; }
+.sd-pile img { width: 100%; height: 100%; border-radius: 4px; box-shadow: 0 0 0 1.5px var(--gold), 2px 3px 0 rgba(20, 12, 8, 0.4); }
+.sd-pile em { position: absolute; right: -6px; bottom: -6px; min-width: 22px; height: 22px; border-radius: 11px; background: var(--teal-dk); color: #faf3e2; border: 2px solid #faf3e2; font: 700 12px/18px var(--font-sans); font-style: normal; text-align: center; }
+.sd-inf { flex: none; display: flex; align-items: center; gap: 3px; padding: 6px 8px; background: rgba(250, 243, 226, 0.94); border: 1px solid var(--gold); }
+.sd-inf i { width: 11px; height: 11px; transform: rotate(45deg); background: #e4d8c4; box-shadow: inset 0 0 0 1px var(--gold-dk); } .sd-inf i.on { background: var(--teal); }
+.sd-inf b { margin-left: 4px; font: 700 13px var(--font-sans); }
+.sd-fhand { display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 0 8px calc(6px * var(--k)); pointer-events: auto; min-height: calc(134px * var(--k)); }
+.sd-fhand .dc { flex: none; width: min(calc(96px * var(--k)), calc((100vw - 24px) / var(--n) + 14px * var(--k))); height: calc(134px * var(--k)); margin: 0 calc(-7px * var(--k)); box-shadow: 3px 5px 0 rgba(20, 12, 8, 0.38); transition: transform 0.16s ease; }
+.sd-fhand .dc:nth-child(odd) { transform: rotate(-2deg); } .sd-fhand .dc:nth-child(even) { transform: rotate(2deg) translateY(3px); }
+.sd-fhand .dc:hover, .sd-fhand .dc:focus-visible { transform: translateY(-12px); z-index: 2; }
+.sd-fhand .dc .dc-txt { font-size: calc(10px * var(--k)); line-height: 1.2; -webkit-line-clamp: 3; }
+.sd-fhand .dc .dc-name { font-size: calc(12px * var(--k)); }
+.sd-fhand.dealing .dc { animation: sdDeal 0.34s cubic-bezier(.3,.7,.2,1) both; }
+.sd-fhand.dealing .dc:nth-child(1) { animation-delay: 0s; } .sd-fhand.dealing .dc:nth-child(2) { animation-delay: 0.06s; } .sd-fhand.dealing .dc:nth-child(3) { animation-delay: 0.12s; }
+.sd-fhand.dealing .dc:nth-child(4) { animation-delay: 0.18s; } .sd-fhand.dealing .dc:nth-child(5) { animation-delay: 0.24s; } .sd-fhand.dealing .dc:nth-child(6) { animation-delay: 0.3s; }
+@keyframes sdDeal { from { opacity: 0; translate: 0 70px; } to { opacity: 1; translate: 0 0; } }
+.sd-empty { margin: 0 0 30px; padding: 8px 14px; background: rgba(48, 34, 18, 0.88); color: #faf3e2; font: 600 14px var(--font-sans); }
+.sd-result { pointer-events: auto; margin: 0 8px 8px; padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center;
+  background: #faf3e2; border: 2px solid var(--gold); box-shadow: inset 0 0 0 4px #faf3e2, inset 0 0 0 5px var(--gold-dk), 0 -6px 30px rgba(20, 12, 8, 0.4); animation: sdTagIn 0.34s ease-out both; }
+.sd-result > b { font: 700 21px/1.2 var(--font-serif); } .sd-result > em { font: 400 14px/1.35 var(--font-sans); font-style: normal; color: var(--ink2); }
+.sd-result q { font: italic 400 14px/1.35 var(--font-serif); color: var(--ink2); }
+.sd-stamp { display: inline-block; padding: 3px 12px; border: 2px solid currentColor; font: 700 13px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; font-style: normal; color: #2f6b2f; transform: rotate(-3deg); }
+.sd-result.lost .sd-stamp { color: #a0342a; } .sd-result.settled .sd-stamp { color: var(--gold-dk); }
+.sd-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.sd-chip { padding: 2px 8px; font: 600 12.5px/1.4 var(--font-sans); border: 1px solid var(--gold); background: #f4ecdc; } .sd-chip.bad { color: #a0342a; border-color: rgba(160, 52, 42, 0.5); }
+.sd-rfoot { display: flex; gap: 12px; align-items: center; margin-top: 4px; width: 100%; }
+.sd-rfoot .df-close { flex: 1; min-height: 50px; border-radius: 0; font: 700 17px var(--font-serif); }
+.sd-log { position: absolute; z-index: 30; left: 50%; top: calc(var(--hud) + 62px); transform: translateX(-50%); max-width: 90%; padding: 6px 12px; background: #faf3e2; border: 1px solid var(--gold); box-shadow: 2px 3px 0 rgba(20, 12, 8, 0.3);
+  font: 600 13px/1.3 var(--font-sans); color: var(--ink); opacity: 0; transition: opacity 0.2s; pointer-events: none; text-align: center; bottom: auto; }
+.sd-log.on { opacity: 1; }
+#door.sd-fight .door-in.is-done .sd-log { display: none; }
+/* landscape fight: info left, actions right, the hand along the bottom of the column */
+#door.sd-fight.is-land .sd-fhead { left: 24px; right: auto; width: calc(var(--col-l) - 48px); top: calc(var(--hud) + 26px); grid-template-columns: 1fr auto; grid-template-areas: "who round" "gal gal"; padding: 12px 14px; }
+#door.sd-fight.is-land .sd-who { grid-area: who; } #door.sd-fight.is-land .sd-who b { font-size: 21px; } #door.sd-fight.is-land .sd-round { grid-area: round; } #door.sd-fight.is-land .sd-gal { grid-area: gal; justify-content: center; margin-top: 6px; }
+#door.sd-fight.is-land .sd-talk { left: 24px; width: calc(var(--col-l) - 48px); top: calc(var(--hud) + 150px); }
+#door.sd-fight.is-land .sd-acts { position: fixed; right: 24px; bottom: auto; top: calc(var(--hud) + 26px); width: calc(var(--col-r) - 48px); flex-wrap: wrap; padding: 14px; box-sizing: border-box;
+  background: #faf3e2; border: 2px solid var(--gold); box-shadow: inset 0 0 0 4px #faf3e2, inset 0 0 0 5px var(--gold-dk), 4px 5px 0 rgba(20, 12, 8, 0.35); }
+#door.sd-fight.is-land .sd-acts .sd-btn { flex: 1 1 100%; min-height: 56px; }
+#door.sd-fight.is-land .sd-fhand { margin: 0 var(--col-r) 0 var(--col-l); }
+#door.sd-fight.is-land .sd-result { margin: 0 calc(var(--col-r) + 8px) 12px calc(var(--col-l) + 8px); }
+#door.sd-fight.is-land .sd-log { top: var(--tbot, calc(var(--hud) + 14px)); left: 24px; transform: none; max-width: calc(var(--col-l) - 48px); text-align: left; }
+@media (prefers-reduced-motion: reduce) {
+  .sd-pin i, .sd-bunker .sd-swivel, .sd-phone.ringing svg, .sd-tag, .sd-fstage.enter .sd-opp, .sd-opp.shake, .sd-opp.lunge, .sd-opp.brace, .sd-fhand.dealing .dc { animation: none !important; }
+  .sd-fan, .sd-hands, .sd-tab { transition: none; }
+}
+/* the house view with the seated desk: the same MG-1 HUD, the stage column centred like the desk */
+.hv-root.is-seated .sd-hud { position: absolute; }
+.hv-root.is-seated .sd-menu { pointer-events: none; }
+.hv-root.is-seated.is-landscape .hv-clip { left: 0; }
+.hv-root.is-seated.is-landscape .hv-band { top: 126px; }
+.hv-root.is-seated.is-landscape::before { top: 100px; }
+.hv-root.is-seated:not(.is-landscape) .hv-card { top: 50%; }
+
+/* the deal sheet in cream (beats the old dark-teal .dz panel rules) */
+#dossier.sd-dossier .dz { background: none; background-image: none; border: 0; box-shadow: none; color: var(--ink); }
+#dossier.sd-dossier .dz::before, #dossier.sd-dossier .dz::after { display: none; }
+#dossier.sd-dossier .dz-head { display: flex; gap: 12px; align-items: flex-start; padding-right: 34px; }
+#dossier.sd-dossier .dz-art { width: 96px; height: auto; flex: none; border: 2px solid var(--gold); box-shadow: 2px 3px 0 rgba(20, 12, 8, 0.25); }
+#dossier.sd-dossier .dz-k { display: flex; flex-wrap: wrap; gap: 0 8px; }
+#dossier.sd-dossier .dz-k::before, #dossier.sd-dossier .dz-k::after, #dossier.sd-dossier .dz-k span::before, #dossier.sd-dossier .dz-k span::after { content: none; display: none; }
+#dossier.sd-dossier .dz-k .dz-reg { color: var(--teal-dk); }
+#dossier.sd-dossier h3 { color: var(--ink); text-shadow: none; }
+#dossier.sd-dossier .dz-body { color: var(--ink2); margin: 8px 0; }
+#dossier.sd-dossier .dz-enc { background: #efe4cc; border: 1px solid rgba(120, 90, 42, 0.55); color: var(--ink2); }
+#dossier.sd-dossier .dz-enc b { color: #7a2c28; }
+#dossier.sd-dossier .row-k { color: var(--gold-dk); }
+#dossier.sd-dossier .when { color: var(--ink); background: none; }
+#dossier.sd-dossier .fx-chip { border-radius: 0; font-weight: 700; border: 1px solid transparent; }
+#dossier.sd-dossier .fx-chip.good { background: #dcebe2; color: #1c4e52; border-color: rgba(31, 95, 99, 0.45); }
+#dossier.sd-dossier .fx-chip.bad { background: #f2ddd2; color: #8a2a22; border-color: rgba(160, 52, 42, 0.4); }
+#dossier.sd-dossier .fx-chip:not(.good):not(.bad) { background: #ece2d0; color: var(--ink2); border-color: rgba(120, 90, 42, 0.4); }
+#dossier.sd-dossier .fine { color: #6a5a44; font-style: italic; font-size: 13px; }
+#dossier.sd-dossier .btn-sign { box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.3); outline: 0; }
+#dossier.sd-dossier .dz-x { color: var(--gold-dk); }
+#dossier.sd-dossier a { color: var(--teal-dk); }
+/* seated fight, portrait: speech + intent in a column beside the visitor (ui.js placeSeatFight sets --tcol and the intent top); captions on the table */
+#door.sd-fight:not(.is-land) .sd-talk { left: var(--tcol, 50%); right: 8px; width: auto; top: calc(var(--hud) + 64px); }
+#door.sd-fight:not(.is-land) .sd-bubble { font-size: 13.5px; padding: 8px 11px 9px; }
+#door.sd-fight:not(.is-land) .sd-bubble::after { content: ""; position: absolute; left: -15px; top: 18px; border-right: 12px solid #30220f; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+#door.sd-fight:not(.is-land) .sd-intent { left: var(--tcol, 50%); right: 8px; width: auto; max-width: none; transform: none; justify-content: flex-start; text-align: left; }
+#door.sd-fight:not(.is-land) .sd-intent .sd-ichips { justify-content: flex-start; }
+.sd-caps { position: absolute; z-index: 11; left: 10px; right: 10px; top: var(--tbot, calc(var(--rim, 420px) + 8px)); display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
+.sd-caps .sd-cap { max-width: 520px; }
+#door.sd-fight:not(.is-land) .sd-log { top: var(--tbot, calc(var(--rim, 420px) + 8px)); }
+#door.sd-fight.is-land .sd-caps { left: 24px; right: auto; width: calc(var(--col-l) - 48px); top: auto; bottom: 24px; }
+@media (min-width: 501px) { #door.sd-fight:not(.is-land) .sd-bubble { font-size: 16px; } #door.sd-fight:not(.is-land) .sd-caps .sd-cap { font-size: 15px; } }
+#dossier.sd-dossier .exec-t, #dossier.sd-dossier .dz-stat span, #dossier.sd-dossier .dz-stat small { color: #6a5a44; }
+#dossier.sd-dossier .target { background: #f1e6cf; border: 1px solid rgba(120, 90, 42, 0.35); color: var(--ink); }
+#dossier.sd-dossier .target b, #dossier.sd-dossier .target { font-family: var(--font-sans); }
+#dossier.sd-dossier .target > span:first-child, #dossier.sd-dossier .target.mandate > span { color: #a0342a; }
+#dossier.sd-dossier .fy-bosslink { background: #f2ddd2; color: #8a2a22; border: 1px solid rgba(160, 52, 42, 0.45); }
+#dossier.sd-dossier .fy-bosslink i { color: #8a2a22; }
+#dossier.sd-dossier .avatar { box-shadow: 0 0 0 2px var(--gold); }
+#door.sd-fight.is-land .sd-intent { left: 24px; width: calc(var(--col-l) - 48px); max-width: none; transform: none; justify-content: flex-start; text-align: left; }
+#door.sd-fight.is-land .sd-intent .sd-ichips { justify-content: flex-start; }
+@media (max-width: 400px) { .sd-hud.is-fight .sd-nets { display: none; } #dossier.sd-dossier .dz-art { width: 72px; } #dossier.sd-dossier .dz h3 { font-size: 19px; } }
+#door.sd-fight .sd-result > b { color: var(--ink); text-shadow: none; }
+#door.sd-fight .sd-result.win > b { color: #1c4e52; } #door.sd-fight .sd-result.lost > b { color: #8a2a22; }
+.desk.sd .sd-fx { position: absolute; inset: 0; z-index: 16; pointer-events: none; }
+.desk.sd .sd-fx .stamp { left: 50%; top: 42%; }
+.desk.sd > .skip-btn { position: absolute; z-index: 17; left: auto; right: 12px; bottom: auto; top: calc(var(--hud) + 48px); transform: none; border-radius: 0; background: #faf3e2; color: var(--ink); border: 2px solid var(--gold); box-shadow: inset 0 0 0 3px #faf3e2, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.35); font: 700 15px var(--font-serif); }
+/* end of quarter: the next quarter's deals stay hidden until the report is read; reaction floats in matte labels */
+.desk.sd.is-closing .sd-tag, .desk.sd.is-closing .sd-pin, .desk.sd.is-closing .sd-lines, .desk.sd.is-closing .sd-ribbon, .desk.sd.is-closing .sd-hand, .desk.sd.is-closing .sd-bunker { visibility: hidden; }
+.desk.sd .sd-fx .float { border-radius: 0; padding: 4px 10px; font: 700 14px/1.25 var(--font-sans); max-width: 240px; background: #faf3e2; color: var(--ink); border: 1px solid var(--gold); box-shadow: 2px 3px 0 rgba(20, 12, 8, 0.35); text-shadow: none; }
+.desk.sd .sd-fx .float.bad { background: #f2ddd2; color: #8a2a22; border-color: rgba(160, 52, 42, 0.6); }
+.desk.sd .sd-fx .float.good, .desk.sd .sd-fx .float.cash { background: #dcebe2; color: #1c4e52; border-color: rgba(31, 95, 99, 0.55); }
+.desk.sd .sd-fx .float.big { font-size: 17px; }
+/* the HUD inside the house view carries its own palette (the desk vars live on .desk.sd) */
+.hv-root .sd-hud { --ink: #2a241c; --ink2: #382e22; --cream: #faf3e2; --cream2: #ece2d0; --gold: #ba9448; --gold-dk: #785a2a; --gold-lt: #dcc080; --teal: #1f5f63; --teal-dk: #1c4e52; }
+.hv-root .sd-hud .sd-sun { stroke: #1c4e52; fill: #1c4e52; }
+.hv-root .sd-hud .sd-ic { fill: none; }
+/* landscape seated turn: the cream side panel only comes in once the turn has landed */
+.hv-root.is-seated.is-landscape::before, .hv-root.is-seated.is-landscape .hv-band, .hv-root.is-seated.is-landscape .hv-dock { transition: opacity 0.3s ease; }
+.hv-root.is-seated.is-landscape.is-before::before, .hv-root.is-seated.is-landscape.is-before .hv-band { opacity: 0; }
+/* the fan's arc transform must beat the global .dc hover nudge (which would knock a card out of the arc) */
+#screen-desk .desk.sd .sd-fan .dc, #screen-desk .desk.sd .sd-fan .dc:not(.no):not(div):hover { transform: translate(calc(-50% + var(--x, 0px)), calc(var(--y, 0px) - var(--lift, 0px))) rotate(var(--r, 0deg)); }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -11779,7 +12162,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     var showSet = mode === "after" || mode === "turning";
     var h = '<div class="' + cls + '" id="hv-stage" role="dialog" aria-label="The house">';
     h += '<div class="hv-bg" aria-hidden="true"><img src="' + BASE + 'turn-bg.webp" alt="" draggable="false"><i class="e l"></i><i class="e r"></i></div>';
-    h += LD.renderHouseHud(state);
+    h += ui.seated && LD.seatHud ? LD.seatHud(state, { menu: false, nets: false }).replace('class="sd-menu"', 'class="sd-menu" tabindex="-1" aria-hidden="true"') : LD.renderHouseHud(state);
     h += '<div class="hv-clip"><div class="hv-rig">';
     h += '<div class="hv-plates" aria-hidden="true">' + frames + "</div>";
     if (showSet) h += LD.renderHouseFeed(state);
@@ -14721,6 +15104,14 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
   LD.renderDesk = renderDesk;
   LD.renderReport = renderReport;
   LD.renderDossier = renderDossier;
+  /* Seated desk (house rules): the short pin tag and the aria line for one offered deal. */
+  LD.dealTagInfo = function (state, dealId) {
+    var d = LD.dealById(dealId); if (!d) return null;
+    var kind = LD.dealKind(d), rid = state.world && state.world.pins ? state.world.pins[dealId] : null;
+    return { id: dealId, kind: kind, label: KIND_LABEL[kind], tag: d.choices ? d.choices.length + " responses" : cardTag(state, d), title: d.title,
+      region: rid, regionName: rid ? LD.REGION_NAMES[rid] : "", aria: pinAria(state, dealId) };
+  };
+  LD.renderExecDossier = renderExecDossier;
   LD.payloadChips = payloadChips;
   LD.deskAnchor = anchor;
   LD.deskAt = at;
@@ -15780,9 +16171,9 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     away: ["Out the back stairs, collar up. Next stop: {p}.", "Out the service exit before the press sees. {p}.", "Out the back, phone face-down. {p}."]
   };
   LD.fightIntroKey = function (state) { var fg = state && state.fy && state.fy.fight; return fg ? (fg.q || 0) + ":" + (fg.enc || "") + ":" + (fg.opp || "") : ""; };
-  LD.fightOpener = function (state, fg) {
+  LD.fightOpener = function (state, fg, atVenue) {
     fg = fg || (state && state.fy && state.fy.fight); if (!fg) return "";
-    var F = LD.fightFace(fg), venue = LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
+    var F = LD.fightFace(fg), venue = atVenue || LD.fightVenue(fg), era = Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3));
     return (F.opp && F.opp.why && LD.missionText ? LD.missionText(F.opp.why, fg) : F.opp && F.opp.why) || (FI_LINES[venue] || FI_LINES.home)[era - 1].replace("{s}", F.short || F.who).replace("{p}", F.place || "their turf");
   };
   /* ---------- Office strip entrance (hub): the visitor walks in to the desk, or you leave by the back door
@@ -15870,6 +16261,89 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     }
     h += "</div>";
     h += '<div class="df-log" id="df-log" aria-live="polite">' + esc(ui.log || "") + "</div>";
+    h += '<div class="fx" id="df-fx" aria-hidden="true"></div>';
+    return h + "</div>";
+  };
+  /* ---------- House rules, seated desk: the fight across the table (first person). Same ids and hooks as renderFight;
+     the visitor sits in the chair opposite, the played card lies on the table, the hand fans up over your own hands. ---------- */
+  LD.renderSeatedFight = function (state, ui) {
+    ui = ui || {};
+    var f = state.fy, fg = f.fight; if (!fg) return "";
+    var it = fg.done ? null : LD.fightIntent(state);
+    var F = LD.fightFace(fg), venue = LD.fightVenue(fg);
+    var how = fg.done ? fg.done.how || (fg.done.win ? "crushed" : fg.done.settled ? "paid" : "walked") : null, out = fg.done ? fg.done.out : null;
+    var base = !fg.done ? "idle" : out === "martyred" || how === "walked" ? "attack" : out === "bought" || out === "converted" || out === "deal" || how === "paid" ? (F.paid ? "paid" : "idle") : "defeated";
+    var h = '<div class="door-in sd-fin' + (fg.boss ? " is-boss" : fg.elite ? " is-elite" : "") + (fg.done ? " is-done" : "") + '" data-enc="' + fg.enc + '" data-venue="' + venue + '">';
+    h += '<div class="sd-bg" aria-hidden="true"></div>';
+    var card = "";
+    if (ui.lastCard && !fg.done) card = '<div class="sd-tcard' + (ui.landing ? " is-landing" : "") + '" id="sd-tcard">' + cardFace(ui.lastCard.id, ui.lastCard.up, { cls: "sd-tc" }).replace(/^<button/, "<div").replace(/<\/button>$/, "</div>") + "</div>";
+    else card = '<div class="sd-tcard is-empty" id="sd-tcard"></div>';
+    h += '<div class="df-stage sd-fstage' + (ui.enter ? " enter" : "") + '" data-venue="' + venue + '">' +
+      LD.seatStage({ opp: LD.seatOppHtml(F.art, base, POSES.concat(F.paid ? ["paid"] : [])), card: card, youId: "sc-you", hands: "dip" }) + "</div>";
+    h += LD.seatHud(state, { fight: fg, menu: false, nets: false }).replace('class="sd-menu"', 'class="sd-menu" id="df-help" aria-label="How fights work"').replace(' aria-label="Menu"', "");
+    /* who, round, gallery */
+    var g = Math.max(-3, Math.min(3, fg.gal | 0)), gal = '<span class="df-gal sd-gal" role="meter" aria-label="Gallery ' + (g > 0 ? "+" : "") + g + '" aria-valuemin="-3" aria-valuemax="3" aria-valuenow="' + g + '"><small>Them</small>';
+    for (var gi = -3; gi <= 3; gi++) gal += '<i class="' + (gi === 0 ? "mid " : "") + (gi === g ? "on" : (gi < 0 && g <= gi) || (gi > 0 && g >= gi) ? "lit" : "") + '"></i>';
+    gal += "<small>You</small></span>";
+    h += '<div class="sd-fhead"><span class="sd-who"><small>' + esc(fg.boss ? "Boss" : fg.elite ? "Hearing" : "At your desk") + "</small><b>" + esc(F.who) + (fg.cb ? ' <i title="A familiar face">★</i>' : "") + "</b><em>" + esc(F.role) + "</em></span>" + gal +
+      '<span class="sd-round" aria-label="Round ' + fg.round + " of " + fg.rounds + '"><small>Round</small><b>' + Math.min(fg.round, fg.rounds) + "<i>/" + fg.rounds + "</i></b></span></div>";
+    var bt = F.opp && !(ui.cap && ui.cap.t && !fg.done) ? bubbleText(state, fg, ui) : null;
+    var capT = "";
+    if (fg.cb && !fg.done && fg.round === 1 && !fg.played && !ui.cbHide) {
+      var cb = fg.cb, im = cb.art ? "assets/fight/" + cb.art + ".webp" : "";
+      h += '<div class="sd-cb' + (cb.inset ? " is-witness" : "") + '" id="sc-cb" role="note"><small>★ A familiar face ★</small>' + (im ? '<img src="' + im + '" alt="" draggable="false">' : "") +
+        "<b>" + esc(cb.who) + "</b><q>" + esc(cb.line) + "</q><em>" + esc(cb.effect) + '</em><button type="button" class="sd-cb-ok" id="sc-cb-ok">Face them ▸</button></div>';
+    } else if (!fg.done && !fg.played && (fg.round | 0) <= 1 && !(ui.cap && ui.cap.t)) capT = LD.fightOpener(state, fg, "home");
+    h += '<div class="sd-talk">';
+    if (bt && bt.t) h += '<div class="sd-bubble k-' + bt.k + '" id="sc-bubble" role="status" aria-live="polite"><b>' + esc(F.who) + "</b>" + esc(bt.t) + "</div>";
+    h += '</div><div class="sd-caps">';
+    if (capT) h += '<div class="sd-cap" id="sc-why" role="note"><span>' + esc(capT) + "</span></div>";
+    if (ui.cap && ui.cap.t && !fg.done) h += '<div class="sd-cap" id="sc-cap" role="note"><span>' + esc(ui.cap.t) + "</span></div>";
+    h += "</div>";
+    if (it) {
+      var thr = it.through, pk = LD.fightPeek ? LD.fightPeek(state) : null;
+      h += '<div class="df-intent sd-intent m-' + it.meter + (thr ? "" : " blocked") + '" id="df-intent" aria-live="polite"><span class="sd-ik">Next</span>' +
+        '<span class="sd-isay">' + esc(F.short) + " will <b>" + esc(it.label) + "</b>" + (F.opp && F.opp.sig === it.k ? ' <i title="Signature move">★</i>' : "") + "</span>" +
+        '<span class="sd-ichips"><span class="sd-ichip m-' + it.meter + '">' + it.n + " → " + esc(METER_NAME[it.meter] || it.meter) + (it.meter === "collapse" ? " ×½" : "") + "</span>" +
+        '<span class="sd-ichip">Block ' + it.block + " · <b>" + thr + "</b> through</span>" +
+        (it.rtext ? '<span class="sd-ichip' + (it.rider && it.at && thr >= it.at ? " live" : "") + '">' + esc(it.rtext) + "</span>" : "") +
+        (it.notes.length ? '<span class="sd-ichip">' + esc(it.notes.join(" · ")) + "</span>" : "") +
+        (pk ? '<span class="sd-ichip">Then: ' + esc(pk.label) + " " + pk.n + "</span>" : "") + "</span></div>";
+    }
+    var pileN = fg.done ? f.deck.length : fg.draw.length;
+    h += '<div class="sd-fdock' + (fg.done ? " is-out" : "") + '">';
+    if (fg.done) {
+      var d = fg.done, L = d.leaks, bits = [];
+      if (L.cash) bits.push("−$" + L.cash + "M"); if (L.unrest) bits.push("unrest +" + L.unrest); if (L.collapse) bits.push("collapse +" + L.collapse); if (L.heat) bits.push("Heat +" + L.heat);
+      var O2 = F.opp, remember = O2 && !O2.boss && O2.act < 3 && how !== "walked", aside = LD.execAside ? LD.execAside(state) : null;
+      var stampT = (out && LD.OUT_LABEL && LD.OUT_LABEL[out]) || LD.HOW_LABEL[how] || (d.win ? "Deal closed" : d.settled ? "Settled" : "They got through");
+      var title = (d.win ? "You won the room" : d.settled ? "Settled for $" + d.cost + "M" : "They got through") + (remember ? " · They'll remember this" : "");
+      var sub = O2 && out && LD.OUT_NOTE && LD.OUT_NOTE[out] ? LD.OUT_NOTE[out] : how === "walked" && O2 ? F.short + " walks out with what they came for." : "";
+      var notes = d.win ? (d.notes.length ? d.notes : ["The deal closes."]) : d.settled ? ["No bonus, no more damage."].concat(d.notes) : ["The deal still signs."].concat(d.notes);
+      h += '<div class="df-result sd-result ' + (d.win ? "win" : d.settled ? "settled" : "lost") + '" role="status"><i class="sd-stamp h-' + (how || "lost") + (out ? " o-" + out : "") + '">' + esc(stampT) + "</i>" +
+        "<b>" + esc(title) + "</b>" + (sub ? "<em>" + esc(sub) + "</em>" : "") + (aside ? '<q class="sc-aside">' + esc(aside.t) + "</q>" : "") +
+        '<span class="sd-chips">' + notes.filter(Boolean).map(function (n) { return '<span class="sd-chip good">' + esc(n) + "</span>"; }).join("") +
+        (bits.length ? '<span class="sd-chip bad df-leaks">This fight cost you: ' + esc(bits.join(", ")) + "</span>" : "") + "</span>" +
+        '<span class="sd-rfoot"><button type="button" class="sd-pile" id="df-deck" aria-label="Your deck, ' + pileN + ' cards. Open the deck list"><img src="assets/ui/card-back.webp" alt="" draggable="false"><em>' + pileN + "</em></button>" +
+        '<button type="button" class="btn btn-coral df-close" id="df-close">Show them out ▸</button></span></div>';
+    } else {
+      var sc = LD.fightSettleCost(state);
+      h += '<div class="sd-acts"><button type="button" class="sd-pile" id="df-deck" aria-label="Draw pile, ' + pileN + ' cards left. Open the deck list"><img src="assets/ui/card-back.webp" alt="" draggable="false"><em>' + pileN + "</em></button>" +
+        '<span class="sd-inf" aria-label="Influence ' + fg.inf + " of " + LD.DOOR.INF + '">';
+      for (var i = 0; i < Math.max(fg.inf, LD.DOOR.INF); i++) h += '<i class="' + (i < fg.inf ? "on" : "") + '"></i>';
+      h += "<b>" + fg.inf + "/" + LD.DOOR.INF + "</b></span>" +
+        '<button type="button" class="sd-btn df-settle" id="df-settle"' + (state.cash < sc ? " disabled" : "") + "><b>Settle $" + sc + "M</b><small>" + (state.cash < sc ? "Not enough cash" : "Pay it off") + "</small></button>" +
+        '<button type="button" class="sd-btn hot df-end" id="df-end"><b>End round</b><small>' + (it ? (it.through ? esc(it.label) + " hits " + it.through : "Fully blocked") : "") + (fg.round >= fg.rounds ? " · last" : "") + "</small></button></div>";
+      h += '<div class="df-hand sd-fhand" role="group" aria-label="Your hand" style="--n:' + Math.max(1, fg.hand.length) + '">';
+      fg.hand.forEach(function (u, k) {
+        var ci = LD.fightCardInfo(state, u); if (!ci) return;
+        h += cardFace(ci.id, ci.up, { attrs: ' data-u="' + u + '" style="--c:' + k + '"', why: ci.why, cost: ci.o.cash ? (ci.cost || null) : ci.cost, p: ci.p, d: ci.d, cls: ui.flashU === u ? "pop" : "" });
+      });
+      if (!fg.hand.length) h += '<p class="sd-empty">No cards left. End the round.</p>';
+      h += "</div>";
+    }
+    h += "</div>";
+    h += '<div class="sd-log df-log" id="df-log" aria-live="polite">' + esc(ui.log || "") + "</div>";
     h += '<div class="fx" id="df-fx" aria-hidden="true"></div>';
     return h + "</div>";
   };
@@ -16050,6 +16524,214 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     return out;
   };
 })(typeof globalThis !== "undefined" ? globalThis : this);
+</script><script>/* Last Dividend — house rules seated desk (B: first person at the 1978 desk). Render + framing maths only; ui.js drives it.
+   Only for house runs with Mara (her 1978 turn set is the only one painted). Shop runs never call this. */
+(function (root) {
+  var LD = root.LD || (root.LD = {});
+  var BASE = "assets/house/1978/";
+  function esc(s) { return LD.escapeHtml ? LD.escapeHtml(s) : String(s == null ? "" : s); }
+
+  /* Layers live in v6 plate space (720x1280): room-clean + mara-ots == turn frame 1. Boxes are [x, y, w, h]. */
+  var SEAT = LD.SEAT = {
+    W: 720, H: 1280, FP: [100, 40, 720, 1142],
+    room: BASE + "sd-room.webp",
+    table: { src: BASE + "sd-table.webp", box: [0, 545, 720, 597] },
+    hands: { rest: { src: BASE + "sd-hands-rest-mara.webp", box: [100, 770, 614, 372] }, dip: { src: BASE + "sd-hands-dip-mara.webp", box: [100, 879, 620, 263] } },
+    mara: { src: BASE + "sd-mara-ots.webp", box: [181, 389, 539, 891] },
+    /* map pins on the painted table map. p: 1 = a painted brass pin sits there; 0 = we add one. */
+    pins: { na: [257, 645, 1], sam: [294, 702, 1], eu: [380, 634, 1], me: [437, 651, 1], ea: [457, 651, 1], af: [381, 699, 0], sa: [452, 681, 0], oc: [507, 729, 0] },
+    /* region hit areas on the painted map (ellipses cx, cy, rx, ry) */
+    regions: { na: [252, 650, 40, 28], sam: [296, 716, 22, 34], eu: [378, 640, 24, 18], af: [384, 704, 24, 32], me: [424, 666, 14, 14], sa: [452, 684, 14, 16], ea: [470, 650, 34, 22], oc: [508, 732, 24, 16] },
+    /* seated visitor: each opponent's idle sprite scaled so the waist lands under the table rim (scripts/seated_assets.py). [x, y, w, h] */
+    opp: {"ashby":[205.3,254.1,283.4,492.9],"benny":[203.4,284.0,293.3,649.1],"brennan":[202.1,284.0,319.7,463.3],"crowe":[213.7,284.0,263.4,460.9],"dana":[191.0,284.0,303.5,671.9],"delacroix":[229.3,284.0,240.4,461.0],"dunn":[222.5,284.0,242.5,461.0],"gil":[220.2,280.5,270.0,648.8],"grace":[195.0,284.0,311.1,645.3],"gray":[228.4,284.0,240.5,462.7],"hale":[197.7,284.0,307.3,460.9],"harrow":[217.8,284.0,242.4,465.7],"honoria":[235.5,284.0,209.3,647.6],"june":[210.1,271.8,272.2,473.1],"mickey":[220.2,281.0,247.6,464.0],"mina":[190.2,284.0,311.4,483.6],"moretti":[214.6,278.1,244.3,467.9],"odell":[217.8,284.0,269.5,462.0],"okafor":[233.6,284.0,225.4,464.6],"pip":[202.5,284.0,297.4,643.0],"pops":[222.6,284.0,330.4,650.1],"rosa":[227.3,265.9,301.7,479.1],"sorel":[185.2,284.0,327.5,461.0],"theo":[203.5,284.0,284.9,651.2],"ticker":[201.5,284.0,279.5,461.0],"varga":[151.9,265.9,409.4,479.3]},
+    table_card: [345, 772],
+    bunkerAt: [632, 1000]
+  };
+  LD.seatedOn = function (state) { return !!(state && LD.isHouse && LD.isHouse(state) && state.executiveId === "mara"); };
+  LD.seatLandscape = function (W, H) { return W >= H * 1.2; };
+  /* First-person framing: the desk view. Portrait keeps both hands and the map near the centre; landscape stands the plate in the
+     same 528px-tall column the live turn rig uses, so the pull-back lands on it exactly. */
+  LD.seatFrame = function (W, H) {
+    var x0 = SEAT.FP[0], y1 = SEAT.FP[3], s, tx, ty;
+    if (LD.seatLandscape(W, H)) { s = H / (y1 - 203); tx = W / 2 - ((x0 + 720) / 2) * s; ty = H - y1 * s;
+      /* keep a seated visitor's head (plate y ~260) clear of the 100px HUD */
+      ty = Math.min(0, Math.max(ty, 124 - 260 * s)); return { s: s, tx: tx, ty: ty, land: true }; }
+    s = Math.max(W / (720 - x0), H / (y1 - SEAT.FP[1]));
+    tx = W / 2 - 410 * s; tx = Math.min(-x0 * s, Math.max(W - 720 * s, tx)); ty = H - y1 * s;
+    return { s: s, tx: tx, ty: ty, land: false };
+  };
+  /* The live turn rig (ui.js sizeHouseRig) for the same viewport: the end of the pull-back. */
+  LD.seatRigFrame = function (W, H) {
+    var s, tx, ty;
+    if (LD.seatLandscape(W, H)) { s = H / 1090; return { s: s, tx: (W - 720 * s) / 2, ty: -190 * s, land: true }; }
+    s = Math.min(W / 658, Math.max(W / 720, H / 1280));
+    tx = Math.max(W - 720 * s, Math.min(0, W - 713 * s)); ty = H - 1280 * s;
+    return { s: s, tx: tx, ty: ty, land: false };
+  };
+  LD.seatLerpFrame = function (a, b, t) {
+    return { s: Math.exp(Math.log(a.s) + (Math.log(b.s) - Math.log(a.s)) * t), tx: a.tx + (b.tx - a.tx) * t, ty: a.ty + (b.ty - a.ty) * t, land: a.land };
+  };
+  LD.seatToScreen = function (f, x, y) { return [x * f.s + f.tx, y * f.s + f.ty]; };
+  /* The column a landscape stage is clipped to (same as the rig's plate width). */
+  LD.seatColumn = function (W, H) { var r = LD.seatRigFrame(W, H); return [r.tx, r.tx + 720 * r.s]; };
+  /* Pull-back curves (t 0 = desk, 1 = turn frame 1). Mara rises in from below as a near object; the hands drop out. */
+  LD.seatPullAt = function (t) {
+    var e = t * t * (3 - 2 * t), ma = Math.max(0, Math.min(1, (t - 0.18) / 0.14)); ma = ma * ma * (3 - 2 * ma);
+    var hu = Math.max(0, Math.min(1, (t - 0.12) / 0.2)); hu = hu * hu * (3 - 2 * hu);
+    return { e: e, mara: { a: ma, k: 1 + 0.55 * Math.pow(1 - t, 2), dy: 760 * Math.pow(1 - t, 2.2), blur: 5 * Math.pow(1 - t, 2) },
+      hands: { a: 1 - hu, dy: 1100 * Math.pow(t, 1.3), blur: 5 * Math.min(1, t * 4) } };
+  };
+  /* Pin tags: where each tag sits relative to its pin, in screen px at scale 1 (tag centre). */
+  var TAG_AT = { na: [-62, -118], sam: [-58, 92], eu: [-6, -150], me: [58, -128], ea: [76, -96], af: [6, 104], sa: [74, 82], oc: [70, 106] };
+  LD.seatTagAt = function (rid, k) { var o = TAG_AT[rid] || [0, -110]; return [o[0] * k, o[1] * k]; };
+
+  /* ---------- MG-1 HUD (locked): cream stepped bar, cash, vials, network jewels, quarter ---------- */
+  var ICON = {
+    unrest: '<path d="M5 15v-4a2 2 0 0 1 4 0v4M11 15v-5a2 2 0 0 1 4 0v5M17 15v-4a2 2 0 0 1 4 0v4" /><circle cx="7" cy="6.5" r="1.7"/><circle cx="13" cy="5" r="1.7"/><circle cx="19" cy="6.5" r="1.7"/>',
+    collapse: '<path d="M4 18h18M7 18V9l4-3v12M13 18V4l5 4v10" />',
+    scrutiny: '<circle cx="11" cy="10" r="5.5"/><path d="M15 14l5 5"/>',
+    air: '<path d="M4 9h11a3 3 0 1 0-3-3M4 13h15a3 3 0 1 1-3 3M4 17h7"/>',
+    water: '<path d="M12 3c3 5 6 8 6 11a6 6 0 0 1-12 0c0-3 3-6 6-11z"/>',
+    power: '<path d="M13 2L5 14h6l-1 8 8-12h-6z"/>',
+    food: '<path d="M12 21V9M12 9c0-4 3-6 6-6 0 4-3 6-6 6zM12 13c0-3-2-5-6-5 0 3 2 5 6 5z"/>'
+  };
+  function ico(k, cls) { return '<svg class="' + (cls || "sd-ic") + '" viewBox="0 0 24 24" aria-hidden="true">' + ICON[k] + "</svg>"; }
+  function sunburst() {
+    var h = '<svg class="sd-sun" viewBox="0 0 24 24" aria-hidden="true">';
+    for (var i = 0; i < 12; i++) { var a = i * Math.PI / 6; h += '<line x1="' + (12 + Math.cos(a) * 3.6).toFixed(2) + '" y1="' + (12 + Math.sin(a) * 3.6).toFixed(2) + '" x2="' + (12 + Math.cos(a) * 9.5).toFixed(2) + '" y2="' + (12 + Math.sin(a) * 9.5).toFixed(2) + '"/>'; }
+    return h + '<circle cx="12" cy="12" r="2.8"/></svg>';
+  }
+  function vial(k, label, v, frac, tip) {
+    return '<span class="sd-meter m-' + k + '" data-tip="' + esc(tip) + '" tabindex="0"><span class="sd-vial" style="--f:' + Math.max(0.06, Math.min(1, frac)).toFixed(3) + '"><i></i>' + ico(k) + "</span>" +
+      '<span class="sd-mv"><b>' + v + "</b><small>" + label + "</small></span></span>";
+  }
+  var NET_NAME = { air: "Air", water: "Water", power: "Power", food: "Food" };
+  LD.seatHud = function (state, o) {
+    o = o || {};
+    var fg = o.fight || null, era = LD.eraOf ? LD.eraOf(state) : 1, year = LD.ERAS && LD.ERAS[era] ? LD.ERAS[era].year : "";
+    var fq = state.fy && state.fy.rules ? state.fy.rules.finalQ : 12;
+    var h = '<header class="sd-hud' + (fg ? " is-fight" : "") + '" aria-label="Run meters">';
+    h += '<button type="button" class="sd-menu"' + (o.menu === false ? "" : ' id="btn-menu"') + ' aria-label="Menu">' + sunburst() + "</button>";
+    h += '<span class="sd-cash" data-tip="Cash on hand." tabindex="0"><small>Cash</small><b>' + (LD.formatMoney ? LD.formatMoney(state.cash) : "$" + state.cash + "M") + "</b></span>";
+    h += '<span class="sd-meters">' + vial("unrest", "Unrest", state.unrest | 0, (state.unrest | 0) / 100, "Unrest " + (state.unrest | 0) + "/100. At 100 the street comes in.") +
+      vial("collapse", "Collapse", state.collapse | 0, (state.collapse | 0) / 100, "Collapse " + (state.collapse | 0) + "/100. The world's clock.");
+    if (fg) { var sc = Math.max(0, fg.scrut); h += vial("scrutiny", "Scrutiny", '<i id="df-scrut-n">' + sc + "</i>", fg.max ? sc / fg.max : 0, "Scrutiny " + sc + "/" + fg.max + ". Bring it to 0 to win."); }
+    h += "</span>";
+    h += '<span class="sd-nets">';
+    ["air", "water", "power", "food"].forEach(function (id) {
+      var lvl = LD.gridLevel ? LD.gridLevel(state, id) : 0, lab = LD.gridLabel ? LD.gridLabel(lvl) : "";
+      h += '<button type="button" class="sd-net g' + lvl + '"' + (o.nets === false ? " disabled" : ' data-net="' + id + '"') + ' aria-label="Public ' + NET_NAME[id] + ": " + esc(lab) + '">' + ico(id) + "</button>";
+    });
+    h += "</span>";
+    h += '<span class="sd-q" aria-label="Quarter ' + state.turn + " of " + fq + '"><b>Q' + state.turn + "<i>/" + fq + "</i></b><small>" + esc(year) + "</small></span>";
+    return h + "</header>";
+  };
+
+  /* ---------- the stage: the room plate and its layers inside a 720x1280 rig ---------- */
+  function img(cls, L, extra) {
+    var b = L.box;
+    return '<img class="' + cls + '" src="' + L.src + '" alt="" draggable="false" style="left:' + b[0] + "px;top:" + b[1] + "px;width:" + b[2] + "px;height:" + b[3] + 'px"' + (extra || "") + ">";
+  }
+  function oppHtml(art, base, poses, cls) {
+    var p = SEAT.opp[art] || SEAT.opp.pip;
+    var h = '<div class="sd-opp ' + (cls || "") + '" id="sc-opp" data-art="' + esc(art) + '" data-base="' + base + '" data-pose="' + base + '" style="left:' + p[0] + "px;top:" + p[1] + "px;width:" + p[2] + "px;height:" + p[3] + 'px" aria-hidden="true">';
+    poses.forEach(function (q) { h += '<img class="p-' + q + '" src="assets/fight/opp-' + art + "-" + q + '.webp" alt="" draggable="false">'; });
+    return h + "</div>";
+  }
+  LD.seatOppHtml = oppHtml;
+  /* o: { opp: html, hands: "rest"|"dip", card: html, mara: bool } */
+  LD.seatStage = function (o) {
+    o = o || {};
+    var h = '<div class="sd-clip"><div class="sd-rig" aria-hidden="true">';
+    h += '<img class="sd-room" src="' + SEAT.room + '" alt="" draggable="false">';
+    if (o.opp) h += o.opp;
+    h += img("sd-table", SEAT.table);
+    h += o.under || "";
+    if (o.card) h += o.card;
+    h += img("sd-mara", SEAT.mara);
+    var you = o.youId ? ' id="' + o.youId + '"' : "";
+    if (o.hands !== "dip") h += img("sd-hands sd-hands-rest", SEAT.hands.rest);
+    if (o.hands !== "rest") h += img("sd-hands sd-hands-dip", SEAT.hands.dip).replace("<img ", "<img" + you + " ");
+    return h + "</div></div>";
+  };
+
+  /* ---------- the desk ---------- */
+  function pinHtml(state, info, i, sel) {
+    var p = SEAT.pins[info.region] || SEAT.pins.eu;
+    return '<button type="button" class="sd-pin k-' + info.kind + (p[2] ? "" : " add") + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-plate="' + p[0] + "," + p[1] + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><i></i></button>';
+  }
+  function tagHtml(info, i, sel) {
+    return '<button type="button" class="sd-tag k-' + info.kind + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-rid="' + esc(info.region || "") + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><b>' + esc(info.label) + "</b><em>" + esc(info.tag) + "</em></button>";
+  }
+  function deckCards(state) {
+    var f = state.fy; if (!f || !f.deck) return "";
+    var h = "";
+    f.deck.forEach(function (c, i) { h += LD.cardFace(c.id, c.up, { attrs: ' data-deck="' + i + '"', cls: "sd-fc" }); });
+    return h;
+  }
+  function quarterList(state, infos, sel) {
+    var deal = state.phase === "deal";
+    var h = '<section class="sd-panel sd-quarter" aria-label="This quarter"><h4>' + (deal ? "This quarter · pick 1 of " + infos.length : "This quarter · deal signed") + "</h4>";
+    if (deal) {
+      h += '<ul class="sd-qlist">';
+      infos.forEach(function (x) {
+        h += '<li><button type="button" class="sd-qrow k-' + x.kind + (sel === x.id ? " sel" : "") + '" data-deal="' + x.id + '"><i class="sd-qpin"></i><span><b>' + esc(x.label) + "</b><small>" + esc(x.regionName ? x.regionName + " · " + x.title : x.title) + "</small></span><em>" + esc(x.tag) + "</em></button></li>";
+      });
+      h += "</ul>";
+    } else if (state.lastDealId && LD.dealById(state.lastDealId)) {
+      h += '<p class="sd-signed">Signed: <b>' + esc(LD.dealById(state.lastDealId).title) + "</b></p>";
+    }
+    var canEnd = state.phase === "bunker" && !(LD.fyBusy && LD.fyBusy(state));
+    h += '<button type="button" class="sd-endq" id="btn-endq"' + (canEnd ? "" : " disabled") + "><b>End quarter</b><small>" + (canEnd ? "Close Q" + state.turn + " and read the report" : "Pick a deal on the map first") + "</small></button>";
+    return h + "</section>";
+  }
+  /* ui: { sel: {deal, region, net}, fan: bool, land: bool, dossier: html, peek: bool, memo: bool } */
+  LD.renderSeatedDesk = function (state, ui) {
+    ui = ui || {};
+    var sel = ui.sel || {}, deal = state.phase === "deal" && !state.ended;
+    var infos = deal ? state.offered.map(function (id) { return LD.dealTagInfo(state, id); }).filter(Boolean) : [];
+    var hasSel = !!(sel.deal || sel.region || sel.net);
+    var h = '<div class="desk sd' + (ui.fan ? " is-fan" : "") + (hasSel ? " has-sel" : "") + (ui.land ? " is-land" : "") + (deal ? " is-deal" : " is-bunker") + (ui.closing ? " is-closing" : "") + '" data-phase="'  + state.phase + '">';
+    h += '<div class="sd-bg" aria-hidden="true"></div>';
+    h += LD.seatStage({ under: "" });
+    /* screen-space layer: lines, pins, tags, region taps */
+    h += '<div class="sd-ui">';
+    h += '<svg class="sd-lines" aria-hidden="true"></svg>';
+    Object.keys(SEAT.regions).forEach(function (rid) {
+      var r = SEAT.regions[rid], st = state.world && state.world.regions ? state.world.regions[rid] : null;
+      var lvl = st && LD.stressLabel ? LD.stressLabel(st.stress) : "calm";
+      h += '<button type="button" class="sd-region s-' + lvl + (st && st.owned ? " owned" : "") + (sel.region === rid ? " sel" : "") + '" data-region="' + rid + '" data-plate="' + r[0] + "," + r[1] + '" data-r="' + r[2] + "," + r[3] + '" aria-label="' + esc(LD.REGION_NAMES[rid] + (st && st.owned ? ", yours" : "") + ", " + lvl) + '">' + (st && st.owned ? '<i class="sd-flag"></i>' : "") + "</button>";
+    });
+    infos.forEach(function (x, i) { h += pinHtml(state, x, i, sel.deal); });
+    infos.forEach(function (x, i) { h += tagHtml(x, i, sel.deal); });
+    h += "</div>";
+    if (!ui.land) h += '<div class="sd-ribbon" role="status">' + (deal ? "Q" + state.turn + " · pick 1 of " + infos.length + " deals on the map" : state.ended ? "The run is over" : "Q" + state.turn + " · deal signed") + "</div>";
+    h += LD.seatHud(state);
+    /* landscape side panels: the dossier (left), this quarter (right) */
+    if (ui.land) h += quarterList(state, infos, sel.deal);
+    h += '<aside class="dossier sd-dossier' + (hasSel ? " on" : "") + '" id="dossier" aria-live="polite">' + (ui.dossier || "") + "</aside>";
+    /* chair-arm buttons */
+    var n = state.fy && state.fy.deck ? state.fy.deck.length : 0;
+    var rd = state.fy ? (state.fy.drawer || []).filter(function (d) { return LD.itemReady && LD.itemReady(state, d); }).length : 0;
+    h += '<div class="sd-left">';
+    if (state.fy) h += '<button type="button" class="sd-brass sd-case" id="btn-portfolio" aria-label="Briefcase">' + '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="12" rx="1.5"/><path d="M9 7V5h6v2M3 12h18"/></svg><small>Case</small>' + (rd ? "<em>" + rd + "</em>" : "") + "</button>";
+    if (state.fy) h += '<button type="button" class="sd-brass sd-phone' + (state.fy.memo ? " ringing" : "") + '" id="btn-phone" aria-label="Phone">' + '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9c0-3 3-5 7-5s7 2 7 5l-3 1-1-2H9L8 10z"/><path d="M7 11h10l2 8H5z"/><circle cx="12" cy="15" r="2"/></svg><small>Phone</small></button>';
+    if (!ui.land && state.phase === "bunker" && !state.ended) h += '<button type="button" class="sd-endq sd-endq-p" id="btn-endq"' + (LD.fyBusy && LD.fyBusy(state) ? " disabled" : "") + "><b>End quarter</b></button>";
+    h += "</div>";
+    h += '<button type="button" class="sd-bunker" id="house-peek" aria-label="Turn to the bunker"' + (ui.peek ? "" : " hidden") + '><span class="sd-swivel" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95"/><path d="M19.5 3.5v5h-5"/></svg></span><small>Bunker</small>' + (ui.badge ? "<em>" + ui.badge + "</em>" : "") + "</button>";
+    /* the hand: a closed tab (cards down) or the fan (cards up) */
+    h += '<div class="fx sd-fx" id="fx" aria-hidden="true"></div>';
+    h += '<div class="sd-hand" id="sd-hand">';
+    h += '<button type="button" class="sd-tab" id="sd-tab" aria-expanded="' + (ui.fan ? "true" : "false") + '" aria-label="Your deck, ' + n + ' cards">' +
+      '<span class="sd-backs" aria-hidden="true">' + [0, 1, 2, 3].map(function (i) { return '<img src="assets/ui/card-back.webp" alt="" draggable="false" style="--c:' + i + '">'; }).join("") + "</span>" +
+      '<b class="sd-tabl">Deck · ' + n + ' <i aria-hidden="true">' + (ui.fan ? "▼" : "▲") + "</i></b></button>";
+    h += '<div class="sd-fan" id="sd-fan" role="group" aria-label="Your deck">' + (ui.fan ? deckCards(state) : "") + "</div>";
+    h += '<button type="button" class="sd-all" id="run-deck"' + (ui.fan ? "" : " hidden") + ">Deck list</button>";
+    h += "</div>";
+    return h + "</div>";
+  };
+
+})(typeof window !== "undefined" ? window : globalThis);
 </script><script>/* Office 40s: sprite atlas rects (generated by art-src/office40/pack2.py; do not hand-edit). */
 (function () {
   "use strict";
@@ -17761,6 +18443,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
 
   function renderDesk(from) {
     syncEra("desk");
+    if (LD.seatedOn && LD.seatedOn(state)) { renderSeatedDesk(from); return; }
     var el = $("screen-desk");
     el.innerHTML = LD.renderDesk(state, uiOpts());
     bindDesk();
@@ -17829,6 +18512,232 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     });
   }
 
+
+  /* ---------- House rules, seated desk (B): first person at the 1978 desk. Only LD.seatedOn(state) runs reach this. ---------- */
+  var SD = { fan: false, t: 0, raf: 0, pull: null };
+  function seatedNow() { return !!(state && LD.seatedOn && LD.seatedOn(state) && document.querySelector("#screen-desk .desk.sd")); }
+  function seatK(W, H) { return W <= 500 ? 1 : LD.seatLandscape(W, H) ? 1.15 : 1.25; }
+  function seatedUi() {
+    return { sel: { deal: sel.deal, region: sel.region, net: sel.net }, fan: SD.fan, closing: hidePins, land: LD.seatLandscape(window.innerWidth, window.innerHeight),
+      dossier: LD.renderDossier(state, uiOpts()), peek: !!(LD.houseCanPeek && LD.houseCanPeek(state)), badge: state.phase === "bunker" && !state.bunkerActedThisTurn && houseCardKind() ? "!" : "" };
+  }
+  function renderSeatedDesk(from) {
+    var el = $("screen-desk");
+    if (tickerTimer) { clearInterval(tickerTimer); tickerTimer = null; }
+    el.innerHTML = LD.renderSeatedDesk(state, seatedUi());
+    bindSeated();
+    placeSeated();
+    if (from) seatDeltas(from);
+    preloadHousePlates();
+    if (HV.facing && !HV.turning) refreshHouseChrome();
+  }
+  /* cash / unrest / collapse changes float off the HUD */
+  function seatDeltas(from) {
+    [["cash", state.cash - from.cash, true], ["unrest", state.unrest - from.unrest, false], ["collapse", state.collapse - from.collapse, false]].forEach(function (x, i) {
+      if (!x[1]) return;
+      var host = document.querySelector(".desk.sd .sd-hud " + (x[0] === "cash" ? ".sd-cash" : ".m-" + x[0]));
+      if (!host) return;
+      var pop = document.createElement("span"), good = x[2] ? x[1] > 0 : x[1] < 0;
+      pop.className = "sd-pop " + (good ? "up" : "down");
+      pop.textContent = (x[1] > 0 ? "+" : "−") + (x[0] === "cash" ? LD.formatMoney(Math.abs(x[1])) : Math.abs(x[1]));
+      pop.style.animationDelay = i * 140 + "ms";
+      host.appendChild(pop);
+      setTimeout(function () { if (pop.parentNode) pop.parentNode.removeChild(pop); }, 1900);
+      if (x[0] === "cash" && x[1] > 0) SFX.play("coin");
+    });
+  }
+  /* Plate -> screen for the rig and every data-plate element; tags placed beside their pins without overlaps. */
+  function placeSeated() {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    var W = window.innerWidth, H = window.innerHeight, k = seatK(W, H), f = LD.seatFrame(W, H), land = f.land;
+    desk.style.setProperty("--k", k);
+    desk.classList.toggle("is-land", land);
+    var col = LD.seatColumn(W, H);
+    desk.style.setProperty("--col-l", Math.round(col[0]) + "px"); desk.style.setProperty("--col-r", Math.round(W - col[1]) + "px");
+    var hud = desk.querySelector(".sd-hud"), hb = hud ? hud.getBoundingClientRect().bottom : 0;
+    desk.style.setProperty("--hud", Math.round(hb) + "px");
+    seatApplyPose(desk, SD.t);
+    layoutFan(desk);
+    var ui = desk.querySelector(".sd-ui"); if (!ui) return;
+    Array.prototype.forEach.call(ui.querySelectorAll("[data-plate]"), function (n) {
+      var p = n.getAttribute("data-plate").split(",").map(Number), q = LD.seatToScreen(f, p[0], p[1]);
+      n.style.left = q[0].toFixed(1) + "px"; n.style.top = q[1].toFixed(1) + "px";
+      var r = n.getAttribute("data-r");
+      if (r) { r = r.split(",").map(Number); n.style.width = (2 * r[0] * f.s).toFixed(1) + "px"; n.style.height = (2 * r[1] * f.s).toFixed(1) + "px"; }
+    });
+    /* tags: start at the region's preferred offset, clamp to the stage, push apart */
+    var x0 = land ? col[0] + 8 : 8, x1 = land ? col[1] - 8 : W - 8, yTop = hb + (land ? 44 : 44 * k), yBot = H - 96 * k;
+    var boxes = [];
+    Array.prototype.forEach.call(ui.querySelectorAll(".sd-tag"), function (t) {
+      var pin = ui.querySelector('.sd-pin[data-deal="' + t.getAttribute("data-deal") + '"]'); if (!pin) return;
+      var px = parseFloat(pin.style.left), py = parseFloat(pin.style.top), o = LD.seatTagAt(t.getAttribute("data-rid"), k);
+      var w = t.offsetWidth, h = t.offsetHeight;
+      var cx = Math.max(x0 + w / 2, Math.min(x1 - w / 2, px + o[0])), cy = Math.max(yTop + h / 2, Math.min(yBot - h / 2, py + o[1]));
+      boxes.push({ t: t, px: px, py: py, cx: cx, cy: cy, w: w, h: h });
+    });
+    for (var it = 0; it < 24; it++) {
+      var moved = false;
+      for (var i = 0; i < boxes.length; i++) for (var j = i + 1; j < boxes.length; j++) {
+        var a = boxes[i], b = boxes[j], ox = (a.w + b.w) / 2 + 6 - Math.abs(a.cx - b.cx), oy = (a.h + b.h) / 2 + 6 - Math.abs(a.cy - b.cy);
+        if (ox > 0 && oy > 0) {
+          moved = true;
+          if (ox < oy) { var sx = a.cx < b.cx ? -1 : 1; a.cx += sx * ox / 2; b.cx -= sx * ox / 2; }
+          else { var sy = a.cy < b.cy ? -1 : 1; a.cy += sy * oy / 2; b.cy -= sy * oy / 2; }
+          [a, b].forEach(function (c) { c.cx = Math.max(x0 + c.w / 2, Math.min(x1 - c.w / 2, c.cx)); c.cy = Math.max(yTop + c.h / 2, Math.min(yBot - c.h / 2, c.cy)); });
+        }
+      }
+      if (!moved) break;
+    }
+    var svg = ui.querySelector(".sd-lines"), lines = "";
+    boxes.forEach(function (b) {
+      b.t.style.left = (b.cx - b.w / 2).toFixed(1) + "px"; b.t.style.top = (b.cy - b.h / 2).toFixed(1) + "px";
+      var ex = Math.max(b.cx - b.w / 2 + 10, Math.min(b.cx + b.w / 2 - 10, b.px)), ey = b.py < b.cy ? b.cy - b.h / 2 : b.cy + b.h / 2;
+      if (Math.abs(b.py - b.cy) < b.h / 2) { ey = b.cy; ex = b.px < b.cx ? b.cx - b.w / 2 : b.cx + b.w / 2; }
+      lines += '<line x1="' + b.px.toFixed(1) + '" y1="' + b.py.toFixed(1) + '" x2="' + ex.toFixed(1) + '" y2="' + ey.toFixed(1) + '" data-deal="' + b.t.getAttribute("data-deal") + '"/>';
+    });
+    if (svg) { svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("width", W); svg.setAttribute("height", H); svg.innerHTML = lines; }
+  }
+  /* Pose of the desk rig: t 0 = first person, 1 = the turn rig's frame 1 (Mara in, hands out). */
+  function seatApplyPose(root, t) {
+    if (!root) return;
+    var W = window.innerWidth, H = window.innerHeight, a = LD.seatFrame(W, H), b = LD.seatRigFrame(W, H), P = LD.seatPullAt(t);
+    var f = t <= 0 ? a : t >= 1 ? b : LD.seatLerpFrame(a, b, P.e);
+    var rig = root.querySelector(".sd-rig"); if (!rig) return;
+    rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    var m = rig.querySelector(".sd-mara"), hs = rig.querySelectorAll(".sd-hands");
+    if (m) {
+      if (P.mara.a <= 0.001) { m.style.opacity = "0"; m.style.transform = ""; m.style.filter = ""; }
+      else { m.style.opacity = P.mara.a.toFixed(3); m.style.transform = "translate(0," + P.mara.dy.toFixed(1) + "px) scale(" + P.mara.k.toFixed(4) + ")"; m.style.filter = P.mara.blur > 0.05 ? "blur(" + (P.mara.blur / f.s).toFixed(2) + "px)" : ""; }
+    }
+    Array.prototype.forEach.call(hs, function (n) {
+      if (t <= 0) { n.style.transform = ""; n.style.filter = ""; n.style.removeProperty("--ha"); return; }
+      n.style.setProperty("--ha", P.hands.a.toFixed(3));
+      n.style.transform = "translate(0," + P.hands.dy.toFixed(1) + "px)"; n.style.filter = P.hands.blur > 0.05 ? "blur(" + (P.hands.blur / f.s).toFixed(2) + "px)" : "";
+    });
+    root.classList.toggle("is-pulling", t > 0);
+    root.style.setProperty("--pull", t.toFixed(3));
+  }
+  LD.seatPose = function (t) { SD.t = t; seatApplyPose(document.querySelector("#screen-desk .desk.sd"), t); };
+  /* Animate the pose. dir "out" 0 -> 1 (into the chair turn), "in" 1 -> 0 (back to the desk). Tap skips. */
+  function seatPull(dir, done) {
+    if (SD.raf) { cancelAnimationFrame(SD.raf); SD.raf = 0; }
+    var from = dir === "out" ? 0 : 1, to = 1 - from, dur = LD.SEAT_PULL_MS || 620;
+    if (reduced() || !seatedNow()) { SD.t = to; seatApplyPose(document.querySelector("#screen-desk .desk.sd"), to); if (done) done(); return; }
+    var t0 = performance.now(), finished = false;
+    var shield = document.createElement("div"); shield.id = "sd-shield"; document.body.appendChild(shield);
+    function end() { if (finished) return; finished = true; if (SD.raf) cancelAnimationFrame(SD.raf); SD.raf = 0; SD.t = to; seatApplyPose(document.querySelector("#screen-desk .desk.sd"), to); if (shield.parentNode) shield.parentNode.removeChild(shield); SD.pull = null; if (done) done(); }
+    shield.addEventListener("pointerdown", function (e) { e.preventDefault(); end(); });
+    SD.pull = { end: end };
+    function step(now) {
+      var u = Math.min(1, (now - t0) / dur);
+      SD.t = from + (to - from) * u;
+      seatApplyPose(document.querySelector("#screen-desk .desk.sd"), SD.t);
+      if (u >= 1) end(); else SD.raf = requestAnimationFrame(step);
+    }
+    SD.raf = requestAnimationFrame(step);
+  }
+  LD.SEAT_PULL_MS = 620;
+  function seatSetFan(on) {
+    SD.fan = !!on;
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    var fan = $("sd-fan"), tab = $("sd-tab"), all = $("run-deck");
+    if (SD.fan && fan && !fan.children.length) {
+      fan.innerHTML = state.fy && state.fy.deck ? state.fy.deck.map(function (c, i) { return LD.cardFace(c.id, c.up, { attrs: ' data-deck="' + i + '" style="--c:' + i + '"', cls: "sd-fc" }); }).join("") : "";
+      fan.style.setProperty("--n", Math.max(1, fan.children.length));
+      Array.prototype.forEach.call(fan.querySelectorAll("[data-deck]"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); tick(); openDeck(); }); });
+    }
+    desk.classList.toggle("is-fan", SD.fan);
+    layoutFan(desk);
+    if (tab) { tab.setAttribute("aria-expanded", SD.fan ? "true" : "false"); var ic = tab.querySelector(".sd-tabl i"); if (ic) ic.textContent = SD.fan ? "▼" : "▲"; }
+    if (all) all.hidden = !SD.fan;
+  }
+  /* The fan as an arc held in the hand: total spread up to 56deg, radius chosen so the outer cards just fit the stage width. */
+  function layoutFan(desk) {
+    var fan = desk && desk.querySelector(".sd-fan"); if (!fan) return;
+    var W = window.innerWidth, H = window.innerHeight, k = seatK(W, H), land = LD.seatLandscape(W, H);
+    var col = LD.seatColumn(W, H), l = land ? col[0] : 0, r = land ? W - col[1] : 0, avail = W - l - r - 16;
+    var cards = fan.querySelectorAll(".dc"), n = cards.length, cw = 96 * k, ch = 134 * k;
+    /* like a hand held low: the outermost cards may tuck a corner past the edge, every card keeps most of itself on screen */
+    var span = Math.max(0, Math.min(avail - cw * (W > 500 ? 2.4 : 1.1), (n - 1) * cw * 0.62)), A = Math.min(40, (n - 1) * 6, span * 0.16) * Math.PI / 180;
+    /* keep the outer cards from sinking more than a quarter card: half * tan(A/4) = drop */
+    var maxDrop = ch * 0.24; if (span > 0 && (span / 2) * Math.tan(A / 4) > maxDrop) A = 4 * Math.atan(maxDrop / (span / 2));
+    var R = n > 1 && A > 0 ? (span / 2) / Math.sin(A / 2) : 0, drop = R * (1 - Math.cos(A / 2));
+    Array.prototype.forEach.call(cards, function (c, i) {
+      var ph = n > 1 ? -A / 2 + (A * i) / (n - 1) : 0;
+      c.style.setProperty("--x", (R * Math.sin(ph)).toFixed(1) + "px");
+      c.style.setProperty("--y", (R * (1 - Math.cos(ph))).toFixed(1) + "px");
+      c.style.setProperty("--r", (ph * 180 / Math.PI).toFixed(2) + "deg");
+      c.style.zIndex = String(i + 1);
+    });
+    desk.style.setProperty("--fan-l", l + "px"); desk.style.setProperty("--fan-r", r + "px");
+    var base = 10 * k + (W > 500 ? drop * 0.8 : 0);
+    desk.style.setProperty("--fan-b", Math.round(base) + "px");
+    desk.style.setProperty("--fan-h", Math.round(ch + base + 8) + "px");
+    var lab = desk.querySelector(".sd-tabl"); if (lab) desk.style.setProperty("--tab-hw", Math.round(lab.offsetWidth / 2) + "px");
+  }
+  function seatSelSync() {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    Array.prototype.forEach.call(desk.querySelectorAll("[data-deal]"), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === sel.deal); });
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-region"), function (n) { n.classList.toggle("sel", n.getAttribute("data-region") === sel.region); });
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-net"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
+    var dz = $("dossier"); if (dz) dz.classList.toggle("on", !!(sel.deal || sel.region || sel.net));
+    if (sel.deal || sel.region || sel.net) seatSetFan(false);
+  }
+  function bindSeated() {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    function on(selr, fn) { Array.prototype.forEach.call(desk.querySelectorAll(selr), function (n) { n.addEventListener("click", function (e) { e.stopPropagation(); fn(n, e); }); }); }
+    on(".sd-pin, .sd-tag, .sd-qrow", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
+    on(".sd-region", function (n) { tick(); selectRegion(n.getAttribute("data-region")); });
+    on(".sd-net[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
+    on("#btn-menu", function () { tick(); openMenu(); });
+    on("#btn-endq", function () { tick(); endQuarter(); });
+    on("#house-peek", function () { tick(); if (document.body.classList.contains("in-fight") || doorOpen()) { flash("Finish the fight first."); return; } openHouse({ peek: true }); });
+    on("#sd-tab", function () { tick(); seatSetFan(!SD.fan); });
+    var stage = desk.querySelector(".sd-clip"), bg = desk.querySelector(".sd-ui");
+    [stage, bg].forEach(function (n) { if (n) n.addEventListener("click", function (e) {
+      if (e.target.closest && e.target.closest("button")) return;
+      if (SD.fan) { seatSetFan(false); return; }
+      if (sel.deal || sel.region || sel.net) { clearSel(); refreshSelection(); }
+    }); });
+    /* swipe up on the tab opens the fan; down closes */
+    var hand = $("sd-hand"), y0 = null;
+    if (hand) {
+      hand.addEventListener("pointerdown", function (e) { y0 = e.clientY; });
+      hand.addEventListener("pointerup", function (e) { if (y0 == null) return; var dy = e.clientY - y0; y0 = null; if (dy < -24 && !SD.fan) seatSetFan(true); else if (dy > 24 && SD.fan) seatSetFan(false); });
+    }
+    bindFyDesk();
+    bindDossier();
+    if (SD.fan) { SD.fan = false; seatSetFan(true); }
+  }
+  window.addEventListener("resize", function () { if (seatedNow()) placeSeated(); if (document.querySelector("#door.sd-fight")) placeSeatFight(); });
+  /* the fight uses the same framing as the desk, so the room does not move when the visitor sits down */
+  function placeSeatFight() {
+    var d = doorEl(); if (!d || !d.classList.contains("sd-fight")) return;
+    var W = window.innerWidth, H = window.innerHeight, f = LD.seatFrame(W, H), col = LD.seatColumn(W, H);
+    d.style.setProperty("--k", seatK(W, H));
+    d.style.setProperty("--col-l", Math.round(col[0]) + "px"); d.style.setProperty("--col-r", Math.round(W - col[1]) + "px");
+    d.classList.toggle("is-land", f.land);
+    var rig = d.querySelector(".sd-rig"); if (rig) rig.style.transform = "translate(" + f.tx.toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
+    var hud = d.querySelector(".sd-hud"); if (hud) d.style.setProperty("--hud", Math.round(hud.getBoundingClientRect().bottom) + "px");
+    var rim = LD.seatToScreen(f, 0, 548)[1]; d.style.setProperty("--rim", Math.round(rim) + "px");
+    /* portrait: speech and intent stand in a column beside the visitor, never over their face; captions lie on the table */
+    var op = d.querySelector("#sc-opp"), box = op && LD.SEAT.opp[op.getAttribute("data-art")], it = $("df-intent"), talk = d.querySelector(".sd-talk");
+    if (!f.land && box) {
+      var hx = LD.seatToScreen(f, box[0] + box[2] * 0.5, 0)[0], right = LD.seatToScreen(f, box[0] + box[2] * 0.82, 0)[0];
+      var cl = Math.round(Math.max(W * 0.46, Math.min(W - 200 * (W > 500 ? 1.3 : 1), right - 6)));
+      d.style.setProperty("--tcol", cl + "px"); d.style.setProperty("--headx", Math.round(hx) + "px");
+      var head = LD.seatToScreen(f, 0, box[1] + 40)[1]; d.style.setProperty("--heady", Math.round(head) + "px");
+      if (it) { var tb = talk && talk.children.length ? talk.getBoundingClientRect().bottom : (d.querySelector(".sd-fhead") || d).getBoundingClientRect().bottom; it.style.top = Math.round(tb + 8) + "px"; }
+      var ib = it ? it.getBoundingClientRect().bottom : talk ? talk.getBoundingClientRect().bottom : 0;
+      d.style.setProperty("--tbot", Math.round(Math.max(rim + 8, ib + 10)) + "px");
+    } else if (it) {
+      /* landscape: the intent stands under the speech in the left panel column */
+      var tb2 = talk && talk.children.length ? talk.getBoundingClientRect().bottom : (d.querySelector(".sd-fhead") || d).getBoundingClientRect().bottom;
+      it.style.top = Math.round(tb2 + 10) + "px";
+      d.style.setProperty("--tbot", Math.round(it.getBoundingClientRect().bottom + 10) + "px");
+    }
+  }
+
   /* In-place update: dossier, selection classes, map preview and rail. No map rebuild. */
   function refreshSelection() {
     var desk = document.querySelector(".desk");
@@ -17851,6 +18760,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     dz.classList.remove("pop");
     void dz.offsetWidth;
     dz.classList.add("pop");
+    if (desk.classList.contains("sd")) { seatSelSync(); return; }
     if (isPhone() && (sel.deal || sel.region)) {
       var board = desk.querySelector(".board");
       if (board) window.scrollTo({ top: Math.max(0, board.getBoundingClientRect().top + window.scrollY - 8), behavior: reduced() ? "auto" : "smooth" });
@@ -18116,6 +19026,8 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
   }
 
   function boardPoint(regionId) {
+    var sd = document.querySelector("#screen-desk .desk.sd");
+    if (sd) { var rg = LD.SEAT.regions[regionId], f0 = LD.seatFrame(window.innerWidth, window.innerHeight); if (!rg) return null; var q = LD.seatToScreen(f0, rg[0], rg[1]); return { x: q[0], y: q[1] }; }
     var board = document.querySelector(".desk .board");
     var a = document.querySelector('.desk .anc[data-anc="' + regionId + '"]');
     if (!board || !a) return null;
@@ -18138,6 +19050,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
   }
   function floatCenter(text, cls, delay, dy) {
     var fx = $("fx");
+    if (document.querySelector("#screen-desk .desk.sd")) { if (!fx) return; var c0 = LD.seatToScreen(LD.seatFrame(window.innerWidth, window.innerHeight), 380, 600); placeFloat(fx, c0[0], c0[1] + (dy || 0), text, cls, delay); return; }
     var slab = document.querySelector(".desk .board-slab");
     var board = document.querySelector(".desk .board");
     if (!fx || !slab || !board) return;
@@ -18332,10 +19245,12 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
       card: (HV.facing && !HV.turning) ? HV.card : null,
       leaveId: (HV.facing && !HV.turning) ? HV.leaveId : null,
       promiseId: HV.promiseId,
-      canEnd: houseCanEndQ()
+      canEnd: houseCanEndQ(),
+      seated: !!(LD.seatedOn && LD.seatedOn(state))
     });
     var stage = root.querySelector(".hv-root");
     if (stage && land) stage.classList.add("is-landscape");
+    if (stage && LD.seatedOn && LD.seatedOn(state)) stage.classList.add("is-seated");
     sizeHouseRig();
     bindHouseChrome();
   }
@@ -18390,6 +19305,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
       var root = $("house-root");
       if (root) { root.innerHTML = ""; root.hidden = true; root.classList.remove("is-open"); }
       attachHousePeek();
+      if (seatedNow() && SD.t > 0) seatPull("in");
     }
   }
   function runHouseTurn(dir) {
@@ -18422,9 +19338,9 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     HV.auto = !!opts.auto;
     HV.leaveId = null;
     HV.promiseId = null;
-    paintHouse("before");
-    setPlateOpacities(0);
-    runHouseTurn("to");
+    function go() { paintHouse("before"); setPlateOpacities(0); runHouseTurn("to"); }
+    if (seatedNow() && SD.t < 1) { HV.turning = true; HV.dir = "to"; seatSetFan(false); seatPull("out", function () { HV.turning = false; go(); }); return; }
+    go();
   }
   function closeHouse() {
     if (!HV.open && !HV.facing) return;
@@ -18451,6 +19367,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     openHouse({ auto: true });
   }
   function attachHousePeek() {
+    if (seatedNow()) { var sb = $("house-peek"); if (sb) sb.hidden = !(LD.houseCanPeek && LD.houseCanPeek(state)) || HV.open || HV.facing || HV.turning; return; }
     Array.prototype.forEach.call(document.querySelectorAll("#house-peek"), function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
     if (!state || !(LD.isHouse && LD.isHouse(state)) || HV.open || HV.facing || HV.turning) return;
     if (!(LD.houseCanPeek && LD.houseCanPeek(state))) return;
@@ -18491,6 +19408,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
       HV.facing = false; HV.open = false; HV.turning = false; HV.auto = false;
       var hr = $("house-root");
       if (hr) { hr.innerHTML = ""; hr.hidden = true; hr.classList.remove("is-open"); }
+      if (seatedNow() && SD.t > 0) seatPull("in");
       endQuarter();
     });
     var admit = $("hv-admit");
@@ -18716,8 +19634,9 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     var meta = loadMeta();
     if (!meta.coachDone) { meta.coachDone = true; saveMeta(meta); }
     var desk = document.querySelector(".desk");
-    desk.classList.add("closing");
+    if (desk) desk.classList.add("closing");
     var fx = $("fx");
+    if (!fx && desk) { fx = document.createElement("div"); fx.className = "fx"; fx.id = "fx"; desk.appendChild(fx); }
     var stamp = document.createElement("div");
     stamp.className = "stamp";
     stamp.innerHTML = "Q" + prev.turn + " <span>closed</span>";
@@ -18744,7 +19663,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
       skip.id = "btn-skip-react";
       skip.textContent = "Skip ▸";
       skip.addEventListener("click", function () { tick(); finish(); });
-      var board = document.querySelector(isPhone() ? ".desk .board-tilt" : ".desk .board") || document.querySelector(".desk .board");
+      var board = document.querySelector(isPhone() ? ".desk .board-tilt" : ".desk .board") || document.querySelector(".desk .board") || document.querySelector("#screen-desk .desk.sd");
       if (board) board.appendChild(skip);
       var beats = [];
       /* 1. Delayed effects land (from the rail). */
@@ -18970,16 +19889,17 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
   function showDoor(html, mode) {
     var d = doorEl(); d.hidden = false;
     var fb = mode === "df-mode", keep = d.classList.contains("lifting") && !fb ? " lifting" : "";
-    d.className = "door-screen on " + (mode || "") + (fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" : "") + keep;
+    var seat = fb && LD.seatedOn && LD.seatedOn(state);
+    d.className = "door-screen on " + (mode || "") + (seat ? " sd-fight" : fb ? " fb-mode" : mode === "rw-mode" ? " disc-mode" : "") + keep;
     d.setAttribute("aria-label", fb ? "Fight" : mode === "rw-mode" ? "Pick a reward" : "At the door");
     d.setAttribute("aria-modal", fb ? "false" : "true");
     d.innerHTML = html;
     document.body.classList.toggle("in-fight", fb);
-    if (fb) placeBay();
+    if (seat) placeSeatFight(); else if (fb) placeBay();
   }
   function hideDoor() {
     var d = doorEl(); if (!d) return;
-    var wasFight = d.classList.contains("fb-mode");
+    var wasFight = d.classList.contains("fb-mode") || d.classList.contains("sd-fight");
     d.className = "door-screen"; d.hidden = true; d.innerHTML = ""; d.removeAttribute("style");
     document.body.classList.remove("in-fight");
     if (wasFight && LD.O4 && LD.O4.exitFight) LD.O4.exitFight();
@@ -19027,6 +19947,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
   }
   function dfFloat(text, cls, sel, delay) {
     var fx = $("df-fx"), a = document.querySelector(sel || ".df-scrut"), root = document.querySelector(".door-in");
+    if (!a && doorEl().classList.contains("sd-fight")) a = document.querySelector({ ".df-scrut": "#door .m-scrutiny", ".df-meters": "#door .sd-cash" }[sel || ".df-scrut"] || "#none");
     if (!fx || !a || !root) return;
     var r = a.getBoundingClientRect(), b = root.getBoundingClientRect();
     /* Scrutiny deltas float out below the panel's bar, never over its label or number. */
@@ -19104,6 +20025,19 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     };
     if (LD.O4 && LD.O4.fightPose) LD.O4.fightPose(hitPose === "block" ? "watch" : "snap", 650);
     if (you) { you.classList.remove("flick"); void you.offsetWidth; you.classList.add("flick"); }
+    var tc = $("sd-tcard");
+    if (tc) {
+      var land = function () { DF.landing = false; var t2 = $("sd-tcard"); if (t2) { t2.classList.remove("is-landing"); t2.classList.add("landed"); } };
+      if (reduced() || !rect || !cardHtml || !fx) { land(); react(); return; }
+      var tb = tc.getBoundingClientRect(), fl = document.createElement("div");
+      fl.className = "sc-fly sd-fly"; fl.innerHTML = cardHtml.replace(/^<button/, "<div").replace(/<\/button>$/, "</div>");
+      fl.style.left = rect.left + "px"; fl.style.top = rect.top + "px"; fl.style.width = rect.width + "px"; fl.style.height = rect.height + "px";
+      fx.appendChild(fl);
+      var ddx = (tb.left + tb.width / 2) - (rect.left + rect.width / 2), ddy = (tb.top + tb.height / 2) - (rect.top + rect.height / 2), k2 = tb.width / Math.max(1, rect.width);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { fl.classList.add("go"); fl.style.transform = "translate(" + ddx.toFixed(1) + "px," + ddy.toFixed(1) + "px) rotate(-5deg) scale(" + k2.toFixed(3) + ")"; }); });
+      setTimeout(function () { if (fl.parentNode) fl.parentNode.removeChild(fl); land(); react(); }, 300);
+      return;
+    }
     if (reduced() || !rect || !cardHtml || !opp || !root || !fx) { react(); return; }
     var b = { left: 0, top: 0 }, tr = (hitPose === "block" && you ? you : opp).getBoundingClientRect();
     var fly = document.createElement("div");
@@ -19140,7 +20074,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
   function startFight() {
     if (FI.on) return;
     var want = false; try { want = fightIntroWanted(); } catch (e) { want = false; }
-    if (!want || reduced() || screen !== "desk") { if (want) FI.key = LD.fightIntroKey(state); openFight(); return; }
+    if (!want || reduced() || screen !== "desk" || (LD.seatedOn && LD.seatedOn(state))) { if (want) FI.key = LD.fightIntroKey(state); openFight(); return; }
     try {
       FI.on = true;
       var go = function () { FI.on = false; FI.key = LD.fightIntroKey(state); DF.settle = true; openFight(); };
@@ -19269,16 +20203,21 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
   }
   function paintFight(flashU, enter) {
     if (state && state.fy && state.fy.fight && state.fy.fight.done && PN.mode === "tip") pennyCloseTip();
-    showDoor(LD.renderFight(state, { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap }), "df-mode");
+    var seat = LD.seatedOn && LD.seatedOn(state), fgp = state.fy && state.fy.fight;
+    if (seat && fgp && !(fgp.rp > 0)) DF.lastCard = null;
+    var fui = { flashU: flashU, enter: !!enter && !reduced(), say: DF.say, cbHide: DF.cbHide, cap: DF.cap, lastCard: DF.lastCard, landing: !!DF.landing };
+    showDoor(seat ? LD.renderSeatedFight(state, fui) : LD.renderFight(state, fui), "df-mode");
     var root = doorEl();
-    adoptScene(DF.settle); DF.settle = false; placeBubble();
+    if (!seat) { adoptScene(DF.settle); placeBubble(); }
+    DF.settle = false;
     /* deal the hand out of the pile (fight start and each new round) */
     if (DF.deal && !reduced()) { var hand = root.querySelector(".df-hand"); if (hand) hand.classList.add("dealing"); }
     DF.deal = false;
     var cbo = $("sc-cb-ok"); if (cbo) cbo.addEventListener("click", function () { tick(); DF.cbHide = true; var cb = $("sc-cb"), stg = cb && cb.parentNode; if (stg) stg.removeChild(cb);
       /* the familiar-face card held the stage; now show the opener caption it was covering */
       var fg1 = state.fy && state.fy.fight, op = fg1 && !fg1.played && !$("sc-cap") && !$("sc-why") && LD.fightOpener ? LD.fightOpener(state, fg1) : "";
-      if (stg && op) { var w = document.createElement("div"); w.className = "sc-cap sc-why e" + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)); w.id = "sc-why"; w.setAttribute("role", "note"); w.innerHTML = "<span>" + LD.escapeHtml(op) + "</span>"; stg.appendChild(w); } });
+      if (seat) { stg = document.querySelector("#door .sd-caps"); op = fg1 && !fg1.played && !$("sc-cap") && !$("sc-why") ? LD.fightOpener(state, fg1, "home") : ""; }
+      if (stg && op) { var w = document.createElement("div"); w.className = seat ? "sd-cap" : "sc-cap sc-why e" + Math.max(1, Math.min(3, LD.eraOf ? LD.eraOf(state) : 3)); w.id = "sc-why"; w.setAttribute("role", "note"); w.innerHTML = "<span>" + LD.escapeHtml(op) + "</span>"; stg.appendChild(w); } });
     Array.prototype.forEach.call(root.querySelectorAll(".df-hand [data-u]"), function (b) {
       b.addEventListener("click", function () { playCard(+b.getAttribute("data-u")); });
     });
@@ -19302,6 +20241,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     var res = LD.fightPlay(state, u);
     if (!res.ok) { SFX.play("bad"); dfLog(res.error); return; }
     state = res.state; persistRun();
+    if (LD.seatedOn && LD.seatedOn(state)) { DF.lastCard = { id: ci.id, up: ci.up }; DF.landing = !reduced() && !!cardRect; }
     SFX.play("flip");
     var fg = state.fy.fight;
     var dS = s0 - Math.max(0, fg.scrut), dB = fg.block - b0;
@@ -19331,7 +20271,7 @@ body.in-fight #side-rail .sr-btn:not(.sr-deck):not(.sr-menu) { pointer-events: n
     DF.busy = true; DF.cbHide = true;
     var ie = $("df-intent"); if (ie) ie.classList.add("firing");
     var bub = $("sc-bubble"), I0 = res.intent && LD.INTENTS[res.intent.k];
-    if (bub && I0) { bub.className = "sc-bubble k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); placeBubble(); }
+    if (bub && I0) { bub.className = (doorEl().classList.contains("sd-fight") ? "sd-bubble" : "sc-bubble") + " k-attack"; bub.innerHTML = "<b>" + LD.escapeHtml(res.intent.label) + "!</b>" + LD.escapeHtml(LD.moveSay ? LD.moveSay(state.fy.fight || {}, res.intent.k) : I0.say || ""); placeBubble(); }
     DF.say = null; DF.cap = null;
     var cp = $("sc-cap"); if (cp && cp.parentNode) cp.parentNode.removeChild(cp);
     scAttackAnim(res.hit && res.hit.n);

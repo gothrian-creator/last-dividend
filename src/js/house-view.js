@@ -158,6 +158,8 @@
     });
     h += "</ul>";
     h += '<p class="hv-stores">Stores <b>' + stores + "</b> \u00b7 " + mood + "</p>";
+    var inl = LD.eraInheritLine ? LD.eraInheritLine(state) : "";
+    if (inl) h += '<p class="hv-inherit">' + esc(inl) + "</p>";
     h += "</aside>";
     return h;
   };
@@ -262,15 +264,134 @@
       "</div>";
   };
 
+
+  /* ---------- Era goals view: 1978 holdings board, 2008 island model, Now bunker. Mara has the full plates; every other
+     exec keeps their own TV and shows the same facility / site vignettes in its four cells. ---------- */
+  var ERA_ART = "assets/house/era/";
+  var ERA_YEAR = { 1: "1978", 2: "2008", 3: "Now" };
+  var ERA_GOAL_LINE = { 1: "Act I goal \u00b7 all four facilities running by Q4", 2: "Act II goal \u00b7 build the island by Q8", 3: "Act III goal \u00b7 seal with all four rooms holding" };
+  /* Mara's plates, % of the 720x1280 rig: the board's four glass panels, the island model's four sites (pin, chip). */
+  var BOARD_PANELS = { power: [101, 307, 152, 134], water: [294, 315, 143, 129], air: [102, 497, 151, 133], food: [295, 497, 143, 128] };
+  var ISLE_SITES = { water: { pin: [125, 545], chip: [158, 440] }, power: { pin: [360, 520], chip: [362, 352] }, food: { pin: [190, 690], chip: [172, 808] }, air: { pin: [430, 650], chip: [470, 790] } };
+  var SLOT_ORDER = { 1: ["power", "water", "air", "food"], 2: ["water", "power", "food", "air"] };
+  function pct(v, of) { return (100 * v / of).toFixed(2) + "%"; }
+  LD.eraFullArt = function (state) { return !!(state && state.executiveId === "mara"); };
+  LD.eraShows = function (state) { return !!(state && state.house && state.house.era && LD.eraAct && LD.eraAct(state) <= 2); };
+  LD.eraPlate = function (state) {
+    if (!LD.eraShows(state) || !LD.eraFullArt(state)) return null;
+    return ERA_ART + "mara/" + (LD.eraAct(state) === 1 ? "board" : "island") + "-after.webp";
+  };
+  function slotState(state, era, k) {
+    var s = LD.eraSlots(state, era)[k];
+    if (s.build) return "building";
+    if (s.lv >= 1) return "on";
+    return LD.eraUpgradeCost(state, k, era) != null && LD.eraFunds(state, era) >= LD.eraUpgradeCost(state, k, era) ? "open" : "locked";
+  }
+  function slotSub(state, era, k) {
+    var s = LD.eraSlots(state, era)[k], st = slotState(state, era, k);
+    if (st === "building") return "Building \u00b7 ready Q" + (state.turn + 1);
+    if (s.lv >= 1) return "Lv " + s.lv + " \u00b7 " + LD.ERA_DEFS[era].slots[k].fx(s.lv);
+    var c = LD.eraUpgradeCost(state, k, era);
+    return (st === "open" ? "Not built \u00b7 $" : "Locked \u00b7 $") + c + "M";
+  }
+  function pips(lv, build) {
+    var h = '<i class="hv-pips" aria-hidden="true">';
+    for (var i = 1; i <= LD.ERA_MAX_LV; i++) h += '<i class="' + (i <= lv ? "on" : build && i === build ? "bd" : "") + '"></i>';
+    return h + "</i>";
+  }
+  LD.eraPick = function (state, want) {
+    var era = LD.eraAct(state), order = SLOT_ORDER[era] || LD.ERA_SLOTS;
+    if (want && order.indexOf(want) !== -1) return want;
+    var first = null;
+    order.forEach(function (k) { if (!first && !LD.eraCanUpgrade(state, k)) first = k; });
+    return first || order[0];
+  };
+  LD.renderEraScreen = function (state, ui) {
+    var era = LD.eraAct(state), full = LD.eraFullArt(state), sel = LD.eraPick(state, ui && ui.eraSlot);
+    var order = SLOT_ORDER[era];
+    var kind = era === 1 ? "board" : "isle";
+    var h = '<div class="hv-screen hv-era is-' + kind + (full ? " is-full" : " is-tv") + '" aria-label="' + esc(LD.ERA_DEFS[era].title) + '">';
+    order.forEach(function (k) {
+      var s = LD.eraSlots(state, era)[k], st = slotState(state, era, k), name = LD.eraSlotName(state, era, k);
+      if (era === 1 && k === "air") name = "Capitol"; else if (era === 1 && k === "food") name = "Offshore";
+      var cls = "hv-eslot is-" + st + (k === sel ? " is-sel" : "");
+      var img = ERA_ART + (era === 1 ? "fac-" : "site-") + k + ".webp";
+      var chip = '<span class="hv-echip">' + pips(s.lv, s.build) + "<b>" + esc(name) + "</b><small>" + esc(slotSub(state, era, k)) + "</small></span>";
+      var lock = st === "locked" ? '<em class="hv-elock">Locked</em>' : "";
+      if (full && era === 1) {
+        var p = BOARD_PANELS[k];
+        h += '<button type="button" class="' + cls + '" data-eslot="' + k + '" style="left:' + pct(p[0], 720) + ";top:" + pct(p[1], 1280) + ";width:" + pct(p[2], 720) + ";height:" + pct(p[3], 1280) + '">' +
+          '<img src="' + img + '" alt="" draggable="false">' + lock + chip + "</button>";
+      } else if (full) {
+        var g = ISLE_SITES[k];
+        h += '<button type="button" class="' + cls + ' is-site" data-eslot="' + k + '" style="left:' + pct(g.chip[0], 720) + ";top:" + pct(g.chip[1], 1280) + '">' + chip + "</button>" +
+          '<i class="hv-epin is-' + st + (k === sel ? " is-sel" : "") + '" style="left:' + pct(g.pin[0], 720) + ";top:" + pct(g.pin[1], 1280) + '" aria-hidden="true"></i>' +
+          (st === "locked" || st === "building" ? '<i class="hv-eveil is-' + st + '" style="left:' + pct(g.pin[0], 720) + ";top:" + pct(g.pin[1], 1280) + '" aria-hidden="true"></i>' : "");
+      } else {
+        h += '<button type="button" class="' + cls + ' hv-cell" data-eslot="' + k + '"><img src="' + img + '" alt="" draggable="false">' + lock + chip + "</button>";
+      }
+    });
+    h += "</div>";
+    return h;
+  };
+  function firmOf(state) { var ex = LD.execById ? LD.execById(state.executiveId) : null; return ex && ex.firm ? ex.firm : "The firm"; }
+  function slotRow(state, era, k, compact) {
+    var why = LD.eraCanUpgrade(state, k), c = LD.eraUpgradeCost(state, k, era), s = LD.eraSlots(state, era)[k];
+    var name = LD.eraSlotName(state, era, k), def = LD.ERA_DEFS[era].slots[k];
+    var nextLv = Math.max(s.lv, s.build) + 1;
+    var line = c == null ? "Fully built." : s.build ? "Being built \u00b7 ready Q" + (state.turn + 1) + "." : "Lv " + nextLv + ": " + def.fx(nextLv) + ".";
+    var verb = s.lv || s.build ? "Expand" : "Build";
+    var btn = c == null || s.build ? "" : '<button type="button" class="btn' + (why ? "" : " btn-coral") + ' hv-era-up" data-eslot="' + k + '"' + (why ? ' aria-disabled="true" data-why="' + esc(why) + '"' : "") + "><b>" + verb + "</b><small>$" + c + "M</small></button>";
+    return '<div class="hv-erow' + (compact ? " is-compact" : "") + '"><div class="hv-erow-t"><b>' + esc(name) + "</b><span>" + esc(line) + "</span></div>" + btn + "</div>";
+  }
+  LD.renderEraCard = function (state, ui) {
+    var era = LD.eraAct(state), e = state.house.era, sel = LD.eraPick(state, ui && ui.eraSlot);
+    var land = !!(ui && ui.land);
+    var h = '<aside class="hv-band hv-ecard" aria-label="' + esc(LD.ERA_DEFS[era].title) + '">';
+    h += '<p class="hv-band-k">' + esc(firmOf(state)) + " \u00b7 " + ERA_YEAR[era] + "</p>";
+    h += '<h3 class="hv-etitle">' + esc(LD.ERA_DEFS[era].title) + "</h3>";
+    if (land) {
+      h += '<p class="hv-egoal">' + esc(LD.ERA_DEFS[era].goal) + "</p>";
+      (SLOT_ORDER[era]).forEach(function (k) { h += slotRow(state, era, k, true); });
+    } else {
+      h += slotRow(state, era, sel, false);
+    }
+    var foot = [];
+    if (era === 2 && e.bank) foot.push("Offshore $" + e.bank + "M");
+    if (era === 1 && e.bank) foot.push("Offshore banked $" + e.bank + "M");
+    if (e.actQ === state.turn) foot.push("Order placed this quarter");
+    var staff = (state.house.residents || []).map(function (r) { var b = BAND[r.id]; return b ? '<button type="button" class="hv-estaff" data-leave="' + r.id + '">' + esc(b.name) + "</button>" : ""; }).join("");
+    h += '<p class="hv-stores">' + (foot.length ? esc(foot.join(" \u00b7 ")) + " \u00b7 " : "") + "Stores <b>" + (state.house.stores | 0) + "</b></p>";
+    if (staff) h += '<p class="hv-estaff-row"><small>Staff</small>' + staff + "</p>";
+    h += "</aside>";
+    return h;
+  };
+  LD.renderEraGoal = function (state) {
+    var era = LD.eraAct ? LD.eraAct(state) : 3;
+    return '<p class="hv-goal" aria-live="polite">' + esc(ERA_GOAL_LINE[era] || "") + "</p>";
+  };
+  LD.eraInheritLine = function (state) {
+    var inh = state && state.house && state.house.era && state.house.era.inherited;
+    if (!inh || inh.legacy) return "";
+    var p = [];
+    if (inh.rooms && inh.rooms.length) p.push(inh.rooms.map(cap).join(", ") + " on from the island");
+    if (inh.sound && inh.sound.length) p.push(inh.sound.map(cap).join(", ") + " recertified");
+    if (inh.stores) p.push("Stores +" + inh.stores + " from Offshore and the Villa");
+    return p.length ? p.join(" \u00b7 ") : "The island left the bunker nothing.";
+  };
+
   /* ui.mode: "before" | "turning" | "after" | "back"
      ui.card: "arrival" | "word" | null; ui.leaveId; ui.auto; ui.canEnd */
   LD.renderHouseStage = function (state, ui) {
     ui = ui || {};
     if (LD.seatUseExec) LD.seatUseExec(state && state.executiveId);
     var mode = ui.mode || "after";
-    var cls = "hv-root is-" + mode + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
+    var cls = "hv-root is-" + mode + (LD.eraShows && LD.eraShows(state) ? " is-era is-era-" + LD.eraAct(state) + (LD.eraFullArt(state) ? " is-era-full" : "") : "") + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
+    var eraPlate = LD.eraPlate ? LD.eraPlate(state) : null, eraOn = LD.eraShows ? LD.eraShows(state) : false;
+    var nF = LD.HOUSE_FRAMES.length;
     var frames = LD.HOUSE_FRAMES.map(function (f, i) {
-      return '<img class="hv-plate" data-frame="' + i + '" src="' + f.src + '" alt="" draggable="false">';
+      var src = eraPlate && i >= nF - 2 ? eraPlate : f.src;
+      return '<img class="hv-plate" data-frame="' + i + '" src="' + src + '" alt="" draggable="false">';
     }).join("");
     var showSet = mode === "after" || mode === "turning";
     var h = '<div class="' + cls + '" id="hv-stage" role="dialog" aria-label="The house">';
@@ -278,9 +399,10 @@
     h += ui.seated && LD.seatHud ? LD.seatHud(state, { menu: false, nets: false }).replace('class="sd-menu"', 'class="sd-menu" tabindex="-1" aria-hidden="true"') : LD.renderHouseHud(state);
     h += '<div class="hv-clip"><div class="hv-rig">';
     h += '<div class="hv-plates" aria-hidden="true">' + frames + "</div>";
-    if (showSet) h += LD.renderHouseFeed(state);
+    if (showSet) h += eraOn ? LD.renderEraScreen(state, ui) : LD.renderHouseFeed(state);
     h += "</div></div>";
-    if (showSet) h += LD.renderHouseBand(state);
+    if (showSet && LD.isHouse(state) && state.house && state.house.era) h += LD.renderEraGoal(state);
+    if (showSet) h += eraOn ? LD.renderEraCard(state, ui) : LD.renderHouseBand(state);
     if (mode === "turning") h += '<button type="button" class="hv-skip" id="hv-skip">Skip</button>';
     h += '<div class="hv-dock">';
     if (mode === "after") {

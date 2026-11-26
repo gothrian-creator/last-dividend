@@ -741,7 +741,8 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
       "band lists Helen, Tom, Lila, Nia and Eli once they are in");
   }
   {
-    const html = LD.renderHouseStage(houseRun(), { mode: "after" });
+    const now9 = houseRun(); now9.turn = 9;
+    const html = LD.renderHouseStage(now9, { mode: "after" });
     ok(/turn-1-before-clean\.webp/.test(html) && /turn-6-after\.webp/.test(html) && (html.match(/class="hv-plate"/g) || []).length === 6,
       "stage paints the six 1978 turn plates");
     ok(/hv-screen/.test(html) && /feed\/water-empty\.webp/.test(html) && /feed\/power-dark\.webp/.test(html),
@@ -793,7 +794,7 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
 
   {
     const st = openBunker(houseRun({ seed: "copy-ui" }));
-    st.house.rooms.air.on = true; st.house.rooms.air.by = "start";
+    st.house.rooms.air.on = true; st.house.rooms.air.by = "start"; st.turn = 9;
     const html = LD.renderHouseStage(st, { mode: "after" });
     ok(!/hv-pip/.test(html) && /feed\/air-empty\.webp/.test(html), "empty-running Air uses the empty plate and no name pip");
     const admitted = LD.houseAdmit(st, { id: "eli" }).state;
@@ -805,6 +806,24 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
       "Lila's inset is a strip inside the TV glass");
     const dark = LD.renderHouseFeed(openBunker(houseRun({ seed: "dark-ui" })));
     ok(/feed\/power-dark/.test(dark) && !/power-on/.test(dark), "dark rooms never show a resident plate");
+  }
+
+  {
+    /* era goals view: 1978 board (Mara: full plate), 2008 island, other execs keep their TV with the shared vignettes */
+    const e1 = openBunker(houseRun({ seed: "era-ui" }));
+    const h1 = LD.renderHouseStage(e1, { mode: "after" });
+    ok(/era\/mara\/board-after\.webp/.test(h1) && /hv-era is-board is-full/.test(h1) && (h1.match(/data-eslot=/g) || []).length >= 4 && /Headquarters/.test(h1) && /The Works/.test(h1) && /Capitol/.test(h1) && /Offshore/.test(h1),
+      "1978: Mara faces the holdings board with four facilities");
+    ok(/Act I goal/.test(h1) && /hv-era-up/.test(h1) && /AquaTerra Holdings/.test(h1), "1978: goal ribbon and an order button on the card");
+    ok(!/feed\/power-dark/.test(h1), "1978: no bunker feed on the board");
+    const e2 = JSON.parse(JSON.stringify(e1)); e2.turn = 6;
+    const h2 = LD.renderHouseStage(e2, { mode: "after" });
+    ok(/era\/mara\/island-after\.webp/.test(h2) && /is-isle is-full/.test(h2) && /Desal Works/.test(h2) && /Power Plant/.test(h2) && /Villa/.test(h2) && /Dock &amp; Airstrip/.test(h2) && /Act II goal/.test(h2),
+      "2008: Mara faces the island model with four sites");
+    ok((h2.match(/turn-1-before-clean\.webp/g) || []).length === 1 && (h2.match(/class="hv-plate"/g) || []).length === 6, "2008: the turn keeps its six frames (last two are the island)");
+    const r1 = openBunker(houseRun({ seed: "era-ui-reid", executiveId: "reid" }));
+    const hr = LD.renderHouseStage(r1, { mode: "after" });
+    ok(!/era\/mara\//.test(hr) && /hv-era is-board is-tv/.test(hr) && /fac-power\.webp/.test(hr) && /The Refinery/.test(hr), "other execs: own TV, shared facility vignettes, own Works name");
   }
 
   /* ---------- seated desk (B, house rules + Mara) ---------- */

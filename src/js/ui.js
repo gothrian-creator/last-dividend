@@ -1823,6 +1823,8 @@
     var w = r.width, h = r.height, s, tx, ty;
     if (houseIsLandscape()) {
       s = h / 1090; tx = (w - 720 * s) / 2; ty = -190 * s;
+      /* the 1978 board and the 2008 island stand higher than the TV: keep their top row clear of the HUD */
+      if (document.querySelector("#house-root .hv-root.is-era-full")) ty = -110 * s;
     } else {
       s = Math.min(w / 658, Math.max(w / 720, h / 1280));
       tx = Math.max(w - 720 * s, Math.min(0, w - 713 * s));
@@ -1849,7 +1851,9 @@
       leaveId: (HV.facing && !HV.turning) ? HV.leaveId : null,
       promiseId: HV.promiseId,
       canEnd: houseCanEndQ(),
-      seated: !!(LD.seatedOn && LD.seatedOn(state))
+      seated: !!(LD.seatedOn && LD.seatedOn(state)),
+      eraSlot: HV.eraSlot || null,
+      land: land
     });
     var stage = root.querySelector(".hv-root");
     if (stage && land) stage.classList.add("is-landscape");
@@ -1878,7 +1882,7 @@
     else { frames[lo[0]].style.opacity = String(1 - u); frames[hi[0]].style.opacity = String(u); }
     if (group) { group.style.filter = ""; group.style.transform = ""; }
     var screen = document.querySelector("#house-root .hv-screen");
-    var band = document.querySelectorAll("#house-root .hv-band");
+    var band = document.querySelectorAll("#house-root .hv-band, #house-root .hv-goal");
     var show = t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0;
     if (screen) { screen.style.opacity = String(show); screen.style.filter = "brightness(" + (0.45 + 0.55 * show) + ")"; }
     for (var b2 = 0; b2 < band.length; b2++) band[b2].style.opacity = String(show);
@@ -2062,6 +2066,27 @@
     });
     var no = $("hv-leave-no");
     if (no) no.addEventListener("click", function () { tick(); HV.leaveId = null; refreshHouseChrome(); });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-eslot[data-eslot]"), function (n) {
+      n.addEventListener("click", function (e) {
+        e.stopPropagation();
+        tick();
+        HV.eraSlot = n.getAttribute("data-eslot");
+        refreshHouseChrome();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-era-up[data-eslot]"), function (n) {
+      n.addEventListener("click", function (e) {
+        e.stopPropagation();
+        tick();
+        var k = n.getAttribute("data-eslot");
+        HV.eraSlot = k;
+        var why = n.getAttribute("data-why");
+        if (why) { flash(why); return; }
+        var r = LD.eraUpgrade(state, k);
+        if (r && r.ok) pennyEmit("era-order");
+        applyHouseVerb(r, r && r.ok ? LD.eraSlotName(r.state, LD.eraAct(r.state), k) + " ordered. Ready next quarter." : null);
+      });
+    });
     var stage = $("hv-stage");
     if (stage) stage.addEventListener("click", function (e) {
       if (HV.turning) { tick(); skipHouseTurn(); }

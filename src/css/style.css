@@ -5797,3 +5797,80 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 /* a reveal clip is up: its first frame is the closed still, so the still underneath steps aside only once the video shows */
 .pk.is-vid .pk-closed { visibility: hidden; }
 .pk-vid { right: auto; bottom: auto; }
+
+/* ===== Era goals (2026-11-26): 1978 holdings board, 2008 island model. Sizes inside .hv-rig are plate px (the rig scales). ===== */
+.hv-screen.hv-era.is-full { left: 0; top: 0; width: 100%; height: 100%; display: block; background: none; box-shadow: none; overflow: visible; border-radius: 0; }
+.hv-eslot { position: absolute; padding: 0; border: 0; background: #0a0806; cursor: pointer; overflow: hidden; border-radius: 16px; font: inherit; color: #2a1c12; }
+.hv-eslot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; transition: filter 0.25s ease; }
+.hv-eslot.is-open img { filter: saturate(0.5) brightness(0.62); }
+.hv-eslot.is-locked img { filter: grayscale(0.92) brightness(0.32); }
+.hv-eslot.is-building img { filter: grayscale(0.7) brightness(0.72); }
+.hv-eslot.is-building::after { content: ""; position: absolute; right: -16px; top: 14px; width: 92px; height: 14px; transform: rotate(32deg); background: repeating-linear-gradient(90deg, #d6a83c 0 14px, #2a1c12 14px 24px); opacity: 0.9; }
+.hv-eslot.is-sel { box-shadow: 0 0 0 4px #ecc45c, 0 0 18px rgba(236, 196, 92, 0.55); }
+.hv-echip { position: absolute; left: 6px; right: 6px; bottom: 6px; display: block; padding: 5px 4px 4px; background: rgba(250, 243, 228, 0.94); border-radius: 5px; text-align: center; line-height: 1.05; }
+.hv-echip b { display: block; font-family: var(--font-serif); font-weight: 600; font-size: 22px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hv-echip small { display: block; margin-top: 2px; font-family: var(--font-sans); font-weight: 700; font-size: 15px; color: #1c5c60; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hv-eslot.is-building .hv-echip small { color: #9a6c1c; }
+.hv-eslot.is-locked .hv-echip, .hv-eslot.is-open .hv-echip { background: rgba(236, 226, 206, 0.86); }
+.hv-eslot.is-locked .hv-echip small, .hv-eslot.is-open .hv-echip small { color: #6a5a48; }
+.hv-pips { position: absolute; left: 8px; top: -13px; display: flex; gap: 4px; font-style: normal; }
+.hv-pips i { width: 14px; height: 14px; border-radius: 50%; background: #3a3028; box-shadow: 0 0 0 2px #faf3e4; }
+.hv-pips i.on { background: #b08434; }
+.hv-pips i.bd { background: repeating-linear-gradient(45deg, #d6a83c 0 3px, #3a3028 3px 6px); }
+.hv-elock { position: absolute; left: 0; right: 0; top: 30%; text-align: center; font: 700 22px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: rgba(244, 236, 220, 0.92); font-style: normal; }
+/* island: chips stand above the model on leader pins */
+.hv-eslot.is-site { overflow: visible; background: none; border-radius: 6px; transform: translate(-50%, -50%); }
+.hv-eslot.is-site .hv-echip { position: relative; left: auto; right: auto; bottom: auto; padding: 7px 14px 6px; min-width: 150px; box-shadow: 0 0 0 1px rgba(140, 100, 48, 0.5), 0 3px 8px rgba(20, 12, 6, 0.3); }
+.hv-eslot.is-site .hv-echip b { font-size: 26px; overflow: visible; }
+.hv-eslot.is-site .hv-echip small { font-size: 17px; overflow: visible; }
+.hv-eslot.is-site .hv-pips { left: 10px; top: -9px; }
+.hv-eslot.is-site.is-sel { box-shadow: 0 0 0 4px #ecc45c; }
+.hv-epin { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: #b08434; box-shadow: 0 0 0 3px #faf3e4, 0 2px 4px rgba(0, 0, 0, 0.4); pointer-events: none; z-index: 1; }
+.hv-epin.is-sel { box-shadow: 0 0 0 3px #faf3e4, 0 0 0 9px rgba(236, 196, 92, 0.7); }
+.hv-eveil { position: absolute; width: 230px; height: 170px; margin: -85px 0 0 -115px; border-radius: 50%; pointer-events: none;
+  -webkit-backdrop-filter: grayscale(0.85) brightness(0.8); backdrop-filter: grayscale(0.85) brightness(0.8);
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent); mask-image: radial-gradient(closest-side, #000 55%, transparent); }
+.hv-eveil.is-locked { -webkit-backdrop-filter: grayscale(0.9) brightness(0.45); backdrop-filter: grayscale(0.9) brightness(0.45); }
+/* every other exec: their own TV, the same vignettes in its four cells */
+.hv-screen.hv-era.is-tv { gap: 2px; }
+.hv-screen.hv-era.is-tv .hv-eslot { position: relative; border-radius: 0; }
+.hv-screen.hv-era.is-tv .hv-echip { left: 4px; right: 4px; bottom: 4px; padding: 3px 3px 2px; }
+.hv-screen.hv-era.is-tv .hv-echip b { font-size: 17px; }
+.hv-screen.hv-era.is-tv .hv-echip small { font-size: 12px; }
+.hv-screen.hv-era.is-tv .hv-pips { top: 4px; left: 6px; }
+.hv-screen.hv-era.is-tv .hv-pips i { width: 10px; height: 10px; }
+.hv-screen.hv-era.is-tv .hv-eslot.is-sel { box-shadow: inset 0 0 0 3px #ecc45c; }
+/* goal ribbon under the HUD */
+.hv-goal { position: absolute; left: 50%; top: 106px; transform: translateX(-50%); z-index: 5; margin: 0; padding: 5px 13px; max-width: calc(100% - 24px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: rgba(40, 34, 28, 0.84); color: #faf3e4; border-radius: 3px; font: 700 13px var(--font-sans); pointer-events: none; opacity: 0; }
+.hv-root.is-after .hv-goal { opacity: 1; }
+.hv-root.has-card .hv-goal { opacity: 0; }
+.hv-root.is-landscape .hv-goal { left: calc(300px + (100% - 300px) / 2); top: auto; bottom: 14px; }
+.hv-root.is-seated.is-landscape .hv-goal { left: 50%; }
+/* the era card: the band's lane, wider, with its one order */
+.hv-band.hv-ecard { pointer-events: auto; left: 10px; right: 10px; width: auto; max-width: 520px; padding: 7px 10px 7px; }
+.hv-etitle { margin: 0; font-family: var(--font-serif); font-weight: 600; font-size: 18px; line-height: 1.1; color: #2a1c12; }
+.hv-egoal { margin: 3px 0 4px; font-family: var(--font-sans); font-size: 12px; color: #1c5c60; font-weight: 700; }
+.hv-erow { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+.hv-erow-t { flex: 1; min-width: 0; }
+.hv-erow-t b { display: block; font-family: var(--font-serif); font-weight: 600; font-size: 15px; color: #2a1c12; }
+.hv-erow-t span { display: block; font-family: var(--font-sans); font-size: 12px; line-height: 1.25; color: #3a2a1c; }
+.hv-erow .btn { min-height: 44px; min-width: 96px; padding: 3px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+.hv-erow .btn b { font-size: 14px; }
+.hv-erow .btn small { font-size: 11px; opacity: 0.9; }
+.hv-erow .btn[aria-disabled="true"] { opacity: 0.55; }
+.hv-erow.is-compact { padding-top: 5px; border-top: 1px solid rgba(140, 100, 48, 0.22); }
+.hv-erow.is-compact .btn { min-width: 84px; min-height: 42px; }
+.hv-estaff-row { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-family: var(--font-sans); font-size: 11px; color: #6a4a22; }
+.hv-estaff-row small { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 2px; }
+.hv-estaff { border: 1px solid rgba(140, 100, 48, 0.45); background: rgba(255, 250, 238, 0.7); border-radius: 10px; padding: 2px 8px; min-height: 26px; font: 600 12px var(--font-sans); color: #2a1c12; cursor: pointer; }
+.hv-inherit { margin: 3px 0 0; font-family: var(--font-sans); font-size: 11px; color: #1c5c60; font-weight: 700; }
+.hv-root.is-landscape .hv-band.hv-ecard { left: 12px; right: auto; width: 276px; max-width: none; }
+@media (min-width: 700px) and (min-height: 1100px) { .hv-band.hv-ecard { right: auto; width: min(70vw, 520px); } }
+.hv-erow .btn { width: auto; flex: 0 0 auto; border-radius: 0; border: 2px solid var(--gold); background: #f4ecdc; color: var(--ink); text-shadow: none;
+  box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.34); font-family: var(--font-serif); }
+.hv-erow .btn.btn-coral { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.34); }
+.hv-erow .btn:active { transform: translate(2px, 3px); }
+.hv-erow .btn b, .hv-erow .btn small { font-family: var(--font-sans); }
+.hv-eslot:not(.is-site):not(.hv-cell) .hv-echip b { font-size: 19px; }
+.hv-eslot:not(.is-site):not(.hv-cell) .hv-echip small { font-size: 14px; }

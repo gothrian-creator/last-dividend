@@ -233,8 +233,9 @@
 
   LD.houseInit = function (state) {
     if (!state || state.ruleset !== "house") return state;
-    if (state.house) { applyHousePerks(state); syncBunker(state); return state; }
+    if (state.house) { LD.eraMigrate(state); applyHousePerks(state); syncBunker(state); return state; }
     var h = emptyHouse();
+    h.era = emptyEra();
     state.house = h;
     LD.SYSTEMS.forEach(function (s) {
       var b = state.bunker[s.id];
@@ -253,6 +254,7 @@
   LD.houseEnsure = function (state) {
     if (!state || state.ruleset !== "house") return state;
     if (!state.house) return LD.houseInit(state);
+    LD.eraMigrate(state);
     applyHousePerks(state);
     syncBunker(state);
     return state;
@@ -706,6 +708,7 @@
   LD.houseBeforeClose = function (state) {
     if (!LD.isHouse(state) || !state.house) return;
     var h = state.house;
+    if (LD.eraBeforeClose) LD.eraBeforeClose(state);
     var inc = incomeFor(state);
     var drain = drainFor(h.residents.length, hasRes(state, "nia"));
     h.stores = h.stores + inc - drain;
@@ -761,6 +764,7 @@
 
   LD.houseAfterClose = function (state) {
     if (!LD.isHouse(state) || !state.house) return;
+    if (LD.eraAfterClose) LD.eraAfterClose(state);
     /* A leftover arrival waits. A due promise can consume the act, so they must not be sent away for that. No second arrival while one is at the door. */
     var dues = openPromises(state).filter(function (p) { return p.dueQ <= state.turn; }).sort(function (a, b) { return a.dueQ - b.dueQ || a.id.localeCompare(b.id); });
     if (dues.length) {
@@ -776,6 +780,7 @@
     if (!LD.isHouse(state) || !state.house) return;
     var d = LD.dealById && LD.dealById(dealId);
     state.house.dealLog.push({ q: state.turn, id: dealId, tags: (d && d.tags) || [] });
+    if (LD.eraOnDeal) LD.eraOnDeal(state);
     if (state.house.dealLog.length > 40) state.house.dealLog = state.house.dealLog.slice(-40);
   };
 
@@ -967,6 +972,163 @@
     var loud = fg.enc === "journalist" || fg.enc === "protest" || !fg.done || (fg.done && !fg.done.win) || (fg.hits | 0) > 0;
     if (!loud) return;
     rollLeak(state, false);
+  };
+
+  /* ---------- Era goals (2026-11-26): 1978 the company, 2008 the island, Now the bunker ----------
+     One extra "holdings" act a quarter (cash, separate from the house act), on four slots that line up with the bunker
+     systems: power / water / air / food. The rooms, residents, Word, stores and the seal are untouched; the eras only
+     feed them. Fights are untouched. */
+  LD.ERA_SAVE_V = 2;
+  LD.ERA_SLOTS = ["power", "water", "air", "food"];
+  LD.ERA_MAX_LV = 3;
+  var WORKS_NAME = { mara: "The Works", reid: "The Refinery", imani: "The Mill", julian: "The Terminal", soren: "The Plant", cassius: "The Trading Floor" };
+  LD.ERA_DEFS = {
+    1: { key: "company", title: "The Company", goal: "All four facilities running by Q4", byQ: 4, slots: {
+      power: { name: "Headquarters", short: "HQ", cost: [10, 18, 28], fx: function (lv) { return "+$" + (2 * lv) + "M on every deal you sign"; } },
+      water: { name: "The Works", short: "Works", cost: [8, 14, 22], fx: function (lv) { return "+$" + (3 * lv) + "M every quarter"; } },
+      air: { name: "Capitol Office", short: "Capitol", cost: [12, 20, 30], fx: function (lv) { return "Unrest \u2212" + lv + " every quarter"; } },
+      food: { name: "Offshore Holding", short: "Offshore", cost: [10, 16, 24], fx: function (lv) { return "Banks $" + (4 * lv) + "M a quarter for the island"; } }
+    } },
+    2: { key: "island", title: "The Island", goal: "All four island sites built by Q8", byQ: 8, slots: {
+      power: { name: "Power Plant", short: "Plant", cost: [14, 22, 32], fx: function (lv) { return lv >= 3 ? "Power room starts on and sound" : lv >= 2 ? "Power room starts on" : "Power room starts sound if on"; } },
+      water: { name: "Desal Works", short: "Desal", cost: [14, 22, 32], fx: function (lv) { return lv >= 3 ? "Water room starts on and sound" : lv >= 2 ? "Water room starts on" : "Water room starts sound if on"; } },
+      air: { name: "Dock & Airstrip", short: "Dock", cost: [16, 24, 34], fx: function (lv) { return lv >= 3 ? "Air room starts on and sound" : lv >= 2 ? "Air room starts on" : "Air room starts sound if on"; } },
+      food: { name: "Villa", short: "Villa", cost: [12, 20, 30], fx: function (lv) { return "+" + lv + " Stores when you move in" + (lv >= 2 ? "; food room starts on" : ""); } }
+    } }
+  };
+  LD.ERA_INHERIT_ROOMS_CAP = 2;   /* island sites can switch on at most two bunker rooms */
+  LD.ERA_BANK_STORES_CAP = 3;     /* Offshore leftovers: +1 store per $8M, at most +3 */
+  LD.eraAct = function (state) { var t = (state && state.turn) | 0 || 1; return t <= 4 ? 1 : t <= 8 ? 2 : 3; };
+  LD.eraSlotName = function (state, era, slot) {
+    if (era === 1 && slot === "water") return WORKS_NAME[state && state.executiveId] || "The Works";
+    var d = LD.ERA_DEFS[era]; return d && d.slots[slot] ? d.slots[slot].name : slot;
+  };
+  function emptyEra() {
+    var mk = function () { var o = {}; LD.ERA_SLOTS.forEach(function (s) { o[s] = { lv: 0, build: 0 }; }); return o; };
+    return { v: LD.ERA_SAVE_V, company: mk(), island: mk(), bank: 0, actQ: 0, goals: { 1: null, 2: null }, legacy: 0, inherited: null, discount: {} };
+  }
+  /* Migration: a v1 house (saved before the era goals) gets the empty era block. Quarters already past are marked
+     legacy so a resumed run is never judged on goals it could not see. */
+  LD.eraMigrate = function (state) {
+    if (!state || !state.house) return state;
+    var h = state.house;
+    if (h.era && h.era.v === LD.ERA_SAVE_V) return state;
+    var e = emptyEra();
+    var t = state.turn | 0;
+    if (t > 1) { e.legacy = t; if (t > 4) e.goals[1] = "legacy"; if (t > 8) { e.goals[2] = "legacy"; e.inherited = { legacy: true, rooms: [], stores: 0, cash: 0 }; } }
+    h.era = e;
+    return state;
+  };
+  function eraBlock(state) { return state.house && state.house.era; }
+  function slotsFor(e, era) { return era === 1 ? e.company : e.island; }
+  LD.eraSlots = function (state, era) { var e = eraBlock(state); return e ? slotsFor(e, era || LD.eraAct(state)) : null; };
+  LD.eraUpgradeCost = function (state, slot, era) {
+    era = era || LD.eraAct(state);
+    var d = LD.ERA_DEFS[era], e = eraBlock(state); if (!d || !e || !d.slots[slot]) return null;
+    var s = slotsFor(e, era)[slot]; var lv = Math.max(s.lv, s.build); if (lv >= LD.ERA_MAX_LV) return null;
+    var c = d.slots[slot].cost[lv];
+    if (era === 2 && e.discount && e.discount[slot]) c = Math.round(c * 0.75);
+    return c;
+  };
+  /* Cash the island can draw on: the Offshore bank first, then the float. */
+  LD.eraFunds = function (state, era) { var e = eraBlock(state); return (state.cash | 0) + ((era || LD.eraAct(state)) === 2 && e ? e.bank | 0 : 0); };
+  LD.eraCanUpgrade = function (state, slot) {
+    if (!LD.isHouse(state) || !state.house) return "The house is not running this run.";
+    var e = eraBlock(state); if (!e) return "No holdings this run.";
+    if (state.ended) return "Run already ended.";
+    var era = LD.eraAct(state); if (era > 2) return "The holdings are sold. This is the bunker now.";
+    if (state.phase !== "bunker") return "Choose a deal first.";
+    if (e.actQ === state.turn) return "One holdings order a quarter.";
+    var s = slotsFor(e, era)[slot]; if (!s) return "Unknown holding.";
+    if (s.build) return "Already being built.";
+    var c = LD.eraUpgradeCost(state, slot, era); if (c == null) return "Fully built.";
+    if (LD.eraFunds(state, era) < c) return "Not enough cash ($" + c + "M required).";
+    return null;
+  };
+  LD.eraUpgrade = function (state, slot) {
+    state = clone(state);
+    var why = LD.eraCanUpgrade(state, slot);
+    if (why) return { ok: false, error: why, state: state };
+    var e = eraBlock(state), era = LD.eraAct(state), s = slotsFor(e, era)[slot];
+    var c = LD.eraUpgradeCost(state, slot, era);
+    var fromBank = era === 2 ? Math.min(e.bank | 0, c) : 0;
+    e.bank = (e.bank | 0) - fromBank; state.cash -= c - fromBank;
+    s.build = s.lv + 1; e.actQ = state.turn;
+    log(state, "You ordered " + LD.eraSlotName(state, era, slot) + " Lv " + s.build + " ($" + c + "M" + (fromBank ? ", $" + fromBank + "M from Offshore" : "") + "). Ready next quarter.");
+    return { ok: true, state: state, cost: c, fromBank: fromBank };
+  };
+  LD.eraGoalMet = function (state, era) {
+    var e = eraBlock(state); if (!e) return false;
+    var s = slotsFor(e, era); return LD.ERA_SLOTS.every(function (k) { return s[k].lv >= 1; });
+  };
+  LD.eraLevel = function (state, era, slot) { var e = eraBlock(state); return e ? slotsFor(e, era)[slot].lv : 0; };
+  /* End of a quarter (before the turn ticks): finish builds, then the company's effects. */
+  function eraBeforeClose(state) {
+    var e = eraBlock(state); if (!e) return;
+    var era = LD.eraAct(state); if (era > 2) return;
+    var s = slotsFor(e, era);
+    LD.ERA_SLOTS.forEach(function (k) { if (s[k].build) { s[k].lv = s[k].build; s[k].build = 0; log(state, LD.eraSlotName(state, era, k) + " is ready (Lv " + s[k].lv + ")."); } });
+    if (era === 1) {
+      var w = s.water.lv, cap = s.air.lv, off = s.food.lv;
+      if (w) { state.cash += 3 * w; log(state, LD.eraSlotName(state, 1, "water") + " pays $" + (3 * w) + "M."); }
+      if (cap) { state.unrest = clamp(state.unrest - cap, 0, LD.MAX_UNREST); log(state, "Capitol Office: Unrest \u2212" + cap + "."); }
+      if (off) { var b = Math.min(Math.max(0, state.cash | 0), 4 * off); if (b > 0) { state.cash -= b; e.bank = (e.bank | 0) + b; log(state, "Offshore banks $" + b + "M (now $" + e.bank + "M)."); } }
+    }
+  }
+  /* Start of a quarter (after the turn ticks): era goals at Q4 -> Q5 and Q8 -> Q9, then the carry-over. */
+  function eraAfterClose(state) {
+    var e = eraBlock(state); if (!e) return;
+    if (state.turn === 5 && e.goals[1] == null) {
+      var met = LD.eraGoalMet(state, 1); e.goals[1] = met ? "met" : "missed";
+      e.bank = Math.round((e.bank | 0) * 1.25);
+      var opened = [];
+      LD.ERA_SLOTS.forEach(function (k) {
+        var lv = e.company[k].lv;
+        if (lv >= 2 && e.island[k].lv < 1) { e.island[k].lv = 1; opened.push(LD.eraSlotName(state, 2, k)); }
+        if (lv >= 3) e.discount[k] = true;
+      });
+      if (met) { state.cash += 10; log(state, "1978 goal met: four facilities running. The listing pays $10M."); }
+      else log(state, "1978 goal missed. The island starts with less.");
+      if (opened.length) log(state, "The company opens island sites: " + opened.join(", ") + ".");
+      if (e.bank) log(state, "Offshore carries $" + e.bank + "M to 2008.");
+    }
+    if (state.turn === 9 && e.goals[2] == null) {
+      var met2 = LD.eraGoalMet(state, 2); e.goals[2] = met2 ? "met" : "missed";
+      if (met2) { state.cash += 12; log(state, "2008 goal met: the island is built. $12M in rents."); }
+      else log(state, "2008 goal missed. The bunker starts with less.");
+      eraInherit(state);
+    }
+  }
+  /* Now: island sites set the bunker rooms' start; Offshore leftovers become stores. Capped. */
+  function eraInherit(state) {
+    var e = eraBlock(state), h = state.house, inh = { rooms: [], sound: [], stores: 0, cash: 0 };
+    var switched = 0;
+    LD.ERA_SLOTS.forEach(function (k) {
+      var lv = e.island[k].lv, room = h.rooms[k]; if (!room) return;
+      var canOn = k === "food" ? lv >= 2 : lv >= 2;
+      if (!room.on && canOn && switched < LD.ERA_INHERIT_ROOMS_CAP) {
+        room.on = true; room.base = "island"; if (!room.by) room.by = "island"; room.quality = lv >= 3 ? "sound" : "cheap";
+        switched++; inh.rooms.push(k);
+      } else if (room.on && room.quality === "cheap" && lv >= 1) { room.quality = "sound"; inh.sound.push(k); }
+    });
+    var villa = e.island.food.lv;
+    var st = Math.min(LD.ERA_BANK_STORES_CAP, Math.floor((e.bank | 0) / 8));
+    inh.stores = st + villa; h.stores = (h.stores | 0) + inh.stores;
+    inh.cash = (e.bank | 0) - st * 8; state.cash += inh.cash; e.bank = 0;
+    e.inherited = inh;
+    syncBunker(state);
+    var parts = [];
+    if (inh.rooms.length) parts.push("rooms on: " + inh.rooms.join(", "));
+    if (inh.sound.length) parts.push("recertified: " + inh.sound.join(", "));
+    if (inh.stores) parts.push("Stores +" + inh.stores);
+    if (inh.cash) parts.push("$" + inh.cash + "M back from Offshore");
+    log(state, "The bunker inherits from the island" + (parts.length ? " \u2014 " + parts.join("; ") : "") + ".");
+  }
+  LD.eraBeforeClose = eraBeforeClose;
+  LD.eraAfterClose = eraAfterClose;
+  LD.eraOnDeal = function (state) {
+    var e = eraBlock(state); if (!e || LD.eraAct(state) !== 1) return;
+    var lv = e.company.power.lv; if (lv) { state.cash += 2 * lv; }
   };
 
   /* ---------- Wraps that are safe once meta/fy have loaded ---------- */

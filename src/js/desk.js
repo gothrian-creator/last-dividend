@@ -787,7 +787,7 @@
     h += '<div class="dz-k">Executive dossier</div>';
     h += '<div class="exec-id"><div class="avatar" aria-hidden="true">' + esc(initials) + '</div><div><h3>' + esc(exec.name) + "</h3>" +
       '<div class="exec-t">' + esc(exec.title) + "<br>" + esc(exec.firm) + "</div></div></div>";
-    h += '<div class="target"><span>◎</span><b>Goal</b> All 4 bunker systems at Lv 2+, then seal (from Q' + LD.MIN_EVAC_TURN + ").</div>";
+    h += '<div class="target"><span>◎</span><b>Goal</b> ' + (LD.isHouse && LD.isHouse(state) ? "All 4 rooms on and holding" : "All 4 bunker systems at Lv 2+") + ", then seal (from Q" + LD.MIN_EVAC_TURN + ").</div>";
     if (LD.fyDossier) h += LD.fyDossier(state);
     var md = LD.mandateById(state.mandate);
     if (md) h += '<div class="target mandate"><span>◈</span><b>Board mandate</b> ' + esc(md.text) + " · +" + LD.MANDATE_BONUS + " ◈ on a win</div>";

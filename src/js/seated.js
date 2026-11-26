@@ -298,7 +298,7 @@
       h += '<p class="sd-signed">Signed: <b>' + esc(LD.dealById(state.lastDealId).title) + "</b></p>";
     }
     var canEnd = state.phase === "bunker" && !(LD.fyBusy && LD.fyBusy(state));
-    h += '<button type="button" class="sd-endq" id="btn-endq"' + (canEnd ? "" : " disabled") + "><b>End quarter</b><small>" + (canEnd ? "Close Q" + state.turn + " and read the report" : "Pick a deal on the map first") + "</small></button>";
+    h += '<button type="button" class="sd-endq" id="btn-endq"' + (canEnd ? "" : " disabled") + "><b>End quarter</b><small>" + (canEnd ? "Close Q" + state.turn + " and read the report" : "Sign a deal on your desk first") + "</small></button>";
     /* landscape has the room for words: the four public networks, by name and state (the HUD only has room for jewels) */
     h += '<div class="sd-nlist"><h5>Public networks</h5>';
     ["air", "water", "power", "food"].forEach(function (id) {
@@ -335,7 +335,7 @@
         '<span class="sd-stk"><b>' + esc(sd.kicker) + "</b><em" + (neg ? ' class="neg"' : "") + ">" + esc(x.tag) + "</em></span></button>";
     });
     h += "</div>";
-    if (!ui.land) h += '<div class="sd-ribbon" role="status">' + (deal ? "Q" + state.turn + " · pick 1 of " + infos.length + " deals on the map" : state.ended ? "The run is over" : "Q" + state.turn + " · deal signed") + "</div>";
+    if (!ui.land) h += '<div class="sd-ribbon" role="status">' + (deal ? "Q" + state.turn + " · pick 1 of " + infos.length + " deals on your desk" : state.ended ? "The run is over" : "Q" + state.turn + " · deal signed") + "</div>";
     h += LD.seatHud(state);
     /* landscape side panels: the dossier (left), this quarter (right) */
     if (ui.land) h += quarterList(state, infos, sel.deal);

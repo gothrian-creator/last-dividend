@@ -5903,6 +5903,31 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   -webkit-mask-image: none; mask-image: none;
   box-shadow: 0 0 0 5px #d3b06a, 0 0 0 9px #1a0f08, 0 0 70px 26px rgba(8, 3, 1, 0.55);
 }
+
+/* ===== Mara's era turns (2026-11-26): per-era plates, the turn clip, the Now wall panel. Sizes are plate px (the rig scales). ===== */
+/* the clip sits over the plates (same mask), under the feed / era layer; it fades out over the end plate */
+.hv-vid {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; opacity: 0; pointer-events: none; background: transparent;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 90px); mask-image: linear-gradient(to bottom, transparent 0, #000 90px);
+}
+.hv-vid.is-on { opacity: 1; }
+.hv-vid.is-out { opacity: 0; transition: opacity 0.18s linear; }
+.hv-root.is-landscape .hv-vid { -webkit-mask-image: none; mask-image: none; }
+/* Now: the frameless wall panel is a perspective quad (74,226)(529,253)(527,629)(74,650); the feed is laid out flat at the painted
+   content size (2x2 cells 440x386, 6px gutters) and mapped onto the quad */
+.hv-root.is-now-panel .hv-screen {
+  left: 0; top: 0; width: 886px; height: 778px; gap: 6px; transform-origin: 0 0;
+  transform: matrix3d(0.59246738, 0.066874587, 0, 0.00014406878, 0.00045611734, 0.55177534, 0, 6.3842675e-06, 0, 0, 1, 0, 72.907349, 224.97234, 0, 1);
+  background: #0e1011; box-shadow: none; border-radius: 0;
+}
+.hv-root.is-now-panel .hv-cell { background: #0e1011; }
+.hv-fg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
+.hv-root.is-after .hv-fg { opacity: 1; }
+/* knock on the seated desk: the same pow as the office knock, on the painted door; louder levels shake harder */
+.sd-knock { position: absolute; z-index: 6; transform: translate(-50%, -50%) rotate(-8deg); font: 900 clamp(15px, 3.2vh, 28px)/1 var(--font-serif, Georgia, serif); color: #fff3c4; -webkit-text-stroke: 2.5px #1d1410; paint-order: stroke; letter-spacing: .02em; white-space: nowrap; opacity: 0; pointer-events: none; }
+.sd-knock.show { animation: o4pow .9s cubic-bezier(.2, 1.6, .4, 1) both; }
+.sd-knock[data-lv="3"] { color: #ffd2b0; font-size: clamp(17px, 3.8vh, 32px); }
+@media (prefers-reduced-motion: reduce) { .sd-knock.show { animation: none; opacity: 1; transition: opacity .2s; } }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -11832,12 +11857,15 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     return items;
   };
 
+  /* Act III (Now) feeds show the present-day bunker; Acts I-II (and old saves before Q9) keep the 1978 feeds */
+  function feedBase(state) { return LD.eraAct && LD.eraAct(state) === 3 ? "assets/house/now/feed/" : BASE + "feed/"; }
+  LD.houseFeedBase = feedBase;
   function feedCell(state, systemId, resId) {
     var room = roomOf(state, systemId) || { on: false };
     var occupied = resId && hasRes(state, resId);
     var failing = !!(room.on && room.quality === "cheap" && !hasRes(state, "helen"));
     var kind = !room.on ? "dark" : occupied ? "on" : "empty";
-    var src = BASE + "feed/" + systemId + "-" + kind + ".webp";
+    var src = feedBase(state) + systemId + "-" + kind + ".webp";
     var label = occupied ? (LD.houseResident(resId) || {}).name : room.on ? (ROOM_EMPTY[systemId] || {}).name : systemId;
     var cls = "hv-cell is-" + kind + (failing ? " is-failing" : "") + (room.on ? " is-lit" : "");
     var tap = occupied ? " data-leave=\"" + resId + "\"" : "";
@@ -11858,7 +11886,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     if (lila) {
       var lr = LD.houseResident("lila") || { name: "Lila Brenner" };
       h += '<button type="button" class="hv-cell hv-lila is-on is-lit" data-leave="lila" aria-label="' + esc(lr.name) + '">' +
-        '<img src="' + BASE + 'feed/lila.webp" alt="" draggable="false"></button>';
+        '<img src="' + feedBase(state) + 'lila.webp" alt="" draggable="false"></button>';
     }
     h += "</div>";
     return h;
@@ -11996,6 +12024,33 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   function pct(v, of) { return (100 * v / of).toFixed(2) + "%"; }
   LD.eraFullArt = function (state) { return !!(state && state.executiveId === "mara"); };
   LD.eraShows = function (state) { return !!(state && state.house && state.house.era && LD.eraAct && LD.eraAct(state) <= 2); };
+  /* Mara's chair turn per era: the plates she turns between and the clip of the turn (ui.js plays it, plate crossfade fallback).
+     start/end: 720x1280 plates (start null = the shared 1978 turn plates); clip: base name of <clip>.mp4 (H.264) + <clip>.webm (VP9)
+     under assets/house/era/mara/, made by scripts/process_turn_clip.py from these same plates; false = plate crossfade only.
+     cls: extra .hv-root class (is-now-panel lays the feed on the frameless wall panel); fg: Mara cut out of the end plate, drawn above
+     the feed where her head overlaps the panel. */
+  var MARA_DIR = ERA_ART + "mara/";
+  LD.MARA_TURN = {
+    1978: { start: null, end: MARA_DIR + "board-after.webp", clip: "turn-1978" },
+    2008: { start: MARA_DIR + "2008-start.webp", end: MARA_DIR + "2008-end.webp", clip: "turn-2008" },
+    now: { start: MARA_DIR + "now-start.webp", end: MARA_DIR + "now-end.webp", clip: "turn-now", cls: "is-now-panel", fg: MARA_DIR + "now-end-fg.webp" }
+  };
+  LD.MARA_TURN_DIR = MARA_DIR;
+  LD.maraTurn = function (state) {
+    if (!state || state.executiveId !== "mara" || !(LD.isHouse && LD.isHouse(state))) return null;
+    var act = LD.eraAct ? LD.eraAct(state) : 3;
+    if (act < 3 && !LD.eraShows(state)) return null; /* no era block: the shared 1978 TV turn */
+    var key = act === 1 ? "1978" : act === 2 ? "2008" : "now", c = LD.MARA_TURN[key];
+    if (!c) return null;
+    return { key: key, start: c.start || null, end: c.end || null, clip: c.clip || null, cls: c.cls || "", fg: c.fg || null };
+  };
+  /* the six plate srcs for this turn */
+  LD.housePlates = function (state) {
+    var t = LD.maraTurn(state), nF = LD.HOUSE_FRAMES.length;
+    if (t && t.start && t.end) return LD.HOUSE_FRAMES.map(function (f, i) { return i < nF / 2 ? t.start : t.end; });
+    var eraPlate = LD.eraPlate ? LD.eraPlate(state) : null;
+    return LD.HOUSE_FRAMES.map(function (f, i) { return (t && t.end && i >= nF - 2) ? t.end : eraPlate && i >= nF - 2 ? eraPlate : f.src; });
+  };
   LD.eraPlate = function (state) {
     if (!LD.eraShows(state) || !LD.eraFullArt(state)) return null;
     return ERA_ART + "mara/" + (LD.eraAct(state) === 1 ? "board" : "island") + "-after.webp";
@@ -12113,12 +12168,11 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     if (LD.seatUseExec) LD.seatUseExec(state && state.executiveId);
     var mode = ui.mode || "after";
     var cls = "hv-root is-" + mode + (LD.eraShows && LD.eraShows(state) ? " is-era is-era-" + LD.eraAct(state) + (LD.eraFullArt(state) ? " is-era-full" : "") : "") + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
-    var eraPlate = LD.eraPlate ? LD.eraPlate(state) : null, eraOn = LD.eraShows ? LD.eraShows(state) : false;
-    var nF = LD.HOUSE_FRAMES.length;
-    var frames = LD.HOUSE_FRAMES.map(function (f, i) {
-      var src = eraPlate && i >= nF - 2 ? eraPlate : f.src;
+    var eraOn = LD.eraShows ? LD.eraShows(state) : false, turn = LD.maraTurn ? LD.maraTurn(state) : null;
+    var frames = LD.housePlates(state).map(function (src, i) {
       return '<img class="hv-plate" data-frame="' + i + '" src="' + src + '" alt="" draggable="false">';
     }).join("");
+    if (turn && turn.cls) cls += " " + turn.cls;
     var showSet = mode === "after" || mode === "turning";
     var h = '<div class="' + cls + '" id="hv-stage" role="dialog" aria-label="The house">';
     h += '<div class="hv-bg" aria-hidden="true"><img src="' + BASE + 'turn-bg.webp" alt="" draggable="false"><i class="e l"></i><i class="e r"></i></div>';
@@ -12126,6 +12180,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     h += '<div class="hv-clip"><div class="hv-rig">';
     h += '<div class="hv-plates" aria-hidden="true">' + frames + "</div>";
     if (showSet) h += eraOn ? LD.renderEraScreen(state, ui) : LD.renderHouseFeed(state);
+    if (showSet && turn && turn.fg && !eraOn) h += '<img class="hv-fg" src="' + turn.fg + '" alt="" aria-hidden="true" draggable="false">';
     h += "</div></div>";
     if (showSet && LD.isHouse(state) && state.house && state.house.era) h += LD.renderEraGoal(state);
     if (showSet) h += eraOn ? LD.renderEraCard(state, ui) : LD.renderHouseBand(state);
@@ -19226,7 +19281,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 
 
   /* ---------- Phase 2 house view (1978 Mara chair-turn) ---------- */
-  var HV = { open: false, facing: false, turning: false, dir: "to", auto: false, leaveId: null, card: null, promiseId: null, raf: 0, t0: 0 };
+  var HV = { open: false, facing: false, turning: false, dir: "to", auto: false, leaveId: null, card: null, promiseId: null, raf: 0, t0: 0, clipGen: 0, vid: null, clipPlayed: 0, clipFell: 0 };
 
   function houseCardKind() {
     if (!state || !(LD.isHouse && LD.isHouse(state)) || state.ended) return null;
@@ -19239,7 +19294,89 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     return !!(state && !state.ended && state.phase === "bunker" && !(LD.fyBusy && LD.fyBusy(state)));
   }
   function preloadHousePlates() {
-    (LD.HOUSE_FRAMES || []).forEach(function (f) { var img = new Image(); img.src = f.src; });
+    var srcs = state && LD.housePlates ? LD.housePlates(state) : (LD.HOUSE_FRAMES || []).map(function (f) { return f.src; });
+    var t = state && LD.maraTurn ? LD.maraTurn(state) : null;
+    if (t && t.fg) srcs = srcs.concat([t.fg]);
+    srcs.forEach(function (src, i) { if (srcs.indexOf(src) === i) { var img = new Image(); img.src = src; } });
+    turnClipPreload();
+  }
+  /* Mara's era turn clips (LD.maraTurn): fetched into memory when the desk renders, so a turn never waits on the network.
+     A clip plays only once fully loaded; missing, failed, slow to start, skipped or reduced motion = the plate crossfade.
+     MP4 (H.264) where it plays (Safari/iOS, Chrome, Android), else the VP9 WebM. */
+  var TC = {};
+  function tcType() {
+    if (TC.type !== undefined) return TC.type;
+    var v = document.createElement("video"), t = null;
+    try {
+      if (v.canPlayType && v.canPlayType('video/mp4; codecs="avc1.640028"')) t = "mp4";
+      else if (v.canPlayType && v.canPlayType('video/webm; codecs="vp9"')) t = "webm";
+    } catch (e) {}
+    if (!window.fetch || !(window.URL && URL.createObjectURL)) t = null;
+    TC.type = t;
+    return t;
+  }
+  function turnClipPreload() {
+    var t = state && LD.maraTurn ? LD.maraTurn(state) : null;
+    if (!t || !t.clip || reduced() || !tcType() || TC["c:" + t.clip]) return;
+    var rec = TC["c:" + t.clip] = { url: null, bad: false };
+    fetch(LD.MARA_TURN_DIR + t.clip + "." + tcType()).then(function (r) { return r.ok ? r.blob() : null; })
+      .then(function (b) { if (b && b.size) rec.url = URL.createObjectURL(b); else rec.bad = true; })
+      .catch(function () { rec.bad = true; });
+  }
+  function turnClipUrl() {
+    var t = state && LD.maraTurn ? LD.maraTurn(state) : null, r = t && t.clip ? TC["c:" + t.clip] : null;
+    return r && r.url && !r.bad && !reduced() ? r.url : null;
+  }
+  function setTurnOverlays(show) {
+    var screen = document.querySelector("#house-root .hv-screen");
+    var band = document.querySelectorAll("#house-root .hv-band, #house-root .hv-goal, #house-root .hv-fg");
+    if (screen) { screen.style.opacity = String(show); screen.style.filter = "brightness(" + (0.45 + 0.55 * show) + ")"; }
+    for (var b2 = 0; b2 < band.length; b2++) band[b2].style.opacity = String(show);
+  }
+  /* the clip over the start plate: shown once it has put up a frame (its first frame is the start plate), then it fades out over the
+     end plate while the feed / era layer, band and goal fade in */
+  function playTurnClip(url) {
+    var plates = document.querySelector("#house-root .hv-rig .hv-plates");
+    if (!plates) return false;
+    var gen = ++HV.clipGen, v = document.createElement("video"), started = false, landed = false, tStart = 0, tAll = 0;
+    v.className = "hv-vid"; v.muted = true; v.defaultMuted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.setAttribute("muted", "");
+    v.preload = "auto"; v.disablePictureInPicture = true; v.setAttribute("aria-hidden", "true");
+    plates.parentNode.insertBefore(v, plates.nextSibling);
+    HV.vid = v;
+    setTurnOverlays(0);
+    function live() { return gen === HV.clipGen && HV.turning && HV.dir === "to"; }
+    function drop() { if (v.parentNode) v.parentNode.removeChild(v); if (HV.vid === v) HV.vid = null; }
+    function fallback() {
+      if (!live() || started) return;
+      clearTimeout(tStart); clearTimeout(tAll); HV.clipGen++; drop(); HV.clipFell++;
+      plateTurn();
+    }
+    function shown() { if (!live() || started) return; started = true; clearTimeout(tStart); v.classList.add("is-on"); HV.clipPlayed++; }
+    function land() {
+      if (!live() || landed) return;
+      if (!started) { fallback(); return; }
+      landed = true; clearTimeout(tAll);
+      setPlateOpacities(1); setTurnOverlays(0);
+      v.classList.add("is-out");
+      var t0 = performance.now();
+      function fade(now) {
+        if (!live()) return;
+        var u = Math.min(1, (now - t0) / 240);
+        setTurnOverlays(u);
+        if (u >= 1) { drop(); finishHouseTurn(); } else HV.raf = requestAnimationFrame(fade);
+      }
+      HV.raf = requestAnimationFrame(fade);
+    }
+    if (v.requestVideoFrameCallback) { var wait = function (now, md) { if (md && md.mediaTime > 0.01 && v.readyState >= 2) shown(); else if (live()) v.requestVideoFrameCallback(wait); }; v.requestVideoFrameCallback(wait); }
+    else v.addEventListener("playing", function () { setTimeout(shown, 40); });
+    v.addEventListener("ended", land);
+    v.addEventListener("error", function () { if (started) land(); else fallback(); });
+    v.addEventListener("loadedmetadata", function () { clearTimeout(tAll); tAll = setTimeout(land, ((v.duration || 2) * 1000) / (LD.TURN_CLIP_RATE || 1) + 1500); });
+    tStart = setTimeout(fallback, LD.TURN_CLIP_START_MS || 900);
+    v.src = url;
+    if (LD.TURN_CLIP_RATE) { try { v.defaultPlaybackRate = v.playbackRate = LD.TURN_CLIP_RATE; } catch (e) {} } /* test hook */
+    var pr = v.play(); if (pr && pr.catch) pr.catch(function () { if (started) land(); else fallback(); });
+    return true;
   }
   /* The plate is 720x1280 portrait. Phones show the whole width bar a sliver of left bezel (Mara's head stays in), with the top blended into
      the backdrop when the screen is taller than the plate. Landscape shows the full chair base and trims only the ceiling. */
@@ -19310,14 +19447,11 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     if (lo[0] === hi[0]) frames[lo[0]].style.opacity = "1";
     else { frames[lo[0]].style.opacity = String(1 - u); frames[hi[0]].style.opacity = String(u); }
     if (group) { group.style.filter = ""; group.style.transform = ""; }
-    var screen = document.querySelector("#house-root .hv-screen");
-    var band = document.querySelectorAll("#house-root .hv-band, #house-root .hv-goal");
-    var show = t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0;
-    if (screen) { screen.style.opacity = String(show); screen.style.filter = "brightness(" + (0.45 + 0.55 * show) + ")"; }
-    for (var b2 = 0; b2 < band.length; b2++) band[b2].style.opacity = String(show);
+    setTurnOverlays(t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0);
   }
   function stopHouseAnim() {
     if (HV.raf) { cancelAnimationFrame(HV.raf); HV.raf = 0; }
+    if (HV.vid) { HV.clipGen++; var v = HV.vid; HV.vid = null; try { v.pause(); } catch (e) {} if (v.parentNode) v.parentNode.removeChild(v); }
   }
   function finishHouseTurn() {
     stopHouseAnim();
@@ -19346,6 +19480,10 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     if (reduced()) { setPlateOpacities(HV.dir === "to" ? 1 : 0); finishHouseTurn(); return; }
     paintHouse(HV.dir === "back" ? "back" : "turning");
     setPlateOpacities(HV.dir === "to" ? 0 : 1);
+    if (HV.dir === "to") { var url = turnClipUrl(); if (url && playTurnClip(url)) return; }
+    plateTurn();
+  }
+  function plateTurn() {
     HV.t0 = performance.now();
     var dur = LD.HOUSE_TURN_MS || 1000;
     function step(now) {
@@ -19397,6 +19535,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     openHouse({ auto: true });
   }
   function attachHousePeek() {
+    if (state && LD.isHouse && LD.isHouse(state)) turnClipPreload();
     if (seatedNow()) { var sb = $("house-peek"); if (sb) sb.hidden = !(LD.houseCanPeek && LD.houseCanPeek(state)) || HV.open || HV.facing || HV.turning; return; }
     Array.prototype.forEach.call(document.querySelectorAll("#house-peek"), function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
     if (!state || !(LD.isHouse && LD.isHouse(state)) || HV.open || HV.facing || HV.turning) return;
@@ -19526,6 +19665,10 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   LD.houseUi = {
     open: openHouse, close: closeHouse, skip: skipHouseTurn, refresh: refreshHouseChrome,
     facing: function () { return HV.facing; }, turning: function () { return HV.turning; },
+    clip: function () {
+      var t = state && LD.maraTurn ? LD.maraTurn(state) : null;
+      return { key: t ? t.key : null, clip: t ? t.clip : null, type: tcType(), ready: !!turnClipUrl(), playing: !!(HV.vid && HV.vid.classList.contains("is-on")), played: HV.clipPlayed, fell: HV.clipFell };
+    },
     seek: function (t) {
       stopHouseAnim();
       HV.open = true; HV.auto = true; HV.leaveId = null;
@@ -20485,13 +20628,29 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   var KN = { last: 0, q: null };
   function knockNow() {
     if (!state || !state.fy || state.ended) return;
-    var door = document.querySelector(".desk .office .of-door"); if (!door) return;
+    var door = document.querySelector(".desk .office .of-door"), sd = !door && document.querySelector("#screen-desk .desk.sd");
+    if (!door && !sd) return;
     var lv = LD.doorLevel(state);
-    door.classList.remove("knocking"); void door.offsetWidth; door.classList.add("knocking");
-    setTimeout(function () { door.classList.remove("knocking"); }, 700);
+    if (door) {
+      door.classList.remove("knocking"); void door.offsetWidth; door.classList.add("knocking");
+      setTimeout(function () { door.classList.remove("knocking"); }, 700);
+    } else seatKnock(sd, lv);
     if (LD.O4) LD.O4.knock(lv);
     SFX.play("knock", lv);
     KN.last = Date.now();
+  }
+  /* the seated desk has no office door element: the knock lands on the painted door behind the visitor's chair */
+  function seatKnock(sd, lv) {
+    var k = sd.querySelector(".sd-knock");
+    if (!k) { k = document.createElement("span"); k.className = "sd-knock"; k.setAttribute("aria-hidden", "true"); sd.appendChild(k); k.addEventListener("animationend", function () { k.classList.remove("show"); }); }
+    k.textContent = lv >= 3 ? "BANG BANG!" : lv >= 2 ? "KNOCK KNOCK" : "tap tap";
+    k.setAttribute("data-lv", String(lv));
+    var q = LD.seatToScreen(LD.seatFrame(window.innerWidth, window.innerHeight), 362, 300), r = sd.getBoundingClientRect(), top = 64;
+    /* on the door, but always clear of the HUD and the quarter ribbon */
+    Array.prototype.forEach.call(sd.querySelectorAll(".sd-hud, .sd-ribbon"), function (e) { var b = e.getBoundingClientRect(); if (b.height && b.top < r.top + r.height * 0.4) top = Math.max(top, b.bottom - r.top + 26); });
+    k.style.left = Math.round(q[0] - r.left) + "px"; k.style.top = Math.round(Math.max(top, q[1] - r.top)) + "px";
+    k.classList.remove("show"); void k.offsetWidth; k.classList.add("show");
+    clearTimeout(KN.st); KN.st = setTimeout(function () { k.classList.remove("show"); }, 1100);
   }
   setInterval(function () {
     if (screen !== "desk" || !state || state.ended || !state.fy || document.hidden) return;

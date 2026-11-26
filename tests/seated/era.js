@@ -14,6 +14,8 @@ async function layout(p,W,H,tag){
     const back=document.querySelector("#hv-back");const goal=document.querySelector("#house-root .hv-goal");
     return {chips,card:card?bb(card):null,hud:hud?bb(hud):null,back:back?bb(back):null,goal:goal?bb(goal):null,era:(document.querySelector("#house-root .hv-root")||{}).className};});
   ok(r.chips.length===4,tag+" four slots ("+r.chips.length+") "+r.era);
+  const cut=await p.evaluate(()=>[...document.querySelectorAll("#house-root .hv-eslot .hv-echip b, #house-root .hv-eslot .hv-echip small")].filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>e.textContent));
+  ok(!cut.length,tag+" no slot label cut off "+JSON.stringify(cut));
   r.chips.forEach((c,i)=>{ok(c.x>=-1&&c.y>=-1&&c.x+c.width<=W+1&&c.y+c.height<=H+1,tag+` slot ${i} on screen ${JSON.stringify(c)}`);
     if(r.card)ok(inter(c,r.card)<4,tag+` slot ${i} clear of the card`);if(r.hud)ok(inter(c,r.hud)<4,tag+` slot ${i} clear of the HUD`);});
   ok(r.card&&r.card.y+r.card.height<=H+1&&r.card.x>=0,tag+" card on screen");

@@ -287,10 +287,16 @@
     if (s.lv >= 1) return "on";
     return LD.eraUpgradeCost(state, k, era) != null && LD.eraFunds(state, era) >= LD.eraUpgradeCost(state, k, era) ? "open" : "locked";
   }
+  /* the chip's one-line effect: short enough for the narrowest phone (the full line is on the card) */
+  function chipFx(era, k, lv) {
+    if (era === 1) return { power: "+$" + 2 * lv + "M a deal", water: "+$" + 3 * lv + "M a qtr", air: "Unrest \u2212" + lv + " a qtr", food: "Banks $" + 4 * lv + "M a qtr" }[k];
+    if (k === "food") return "+" + lv + " Stores" + (lv >= 2 ? ", room on" : "");
+    return lv >= 3 ? "Starts on, sound" : lv >= 2 ? "Room starts on" : "Starts sound";
+  }
   function slotSub(state, era, k) {
     var s = LD.eraSlots(state, era)[k], st = slotState(state, era, k);
     if (st === "building") return "Building \u00b7 ready Q" + (state.turn + 1);
-    if (s.lv >= 1) return "Lv " + s.lv + " \u00b7 " + LD.ERA_DEFS[era].slots[k].fx(s.lv);
+    if (s.lv >= 1) return "Lv " + s.lv + " \u00b7 " + chipFx(era, k, s.lv);
     var c = LD.eraUpgradeCost(state, k, era);
     return (st === "open" ? "Not built \u00b7 $" : "Locked \u00b7 $") + c + "M";
   }

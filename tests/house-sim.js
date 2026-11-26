@@ -12,6 +12,7 @@ ctx.document = { documentElement: elStub, body: elStub, getElementById: () => el
 vm.createContext(ctx);
 for (const n of JS_NAMES) vm.runInContext(fs.readFileSync(path.join(ROOT, "src/js", n), "utf8"), ctx, { filename: n });
 const LD = ctx.LD;
+LD.HOUSE_RULES = false;   /* default is house since the flip; this sim stamps ruleset per run and checks the flag is never left on */
 
 function playFight(state, style) {
   const f = state.fy, fg = f && f.fight;

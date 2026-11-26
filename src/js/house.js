@@ -1,22 +1,46 @@
-/* Last Dividend — house rules (Phase 1). Feature flag LD.HOUSE_RULES defaults off.
-   New runs stamp state.ruleset at createRun. Shop runs are unchanged, including Go private. */
+/* Last Dividend — house rules. Since the 2026-11-26 flip the seated house desk is the DEFAULT game (LD.HOUSE_RULES on).
+   New runs stamp state.ruleset at createRun, so a saved run keeps the rules it started with: an old shop save resumes
+   as the shop game until it ends, and every new run after that is a house run. */
 (function () {
-  LD.HOUSE_RULES = false;
+  LD.HOUSE_RULES = true;
   LD.HOUSE_SAVE_KEY = "lastDividend.house.v1";
   function devQuery() { try { return (typeof location !== "undefined" && location && location.search) ? String(location.search) : ""; } catch (e) { return ""; } }
-  /* The test link (?house=1) turns house rules on for that page load only, and keeps its run in its own save slot so a phone's
-     real save is never touched. Nothing in the game links to it. */
+  /* ?classic=1 (or ?house=0) = the old shop game for new runs: the fallback hatch, kept through the soak.
+     ?house=1 = the old test link: house rules in its own save slot, so a tester's slot keeps working as before.
+     The default (no query) uses the main save, lastDividend.v1. */
+  LD.CLASSIC = false;
   LD.applyDevHouseFlag = function () {
     try {
       var q = devQuery();
-      if (/[?&]house=1(?:&|$)/.test(q)) { LD.HOUSE_RULES = true; LD.SAVE_KEY = LD.HOUSE_SAVE_KEY; }
-      else if (/[?&]house=0(?:&|$)/.test(q)) LD.HOUSE_RULES = false;
+      if (/[?&](?:classic=1|house=0)(?:&|$)/.test(q)) { LD.HOUSE_RULES = false; LD.CLASSIC = true; }
+      else if (/[?&]house=1(?:&|$)/.test(q)) { LD.HOUSE_RULES = true; LD.SAVE_KEY = LD.HOUSE_SAVE_KEY; }
+      else LD.HOUSE_RULES = true;
     } catch (e) {}
     return LD.HOUSE_RULES;
   };
+  /* One-time, non-destructive: a player who was on the ?house=1 test slot keeps that run and those climbs in the main
+     save the first time they open the default game. The test slot itself is left as it is. */
+  LD.mergeHouseSlot = function () {
+    try {
+      if (typeof localStorage === "undefined" || LD.SAVE_KEY === LD.HOUSE_SAVE_KEY) return false;
+      var hr = localStorage.getItem(LD.HOUSE_SAVE_KEY); if (!hr) return false;
+      var mr = localStorage.getItem(LD.SAVE_KEY), m = mr ? JSON.parse(mr) : {};
+      if (m.houseSlotMerged) return false;
+      var h = JSON.parse(hr) || {}, did = false;
+      if (!m.midRun && h.midRun && h.midRun.ruleset === "house") { m.midRun = h.midRun; did = true; }
+      if (Array.isArray(h.history) && h.history.length) {
+        m.history = (Array.isArray(m.history) ? m.history : []).concat(h.history);
+        m.finished = (m.finished | 0) + (h.finished | 0); m.wins = (m.wins | 0) + (h.wins | 0); did = true;
+      }
+      if (!mr) ["penny", "seenTutorial", "coachDone", "audioOff"].forEach(function (k) { if (h[k] !== undefined) m[k] = h[k]; });
+      m.houseSlotMerged = true;
+      localStorage.setItem(LD.SAVE_KEY, JSON.stringify(m));
+      return did;
+    } catch (e) { return false; }
+  };
   LD.devHouseVisible = function () { return /[?&]house=/.test(devQuery()); };
   LD.setDevHouseFlag = function (on) { LD.HOUSE_RULES = !!on; return LD.HOUSE_RULES; };
-  if (typeof document !== "undefined") LD.applyDevHouseFlag();
+  if (typeof document !== "undefined") { LD.applyDevHouseFlag(); LD.mergeHouseSlot(); }
 
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }

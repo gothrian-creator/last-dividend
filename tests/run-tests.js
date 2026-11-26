@@ -39,6 +39,10 @@ for (const name of JS_NAMES) {
 }
 const LD = ctx.LD || ctx.globalThis.LD;
 if (!LD) throw new Error("LD not defined");
+/* Since the flip the house desk is the default (LD.HOUSE_RULES true). Most checks here pin the classic shop rules:
+   record the default, then run the suite with the flag off as ?classic=1 does; house checks opt in per run. */
+const FLAG_DEFAULT = LD.HOUSE_RULES;
+LD.HOUSE_RULES = false;
 
 let failed = 0, passed = 0;
 function ok(cond, msg) {
@@ -328,7 +332,7 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
 
   /* ---------- Phase 1 house rules (flag off by default; shop path unchanged) ---------- */
   {
-    ok(LD.HOUSE_RULES === false, "house feature flag defaults off");
+    ok(FLAG_DEFAULT === true, "house rules are the default since the flip (classic pinned for the shop checks)");
     const shop = LD.createRun({ seed: "shop-default", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 });
     ok(shop.ruleset === "shop" && !shop.house && shop.bunker.water.level === 1 && !LD.isHouse(shop),
       "default createRun is a shop run, Mara still starts Water L1");
@@ -694,8 +698,9 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
 
   /* ---- Phase 2 house view (flag still off by default) ---- */
   {
-    ok(LD.HOUSE_RULES === false, "HOUSE_RULES stays off in Node tests");
-    ok(typeof LD.applyDevHouseFlag === "function" && LD.applyDevHouseFlag() === false, "applyDevHouseFlag is a no-op without a query or storage");
+    ok(LD.HOUSE_RULES === false, "HOUSE_RULES pinned off (classic) for the shop checks");
+    ok(typeof LD.applyDevHouseFlag === "function" && LD.applyDevHouseFlag() === true && LD.CLASSIC === false, "applyDevHouseFlag without a query = the default house game");
+    LD.HOUSE_RULES = false;
     ok(typeof LD.renderHouseStage === "function" && typeof LD.houseCanPeek === "function", "house-view APIs load in Node");
   }
   {

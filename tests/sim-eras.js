@@ -14,6 +14,7 @@ ctx.globalThis = ctx; ctx.window = ctx;
 ctx.document = { documentElement: elStub, body: elStub, getElementById: () => elStub, querySelector: () => elStub, querySelectorAll: () => [], createElement: () => elStub, addEventListener() {} };
 vm.createContext(ctx);
 for (const n of JS_NAMES) vm.runInContext(fs.readFileSync(path.join(ROOT, "src/js", n), "utf8"), ctx, { filename: n });
+if (ctx.LD) ctx.LD.HOUSE_RULES = process.env.HOUSE === "1";   /* the flip made house the default; this sim pins the classic shop rules (house-sim covers house) */
 const LD = ctx.LD;
 let failed = 0, passed = 0;
 function ok(c, m) { if (c) passed++; else { failed++; console.error("FAIL", m); } }

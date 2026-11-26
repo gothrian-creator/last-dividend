@@ -11,6 +11,7 @@ ctx.globalThis = ctx; ctx.window = ctx;
 ctx.document = { documentElement: elStub, body: elStub, getElementById: () => elStub, querySelector: () => elStub, querySelectorAll: () => [], createElement: () => elStub, addEventListener() {} };
 vm.createContext(ctx);
 for (const n of JS_NAMES) vm.runInContext(fs.readFileSync(path.join(ROOT, "src/js", n), "utf8"), ctx, { filename: n });
+if (ctx.LD) ctx.LD.HOUSE_RULES = process.env.HOUSE === "1";   /* the flip made house the default; this sim pins the classic shop rules (house-sim covers house) */
 const LD = ctx.LD;
 const eraDrive = new Function("module", fs.readFileSync(path.join(ROOT, "tests/era-driver.js"), "utf8") + "; return eraDrive;")(undefined);
 const N = +(process.env.N || 20), EX = ["mara", "reid", "imani", "julian", "soren", "cassius"], ST = ["bribe", "crush", "any"];

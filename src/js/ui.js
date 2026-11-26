@@ -458,6 +458,7 @@
   }
 
   function renderTutorial() {
+    LD.TUTORIAL = (state && !state.ended ? LD.isHouse(state) : LD.HOUSE_RULES) ? LD.TUTORIAL_HOUSE : LD.TUTORIAL_SHOP;
     $("screen-tutorial").innerHTML = LD.renderTutorial(tutorialPage);
     function finish() {
       var meta = loadMeta();
@@ -3425,7 +3426,7 @@
       target: function () { return pq("#df-close"); },
       act: function () { clickEl(pq("#df-close")); } },
     { id: "reward", n: 4, face: "excited", on: "reward-done", label: "Pick for me ▸",
-      text: function () { if (pq("#door .rw-item")) return "Loot! An <b>item</b> for your briefcase: keep it for a rainy quarter (the Case button on the rail), or sell it for cash. Assets and cards come next."; return pq("#door .rw-assets") ? "Loot! Frame one <b>Asset</b> on your office wall: it pays every quarter (read the small print). Next comes a card: add one, <b>shred</b> one, or skip for cash." : "Your <b>reward</b>: add a card to your deck, <b>shred</b> a weak one, or skip for cash. A lean deck draws its best cards more often!"; },
+      text: function () { if (pq("#door .rw-item")) return "Loot! An <b>item</b> for your briefcase: keep it for a rainy quarter (the Case button), or sell it for cash. Assets and cards come next."; return pq("#door .rw-assets") ? "Loot! Frame one <b>Asset</b> on your office wall: it pays every quarter (read the small print). Next comes a card: add one, <b>shred</b> one, or skip for cash." : "Your <b>reward</b>: add a card to your deck, <b>shred</b> a weak one, or skip for cash. A lean deck draws its best cards more often!"; },
       skip: function () { return !(state.fy && state.fy.reward); },
       target: function () { return (pq("#door .rw-item") ? pennyUnion("#door .rw-item, #door .rw-foot .btn") : null) || pennyUnion("#door .rw-assets [data-asset]") || pennyUnion("#door .rw-cards [data-card]") || pq("#door .rw-in"); },
       act: function () { var a = pq("#door [data-asset]"); if (a) { clickEl(a); return; } var k = pq("#rw-keep"); if (k) { clickEl(k); return; } var c = pq("#door [data-card]"); if (c) { clickEl(c); setTimeout(function () { clickEl(pq("#rw-take")); }, 80); } } },
@@ -3543,8 +3544,8 @@
       target: function () { return pq("#door .df-stage"); } },
     reward: { face: "excited", text: function () { return "Your <b>reward</b>! Add a card, <b>shred</b> one (it gets pricier each time), or skip for cash. Bosses and the Hearing also frame an <b>Asset</b> on your wall."; },
       target: function () { return pq("#door .rw-in"); } },
-    boss: { face: "worried", text: function () { return "Every act ends in a <b>boss quarter</b>. Tap the red marker on the timeline any time to see what it wants. Q4 and Q8 are card fights at the door: beat them for a rare card, an Asset and loot. Miss and… well, the board remembers."; },
-      target: function () { return pq(".desk #rail-wrap .rm.boss") || pq("#rail-wrap"); } },
+    boss: { face: "worried", text: function () { return "Every act ends in a <b>boss quarter</b>. " + (state && LD.isHouse(state) ? "" : "Tap the red marker on the timeline any time to see what it wants. ") + "Q4 and Q8 are card fights at the door: beat them for a rare card, an Asset and loot. Miss and… well, the board remembers."; },
+      target: function () { return pq(".desk #rail-wrap .rm.boss") || pq("#rail-wrap") || pq(".desk.sd .sd-hud"); } },
     ratings: { face: "smug", text: function () { return "<b>Credit ratings</b>: win at a rating to unlock the next one, from AAA all the way down to D. Every tier adds a new rule, and exits there pay a lot more. No pressure ♡"; },
       target: function () { return pq("#screen-exec .rating-row"); } }
   };
@@ -3938,7 +3939,7 @@
         "<div class='bro-folds'>" +
         "<section class='bro-p'><img src='" + assetUrlP("penny-wink") + "' alt=''><h3>Guided tour</h3><p>Penny walks you through a real first quarter in 1978, one tap at a time.</p></section>" +
         "<section class='bro-p'><div class='bro-ico'>" + "<svg viewBox='0 0 32 32' aria-hidden='true'><path d='M4 7l8-2 8 2 8-2v20l-8 2-8-2-8 2z' class='i-fill'/><path d='M4 7l8-2 8 2 8-2v20l-8 2-8-2-8 2zM12 5v20M20 7v20' class='i-line'/></svg>" + "</div><h3>The rulebook</h3><p>Deals, door fights, the bunker and the board, page by page.</p></section>" +
-        "<section class='bro-p bro-pack'><h3>What to pack</h3><ul><li><b>One deal a quarter</b> on the map.</li><li><b>Fights at the door:</b> Pressure to 0.</li><li><b>Climb the eras:</b> 1978, 2008, Today.</li><li><b>Seal the bunker</b> before the doors close.</li></ul></section>" +
+        "<section class='bro-p bro-pack'><h3>What to pack</h3><ul><li><b>One deal a quarter</b> " + (LD.HOUSE_RULES ? "on your desk" : "on the map") + ".</li><li><b>Fights at the door:</b> Pressure to 0.</li><li><b>Climb the eras:</b> 1978, 2008, Today.</li><li><b>Seal the bunker</b> before the doors close.</li></ul></section>" +
         "</div>" + warn + "</div>";
     showOverlay(inRun ? "How to play" : "", body,
       '<button class="btn btn-coral" id="ht-penny">' + (inRun ? "Replay Penny's tour" : "Take the guided tour") + '</button><button class="btn" id="ht-rules">Read the rulebook</button><button class="btn btn-ghost" id="ht-close">' + (inRun ? "Back" : "Fold it up") + "</button>",

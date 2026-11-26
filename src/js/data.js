@@ -633,6 +633,24 @@
     }
   ];
 
+  LD.TUTORIAL_SHOP = LD.TUTORIAL;
+  /* The rulebook for the house desk (the default game since the flip). ui.js picks the set by the run's ruleset. */
+  LD.TUTORIAL_HOUSE = [
+    {
+      title: "One deal a quarter",
+      body: "Each quarter three deals sit on your desk, one in each prop: a briefcase, a dossier, a ledger. Open one to read its slip, then stamp it. You sign one. Money often arrives now. Public consequences often arrive later, and the street remembers."
+    },
+    LD.TUTORIAL[2],
+    {
+      title: "The house behind your chair",
+      body: "Turn round (the Bunker button) and you see the house. The rooms your executive starts with are already running. Over the climb, people come to the door: an engineer, a cistern hand, a cook, an intake technician and a reporter. Let one in and their room comes on. A promise can come with them: keep your word, or it costs you. Everyone inside eats, so the stores rise with your income and fall with every mouth."
+    },
+    {
+      title: "Then seal the doors",
+      body: "You win when all four rooms, Air, Water, Power and Food, are on and holding when the doors close. You may seal from quarter " + LD.MIN_EVAC_TURN + ". Rushed, cheap work can fail at the seal unless someone inside keeps it running. Collapse at 100 forces the doors. Unrest at 100 means you never reach them."
+    }
+  ];
+
   if (typeof module !== "undefined" && module.exports) {
     module.exports = LD;
   }

@@ -113,12 +113,15 @@
     return items;
   };
 
+  /* Act III (Now) feeds show the present-day bunker; Acts I-II (and old saves before Q9) keep the 1978 feeds */
+  function feedBase(state) { return LD.eraAct && LD.eraAct(state) === 3 ? "assets/house/now/feed/" : BASE + "feed/"; }
+  LD.houseFeedBase = feedBase;
   function feedCell(state, systemId, resId) {
     var room = roomOf(state, systemId) || { on: false };
     var occupied = resId && hasRes(state, resId);
     var failing = !!(room.on && room.quality === "cheap" && !hasRes(state, "helen"));
     var kind = !room.on ? "dark" : occupied ? "on" : "empty";
-    var src = BASE + "feed/" + systemId + "-" + kind + ".webp";
+    var src = feedBase(state) + systemId + "-" + kind + ".webp";
     var label = occupied ? (LD.houseResident(resId) || {}).name : room.on ? (ROOM_EMPTY[systemId] || {}).name : systemId;
     var cls = "hv-cell is-" + kind + (failing ? " is-failing" : "") + (room.on ? " is-lit" : "");
     var tap = occupied ? " data-leave=\"" + resId + "\"" : "";
@@ -139,7 +142,7 @@
     if (lila) {
       var lr = LD.houseResident("lila") || { name: "Lila Brenner" };
       h += '<button type="button" class="hv-cell hv-lila is-on is-lit" data-leave="lila" aria-label="' + esc(lr.name) + '">' +
-        '<img src="' + BASE + 'feed/lila.webp" alt="" draggable="false"></button>';
+        '<img src="' + feedBase(state) + 'lila.webp" alt="" draggable="false"></button>';
     }
     h += "</div>";
     return h;
@@ -277,6 +280,33 @@
   function pct(v, of) { return (100 * v / of).toFixed(2) + "%"; }
   LD.eraFullArt = function (state) { return !!(state && state.executiveId === "mara"); };
   LD.eraShows = function (state) { return !!(state && state.house && state.house.era && LD.eraAct && LD.eraAct(state) <= 2); };
+  /* Mara's chair turn per era: the plates she turns between and the clip of the turn (ui.js plays it, plate crossfade fallback).
+     start/end: 720x1280 plates (start null = the shared 1978 turn plates); clip: base name of <clip>.mp4 (H.264) + <clip>.webm (VP9)
+     under assets/house/era/mara/, made by scripts/process_turn_clip.py from these same plates; false = plate crossfade only.
+     cls: extra .hv-root class (is-now-panel lays the feed on the frameless wall panel); fg: Mara cut out of the end plate, drawn above
+     the feed where her head overlaps the panel. */
+  var MARA_DIR = ERA_ART + "mara/";
+  LD.MARA_TURN = {
+    1978: { start: null, end: MARA_DIR + "board-after.webp", clip: "turn-1978" },
+    2008: { start: MARA_DIR + "2008-start.webp", end: MARA_DIR + "2008-end.webp", clip: "turn-2008" },
+    now: { start: MARA_DIR + "now-start.webp", end: MARA_DIR + "now-end.webp", clip: "turn-now", cls: "is-now-panel", fg: MARA_DIR + "now-end-fg.webp" }
+  };
+  LD.MARA_TURN_DIR = MARA_DIR;
+  LD.maraTurn = function (state) {
+    if (!state || state.executiveId !== "mara" || !(LD.isHouse && LD.isHouse(state))) return null;
+    var act = LD.eraAct ? LD.eraAct(state) : 3;
+    if (act < 3 && !LD.eraShows(state)) return null; /* no era block: the shared 1978 TV turn */
+    var key = act === 1 ? "1978" : act === 2 ? "2008" : "now", c = LD.MARA_TURN[key];
+    if (!c) return null;
+    return { key: key, start: c.start || null, end: c.end || null, clip: c.clip || null, cls: c.cls || "", fg: c.fg || null };
+  };
+  /* the six plate srcs for this turn */
+  LD.housePlates = function (state) {
+    var t = LD.maraTurn(state), nF = LD.HOUSE_FRAMES.length;
+    if (t && t.start && t.end) return LD.HOUSE_FRAMES.map(function (f, i) { return i < nF / 2 ? t.start : t.end; });
+    var eraPlate = LD.eraPlate ? LD.eraPlate(state) : null;
+    return LD.HOUSE_FRAMES.map(function (f, i) { return (t && t.end && i >= nF - 2) ? t.end : eraPlate && i >= nF - 2 ? eraPlate : f.src; });
+  };
   LD.eraPlate = function (state) {
     if (!LD.eraShows(state) || !LD.eraFullArt(state)) return null;
     return ERA_ART + "mara/" + (LD.eraAct(state) === 1 ? "board" : "island") + "-after.webp";
@@ -394,12 +424,11 @@
     if (LD.seatUseExec) LD.seatUseExec(state && state.executiveId);
     var mode = ui.mode || "after";
     var cls = "hv-root is-" + mode + (LD.eraShows && LD.eraShows(state) ? " is-era is-era-" + LD.eraAct(state) + (LD.eraFullArt(state) ? " is-era-full" : "") : "") + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
-    var eraPlate = LD.eraPlate ? LD.eraPlate(state) : null, eraOn = LD.eraShows ? LD.eraShows(state) : false;
-    var nF = LD.HOUSE_FRAMES.length;
-    var frames = LD.HOUSE_FRAMES.map(function (f, i) {
-      var src = eraPlate && i >= nF - 2 ? eraPlate : f.src;
+    var eraOn = LD.eraShows ? LD.eraShows(state) : false, turn = LD.maraTurn ? LD.maraTurn(state) : null;
+    var frames = LD.housePlates(state).map(function (src, i) {
       return '<img class="hv-plate" data-frame="' + i + '" src="' + src + '" alt="" draggable="false">';
     }).join("");
+    if (turn && turn.cls) cls += " " + turn.cls;
     var showSet = mode === "after" || mode === "turning";
     var h = '<div class="' + cls + '" id="hv-stage" role="dialog" aria-label="The house">';
     h += '<div class="hv-bg" aria-hidden="true"><img src="' + BASE + 'turn-bg.webp" alt="" draggable="false"><i class="e l"></i><i class="e r"></i></div>';
@@ -407,6 +436,7 @@
     h += '<div class="hv-clip"><div class="hv-rig">';
     h += '<div class="hv-plates" aria-hidden="true">' + frames + "</div>";
     if (showSet) h += eraOn ? LD.renderEraScreen(state, ui) : LD.renderHouseFeed(state);
+    if (showSet && turn && turn.fg && !eraOn) h += '<img class="hv-fg" src="' + turn.fg + '" alt="" aria-hidden="true" draggable="false">';
     h += "</div></div>";
     if (showSet && LD.isHouse(state) && state.house && state.house.era) h += LD.renderEraGoal(state);
     if (showSet) h += eraOn ? LD.renderEraCard(state, ui) : LD.renderHouseBand(state);

@@ -1,7 +1,7 @@
 // Shared harness: static server for DIST + playwright chromium.
 const fs=require("fs"),http=require("http"),path=require("path");
 const {chromium}=require("/workspace/tools/node_modules/playwright-core");
-const MIME={".html":"text/html; charset=utf-8",".webp":"image/webp",".png":"image/png",".woff2":"font/woff2",".jpg":"image/jpeg",".ttf":"font/ttf"};
+const MIME={".html":"text/html; charset=utf-8",".webp":"image/webp",".png":"image/png",".woff2":"font/woff2",".jpg":"image/jpeg",".ttf":"font/ttf",".mp4":"video/mp4",".webm":"video/webm"};
 const DRIVER=fs.readFileSync("/workspace/ld-src/tests/era-driver.js","utf8");
 exports.sleep=ms=>new Promise(r=>setTimeout(r,ms));
 exports.start=async function(dist){

@@ -743,8 +743,13 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   {
     const now9 = houseRun(); now9.turn = 9;
     const html = LD.renderHouseStage(now9, { mode: "after" });
-    ok(/turn-1-before-clean\.webp/.test(html) && /turn-6-after\.webp/.test(html) && (html.match(/class="hv-plate"/g) || []).length === 6,
-      "stage paints the six 1978 turn plates");
+    ok(/era\/mara\/now-start\.webp/.test(html) && /era\/mara\/now-end\.webp/.test(html) && !/turn-6-after\.webp/.test(html) && (html.match(/class="hv-plate"/g) || []).length === 6 && /is-now-panel/.test(html) && /class="hv-fg"/.test(html) && /house\/now\/feed\//.test(html) && !/1978\/feed\//.test(html),
+      "Now (Mara): her Now plates, the wall panel, her foreground over it and the present-day feeds (no old TV, no 1978 feeds)");
+    const oth = houseRun(); oth.turn = 9; oth.executiveId = "reid";
+    const ho = LD.renderHouseStage(oth, { mode: "after" });
+    ok((ho.match(/class="hv-plate"/g) || []).length === 6 && !/era\/mara/.test(ho) && !/is-now-panel/.test(ho) && /house\/now\/feed\//.test(ho),
+      "Now (other execs): the shared six turn plates, present-day feeds on their TV");
+    if (LD.seatUseExec) LD.seatUseExec("mara");
     ok(/hv-screen/.test(html) && /feed\/water-empty\.webp/.test(html) && /feed\/power-dark\.webp/.test(html),
       "feed maps Mara's empty-running Water and the dark rooms");
     ok(/class="hv-band/.test(html) && /hv-band-k/.test(html) && /This run/.test(html) && !/Cinzel/.test(html) && !/Libre Franklin/.test(html),
@@ -818,9 +823,11 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     ok(!/feed\/power-dark/.test(h1), "1978: no bunker feed on the board");
     const e2 = JSON.parse(JSON.stringify(e1)); e2.turn = 6;
     const h2 = LD.renderHouseStage(e2, { mode: "after" });
-    ok(/era\/mara\/island-after\.webp/.test(h2) && /is-isle is-full/.test(h2) && /Desal Works/.test(h2) && /Power Plant/.test(h2) && /Villa/.test(h2) && /Dock &amp; Airstrip/.test(h2) && /Act II goal/.test(h2),
+    ok(/era\/mara\/2008-end\.webp/.test(h2) && /is-isle is-full/.test(h2) && /Desal Works/.test(h2) && /Power Plant/.test(h2) && /Villa/.test(h2) && /Dock &amp; Airstrip/.test(h2) && /Act II goal/.test(h2),
       "2008: Mara faces the island model with four sites");
-    ok((h2.match(/turn-1-before-clean\.webp/g) || []).length === 1 && (h2.match(/class="hv-plate"/g) || []).length === 6, "2008: the turn keeps its six frames (last two are the island)");
+    ok((h2.match(/era\/mara\/2008-start\.webp/g) || []).length === 3 && (h2.match(/era\/mara\/2008-end\.webp/g) || []).length === 3 && (h2.match(/class="hv-plate"/g) || []).length === 6, "2008: the turn plates are the 2008 office (start x3, island end x3)");
+    const t08 = LD.maraTurn(e2);
+    ok(t08 && t08.key === "2008" && t08.clip === "turn-2008", "2008: Mara's turn clip is keyed by era");
     const r1 = openBunker(houseRun({ seed: "era-ui-reid", executiveId: "reid" }));
     const hr = LD.renderHouseStage(r1, { mode: "after" });
     ok(!/era\/mara\//.test(hr) && /hv-era is-board is-tv/.test(hr) && /fac-power\.webp/.test(hr) && /The Refinery/.test(hr), "other execs: own TV, shared facility vignettes, own Works name");

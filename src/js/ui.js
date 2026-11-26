@@ -1797,7 +1797,7 @@
 
 
   /* ---------- Phase 2 house view (1978 Mara chair-turn) ---------- */
-  var HV = { open: false, facing: false, turning: false, dir: "to", auto: false, leaveId: null, card: null, promiseId: null, raf: 0, t0: 0 };
+  var HV = { open: false, facing: false, turning: false, dir: "to", auto: false, leaveId: null, card: null, promiseId: null, raf: 0, t0: 0, clipGen: 0, vid: null, clipPlayed: 0, clipFell: 0 };
 
   function houseCardKind() {
     if (!state || !(LD.isHouse && LD.isHouse(state)) || state.ended) return null;
@@ -1810,7 +1810,89 @@
     return !!(state && !state.ended && state.phase === "bunker" && !(LD.fyBusy && LD.fyBusy(state)));
   }
   function preloadHousePlates() {
-    (LD.HOUSE_FRAMES || []).forEach(function (f) { var img = new Image(); img.src = f.src; });
+    var srcs = state && LD.housePlates ? LD.housePlates(state) : (LD.HOUSE_FRAMES || []).map(function (f) { return f.src; });
+    var t = state && LD.maraTurn ? LD.maraTurn(state) : null;
+    if (t && t.fg) srcs = srcs.concat([t.fg]);
+    srcs.forEach(function (src, i) { if (srcs.indexOf(src) === i) { var img = new Image(); img.src = src; } });
+    turnClipPreload();
+  }
+  /* Mara's era turn clips (LD.maraTurn): fetched into memory when the desk renders, so a turn never waits on the network.
+     A clip plays only once fully loaded; missing, failed, slow to start, skipped or reduced motion = the plate crossfade.
+     MP4 (H.264) where it plays (Safari/iOS, Chrome, Android), else the VP9 WebM. */
+  var TC = {};
+  function tcType() {
+    if (TC.type !== undefined) return TC.type;
+    var v = document.createElement("video"), t = null;
+    try {
+      if (v.canPlayType && v.canPlayType('video/mp4; codecs="avc1.640028"')) t = "mp4";
+      else if (v.canPlayType && v.canPlayType('video/webm; codecs="vp9"')) t = "webm";
+    } catch (e) {}
+    if (!window.fetch || !(window.URL && URL.createObjectURL)) t = null;
+    TC.type = t;
+    return t;
+  }
+  function turnClipPreload() {
+    var t = state && LD.maraTurn ? LD.maraTurn(state) : null;
+    if (!t || !t.clip || reduced() || !tcType() || TC["c:" + t.clip]) return;
+    var rec = TC["c:" + t.clip] = { url: null, bad: false };
+    fetch(LD.MARA_TURN_DIR + t.clip + "." + tcType()).then(function (r) { return r.ok ? r.blob() : null; })
+      .then(function (b) { if (b && b.size) rec.url = URL.createObjectURL(b); else rec.bad = true; })
+      .catch(function () { rec.bad = true; });
+  }
+  function turnClipUrl() {
+    var t = state && LD.maraTurn ? LD.maraTurn(state) : null, r = t && t.clip ? TC["c:" + t.clip] : null;
+    return r && r.url && !r.bad && !reduced() ? r.url : null;
+  }
+  function setTurnOverlays(show) {
+    var screen = document.querySelector("#house-root .hv-screen");
+    var band = document.querySelectorAll("#house-root .hv-band, #house-root .hv-goal, #house-root .hv-fg");
+    if (screen) { screen.style.opacity = String(show); screen.style.filter = "brightness(" + (0.45 + 0.55 * show) + ")"; }
+    for (var b2 = 0; b2 < band.length; b2++) band[b2].style.opacity = String(show);
+  }
+  /* the clip over the start plate: shown once it has put up a frame (its first frame is the start plate), then it fades out over the
+     end plate while the feed / era layer, band and goal fade in */
+  function playTurnClip(url) {
+    var plates = document.querySelector("#house-root .hv-rig .hv-plates");
+    if (!plates) return false;
+    var gen = ++HV.clipGen, v = document.createElement("video"), started = false, landed = false, tStart = 0, tAll = 0;
+    v.className = "hv-vid"; v.muted = true; v.defaultMuted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.setAttribute("muted", "");
+    v.preload = "auto"; v.disablePictureInPicture = true; v.setAttribute("aria-hidden", "true");
+    plates.parentNode.insertBefore(v, plates.nextSibling);
+    HV.vid = v;
+    setTurnOverlays(0);
+    function live() { return gen === HV.clipGen && HV.turning && HV.dir === "to"; }
+    function drop() { if (v.parentNode) v.parentNode.removeChild(v); if (HV.vid === v) HV.vid = null; }
+    function fallback() {
+      if (!live() || started) return;
+      clearTimeout(tStart); clearTimeout(tAll); HV.clipGen++; drop(); HV.clipFell++;
+      plateTurn();
+    }
+    function shown() { if (!live() || started) return; started = true; clearTimeout(tStart); v.classList.add("is-on"); HV.clipPlayed++; }
+    function land() {
+      if (!live() || landed) return;
+      if (!started) { fallback(); return; }
+      landed = true; clearTimeout(tAll);
+      setPlateOpacities(1); setTurnOverlays(0);
+      v.classList.add("is-out");
+      var t0 = performance.now();
+      function fade(now) {
+        if (!live()) return;
+        var u = Math.min(1, (now - t0) / 240);
+        setTurnOverlays(u);
+        if (u >= 1) { drop(); finishHouseTurn(); } else HV.raf = requestAnimationFrame(fade);
+      }
+      HV.raf = requestAnimationFrame(fade);
+    }
+    if (v.requestVideoFrameCallback) { var wait = function (now, md) { if (md && md.mediaTime > 0.01 && v.readyState >= 2) shown(); else if (live()) v.requestVideoFrameCallback(wait); }; v.requestVideoFrameCallback(wait); }
+    else v.addEventListener("playing", function () { setTimeout(shown, 40); });
+    v.addEventListener("ended", land);
+    v.addEventListener("error", function () { if (started) land(); else fallback(); });
+    v.addEventListener("loadedmetadata", function () { clearTimeout(tAll); tAll = setTimeout(land, ((v.duration || 2) * 1000) / (LD.TURN_CLIP_RATE || 1) + 1500); });
+    tStart = setTimeout(fallback, LD.TURN_CLIP_START_MS || 900);
+    v.src = url;
+    if (LD.TURN_CLIP_RATE) { try { v.defaultPlaybackRate = v.playbackRate = LD.TURN_CLIP_RATE; } catch (e) {} } /* test hook */
+    var pr = v.play(); if (pr && pr.catch) pr.catch(function () { if (started) land(); else fallback(); });
+    return true;
   }
   /* The plate is 720x1280 portrait. Phones show the whole width bar a sliver of left bezel (Mara's head stays in), with the top blended into
      the backdrop when the screen is taller than the plate. Landscape shows the full chair base and trims only the ceiling. */
@@ -1881,14 +1963,11 @@
     if (lo[0] === hi[0]) frames[lo[0]].style.opacity = "1";
     else { frames[lo[0]].style.opacity = String(1 - u); frames[hi[0]].style.opacity = String(u); }
     if (group) { group.style.filter = ""; group.style.transform = ""; }
-    var screen = document.querySelector("#house-root .hv-screen");
-    var band = document.querySelectorAll("#house-root .hv-band, #house-root .hv-goal");
-    var show = t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0;
-    if (screen) { screen.style.opacity = String(show); screen.style.filter = "brightness(" + (0.45 + 0.55 * show) + ")"; }
-    for (var b2 = 0; b2 < band.length; b2++) band[b2].style.opacity = String(show);
+    setTurnOverlays(t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0);
   }
   function stopHouseAnim() {
     if (HV.raf) { cancelAnimationFrame(HV.raf); HV.raf = 0; }
+    if (HV.vid) { HV.clipGen++; var v = HV.vid; HV.vid = null; try { v.pause(); } catch (e) {} if (v.parentNode) v.parentNode.removeChild(v); }
   }
   function finishHouseTurn() {
     stopHouseAnim();
@@ -1917,6 +1996,10 @@
     if (reduced()) { setPlateOpacities(HV.dir === "to" ? 1 : 0); finishHouseTurn(); return; }
     paintHouse(HV.dir === "back" ? "back" : "turning");
     setPlateOpacities(HV.dir === "to" ? 0 : 1);
+    if (HV.dir === "to") { var url = turnClipUrl(); if (url && playTurnClip(url)) return; }
+    plateTurn();
+  }
+  function plateTurn() {
     HV.t0 = performance.now();
     var dur = LD.HOUSE_TURN_MS || 1000;
     function step(now) {
@@ -1968,6 +2051,7 @@
     openHouse({ auto: true });
   }
   function attachHousePeek() {
+    if (state && LD.isHouse && LD.isHouse(state)) turnClipPreload();
     if (seatedNow()) { var sb = $("house-peek"); if (sb) sb.hidden = !(LD.houseCanPeek && LD.houseCanPeek(state)) || HV.open || HV.facing || HV.turning; return; }
     Array.prototype.forEach.call(document.querySelectorAll("#house-peek"), function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
     if (!state || !(LD.isHouse && LD.isHouse(state)) || HV.open || HV.facing || HV.turning) return;
@@ -2097,6 +2181,10 @@
   LD.houseUi = {
     open: openHouse, close: closeHouse, skip: skipHouseTurn, refresh: refreshHouseChrome,
     facing: function () { return HV.facing; }, turning: function () { return HV.turning; },
+    clip: function () {
+      var t = state && LD.maraTurn ? LD.maraTurn(state) : null;
+      return { key: t ? t.key : null, clip: t ? t.clip : null, type: tcType(), ready: !!turnClipUrl(), playing: !!(HV.vid && HV.vid.classList.contains("is-on")), played: HV.clipPlayed, fell: HV.clipFell };
+    },
     seek: function (t) {
       stopHouseAnim();
       HV.open = true; HV.auto = true; HV.leaveId = null;
@@ -3056,13 +3144,29 @@
   var KN = { last: 0, q: null };
   function knockNow() {
     if (!state || !state.fy || state.ended) return;
-    var door = document.querySelector(".desk .office .of-door"); if (!door) return;
+    var door = document.querySelector(".desk .office .of-door"), sd = !door && document.querySelector("#screen-desk .desk.sd");
+    if (!door && !sd) return;
     var lv = LD.doorLevel(state);
-    door.classList.remove("knocking"); void door.offsetWidth; door.classList.add("knocking");
-    setTimeout(function () { door.classList.remove("knocking"); }, 700);
+    if (door) {
+      door.classList.remove("knocking"); void door.offsetWidth; door.classList.add("knocking");
+      setTimeout(function () { door.classList.remove("knocking"); }, 700);
+    } else seatKnock(sd, lv);
     if (LD.O4) LD.O4.knock(lv);
     SFX.play("knock", lv);
     KN.last = Date.now();
+  }
+  /* the seated desk has no office door element: the knock lands on the painted door behind the visitor's chair */
+  function seatKnock(sd, lv) {
+    var k = sd.querySelector(".sd-knock");
+    if (!k) { k = document.createElement("span"); k.className = "sd-knock"; k.setAttribute("aria-hidden", "true"); sd.appendChild(k); k.addEventListener("animationend", function () { k.classList.remove("show"); }); }
+    k.textContent = lv >= 3 ? "BANG BANG!" : lv >= 2 ? "KNOCK KNOCK" : "tap tap";
+    k.setAttribute("data-lv", String(lv));
+    var q = LD.seatToScreen(LD.seatFrame(window.innerWidth, window.innerHeight), 362, 300), r = sd.getBoundingClientRect(), top = 64;
+    /* on the door, but always clear of the HUD and the quarter ribbon */
+    Array.prototype.forEach.call(sd.querySelectorAll(".sd-hud, .sd-ribbon"), function (e) { var b = e.getBoundingClientRect(); if (b.height && b.top < r.top + r.height * 0.4) top = Math.max(top, b.bottom - r.top + 26); });
+    k.style.left = Math.round(q[0] - r.left) + "px"; k.style.top = Math.round(Math.max(top, q[1] - r.top)) + "px";
+    k.classList.remove("show"); void k.offsetWidth; k.classList.add("show");
+    clearTimeout(KN.st); KN.st = setTimeout(function () { k.classList.remove("show"); }, 1100);
   }
   setInterval(function () {
     if (screen !== "desk" || !state || state.ended || !state.fy || document.hidden) return;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Seated desk end-to-end at the four test sizes: layout checks (no overlaps, nothing off screen, the visitor's face clear),
-// a full deal -> fight -> settle -> desk loop, and the default (shop) game untouched. Exit 1 on any failure.
+// a full deal -> fight -> settle -> desk loop, and the classic shop game (?classic=1) untouched. Exit 1 on any failure.
 const H=require("../real-input/h.js");const {seedHouse}=require("./probe.js");
 const SIZES=(process.env.SIZES||"360x800,412x915,800x1280,1280x800").split(",");let bad=0,n=0;
 function LD_CAP(sz){const [w,h]=sz.split("x").map(Number);return w>=h*1.2?9:w>500?10:6;}
@@ -67,10 +67,10 @@ const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right
     const back=await p.evaluate(()=>({desk:!!document.querySelector("#screen-desk .desk.sd"),door:!document.getElementById("door").hidden,phase:JSON.parse(localStorage.getItem(LD.HOUSE_SAVE_KEY)).midRun.phase}));
     ok(back.desk&&!back.door&&back.phase==="bunker",sz+" back at the seated desk after the fight "+JSON.stringify(back));}
   ok(!p.errs.length,sz+" no page errors "+p.errs.slice(0,3));await p.ctx.close();
-  // the default game: no flag, the old desk, no seated markup
+  // the classic fallback (?classic=1): no flag, the old desk, no seated markup
   const q=await H.page(env,w,h);await H.seedRun(q,env.origin,{seed:13,stop:"deal:3",exec:"mara",smart:true});
   const def=await q.evaluate(()=>({desk:!!document.querySelector("#screen-desk .desk"),sd:!!document.querySelector(".sd, .sd-hud, #sd-tab"),rs:JSON.parse(localStorage.getItem("lastDividend.v1")).midRun.ruleset,flag:!!LD.HOUSE_RULES}));
-  ok(def.desk&&!def.sd&&def.rs!=="house"&&!def.flag,sz+" default game keeps the old desk "+JSON.stringify(def));
-  ok(!q.errs.length,sz+" default game no page errors "+q.errs.slice(0,3));await q.ctx.close();
+  ok(def.desk&&!def.sd&&def.rs!=="house"&&!def.flag,sz+" ?classic=1 keeps the old desk "+JSON.stringify(def));
+  ok(!q.errs.length,sz+" ?classic=1 no page errors "+q.errs.slice(0,3));await q.ctx.close();
   console.log(sz,"done");}
  await env.close();console.log(bad?"SEATED E2E FAIL "+bad+" / "+n:"SEATED E2E OK "+n+" checks");process.exit(bad?1:0);})();

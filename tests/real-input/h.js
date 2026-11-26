@@ -25,6 +25,8 @@ exports.page=async function(env,w,h){
 };
 // Shortcut to a mid-run state (named in reports): drive headless to stop, store as midRun, reload, Continue.
 exports.seedRun=async function(page,origin,o,pennyMeta){
+  /* a shop (classic) run: since the flip the default page makes house runs, so seed on ?classic=1 (old builds ignore it) */
+  const base=origin; origin=origin+(o&&o.query!==undefined?o.query:"?classic=1");
   await page.goto(origin); await page.waitForTimeout(300);
   const ok=await page.evaluate(([DRIVER,o,pm])=>{localStorage.clear();const LD=window.LD;const st=new Function("module",DRIVER+"; return eraDrive;")(undefined)(LD,o);if(!st)return false;
     if(o.patch) new Function("st","LD",o.patch)(st,LD);

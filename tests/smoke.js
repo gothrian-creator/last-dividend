@@ -48,7 +48,8 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
 (async () => {
   const { server, port } = await startServer();
-  const origin = "http://127.0.0.1:" + port + "/";
+  /* the classic shop flow (the map/dossier/rail desk), kept as ?classic=1 since the flip; the house desk default is covered by tests/seated/* */
+  const origin = "http://127.0.0.1:" + port + "/" + (process.env.SMOKE_QUERY !== undefined ? process.env.SMOKE_QUERY : "?classic=1");
   const puppeteer = require(PUPPETEER);
   const errors = [];
   const browser = await puppeteer.launch({

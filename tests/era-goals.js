@@ -23,24 +23,24 @@ function close(s) { s = clone(s); if (s.fy) { s.fy.fight = null; s.fy.reward = n
 let s = run();
 ok(s.house.era && s.house.era.v === LD.ERA_SAVE_V, "fresh house run has era block v" + LD.ERA_SAVE_V);
 ok(LD.eraAct(s) === 1, "Q1 is era 1");
-ok(LD.ERA_SLOTS.every((k) => s.house.era.company[k].lv === 0 && s.house.era.island[k].lv === 0), "slots start at Lv 0");
+ok(s.house.era.company.power.lv === 1 && ["water", "air", "food"].every((k) => s.house.era.company[k].lv === 0) && LD.ERA_SLOTS.every((k) => s.house.era.island[k].lv === 0), "HQ opens at Lv 1, the rest at Lv 0");
 ok(LD.eraSlotName(s, 1, "water") === "The Works" && LD.eraSlotName(run("reid"), 1, "water") === "The Refinery", "Works name per exec");
 /* guards */
 ok(/deal/i.test(LD.eraUpgrade(s, "power").error), "needs a deal first");
 s = toBunker(s); s.cash = 100;
 let r = LD.eraUpgrade(s, "power");
-ok(r.ok && r.state.house.era.company.power.build === 1 && r.state.cash === 90, "HQ Lv1 order costs $10M, building");
+ok(r.ok && r.state.house.era.company.power.build === 2 && r.state.cash === 82, "HQ Lv2 order costs $18M, building");
 ok(!LD.eraUpgrade(r.state, "water").ok, "one holdings order a quarter");
 ok(r.state.bunkerActedThisTurn === s.bunkerActedThisTurn, "holdings order does not spend the house act");
 /* builds land at close */
 let t = close(r.state);
-ok(t.house.era.company.power.lv === 1 && t.house.era.company.power.build === 0, "build finishes at close");
+ok(t.house.era.company.power.lv === 2 && t.house.era.company.power.build === 0, "build finishes at close");
 /* full company, goal met at Q4 */
 s = run(); s.cash = 400;
-const order = ["power", "water", "air", "food"];
+const order = ["water", "air", "food", "water"];
 for (let q = 1; q <= 4; q++) { s = toBunker(s); const u = LD.eraUpgrade(s, order[q - 1]); ok(u.ok, "Q" + q + " order " + order[q - 1]); s = close(u.state); s.cash = Math.max(s.cash, 300); s.unrest = 10; s.collapse = 20; }
 ok(s.turn === 5 && s.house.era.goals[1] === "met", "1978 goal met at Q4 -> Q5");
-ok(LD.ERA_SLOTS.every((k) => s.house.era.island[k].lv === 0), "Lv1 facilities open no island sites");
+ok(s.house.era.island.water.lv === 1 && ["power", "air", "food"].every((k) => s.house.era.island[k].lv === 0), "only the Lv 2 facility opens its island site");
 /* Lv2 facility opens its site at Lv1 (cap 1), Lv3 gives a discount */
 s = run(); s.house.era.company.water.lv = 3; s.house.era.company.power.lv = 2; s.house.era.company.air.lv = 1; s.house.era.company.food.lv = 1; s.turn = 4; s.house.era.bank = 20;
 s = close(s);

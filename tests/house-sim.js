@@ -86,8 +86,29 @@ function attachPromise(state, id, policy) {
   return defs[0].id;
 }
 
+/* Era goals: one holdings order a quarter (separate from the house act). ERA=0 skips it (the old sim). */
+const ERA = process.env.ERA !== "0";
+function playEra(state, policy) {
+  if (!ERA || !state.house || !state.house.era || state.ended || state.phase !== "bunker") return state;
+  if (state.house.era.actQ === state.turn || LD.eraAct(state) > 2) return state;
+  const era = LD.eraAct(state), slots = LD.eraSlots(state, era);
+  const reserve = policy === "greedy" ? 6 : policy === "ruthless" ? 0 : 14;
+  const pri = era === 1 ? ["water", "air", "food", "power"] : ["water", "power", "food", "air"];
+  const cand = pri.filter((k) => slots[k].lv === 0 && !slots[k].build).concat(pri.filter((k) => slots[k].lv > 0 && !slots[k].build));
+  for (const k of cand) {
+    const c = LD.eraUpgradeCost(state, k, era);
+    if (c == null || LD.eraFunds(state, era) - c < reserve) continue;
+    const r = LD.eraUpgrade(state, k);
+    if (r.ok) return r.state;
+  }
+  return state;
+}
+
 function playHouse(state, policy) {
-  if (state.ended || state.phase !== "bunker" || state.bunkerActedThisTurn) return state;
+  if (state.ended || state.phase !== "bunker") return state;
+  const se = playEra(state, policy);
+  if (se !== state) return se;
+  if (state.bunkerActedThisTurn) return state;
   const due = LD.houseDuePromise(state);
   if (due) {
     const fx = keepCost(state, due) || {};
@@ -196,7 +217,7 @@ function drive(opts) {
 }
 
 function empty() {
-  return { n: 0, win: 0, well: 0, contractor: 0, unrest: 0, unfinished: 0, failed: 0, stuck: 0, q: 0, stores: 0, admitted: 0, arrivals: 0, kept: 0, broken: 0, cash: 0, titles: {}, reasons: {}, exec: {} };
+  return { g1: 0, g2: 0, inhRooms: 0, n: 0, win: 0, well: 0, contractor: 0, unrest: 0, unfinished: 0, failed: 0, stuck: 0, q: 0, stores: 0, admitted: 0, arrivals: 0, kept: 0, broken: 0, cash: 0, titles: {}, reasons: {}, exec: {} };
 }
 function tally(all, st, exec) {
   all.n++;
@@ -215,6 +236,8 @@ function tally(all, st, exec) {
   all.kept += (st.house && st.house.wordKept && st.house.wordKept.length) || 0;
   all.broken += (st.house && st.house.wordBroken && st.house.wordBroken.length) || 0;
   if (st.house && st.house.contractorUsed) all.contractor++;
+  const eg = st.house && st.house.era && st.house.era.goals;
+  if (eg) { if (eg[1] === "met") all.g1++; if (eg[2] === "met") all.g2++; if (st.house.era.inherited) all.inhRooms += (st.house.era.inherited.rooms || []).length; }
   if (e.kind === "win") { all.win++; ex.win++; if (e.wellStocked) all.well++; }
   else if (e.reason === "unrest") all.unrest++;
   else if (e.reason === "unfinished") all.unfinished++;
@@ -230,6 +253,7 @@ function report(name, all) {
   console.log("  losses: unrest " + all.unrest + "  unfinished " + all.unfinished + "  failed-systems " + all.failed);
   console.log("  avg Q " + avg(all.q, all.n) + "  avg stores " + avg(all.stores, all.n) + "  avg cash $" + avg(all.cash, all.n) + "M  contractor " + all.contractor + "/" + all.n);
   console.log("  avg arrivals " + avg(all.arrivals, all.n) + "  avg residents " + avg(all.admitted, all.n) + "  kept " + all.kept + "  broken " + all.broken + (words ? "  (keep " + pct(all.kept, words) + ")" : ""));
+  console.log("  era goals: 1978 met " + all.g1 + "/" + all.n + "  2008 met " + all.g2 + "/" + all.n + "  inherited rooms " + all.inhRooms + (ERA ? "" : "  (ERA=0: no orders)"));
   const by = Object.keys(all.exec).map((k) => k + " " + all.exec[k].win + "/" + all.exec[k].n + " (" + pct(all.exec[k].win, all.exec[k].n) + ")").join("  ");
   console.log("  by exec  " + by);
   console.log("  reasons " + JSON.stringify(all.reasons));

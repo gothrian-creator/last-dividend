@@ -1005,7 +1005,8 @@
   };
   function emptyEra() {
     var mk = function () { var o = {}; LD.ERA_SLOTS.forEach(function (s) { o[s] = { lv: 0, build: 0 }; }); return o; };
-    return { v: LD.ERA_SAVE_V, company: mk(), island: mk(), bank: 0, actQ: 0, goals: { 1: null, 2: null }, legacy: 0, inherited: null, discount: {} };
+    var co = mk(); co.power.lv = 1;   /* the firm exists: Headquarters opens at Lv 1, three facilities to build in four quarters */
+    return { v: LD.ERA_SAVE_V, company: co, island: mk(), bank: 0, actQ: 0, goals: { 1: null, 2: null }, legacy: 0, inherited: null, discount: {} };
   }
   /* Migration: a v1 house (saved before the era goals) gets the empty era block. Quarters already past are marked
      legacy so a resumed run is never judged on goals it could not see. */

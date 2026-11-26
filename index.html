@@ -5809,6 +5809,87 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 /* a reveal clip is up: its first frame is the closed still, so the still underneath steps aside only once the video shows */
 .pk.is-vid .pk-closed { visibility: hidden; }
 .pk-vid { right: auto; bottom: auto; }
+
+/* ===== Era goals (2026-11-26): 1978 holdings board, 2008 island model. Sizes inside .hv-rig are plate px (the rig scales). ===== */
+.hv-screen.hv-era.is-full { left: 0; top: 0; width: 100%; height: 100%; display: block; background: none; box-shadow: none; overflow: visible; border-radius: 0; }
+.hv-eslot { position: absolute; padding: 0; border: 0; background: #0a0806; cursor: pointer; overflow: hidden; border-radius: 16px; font: inherit; color: #2a1c12; }
+.hv-eslot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; transition: filter 0.25s ease; }
+.hv-eslot.is-open img { filter: saturate(0.5) brightness(0.62); }
+.hv-eslot.is-locked img { filter: grayscale(0.92) brightness(0.32); }
+.hv-eslot.is-building img { filter: grayscale(0.7) brightness(0.72); }
+.hv-eslot.is-building::after { content: ""; position: absolute; right: -16px; top: 14px; width: 92px; height: 14px; transform: rotate(32deg); background: repeating-linear-gradient(90deg, #d6a83c 0 14px, #2a1c12 14px 24px); opacity: 0.9; }
+.hv-eslot.is-sel { box-shadow: 0 0 0 4px #ecc45c, 0 0 18px rgba(236, 196, 92, 0.55); }
+.hv-echip { position: absolute; left: 6px; right: 6px; bottom: 6px; display: block; padding: 5px 4px 4px; background: rgba(250, 243, 228, 0.94); border-radius: 5px; text-align: center; line-height: 1.05; }
+.hv-echip b { display: block; font-family: var(--font-serif); font-weight: 600; font-size: 22px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hv-echip small { display: block; margin-top: 2px; font-family: var(--font-sans); font-weight: 700; font-size: 15px; color: #1c5c60; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hv-eslot.is-building .hv-echip small { color: #9a6c1c; }
+.hv-eslot.is-locked .hv-echip, .hv-eslot.is-open .hv-echip { background: rgba(236, 226, 206, 0.86); }
+.hv-eslot.is-locked .hv-echip small, .hv-eslot.is-open .hv-echip small { color: #6a5a48; }
+.hv-pips { position: absolute; left: 8px; top: -13px; display: flex; gap: 4px; font-style: normal; }
+.hv-pips i { width: 14px; height: 14px; border-radius: 50%; background: #3a3028; box-shadow: 0 0 0 2px #faf3e4; }
+.hv-pips i.on { background: #b08434; }
+.hv-pips i.bd { background: repeating-linear-gradient(45deg, #d6a83c 0 3px, #3a3028 3px 6px); }
+.hv-elock { position: absolute; left: 0; right: 0; top: 30%; text-align: center; font: 700 22px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: rgba(244, 236, 220, 0.92); font-style: normal; }
+/* island: chips stand above the model on leader pins */
+.hv-eslot.is-site { overflow: visible; background: none; border-radius: 6px; transform: translate(-50%, -50%); }
+.hv-eslot.is-site .hv-echip { position: relative; left: auto; right: auto; bottom: auto; padding: 7px 14px 6px; min-width: 150px; box-shadow: 0 0 0 1px rgba(140, 100, 48, 0.5), 0 3px 8px rgba(20, 12, 6, 0.3); }
+.hv-eslot.is-site .hv-echip b { font-size: 26px; overflow: visible; }
+.hv-eslot.is-site .hv-echip small { font-size: 17px; overflow: visible; }
+.hv-eslot.is-site .hv-pips { left: 10px; top: -9px; }
+.hv-eslot.is-site.is-sel { box-shadow: 0 0 0 4px #ecc45c; }
+.hv-epin { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: #b08434; box-shadow: 0 0 0 3px #faf3e4, 0 2px 4px rgba(0, 0, 0, 0.4); pointer-events: none; z-index: 1; }
+.hv-epin.is-sel { box-shadow: 0 0 0 3px #faf3e4, 0 0 0 9px rgba(236, 196, 92, 0.7); }
+.hv-eveil { position: absolute; width: 230px; height: 170px; margin: -85px 0 0 -115px; border-radius: 50%; pointer-events: none;
+  -webkit-backdrop-filter: grayscale(0.85) brightness(0.8); backdrop-filter: grayscale(0.85) brightness(0.8);
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent); mask-image: radial-gradient(closest-side, #000 55%, transparent); }
+.hv-eveil.is-locked { -webkit-backdrop-filter: grayscale(0.9) brightness(0.45); backdrop-filter: grayscale(0.9) brightness(0.45); }
+/* every other exec: their own TV, the same vignettes in its four cells */
+.hv-screen.hv-era.is-tv { gap: 2px; }
+.hv-screen.hv-era.is-tv .hv-eslot { position: relative; border-radius: 0; }
+.hv-screen.hv-era.is-tv .hv-echip { left: 4px; right: 4px; bottom: 4px; padding: 3px 3px 2px; }
+.hv-screen.hv-era.is-tv .hv-echip b { font-size: 17px; }
+.hv-screen.hv-era.is-tv .hv-echip small { font-size: 12px; }
+.hv-screen.hv-era.is-tv .hv-pips { top: 4px; left: 6px; }
+.hv-screen.hv-era.is-tv .hv-pips i { width: 10px; height: 10px; }
+.hv-screen.hv-era.is-tv .hv-eslot.is-sel { box-shadow: inset 0 0 0 3px #ecc45c; }
+/* goal ribbon under the HUD */
+.hv-goal { position: absolute; left: 50%; top: 106px; transform: translateX(-50%); z-index: 5; margin: 0; padding: 5px 13px; max-width: calc(100% - 24px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: rgba(40, 34, 28, 0.84); color: #faf3e4; border-radius: 3px; font: 700 13px var(--font-sans); pointer-events: none; opacity: 0; }
+.hv-root.is-after .hv-goal { opacity: 1; }
+.hv-root.has-card .hv-goal { opacity: 0; }
+.hv-root.is-landscape .hv-goal { left: calc(300px + (100% - 300px) / 2); top: auto; bottom: 14px; }
+.hv-root.is-seated.is-landscape .hv-goal { left: 50%; }
+/* the era card: the band's lane, wider, with its one order */
+.hv-band.hv-ecard { pointer-events: auto; left: 10px; right: 10px; width: auto; max-width: 520px; padding: 7px 10px 7px; }
+.hv-etitle { margin: 0; font-family: var(--font-serif); font-weight: 600; font-size: 18px; line-height: 1.1; color: #2a1c12; }
+.hv-egoal { margin: 3px 0 4px; font-family: var(--font-sans); font-size: 12px; color: #1c5c60; font-weight: 700; }
+.hv-erow { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+.hv-erow-t { flex: 1; min-width: 0; }
+.hv-erow-t b { display: block; font-family: var(--font-serif); font-weight: 600; font-size: 15px; color: #2a1c12; }
+.hv-erow-t span { display: block; font-family: var(--font-sans); font-size: 12px; line-height: 1.25; color: #3a2a1c; }
+.hv-erow .btn { min-height: 44px; min-width: 96px; padding: 3px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+.hv-erow .btn b { font-size: 14px; }
+.hv-erow .btn small { font-size: 11px; opacity: 0.9; }
+.hv-erow .btn[aria-disabled="true"] { opacity: 0.55; }
+.hv-erow.is-compact { padding-top: 5px; border-top: 1px solid rgba(140, 100, 48, 0.22); }
+.hv-erow.is-compact .btn { min-width: 84px; min-height: 42px; }
+.hv-estaff-row { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-family: var(--font-sans); font-size: 11px; color: #6a4a22; }
+.hv-estaff-row small { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 2px; }
+.hv-estaff { border: 1px solid rgba(140, 100, 48, 0.45); background: rgba(255, 250, 238, 0.7); border-radius: 10px; padding: 2px 8px; min-height: 26px; font: 600 12px var(--font-sans); color: #2a1c12; cursor: pointer; }
+.hv-inherit { margin: 3px 0 0; font-family: var(--font-sans); font-size: 11px; color: #1c5c60; font-weight: 700; }
+.hv-root.is-landscape .hv-band.hv-ecard { left: 12px; right: auto; width: 276px; max-width: none; }
+@media (min-width: 700px) and (min-height: 1100px) { .hv-band.hv-ecard { right: auto; width: min(70vw, 520px); } }
+.hv-erow .btn { width: auto; flex: 0 0 auto; border-radius: 0; border: 2px solid var(--gold); background: #f4ecdc; color: var(--ink); text-shadow: none;
+  box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.34); font-family: var(--font-serif); }
+.hv-erow .btn.btn-coral { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.34); }
+.hv-erow .btn:active { transform: translate(2px, 3px); }
+.hv-erow .btn b, .hv-erow .btn small { font-family: var(--font-sans); }
+.hv-eslot:not(.is-site):not(.hv-cell) .hv-echip b { font-size: 19px; }
+.hv-eslot:not(.is-site):not(.hv-cell) .hv-echip small { font-size: 14px; }
+.hv-root.is-after .hv-screen.hv-era.is-full { pointer-events: none; }
+.hv-root.is-after .hv-screen.hv-era.is-full .hv-eslot { pointer-events: auto; }
+.hv-root:not(.is-landscape) .hv-goal { top: 116px; }
+.hv-root.has-card .hv-band.hv-ecard, .hv-root.has-sheet .hv-band.hv-ecard { pointer-events: none; }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -6572,6 +6653,10 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     {
       title: "The house behind your chair",
       body: "Turn round (the Bunker button) and you see the house. The rooms your executive starts with are already running. Over the climb, people come to the door: an engineer, a cistern hand, a cook, an intake technician and a reporter. Let one in and their room comes on. A promise can come with them: keep your word, or it costs you. Everyone inside eats, so the stores rise with your income and fall with every mouth."
+    },
+    {
+      title: "Three eras, three goals",
+      body: "In 1978 the house is a holdings board: one order a quarter (cash, on top of the house) builds Headquarters, the Works, a Capitol Office and an Offshore Holding. Get all four running by Q4. In 2008 it is a private island: Lv 2 facilities open its sites, Offshore pays for the rest, and you build all four by Q8. Today it is the bunker: each island site decides how its room starts, capped at two rooms, and Offshore's leftovers become stores. Missing a goal never ends the run; the next era just starts behind."
     },
     {
       title: "Then seal the doors",
@@ -10692,8 +10777,9 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 
   LD.houseInit = function (state) {
     if (!state || state.ruleset !== "house") return state;
-    if (state.house) { applyHousePerks(state); syncBunker(state); return state; }
+    if (state.house) { LD.eraMigrate(state); applyHousePerks(state); syncBunker(state); return state; }
     var h = emptyHouse();
+    h.era = emptyEra();
     state.house = h;
     LD.SYSTEMS.forEach(function (s) {
       var b = state.bunker[s.id];
@@ -10712,6 +10798,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   LD.houseEnsure = function (state) {
     if (!state || state.ruleset !== "house") return state;
     if (!state.house) return LD.houseInit(state);
+    LD.eraMigrate(state);
     applyHousePerks(state);
     syncBunker(state);
     return state;
@@ -11165,6 +11252,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   LD.houseBeforeClose = function (state) {
     if (!LD.isHouse(state) || !state.house) return;
     var h = state.house;
+    if (LD.eraBeforeClose) LD.eraBeforeClose(state);
     var inc = incomeFor(state);
     var drain = drainFor(h.residents.length, hasRes(state, "nia"));
     h.stores = h.stores + inc - drain;
@@ -11220,6 +11308,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 
   LD.houseAfterClose = function (state) {
     if (!LD.isHouse(state) || !state.house) return;
+    if (LD.eraAfterClose) LD.eraAfterClose(state);
     /* A leftover arrival waits. A due promise can consume the act, so they must not be sent away for that. No second arrival while one is at the door. */
     var dues = openPromises(state).filter(function (p) { return p.dueQ <= state.turn; }).sort(function (a, b) { return a.dueQ - b.dueQ || a.id.localeCompare(b.id); });
     if (dues.length) {
@@ -11235,6 +11324,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     if (!LD.isHouse(state) || !state.house) return;
     var d = LD.dealById && LD.dealById(dealId);
     state.house.dealLog.push({ q: state.turn, id: dealId, tags: (d && d.tags) || [] });
+    if (LD.eraOnDeal) LD.eraOnDeal(state);
     if (state.house.dealLog.length > 40) state.house.dealLog = state.house.dealLog.slice(-40);
   };
 
@@ -11428,6 +11518,164 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     rollLeak(state, false);
   };
 
+  /* ---------- Era goals (2026-11-26): 1978 the company, 2008 the island, Now the bunker ----------
+     One extra "holdings" act a quarter (cash, separate from the house act), on four slots that line up with the bunker
+     systems: power / water / air / food. The rooms, residents, Word, stores and the seal are untouched; the eras only
+     feed them. Fights are untouched. */
+  LD.ERA_SAVE_V = 2;
+  LD.ERA_SLOTS = ["power", "water", "air", "food"];
+  LD.ERA_MAX_LV = 3;
+  var WORKS_NAME = { mara: "The Works", reid: "The Refinery", imani: "The Mill", julian: "The Terminal", soren: "The Plant", cassius: "The Trading Floor" };
+  LD.ERA_DEFS = {
+    1: { key: "company", title: "The Company", goal: "All four facilities running by Q4", byQ: 4, slots: {
+      power: { name: "Headquarters", short: "HQ", cost: [10, 18, 28], fx: function (lv) { return "+$" + (2 * lv) + "M on every deal you sign"; } },
+      water: { name: "The Works", short: "Works", cost: [8, 14, 22], fx: function (lv) { return "+$" + (3 * lv) + "M every quarter"; } },
+      air: { name: "Capitol Office", short: "Capitol", cost: [12, 20, 30], fx: function (lv) { return "Unrest \u2212" + lv + " every quarter"; } },
+      food: { name: "Offshore Holding", short: "Offshore", cost: [10, 16, 24], fx: function (lv) { return "Banks $" + (4 * lv) + "M a quarter for the island"; } }
+    } },
+    2: { key: "island", title: "The Island", goal: "All four island sites built by Q8", byQ: 8, slots: {
+      power: { name: "Power Plant", short: "Plant", cost: [14, 22, 32], fx: function (lv) { return lv >= 3 ? "Power room starts on and sound" : lv >= 2 ? "Power room starts on" : "Power room starts sound if on"; } },
+      water: { name: "Desal Works", short: "Desal", cost: [14, 22, 32], fx: function (lv) { return lv >= 3 ? "Water room starts on and sound" : lv >= 2 ? "Water room starts on" : "Water room starts sound if on"; } },
+      air: { name: "Dock & Airstrip", short: "Dock", cost: [16, 24, 34], fx: function (lv) { return lv >= 3 ? "Air room starts on and sound" : lv >= 2 ? "Air room starts on" : "Air room starts sound if on"; } },
+      food: { name: "Villa", short: "Villa", cost: [12, 20, 30], fx: function (lv) { return "+" + lv + " Stores when you move in" + (lv >= 2 ? "; food room starts on" : ""); } }
+    } }
+  };
+  LD.ERA_INHERIT_ROOMS_CAP = 2;   /* island sites can switch on at most two bunker rooms */
+  LD.ERA_BANK_STORES_CAP = 3;     /* Offshore leftovers: +1 store per $8M, at most +3 */
+  LD.eraAct = function (state) { var t = (state && state.turn) | 0 || 1; return t <= 4 ? 1 : t <= 8 ? 2 : 3; };
+  LD.eraSlotName = function (state, era, slot) {
+    if (era === 1 && slot === "water") return WORKS_NAME[state && state.executiveId] || "The Works";
+    var d = LD.ERA_DEFS[era]; return d && d.slots[slot] ? d.slots[slot].name : slot;
+  };
+  function emptyEra() {
+    var mk = function () { var o = {}; LD.ERA_SLOTS.forEach(function (s) { o[s] = { lv: 0, build: 0 }; }); return o; };
+    var co = mk(); co.power.lv = 1;   /* the firm exists: Headquarters opens at Lv 1, three facilities to build in four quarters */
+    return { v: LD.ERA_SAVE_V, company: co, island: mk(), bank: 0, actQ: 0, goals: { 1: null, 2: null }, legacy: 0, inherited: null, discount: {} };
+  }
+  /* Migration: a v1 house (saved before the era goals) gets the empty era block. Quarters already past are marked
+     legacy so a resumed run is never judged on goals it could not see. */
+  LD.eraMigrate = function (state) {
+    if (!state || !state.house) return state;
+    var h = state.house;
+    if (h.era && h.era.v === LD.ERA_SAVE_V) return state;
+    var e = emptyEra();
+    var t = state.turn | 0;
+    if (t > 1) { e.legacy = t; if (t > 4) e.goals[1] = "legacy"; if (t > 8) { e.goals[2] = "legacy"; e.inherited = { legacy: true, rooms: [], stores: 0, cash: 0 }; } }
+    h.era = e;
+    return state;
+  };
+  function eraBlock(state) { return state.house && state.house.era; }
+  function slotsFor(e, era) { return era === 1 ? e.company : e.island; }
+  LD.eraSlots = function (state, era) { var e = eraBlock(state); return e ? slotsFor(e, era || LD.eraAct(state)) : null; };
+  LD.eraUpgradeCost = function (state, slot, era) {
+    era = era || LD.eraAct(state);
+    var d = LD.ERA_DEFS[era], e = eraBlock(state); if (!d || !e || !d.slots[slot]) return null;
+    var s = slotsFor(e, era)[slot]; var lv = Math.max(s.lv, s.build); if (lv >= LD.ERA_MAX_LV) return null;
+    var c = d.slots[slot].cost[lv];
+    if (era === 2 && e.discount && e.discount[slot]) c = Math.round(c * 0.75);
+    return c;
+  };
+  /* Cash the island can draw on: the Offshore bank first, then the float. */
+  LD.eraFunds = function (state, era) { var e = eraBlock(state); return (state.cash | 0) + ((era || LD.eraAct(state)) === 2 && e ? e.bank | 0 : 0); };
+  LD.eraCanUpgrade = function (state, slot) {
+    if (!LD.isHouse(state) || !state.house) return "The house is not running this run.";
+    var e = eraBlock(state); if (!e) return "No holdings this run.";
+    if (state.ended) return "Run already ended.";
+    var era = LD.eraAct(state); if (era > 2) return "The holdings are sold. This is the bunker now.";
+    if (state.phase !== "bunker") return "Choose a deal first.";
+    if (e.actQ === state.turn) return "One holdings order a quarter.";
+    var s = slotsFor(e, era)[slot]; if (!s) return "Unknown holding.";
+    if (s.build) return "Already being built.";
+    var c = LD.eraUpgradeCost(state, slot, era); if (c == null) return "Fully built.";
+    if (LD.eraFunds(state, era) < c) return "Not enough cash ($" + c + "M required).";
+    return null;
+  };
+  LD.eraUpgrade = function (state, slot) {
+    state = clone(state);
+    var why = LD.eraCanUpgrade(state, slot);
+    if (why) return { ok: false, error: why, state: state };
+    var e = eraBlock(state), era = LD.eraAct(state), s = slotsFor(e, era)[slot];
+    var c = LD.eraUpgradeCost(state, slot, era);
+    var fromBank = era === 2 ? Math.min(e.bank | 0, c) : 0;
+    e.bank = (e.bank | 0) - fromBank; state.cash -= c - fromBank;
+    s.build = s.lv + 1; e.actQ = state.turn;
+    log(state, "You ordered " + LD.eraSlotName(state, era, slot) + " Lv " + s.build + " ($" + c + "M" + (fromBank ? ", $" + fromBank + "M from Offshore" : "") + "). Ready next quarter.");
+    return { ok: true, state: state, cost: c, fromBank: fromBank };
+  };
+  LD.eraGoalMet = function (state, era) {
+    var e = eraBlock(state); if (!e) return false;
+    var s = slotsFor(e, era); return LD.ERA_SLOTS.every(function (k) { return s[k].lv >= 1; });
+  };
+  LD.eraLevel = function (state, era, slot) { var e = eraBlock(state); return e ? slotsFor(e, era)[slot].lv : 0; };
+  /* End of a quarter (before the turn ticks): finish builds, then the company's effects. */
+  function eraBeforeClose(state) {
+    var e = eraBlock(state); if (!e) return;
+    var era = LD.eraAct(state); if (era > 2) return;
+    var s = slotsFor(e, era);
+    LD.ERA_SLOTS.forEach(function (k) { if (s[k].build) { s[k].lv = s[k].build; s[k].build = 0; log(state, LD.eraSlotName(state, era, k) + " is ready (Lv " + s[k].lv + ")."); } });
+    if (era === 1) {
+      var w = s.water.lv, cap = s.air.lv, off = s.food.lv;
+      if (w) { state.cash += 3 * w; log(state, LD.eraSlotName(state, 1, "water") + " pays $" + (3 * w) + "M."); }
+      if (cap) { state.unrest = clamp(state.unrest - cap, 0, LD.MAX_UNREST); log(state, "Capitol Office: Unrest \u2212" + cap + "."); }
+      if (off) { var b = Math.min(Math.max(0, state.cash | 0), 4 * off); if (b > 0) { state.cash -= b; e.bank = (e.bank | 0) + b; log(state, "Offshore banks $" + b + "M (now $" + e.bank + "M)."); } }
+    }
+  }
+  /* Start of a quarter (after the turn ticks): era goals at Q4 -> Q5 and Q8 -> Q9, then the carry-over. */
+  function eraAfterClose(state) {
+    var e = eraBlock(state); if (!e) return;
+    if (state.turn === 5 && e.goals[1] == null) {
+      var met = LD.eraGoalMet(state, 1); e.goals[1] = met ? "met" : "missed";
+      e.bank = Math.round((e.bank | 0) * 1.25);
+      var opened = [];
+      LD.ERA_SLOTS.forEach(function (k) {
+        var lv = e.company[k].lv;
+        if (lv >= 2 && e.island[k].lv < 1) { e.island[k].lv = 1; opened.push(LD.eraSlotName(state, 2, k)); }
+        if (lv >= 3) e.discount[k] = true;
+      });
+      if (met) { state.cash += 10; log(state, "1978 goal met: four facilities running. The listing pays $10M."); }
+      else log(state, "1978 goal missed. The island starts with less.");
+      if (opened.length) log(state, "The company opens island sites: " + opened.join(", ") + ".");
+      if (e.bank) log(state, "Offshore carries $" + e.bank + "M to 2008.");
+    }
+    if (state.turn === 9 && e.goals[2] == null) {
+      var met2 = LD.eraGoalMet(state, 2); e.goals[2] = met2 ? "met" : "missed";
+      if (met2) { state.cash += 12; log(state, "2008 goal met: the island is built. $12M in rents."); }
+      else log(state, "2008 goal missed. The bunker starts with less.");
+      eraInherit(state);
+    }
+  }
+  /* Now: island sites set the bunker rooms' start; Offshore leftovers become stores. Capped. */
+  function eraInherit(state) {
+    var e = eraBlock(state), h = state.house, inh = { rooms: [], sound: [], stores: 0, cash: 0 };
+    var switched = 0;
+    LD.ERA_SLOTS.forEach(function (k) {
+      var lv = e.island[k].lv, room = h.rooms[k]; if (!room) return;
+      var canOn = k === "food" ? lv >= 2 : lv >= 2;
+      if (!room.on && canOn && switched < LD.ERA_INHERIT_ROOMS_CAP) {
+        room.on = true; room.base = "island"; if (!room.by) room.by = "island"; room.quality = lv >= 3 ? "sound" : "cheap";
+        switched++; inh.rooms.push(k);
+      } else if (room.on && room.quality === "cheap" && lv >= 1) { room.quality = "sound"; inh.sound.push(k); }
+    });
+    var villa = e.island.food.lv;
+    var st = Math.min(LD.ERA_BANK_STORES_CAP, Math.floor((e.bank | 0) / 8));
+    inh.stores = st + villa; h.stores = (h.stores | 0) + inh.stores;
+    inh.cash = (e.bank | 0) - st * 8; state.cash += inh.cash; e.bank = 0;
+    e.inherited = inh;
+    syncBunker(state);
+    var parts = [];
+    if (inh.rooms.length) parts.push("rooms on: " + inh.rooms.join(", "));
+    if (inh.sound.length) parts.push("recertified: " + inh.sound.join(", "));
+    if (inh.stores) parts.push("Stores +" + inh.stores);
+    if (inh.cash) parts.push("$" + inh.cash + "M back from Offshore");
+    log(state, "The bunker inherits from the island" + (parts.length ? " \u2014 " + parts.join("; ") : "") + ".");
+  }
+  LD.eraBeforeClose = eraBeforeClose;
+  LD.eraAfterClose = eraAfterClose;
+  LD.eraOnDeal = function (state) {
+    var e = eraBlock(state); if (!e || LD.eraAct(state) !== 1) return;
+    var lv = e.company.power.lv; if (lv) { state.cash += 2 * lv; }
+  };
+
   /* ---------- Wraps that are safe once meta/fy have loaded ---------- */
   if (LD.selectDeal) {
     var _select = LD.selectDeal;
@@ -11616,6 +11864,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     });
     h += "</ul>";
     h += '<p class="hv-stores">Stores <b>' + stores + "</b> \u00b7 " + mood + "</p>";
+    var inl = LD.eraInheritLine ? LD.eraInheritLine(state) : "";
+    if (inl) h += '<p class="hv-inherit">' + esc(inl) + "</p>";
     h += "</aside>";
     return h;
   };
@@ -11720,15 +11970,135 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       "</div>";
   };
 
+
+  /* ---------- Era goals view: 1978 holdings board, 2008 island model, Now bunker. Mara has the full plates; every other
+     exec keeps their own TV and shows the same facility / site vignettes in its four cells. ---------- */
+  var ERA_ART = "assets/house/era/";
+  var ERA_YEAR = { 1: "1978", 2: "2008", 3: "Now" };
+  var ERA_GOAL_LINE = { 1: "Act I goal \u00b7 all four facilities running by Q4", 2: "Act II goal \u00b7 build the island by Q8", 3: "Act III goal \u00b7 seal with all four rooms holding" };
+  /* Mara's plates, % of the 720x1280 rig: the board's four glass panels, the island model's four sites (pin, chip). */
+  var BOARD_PANELS = { power: [101, 307, 152, 134], water: [294, 315, 143, 129], air: [102, 497, 151, 133], food: [295, 497, 143, 128] };
+  var ISLE_SITES = { water: { pin: [125, 545], chip: [158, 440] }, power: { pin: [360, 520], chip: [362, 396] }, food: { pin: [190, 690], chip: [172, 808] }, air: { pin: [430, 650], chip: [470, 790] } };
+  var SLOT_ORDER = { 1: ["power", "water", "air", "food"], 2: ["water", "power", "food", "air"] };
+  function pct(v, of) { return (100 * v / of).toFixed(2) + "%"; }
+  LD.eraFullArt = function (state) { return !!(state && state.executiveId === "mara"); };
+  LD.eraShows = function (state) { return !!(state && state.house && state.house.era && LD.eraAct && LD.eraAct(state) <= 2); };
+  LD.eraPlate = function (state) {
+    if (!LD.eraShows(state) || !LD.eraFullArt(state)) return null;
+    return ERA_ART + "mara/" + (LD.eraAct(state) === 1 ? "board" : "island") + "-after.webp";
+  };
+  function slotState(state, era, k) {
+    var s = LD.eraSlots(state, era)[k];
+    if (s.build) return "building";
+    if (s.lv >= 1) return "on";
+    return LD.eraUpgradeCost(state, k, era) != null && LD.eraFunds(state, era) >= LD.eraUpgradeCost(state, k, era) ? "open" : "locked";
+  }
+  function slotSub(state, era, k) {
+    var s = LD.eraSlots(state, era)[k], st = slotState(state, era, k);
+    if (st === "building") return "Building \u00b7 ready Q" + (state.turn + 1);
+    if (s.lv >= 1) return "Lv " + s.lv + " \u00b7 " + LD.ERA_DEFS[era].slots[k].fx(s.lv);
+    var c = LD.eraUpgradeCost(state, k, era);
+    return (st === "open" ? "Not built \u00b7 $" : "Locked \u00b7 $") + c + "M";
+  }
+  function pips(lv, build) {
+    var h = '<i class="hv-pips" aria-hidden="true">';
+    for (var i = 1; i <= LD.ERA_MAX_LV; i++) h += '<i class="' + (i <= lv ? "on" : build && i === build ? "bd" : "") + '"></i>';
+    return h + "</i>";
+  }
+  LD.eraPick = function (state, want) {
+    var era = LD.eraAct(state), order = SLOT_ORDER[era] || LD.ERA_SLOTS;
+    if (want && order.indexOf(want) !== -1) return want;
+    var first = null, fresh = null;
+    order.forEach(function (k) { if (!LD.eraCanUpgrade(state, k)) { if (!first) first = k; if (!fresh && !LD.eraSlots(state, era)[k].lv) fresh = k; } });
+    if (!fresh) order.forEach(function (k) { var s = LD.eraSlots(state, era)[k]; if (!fresh && !s.lv && !s.build) fresh = k; });
+    return fresh || first || order[0];
+  };
+  LD.renderEraScreen = function (state, ui) {
+    var era = LD.eraAct(state), full = LD.eraFullArt(state), sel = LD.eraPick(state, ui && ui.eraSlot);
+    var order = SLOT_ORDER[era];
+    var kind = era === 1 ? "board" : "isle";
+    var h = '<div class="hv-screen hv-era is-' + kind + (full ? " is-full" : " is-tv") + '" aria-label="' + esc(LD.ERA_DEFS[era].title) + '">';
+    order.forEach(function (k) {
+      var s = LD.eraSlots(state, era)[k], st = slotState(state, era, k), name = LD.eraSlotName(state, era, k);
+      if (era === 1 && k === "air") name = "Capitol"; else if (era === 1 && k === "food") name = "Offshore";
+      var cls = "hv-eslot is-" + st + (k === sel ? " is-sel" : "");
+      var img = ERA_ART + (era === 1 ? "fac-" : "site-") + k + ".webp";
+      var chip = '<span class="hv-echip">' + pips(s.lv, s.build) + "<b>" + esc(name) + "</b><small>" + esc(slotSub(state, era, k)) + "</small></span>";
+      var lock = st === "locked" ? '<em class="hv-elock">Locked</em>' : "";
+      if (full && era === 1) {
+        var p = BOARD_PANELS[k];
+        h += '<button type="button" class="' + cls + '" data-eslot="' + k + '" style="left:' + pct(p[0], 720) + ";top:" + pct(p[1], 1280) + ";width:" + pct(p[2], 720) + ";height:" + pct(p[3], 1280) + '">' +
+          '<img src="' + img + '" alt="" draggable="false">' + lock + chip + "</button>";
+      } else if (full) {
+        var g = ISLE_SITES[k];
+        h += '<button type="button" class="' + cls + ' is-site" data-eslot="' + k + '" style="left:' + pct(g.chip[0], 720) + ";top:" + pct(g.chip[1], 1280) + '">' + chip + "</button>" +
+          '<i class="hv-epin is-' + st + (k === sel ? " is-sel" : "") + '" style="left:' + pct(g.pin[0], 720) + ";top:" + pct(g.pin[1], 1280) + '" aria-hidden="true"></i>' +
+          (st === "locked" || st === "building" ? '<i class="hv-eveil is-' + st + '" style="left:' + pct(g.pin[0], 720) + ";top:" + pct(g.pin[1], 1280) + '" aria-hidden="true"></i>' : "");
+      } else {
+        h += '<button type="button" class="' + cls + ' hv-cell" data-eslot="' + k + '"><img src="' + img + '" alt="" draggable="false">' + lock + chip + "</button>";
+      }
+    });
+    h += "</div>";
+    return h;
+  };
+  function firmOf(state) { var ex = LD.execById ? LD.execById(state.executiveId) : null; return ex && ex.firm ? ex.firm : "The firm"; }
+  function slotRow(state, era, k, compact) {
+    var why = LD.eraCanUpgrade(state, k), c = LD.eraUpgradeCost(state, k, era), s = LD.eraSlots(state, era)[k];
+    var name = LD.eraSlotName(state, era, k), def = LD.ERA_DEFS[era].slots[k];
+    var nextLv = Math.max(s.lv, s.build) + 1;
+    var line = c == null ? "Fully built." : s.build ? "Being built \u00b7 ready Q" + (state.turn + 1) + "." : "Lv " + nextLv + ": " + def.fx(nextLv) + ".";
+    var verb = s.lv || s.build ? "Expand" : "Build";
+    var btn = c == null || s.build ? "" : '<button type="button" class="btn' + (why ? "" : " btn-coral") + ' hv-era-up" data-eslot="' + k + '"' + (why ? ' aria-disabled="true" data-why="' + esc(why) + '"' : "") + "><b>" + verb + "</b><small>$" + c + "M</small></button>";
+    return '<div class="hv-erow' + (compact ? " is-compact" : "") + '"><div class="hv-erow-t"><b>' + esc(name) + "</b><span>" + esc(line) + "</span></div>" + btn + "</div>";
+  }
+  LD.renderEraCard = function (state, ui) {
+    var era = LD.eraAct(state), e = state.house.era, sel = LD.eraPick(state, ui && ui.eraSlot);
+    var land = !!(ui && ui.land);
+    var h = '<aside class="hv-band hv-ecard" aria-label="' + esc(LD.ERA_DEFS[era].title) + '">';
+    h += '<p class="hv-band-k">' + esc(firmOf(state)) + " \u00b7 " + ERA_YEAR[era] + "</p>";
+    h += '<h3 class="hv-etitle">' + esc(LD.ERA_DEFS[era].title) + "</h3>";
+    if (land) {
+      h += '<p class="hv-egoal">' + esc(LD.ERA_DEFS[era].goal) + "</p>";
+      (SLOT_ORDER[era]).forEach(function (k) { h += slotRow(state, era, k, true); });
+    } else {
+      h += slotRow(state, era, sel, false);
+    }
+    var foot = [];
+    if (era === 2 && e.bank) foot.push("Offshore $" + e.bank + "M");
+    if (era === 1 && e.bank) foot.push("Offshore banked $" + e.bank + "M");
+    if (e.actQ === state.turn) foot.push("Order placed this quarter");
+    var staff = (state.house.residents || []).map(function (r) { var b = BAND[r.id]; return b ? '<button type="button" class="hv-estaff" data-leave="' + r.id + '">' + esc(b.name) + "</button>" : ""; }).join("");
+    h += '<p class="hv-stores">' + (foot.length ? esc(foot.join(" \u00b7 ")) + " \u00b7 " : "") + "Stores <b>" + (state.house.stores | 0) + "</b></p>";
+    if (staff) h += '<p class="hv-estaff-row"><small>Staff</small>' + staff + "</p>";
+    h += "</aside>";
+    return h;
+  };
+  LD.renderEraGoal = function (state) {
+    var era = LD.eraAct ? LD.eraAct(state) : 3;
+    return '<p class="hv-goal" aria-live="polite">' + esc(ERA_GOAL_LINE[era] || "") + "</p>";
+  };
+  LD.eraInheritLine = function (state) {
+    var inh = state && state.house && state.house.era && state.house.era.inherited;
+    if (!inh || inh.legacy) return "";
+    var p = [];
+    if (inh.rooms && inh.rooms.length) p.push(inh.rooms.map(cap).join(", ") + " on from the island");
+    if (inh.sound && inh.sound.length) p.push(inh.sound.map(cap).join(", ") + " recertified");
+    if (inh.stores) p.push("Stores +" + inh.stores + " from Offshore and the Villa");
+    return p.length ? p.join(" \u00b7 ") : "The island left the bunker nothing.";
+  };
+
   /* ui.mode: "before" | "turning" | "after" | "back"
      ui.card: "arrival" | "word" | null; ui.leaveId; ui.auto; ui.canEnd */
   LD.renderHouseStage = function (state, ui) {
     ui = ui || {};
     if (LD.seatUseExec) LD.seatUseExec(state && state.executiveId);
     var mode = ui.mode || "after";
-    var cls = "hv-root is-" + mode + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
+    var cls = "hv-root is-" + mode + (LD.eraShows && LD.eraShows(state) ? " is-era is-era-" + LD.eraAct(state) + (LD.eraFullArt(state) ? " is-era-full" : "") : "") + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
+    var eraPlate = LD.eraPlate ? LD.eraPlate(state) : null, eraOn = LD.eraShows ? LD.eraShows(state) : false;
+    var nF = LD.HOUSE_FRAMES.length;
     var frames = LD.HOUSE_FRAMES.map(function (f, i) {
-      return '<img class="hv-plate" data-frame="' + i + '" src="' + f.src + '" alt="" draggable="false">';
+      var src = eraPlate && i >= nF - 2 ? eraPlate : f.src;
+      return '<img class="hv-plate" data-frame="' + i + '" src="' + src + '" alt="" draggable="false">';
     }).join("");
     var showSet = mode === "after" || mode === "turning";
     var h = '<div class="' + cls + '" id="hv-stage" role="dialog" aria-label="The house">';
@@ -11736,9 +12106,10 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     h += ui.seated && LD.seatHud ? LD.seatHud(state, { menu: false, nets: false }).replace('class="sd-menu"', 'class="sd-menu" tabindex="-1" aria-hidden="true"') : LD.renderHouseHud(state);
     h += '<div class="hv-clip"><div class="hv-rig">';
     h += '<div class="hv-plates" aria-hidden="true">' + frames + "</div>";
-    if (showSet) h += LD.renderHouseFeed(state);
+    if (showSet) h += eraOn ? LD.renderEraScreen(state, ui) : LD.renderHouseFeed(state);
     h += "</div></div>";
-    if (showSet) h += LD.renderHouseBand(state);
+    if (showSet && LD.isHouse(state) && state.house && state.house.era) h += LD.renderEraGoal(state);
+    if (showSet) h += eraOn ? LD.renderEraCard(state, ui) : LD.renderHouseBand(state);
     if (mode === "turning") h += '<button type="button" class="hv-skip" id="hv-skip">Skip</button>';
     h += '<div class="hv-dock">';
     if (mode === "after") {
@@ -18862,6 +19233,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var w = r.width, h = r.height, s, tx, ty;
     if (houseIsLandscape()) {
       s = h / 1090; tx = (w - 720 * s) / 2; ty = -190 * s;
+      /* the 1978 board and the 2008 island stand higher than the TV: keep their top row clear of the HUD */
+      if (document.querySelector("#house-root .hv-root.is-era-full")) ty = -110 * s;
     } else {
       s = Math.min(w / 658, Math.max(w / 720, h / 1280));
       tx = Math.max(w - 720 * s, Math.min(0, w - 713 * s));
@@ -18888,7 +19261,9 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       leaveId: (HV.facing && !HV.turning) ? HV.leaveId : null,
       promiseId: HV.promiseId,
       canEnd: houseCanEndQ(),
-      seated: !!(LD.seatedOn && LD.seatedOn(state))
+      seated: !!(LD.seatedOn && LD.seatedOn(state)),
+      eraSlot: HV.eraSlot || null,
+      land: land
     });
     var stage = root.querySelector(".hv-root");
     if (stage && land) stage.classList.add("is-landscape");
@@ -18917,7 +19292,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     else { frames[lo[0]].style.opacity = String(1 - u); frames[hi[0]].style.opacity = String(u); }
     if (group) { group.style.filter = ""; group.style.transform = ""; }
     var screen = document.querySelector("#house-root .hv-screen");
-    var band = document.querySelectorAll("#house-root .hv-band");
+    var band = document.querySelectorAll("#house-root .hv-band, #house-root .hv-goal");
     var show = t >= 0.7 ? Math.min(1, (t - 0.7) / 0.22) : 0;
     if (screen) { screen.style.opacity = String(show); screen.style.filter = "brightness(" + (0.45 + 0.55 * show) + ")"; }
     for (var b2 = 0; b2 < band.length; b2++) band[b2].style.opacity = String(show);
@@ -18932,6 +19307,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       HV.facing = true;
       setPlateOpacities(1);
       paintHouse("after");
+      if (state && state.house && state.house.era && LD.eraAct) { var eraT = LD.eraAct(state); setTimeout(function () { if (HV.facing && !HV.turning) pennyTip("era" + eraT); }, 400); }
     } else {
       HV.facing = false;
       HV.open = false;
@@ -19101,6 +19477,27 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     });
     var no = $("hv-leave-no");
     if (no) no.addEventListener("click", function () { tick(); HV.leaveId = null; refreshHouseChrome(); });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-eslot[data-eslot]"), function (n) {
+      n.addEventListener("click", function (e) {
+        e.stopPropagation();
+        tick();
+        HV.eraSlot = n.getAttribute("data-eslot");
+        refreshHouseChrome();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-era-up[data-eslot]"), function (n) {
+      n.addEventListener("click", function (e) {
+        e.stopPropagation();
+        tick();
+        var k = n.getAttribute("data-eslot");
+        HV.eraSlot = k;
+        var why = n.getAttribute("data-why");
+        if (why) { flash(why); return; }
+        var r = LD.eraUpgrade(state, k);
+        if (r && r.ok) pennyEmit("era-order");
+        applyHouseVerb(r);
+      });
+    });
     var stage = $("hv-stage");
     if (stage) stage.addEventListener("click", function (e) {
       if (HV.turning) { tick(); skipHouseTurn(); }
@@ -20532,7 +20929,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   }
   var TOUR_HOUSE = [
     { id: "era", n: 1, face: "wink", next: true,
-      text: function () { var E = pennyEra(); return "Welcome to Port Calder, <b>" + (E ? E.year + ", " + E.name : "1978") + "</b> ✦ Your climb runs 12 quarters through three eras: <b>1978</b>, <b>2008</b> and <b>today</b>. Each quarter you sign <b>one deal</b> from the props on your desk."; },
+      text: function () { var E = pennyEra(); return "Welcome to Port Calder, <b>" + (E ? E.year + ", " + E.name : "1978") + "</b> ✦ Your climb runs 12 quarters through three eras, each with its own goal: build the <b>company</b> in 1978, buy the <b>island</b> in 2008, then seal the <b>bunker</b> today. Each quarter you sign <b>one deal</b> from the props on your desk."; },
       skip: function () { return state.phase !== "deal"; },
       target: function () { return pq(".desk.sd .sd-hud"); } },
     { id: "pin", n: 2, face: "excited", on: "pin", label: "Pick one for me ▸",
@@ -20548,7 +20945,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       act: function () { clickEl(pq("#sd-peek #btn-sign")); } },
     tourStep("door"), tourStep("intent"), tourStep("win"), tourStep("close"), tourStep("reward"),
     { id: "bunker", n: 5, face: "wink", next: true,
-      text: function () { var x = pennyExec(); return "Back at the desk. Behind your chair is <b>" + LD.escapeHtml(x.compound || "your bunker") + "</b>: tap <b>Bunker</b> any time to turn round and run the house: rooms, stores and who comes with you."; },
+      text: function () { var x = pennyExec(); var era = LD.eraAct ? LD.eraAct(state) : 3; return era === 1 ? "Back at the desk. Behind your chair is your <b>holdings board</b>: tap <b>Bunker</b> to turn round. One <b>order</b> a quarter builds the four facilities, and the people at the door still pick their rooms for later." : era === 2 ? "Behind your chair is <b>the island</b>: tap <b>Bunker</b> to turn round. One order a quarter builds its four sites, paid from Offshore first." : "Back at the desk. Behind your chair is <b>" + LD.escapeHtml(x.compound || "your bunker") + "</b>: tap <b>Bunker</b> any time to turn round and run the house: rooms, stores and who comes with you."; },
       wait: function () { return !!pq("#overlay.on") || doorOpen(); },
       target: function () { return pq("#house-peek"); } },
     { id: "office", n: 6, face: "smug", next: true,
@@ -20564,7 +20961,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     (function () { var r = tourStep("report"); if (!r) return null; var c = {}; for (var k in r) c[k] = r[k];
       c.skip = function () { return !reportOpen() && state.turn > PN.startTurn; }; return c; })(),
     { id: "goal", n: 8, face: "excited", next: true, last: true,
-      text: function () { return "The goal: get all four rooms <b>on</b> (Air, Water, Power, Food) and holding, then <b>seal the doors from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse or Unrest hit 100. Bosses knock at Q4 and Q8. Between climbs, spend your Dividends ◈ in the <b>Summit Lounge</b>. Go get 'em, Executive! ✦"; },
+      text: function () { return "The goals: all four <b>facilities</b> running by Q4, the <b>island</b> built by Q8, and both feed the bunker. In the end, get all four rooms <b>on</b> and holding, then <b>seal the doors from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse or Unrest hit 100. Bosses knock at Q4 and Q8. Between climbs, spend your Dividends ◈ in the <b>Summit Lounge</b>. Go get 'em, Executive! ✦"; },
       wait: function () { return !!pq("#overlay.on") || doorOpen(); },
       target: function () { return pq("#house-peek"); } }
   ].filter(Boolean);
@@ -20585,6 +20982,12 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       target: function () { return pq("#door .rw-in"); } },
     boss: { face: "worried", text: function () { return "Every act ends in a <b>boss quarter</b>. " + (state && LD.isHouse(state) ? "" : "Tap the red marker on the timeline any time to see what it wants. ") + "Q4 and Q8 are card fights at the door: beat them for a rare card, an Asset and loot. Miss and… well, the board remembers."; },
       target: function () { return pq(".desk #rail-wrap .rm.boss") || pq("#rail-wrap") || pq(".desk.sd .sd-hud"); } },
+    era1: { face: "excited", text: function () { return "Your <b>holdings board</b>! One <b>order</b> a quarter, cash only, on top of the house. Get all four facilities running by <b>Q4</b>. Lv 2 facilities open island sites in 2008; <b>Offshore</b> banks money for it."; },
+      target: function () { return pq("#house-root .hv-ecard") || pq("#house-root .hv-screen"); } },
+    era2: { face: "wink", text: function () { return "Welcome to <b>2008</b>: the island! Build all four sites by <b>Q8</b>, paid from Offshore first. Each site's level decides how its bunker room starts: Lv 2 switches it on, Lv 3 makes it sound."; },
+      target: function () { return pq("#house-root .hv-ecard") || pq("#house-root .hv-screen"); } },
+    era3: { face: "smug", text: function () { return "Now it's the <b>bunker</b>. Your island set the rooms' start, and Offshore's leftovers are in the stores. Get all four rooms on and holding, then seal from <b>Q" + LD.MIN_EVAC_TURN + "</b>."; },
+      target: function () { return pq("#house-root .hv-band") || pq("#house-root .hv-screen"); } },
     ratings: { face: "smug", text: function () { return "<b>Credit ratings</b>: win at a rating to unlock the next one, from AAA all the way down to D. Every tier adds a new rule, and exits there pay a lot more. No pressure ♡"; },
       target: function () { return pq("#screen-exec .rating-row"); } }
   };

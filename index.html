@@ -5890,6 +5890,19 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .hv-root.is-after .hv-screen.hv-era.is-full .hv-eslot { pointer-events: auto; }
 .hv-root:not(.is-landscape) .hv-goal { top: 116px; }
 .hv-root.has-card .hv-band.hv-ecard, .hv-root.has-sheet .hv-band.hv-ecard { pointer-events: none; }
+
+/* ===== Landscape house view (2026-11-26): the 720-wide plate stands as a framed painting on a clean walnut panel wall.
+   Replaces the blurred edge stretch (turn-edge-l/r) that smeared the chair into the floor. No art is stretched or painted over. ===== */
+.hv-root.is-landscape .hv-bg {
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0 118px, rgba(10, 5, 2, 0.34) 118px 120px, rgba(255, 220, 160, 0.05) 120px 122px),
+    linear-gradient(90deg, #1f130b 0%, #3b2415 22%, #4a2d1a 50%, #3b2415 78%, #1f130b 100%);
+}
+.hv-root.is-landscape .hv-bg .e { display: none; }
+.hv-root.is-landscape .hv-plates {
+  -webkit-mask-image: none; mask-image: none;
+  box-shadow: 0 0 0 5px #d3b06a, 0 0 0 9px #1a0f08, 0 0 70px 26px rgba(8, 3, 1, 0.55);
+}
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -11993,10 +12006,16 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     if (s.lv >= 1) return "on";
     return LD.eraUpgradeCost(state, k, era) != null && LD.eraFunds(state, era) >= LD.eraUpgradeCost(state, k, era) ? "open" : "locked";
   }
+  /* the chip's one-line effect: short enough for the narrowest phone (the full line is on the card) */
+  function chipFx(era, k, lv) {
+    if (era === 1) return { power: "+$" + 2 * lv + "M a deal", water: "+$" + 3 * lv + "M a qtr", air: "Unrest \u2212" + lv + " a qtr", food: "Banks $" + 4 * lv + "M a qtr" }[k];
+    if (k === "food") return "+" + lv + " Stores" + (lv >= 2 ? ", room on" : "");
+    return lv >= 3 ? "Starts on, sound" : lv >= 2 ? "Room starts on" : "Starts sound";
+  }
   function slotSub(state, era, k) {
     var s = LD.eraSlots(state, era)[k], st = slotState(state, era, k);
     if (st === "building") return "Building \u00b7 ready Q" + (state.turn + 1);
-    if (s.lv >= 1) return "Lv " + s.lv + " \u00b7 " + LD.ERA_DEFS[era].slots[k].fx(s.lv);
+    if (s.lv >= 1) return "Lv " + s.lv + " \u00b7 " + chipFx(era, k, s.lv);
     var c = LD.eraUpgradeCost(state, k, era);
     return (st === "open" ? "Not built \u00b7 $" : "Locked \u00b7 $") + c + "M";
   }

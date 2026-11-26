@@ -5874,3 +5874,6 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .hv-erow .btn b, .hv-erow .btn small { font-family: var(--font-sans); }
 .hv-eslot:not(.is-site):not(.hv-cell) .hv-echip b { font-size: 19px; }
 .hv-eslot:not(.is-site):not(.hv-cell) .hv-echip small { font-size: 14px; }
+.hv-root.is-after .hv-screen.hv-era.is-full { pointer-events: none; }
+.hv-root.is-after .hv-screen.hv-era.is-full .hv-eslot { pointer-events: auto; }
+.hv-root:not(.is-landscape) .hv-goal { top: 116px; }

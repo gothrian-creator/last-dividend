@@ -272,7 +272,7 @@
   var ERA_GOAL_LINE = { 1: "Act I goal \u00b7 all four facilities running by Q4", 2: "Act II goal \u00b7 build the island by Q8", 3: "Act III goal \u00b7 seal with all four rooms holding" };
   /* Mara's plates, % of the 720x1280 rig: the board's four glass panels, the island model's four sites (pin, chip). */
   var BOARD_PANELS = { power: [101, 307, 152, 134], water: [294, 315, 143, 129], air: [102, 497, 151, 133], food: [295, 497, 143, 128] };
-  var ISLE_SITES = { water: { pin: [125, 545], chip: [158, 440] }, power: { pin: [360, 520], chip: [362, 352] }, food: { pin: [190, 690], chip: [172, 808] }, air: { pin: [430, 650], chip: [470, 790] } };
+  var ISLE_SITES = { water: { pin: [125, 545], chip: [158, 440] }, power: { pin: [360, 520], chip: [362, 396] }, food: { pin: [190, 690], chip: [172, 808] }, air: { pin: [430, 650], chip: [470, 790] } };
   var SLOT_ORDER = { 1: ["power", "water", "air", "food"], 2: ["water", "power", "food", "air"] };
   function pct(v, of) { return (100 * v / of).toFixed(2) + "%"; }
   LD.eraFullArt = function (state) { return !!(state && state.executiveId === "mara"); };

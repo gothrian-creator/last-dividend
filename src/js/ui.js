@@ -1897,6 +1897,7 @@
       HV.facing = true;
       setPlateOpacities(1);
       paintHouse("after");
+      if (state && state.house && state.house.era && LD.eraAct) { var eraT = LD.eraAct(state); setTimeout(function () { if (HV.facing && !HV.turning) pennyTip("era" + eraT); }, 400); }
     } else {
       HV.facing = false;
       HV.open = false;
@@ -3518,7 +3519,7 @@
   }
   var TOUR_HOUSE = [
     { id: "era", n: 1, face: "wink", next: true,
-      text: function () { var E = pennyEra(); return "Welcome to Port Calder, <b>" + (E ? E.year + ", " + E.name : "1978") + "</b> ✦ Your climb runs 12 quarters through three eras: <b>1978</b>, <b>2008</b> and <b>today</b>. Each quarter you sign <b>one deal</b> from the props on your desk."; },
+      text: function () { var E = pennyEra(); return "Welcome to Port Calder, <b>" + (E ? E.year + ", " + E.name : "1978") + "</b> ✦ Your climb runs 12 quarters through three eras, each with its own goal: build the <b>company</b> in 1978, buy the <b>island</b> in 2008, then seal the <b>bunker</b> today. Each quarter you sign <b>one deal</b> from the props on your desk."; },
       skip: function () { return state.phase !== "deal"; },
       target: function () { return pq(".desk.sd .sd-hud"); } },
     { id: "pin", n: 2, face: "excited", on: "pin", label: "Pick one for me ▸",
@@ -3534,7 +3535,7 @@
       act: function () { clickEl(pq("#sd-peek #btn-sign")); } },
     tourStep("door"), tourStep("intent"), tourStep("win"), tourStep("close"), tourStep("reward"),
     { id: "bunker", n: 5, face: "wink", next: true,
-      text: function () { var x = pennyExec(); return "Back at the desk. Behind your chair is <b>" + LD.escapeHtml(x.compound || "your bunker") + "</b>: tap <b>Bunker</b> any time to turn round and run the house: rooms, stores and who comes with you."; },
+      text: function () { var x = pennyExec(); var era = LD.eraAct ? LD.eraAct(state) : 3; return era === 1 ? "Back at the desk. Behind your chair is your <b>holdings board</b>: tap <b>Bunker</b> to turn round. One <b>order</b> a quarter builds the four facilities, and the people at the door still pick their rooms for later." : era === 2 ? "Behind your chair is <b>the island</b>: tap <b>Bunker</b> to turn round. One order a quarter builds its four sites, paid from Offshore first." : "Back at the desk. Behind your chair is <b>" + LD.escapeHtml(x.compound || "your bunker") + "</b>: tap <b>Bunker</b> any time to turn round and run the house: rooms, stores and who comes with you."; },
       wait: function () { return !!pq("#overlay.on") || doorOpen(); },
       target: function () { return pq("#house-peek"); } },
     { id: "office", n: 6, face: "smug", next: true,
@@ -3550,7 +3551,7 @@
     (function () { var r = tourStep("report"); if (!r) return null; var c = {}; for (var k in r) c[k] = r[k];
       c.skip = function () { return !reportOpen() && state.turn > PN.startTurn; }; return c; })(),
     { id: "goal", n: 8, face: "excited", next: true, last: true,
-      text: function () { return "The goal: get all four rooms <b>on</b> (Air, Water, Power, Food) and holding, then <b>seal the doors from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse or Unrest hit 100. Bosses knock at Q4 and Q8. Between climbs, spend your Dividends ◈ in the <b>Summit Lounge</b>. Go get 'em, Executive! ✦"; },
+      text: function () { return "The goals: all four <b>facilities</b> running by Q4, the <b>island</b> built by Q8, and both feed the bunker. In the end, get all four rooms <b>on</b> and holding, then <b>seal the doors from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse or Unrest hit 100. Bosses knock at Q4 and Q8. Between climbs, spend your Dividends ◈ in the <b>Summit Lounge</b>. Go get 'em, Executive! ✦"; },
       wait: function () { return !!pq("#overlay.on") || doorOpen(); },
       target: function () { return pq("#house-peek"); } }
   ].filter(Boolean);
@@ -3571,6 +3572,12 @@
       target: function () { return pq("#door .rw-in"); } },
     boss: { face: "worried", text: function () { return "Every act ends in a <b>boss quarter</b>. " + (state && LD.isHouse(state) ? "" : "Tap the red marker on the timeline any time to see what it wants. ") + "Q4 and Q8 are card fights at the door: beat them for a rare card, an Asset and loot. Miss and… well, the board remembers."; },
       target: function () { return pq(".desk #rail-wrap .rm.boss") || pq("#rail-wrap") || pq(".desk.sd .sd-hud"); } },
+    era1: { face: "excited", text: function () { return "Your <b>holdings board</b>! One <b>order</b> a quarter, cash only, on top of the house. Get all four facilities running by <b>Q4</b>. Lv 2 facilities open island sites in 2008; <b>Offshore</b> banks money for it."; },
+      target: function () { return pq("#house-root .hv-ecard") || pq("#house-root .hv-screen"); } },
+    era2: { face: "wink", text: function () { return "Welcome to <b>2008</b>: the island! Build all four sites by <b>Q8</b>, paid from Offshore first. Each site's level decides how its bunker room starts: Lv 2 switches it on, Lv 3 makes it sound."; },
+      target: function () { return pq("#house-root .hv-ecard") || pq("#house-root .hv-screen"); } },
+    era3: { face: "smug", text: function () { return "Now it's the <b>bunker</b>. Your island set the rooms' start, and Offshore's leftovers are in the stores. Get all four rooms on and holding, then seal from <b>Q" + LD.MIN_EVAC_TURN + "</b>."; },
+      target: function () { return pq("#house-root .hv-band") || pq("#house-root .hv-screen"); } },
     ratings: { face: "smug", text: function () { return "<b>Credit ratings</b>: win at a rating to unlock the next one, from AAA all the way down to D. Every tier adds a new rule, and exits there pay a lot more. No pressure ♡"; },
       target: function () { return pq("#screen-exec .rating-row"); } }
   };

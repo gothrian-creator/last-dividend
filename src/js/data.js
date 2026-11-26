@@ -646,6 +646,10 @@
       body: "Turn round (the Bunker button) and you see the house. The rooms your executive starts with are already running. Over the climb, people come to the door: an engineer, a cistern hand, a cook, an intake technician and a reporter. Let one in and their room comes on. A promise can come with them: keep your word, or it costs you. Everyone inside eats, so the stores rise with your income and fall with every mouth."
     },
     {
+      title: "Three eras, three goals",
+      body: "In 1978 the house is a holdings board: one order a quarter (cash, on top of the house) builds Headquarters, the Works, a Capitol Office and an Offshore Holding. Get all four running by Q4. In 2008 it is a private island: Lv 2 facilities open its sites, Offshore pays for the rest, and you build all four by Q8. Today it is the bunker: each island site decides how its room starts, capped at two rooms, and Offshore's leftovers become stores. Missing a goal never ends the run; the next era just starts behind."
+    },
+    {
       title: "Then seal the doors",
       body: "You win when all four rooms, Air, Water, Power and Food, are on and holding when the doors close. You may seal from quarter " + LD.MIN_EVAC_TURN + ". Rushed, cheap work can fail at the seal unless someone inside keeps it running. Collapse at 100 forces the doors. Unrest at 100 means you never reach them."
     }

@@ -302,9 +302,10 @@
   LD.eraPick = function (state, want) {
     var era = LD.eraAct(state), order = SLOT_ORDER[era] || LD.ERA_SLOTS;
     if (want && order.indexOf(want) !== -1) return want;
-    var first = null;
-    order.forEach(function (k) { if (!first && !LD.eraCanUpgrade(state, k)) first = k; });
-    return first || order[0];
+    var first = null, fresh = null;
+    order.forEach(function (k) { if (!LD.eraCanUpgrade(state, k)) { if (!first) first = k; if (!fresh && !LD.eraSlots(state, era)[k].lv) fresh = k; } });
+    if (!fresh) order.forEach(function (k) { var s = LD.eraSlots(state, era)[k]; if (!fresh && !s.lv && !s.build) fresh = k; });
+    return fresh || first || order[0];
   };
   LD.renderEraScreen = function (state, ui) {
     var era = LD.eraAct(state), full = LD.eraFullArt(state), sel = LD.eraPick(state, ui && ui.eraSlot);

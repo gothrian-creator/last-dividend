@@ -2085,7 +2085,7 @@
         if (why) { flash(why); return; }
         var r = LD.eraUpgrade(state, k);
         if (r && r.ok) pennyEmit("era-order");
-        applyHouseVerb(r, r && r.ok ? LD.eraSlotName(r.state, LD.eraAct(r.state), k) + " ordered. Ready next quarter." : null);
+        applyHouseVerb(r);
       });
     });
     var stage = $("hv-stage");

@@ -11,7 +11,8 @@
     room: BASE + "sd-room.webp",
     /* the same room painted wider (outpainted from sd-room, lined up by feature match); plate x 0 sits at x0 */
     roomWide: { src: BASE + "sd-room-wide.webp", x0: 640, w: 2000 },
-    table: { src: BASE + "sd-table.webp", box: [0, 545, 720, 597] },
+    table: { src: BASE + "sd-table-clean.webp", box: [0, 545, 720, 597] },
+    /* sd-table.webp (painted brass pins) is kept; the house desk now draws glass pins over sd-table-clean.webp */
     hands: { rest: { src: BASE + "sd-hands-rest-mara.webp", box: [100, 770, 614, 372] }, dip: { src: BASE + "sd-hands-dip-mara.webp", box: [100, 879, 620, 263] } },
     mara: { src: BASE + "sd-mara-ots.webp", box: [181, 389, 539, 891] },
     /* map pins on the painted table map. p: 1 = a painted brass pin sits there; 0 = we add one. */
@@ -37,7 +38,7 @@
     SEAT.mara = id === "mara" ? MARA_SET.mara : { src: d + "sd-ots.webp", box: EXEC_OTS[id] };
     SEAT.hands.rest.src = id === "mara" ? MARA_SET.rest : d + "sd-hands-rest.webp";
     SEAT.hands.dip.src = id === "mara" ? MARA_SET.dip : d + "sd-hands-dip.webp";
-    if (LD.HOUSE_FRAMES && plateSrc) LD.HOUSE_FRAMES.forEach(function (f, i) { f.src = id === "mara" ? plateSrc[i] : d + "turn-" + (i + 1) + ".webp"; });
+    if (LD.HOUSE_FRAMES && plateSrc) LD.HOUSE_FRAMES.forEach(function (f, i) { f.src = id === "mara" ? plateSrc[i] : d + "turn-" + (i + 1) + (i === 0 ? "-clean" : "") + ".webp"; });
     return id;
   };
   LD.seatedOn = function (state) {
@@ -103,6 +104,105 @@
   var TAG_AT = { na: [-62, -118], sam: [-58, 92], eu: [-6, -150], me: [58, -128], ea: [76, -96], af: [6, 104], sa: [74, 82], oc: [70, 106] };
   LD.seatTagAt = function (rid, k) { var o = TAG_AT[rid] || [0, -110]; return [o[0] * k, o[1] * k]; };
 
+
+  /* ---------- Deal props (house desk): the deal lies on the table as a prop; tap to open it, drag it to your hands to sign ----------
+     Closed props sit on the near rim (plate px). Each opens into a painted interior (no text in the art); the typed slip on it is
+     live game text. Every move is one object tweened; the open is a video slot (CLIPS) with a hard-cut fallback. */
+  var PROP_DIR = "assets/house/props/";
+  var PSIZE = {"briefcase": [640, 341], "briefcase-oxblood": [640, 341], "briefcase-black": [640, 341], "policy": [542, 640], "deed": [640, 537], "dossier": [614, 640], "dossier-red": [614, 640], "ledger": [633, 640], "cheque": [640, 443], "cheque-blue": [640, 443], "telegram": [640, 467], "stamp": [543, 640], "pen": [364, 279], "briefcase-open": [851, 751], "briefcase-oxblood-open": [851, 751], "briefcase-black-open": [851, 751], "policy-open": [686, 817], "deed-open": [721, 616], "dossier-open": [898, 676], "dossier-red-open": [898, 676], "ledger-open": [878, 742], "cheque-open": [900, 663], "cheque-blue-open": [900, 663], "telegram-open": [754, 633]};
+  var PROP_TYPES = {
+    briefcase: ["Treasury", "Export", "Procurement", "Operations", "Disaster", "Diversion", "Talent", "Commodities"],
+    policy: ["Products", "Services", "ESG"], deed: ["Acquisition", "Land", "Takeover", "Off-books"],
+    dossier: ["Lobby", "Government", "Compliance", "Legal", "Communications"], ledger: ["Finance", "IR", "Tax", "Disclosure"],
+    cheque: ["Concession", "Philanthropy", "People", "Logistics"]
+  };
+  var PROP_VAR = { briefcase: ["briefcase", "briefcase-oxblood", "briefcase-black"], dossier: ["dossier", "dossier-red"], cheque: ["cheque", "cheque-blue"] };
+  /* rim width in plate px */
+  var PROP_W = { briefcase: 200, policy: 128, deed: 168, dossier: 138, ledger: 150, cheque: 176, telegram: 166 };
+  var RIM = [[262, 838, -6], [430, 860, 4], [592, 832, 7]];
+  /* where the closed prop sits inside its open box ([x, y, w] as fractions of the open box): the clip's first frame */
+  var CLOSED_IN = { briefcase: [0.01, 0.41, 0.98], policy: [0.02, 0.02, 0.96], deed: [0.06, 0.06, 0.88], dossier: [0.34, 0.05, 0.64],
+    ledger: [0.36, 0.18, 0.62], cheque: [0.12, 0.2, 0.68], telegram: [0.03, 0.12, 0.94] };
+  /* the typed slip on each open interior: x, y, w (fractions of the open box), rotate, skewX (deg), how it is held */
+  var SLIP = { briefcase: { x: 0.15, y: 0.035, w: 0.68, r: -1.5, sk: -3, hold: "lid" }, dossier: { x: 0.03, y: 0.46, w: 0.46, r: -2, sk: 0, hold: "clip", min: 178 },
+    deed: { x: 0.05, y: 0.05, w: 0.6, r: -4, sk: 2, hold: "pin" }, cheque: { x: 0.01, y: 0.56, w: 0.56, r: -3, sk: 0, hold: "pocket", min: 186 },
+    policy: { x: 0.15, y: 0.15, w: 0.66, r: 1.2, sk: 0, hold: "rider" }, ledger: { x: 0.1, y: 0.52, w: 0.7, r: -3, sk: 0, hold: "page", wide: true },
+    telegram: { x: 0.12, y: 0.27, w: 0.76, r: -1.5, sk: 0, hold: "strips" } };
+  /* finished reveal clips: set an art name true once assets/house/props/clips/<art>-open.webm is in (see the video-stills README) */
+  LD.PROP_CLIPS = { stamp: false };
+  LD.PROP_CLIP_DIR = PROP_DIR + "clips/";
+  LD.SEAT_PROPS = { dir: PROP_DIR, size: PSIZE, w: PROP_W, rim: RIM, closedIn: CLOSED_IN, slip: SLIP };
+  LD.propTypeOf = function (d) {
+    if (!d) return "dossier";
+    if (LD.dealKind(d) === "crisis") return "telegram";
+    for (var t in PROP_TYPES) if (PROP_TYPES[t].indexOf(d.kicker) >= 0) return t;
+    return "dossier";
+  };
+  LD.propSrc = function (art) { return PROP_DIR + art + ".webp"; };
+  /* the props on the table this quarter, left to right in pin order (repeats of a kind get the next colourway) */
+  LD.seatPropsFor = function (state) {
+    if (!state || state.phase !== "deal" || state.ended || !state.offered) return [];
+    var ids = state.offered.filter(function (id) { return LD.dealById(id); });
+    ids.sort(function (a, b) { var pa = SEAT.pins[state.world.pins[a]] || SEAT.pins.eu, pb = SEAT.pins[state.world.pins[b]] || SEAT.pins.eu; return pa[0] - pb[0]; });
+    var seen = {};
+    return ids.slice(0, 3).map(function (id, i) {
+      var d = LD.dealById(id), t = LD.propTypeOf(d), n = seen[t] = (seen[t] || 0) + 1, v = PROP_VAR[t] || [t], art = v[(n - 1) % v.length];
+      var nat = PSIZE[art], w = PROP_W[t], h = w * nat[1] / nat[0], slot = ids.length === 2 ? RIM[i === 0 ? 0 : 2] : ids.length === 1 ? RIM[1] : RIM[i];
+      return { id: id, type: t, art: art, open: art + "-open", x: slot[0], y: slot[1], rot: slot[2], w: w, h: h };
+    });
+  };
+  /* Where the open prop stands: the biggest box (aspect r = h/w) in the free band that keeps the chosen deal's pin in sight.
+     o: { r, pin: [x, y], top, bottom, left, right, maxW } in screen px. */
+  LD.seatPeekBox = function (o) {
+    var gap = o.gap || 24, best = null;
+    function cand(x0, x1, y0, y1, side) {
+      var aw = x1 - x0, ah = y1 - y0; if (aw < 60 || ah < 60) return;
+      var w = Math.min(aw, o.maxW, ah / o.r), h = w * o.r;
+      if (!best || w > best.w + 0.5) best = { w: w, h: h, x0: x0, x1: x1, y0: y0, y1: y1, side: side };
+    }
+    var px = o.pin ? o.pin[0] : -1e4, py = o.pin ? o.pin[1] : 1e4;
+    cand(o.left, o.right, o.top, Math.min(o.bottom, py - gap), "above");
+    if (o.pin) { cand(o.left, px - gap, o.top, o.bottom, "left"); cand(px + gap, o.right, o.top, o.bottom, "right"); }
+    if (!best) return null;
+    var cx = best.side === "above" ? (o.left + o.right) / 2 : (best.x0 + best.x1) / 2;
+    cx = Math.max(best.x0 + best.w / 2, Math.min(best.x1 - best.w / 2, cx));
+    var y = best.y0 + Math.max(0, best.y1 - best.y0 - best.h) * 0.25;
+    return { x: cx - best.w / 2, y: y, w: best.w, h: best.h, side: best.side };
+  };
+  function slipRows(rows, cls) {
+    return (rows || []).map(function (x) { return '<span class="' + (/good|own/.test(x.c) ? "ps-g" : /bad|cost/.test(x.c) ? "ps-x" : "ps-m") + (cls || "") + '">' + x.t + "</span>"; }).join(" · ");
+  }
+  /* the typed slip for one deal (live text). Crisis telegrams list every response with its cost. */
+  LD.seatSlipHtml = function (state, id, type) {
+    var o = LD.dealSlip(state, id); if (!o) return "";
+    var g = SLIP[type] || SLIP.dossier;
+    var h = '<div class="pk-slip t-' + type + " h-" + g.hold + (g.wide ? " is-wide" : "") + (o.choices ? " is-crisis" : "") + '" data-deal="' + esc(id) + '">';
+    h += '<div class="ps-k">' + esc(o.kicker) + (o.region ? " · " + esc(o.region) : "") + "</div>";
+    h += '<div class="ps-t">' + esc(o.title) + "</div>";
+    var enc = o.enc ? '<div class="ps-r ps-enc"><i>Knocking</i><span><span class="ps-ic" aria-hidden="true">' + o.enc.art + "</span>" + esc(o.enc.name) + "</span></div>" : "";
+    if (o.choices) {
+      h += enc + '<div class="ps-chs">';
+      o.choices.forEach(function (c, i) {
+        var dis = c.blocked || c.poor;
+        h += '<button type="button" class="dz-choice ps-ch" data-deal="' + esc(id) + '" data-choice="' + esc(c.id) + '"' + (dis ? " disabled" : "") + ">" +
+          '<b><em>' + (i + 1) + ".</em> " + esc(c.label) + (c.blocked ? " · " + esc(c.blocked) : c.poor ? " · need " + c.poor : "") + "</b>" +
+          '<span class="ps-cr">' + (c.rebate ? '<span class="ps-g">Rebate +' + c.rebate + "</span> · " : "") + (slipRows(c.now) || "Free") +
+          (c.later.length ? " · <i>" + esc(c.when || "Later") + "</i> " + slipRows(c.later) : "") + (c.map.length ? " · " + slipRows(c.map) : "") + "</span></button>";
+      });
+      h += "</div>";
+      h += '<div class="ps-more"><p class="ps-fine">Ignore it and it spreads to a neighbouring region at quarter close.</p></div>';
+    } else {
+      var now = o.now || [], money0 = now.length && /\$/.test(now[0].t) ? now[0] : null, rest = money0 ? now.slice(1) : now;
+      h += '<div class="ps-r ps-pay"><i>Pays now</i><span><b class="' + (money0 && /^−|^-/.test(money0.t) ? "ps-x" : "") + '">' + esc(money0 ? money0.t : o.tag) + "</b>" + (rest.length ? " " + slipRows(rest) : "") + "</span></div>";
+      h += enc;
+      if (o.later.length) h += '<div class="ps-r"><i>Later ' + esc(o.when) + "</i><span>" + slipRows(o.later) + "</span></div>";
+      h += '<div class="ps-more">' + (o.map.length ? '<div class="ps-r"><i>Map</i><span>' + slipRows(o.map) + "</span></div>" : "") +
+        (o.enc ? '<p class="ps-fine">Win the meeting: ' + esc(o.enc.win) + "</p>" : "") + '<p class="ps-fine">Fine print: ' + esc(o.fine) + "</p></div>";
+      h += '<button type="button" class="ps-sign" id="btn-sign" data-deal="' + esc(id) + '"' + (o.poor ? " disabled" : "") + "><i>" + (o.poor ? "Need " + o.poor : "Sign") + '</i><span class="ps-line"><svg viewBox="0 0 120 22" preserveAspectRatio="none" aria-hidden="true"><path d="M3,16 c8,-14 12,-4 9,4 s9,-16 16,-9 s3,12 11,-2 s9,-8 12,2 s7,3 14,-6 s5,8 12,1 s9,-5 20,-3 s10,2 16,-1" pathLength="100"/></svg></span></button>';
+    }
+    h += '<span class="ps-ink" aria-hidden="true">Approved</span>';
+    return h + "</div>";
+  };
   /* ---------- MG-1 HUD (locked): cream stepped bar, cash, vials, network jewels, quarter ---------- */
   var ICON = {
     unrest: '<path d="M5 15v-4a2 2 0 0 1 4 0v4M11 15v-5a2 2 0 0 1 4 0v5M17 15v-4a2 2 0 0 1 4 0v4" /><circle cx="7" cy="6.5" r="1.7"/><circle cx="13" cy="5" r="1.7"/><circle cx="19" cy="6.5" r="1.7"/>',
@@ -178,7 +278,7 @@
   /* ---------- the desk ---------- */
   function pinHtml(state, info, i, sel) {
     var p = SEAT.pins[info.region] || SEAT.pins.eu;
-    return '<button type="button" class="sd-pin k-' + info.kind + (p[2] ? "" : " add") + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-plate="' + p[0] + "," + p[1] + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><i></i></button>';
+    return '<button type="button" class="sd-pin k-' + info.kind + " add" + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-plate="' + p[0] + "," + p[1] + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><i></i></button>';
   }
   function tagHtml(info, i, sel) {
     return '<button type="button" class="sd-tag k-' + info.kind + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-rid="' + esc(info.region || "") + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><b>' + esc(info.label) + "</b><em>" + esc(info.tag) + "</em></button>";
@@ -217,10 +317,14 @@
     ui = ui || {};
     var sel = ui.sel || {}, deal = state.phase === "deal" && !state.ended;
     var infos = deal ? state.offered.map(function (id) { return LD.dealTagInfo(state, id); }).filter(Boolean) : [];
-    var hasSel = !!(sel.deal || sel.region || sel.net);
-    var h = '<div class="desk sd' + (ui.fan ? " is-fan" : "") + (hasSel ? " has-sel" : "") + (ui.land ? " is-land" : "") + (deal ? " is-deal" : " is-bunker") + (ui.closing ? " is-closing" : "") + '" data-phase="'  + state.phase + '">';
+    var hasSel = !!(sel.deal || sel.region || sel.net), props = LD.seatPropsFor(state);
+    var h = '<div class="desk sd' + (ui.fan ? " is-fan" : "") + (hasSel ? " has-sel" : "") + (ui.land ? " is-land" : "") + (deal ? " is-deal" : " is-bunker") + (deal && props.length ? " has-props" : "") + (ui.closing ? " is-closing" : "") + '" data-phase="'  + state.phase + '">';
     h += '<div class="sd-bg" aria-hidden="true"></div>';
-    h += LD.seatStage({ under: "" });
+    var under = "";
+    props.forEach(function (pr) {
+      under += '<img class="sd-propimg" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + 'deg)">';
+    });
+    h += LD.seatStage({ under: under });
     /* screen-space layer: lines, pins, tags, region taps */
     h += '<div class="sd-ui">';
     h += '<svg class="sd-lines" aria-hidden="true"></svg>';
@@ -231,6 +335,11 @@
     });
     infos.forEach(function (x, i) { h += pinHtml(state, x, i, sel.deal); });
     infos.forEach(function (x, i) { h += tagHtml(x, i, sel.deal); });
+    props.forEach(function (pr, i) {
+      var x = infos.filter(function (n) { return n.id === pr.id; })[0], sd = LD.dealSlip(state, pr.id), neg = /^[−-]/.test(x.tag);
+      h += '<button type="button" class="sd-prop k-' + x.kind + " t-" + pr.type + (sel.deal === pr.id ? " sel" : "") + '" data-deal="' + pr.id + '" data-plate="' + pr.x + "," + pr.y + '" data-pw="' + pr.w.toFixed(1) + "," + pr.h.toFixed(1) + '" style="--rot:' + pr.rot + "deg;--i:" + i + '" aria-label="' + esc(x.aria) + '">' +
+        '<span class="sd-stk"><b>' + esc(sd.kicker) + "</b><em" + (neg ? ' class="neg"' : "") + ">" + esc(x.tag) + "</em></span></button>";
+    });
     h += "</div>";
     if (!ui.land) h += '<div class="sd-ribbon" role="status">' + (deal ? "Q" + state.turn + " · pick 1 of " + infos.length + " deals on the map" : state.ended ? "The run is over" : "Q" + state.turn + " · deal signed") + "</div>";
     h += LD.seatHud(state);

@@ -724,7 +724,7 @@
   function uiOpts() {
     var c = coachInfo();
     var phone = isPhone();
-    return { selDeal: sel.deal, selRegion: sel.region, selNet: sel.net, coach: c.coach, coachDeal: c.coachDeal, coachText: c.coachText,
+    return { selDeal: seatedNow() && pkOn() ? null : sel.deal, selRegion: sel.region, selNet: sel.net, coach: c.coach, coachDeal: c.coachDeal, coachText: c.coachText,
       hidePins: hidePins, lens: lens, interactive: true, phone: phone, globe: !phone };
   }
 
@@ -811,6 +811,7 @@
   function renderSeatedDesk(from) {
     var el = $("screen-desk");
     if (tickerTimer) { clearInterval(tickerTimer); tickerTimer = null; }
+    seatPeekKill();
     el.innerHTML = LD.renderSeatedDesk(state, seatedUi());
     bindSeated();
     placeSeated();
@@ -849,8 +850,16 @@
     Array.prototype.forEach.call(ui.querySelectorAll("[data-plate]"), function (n) {
       var p = n.getAttribute("data-plate").split(",").map(Number), q = LD.seatToScreen(f, p[0], p[1]);
       n.style.left = q[0].toFixed(1) + "px"; n.style.top = q[1].toFixed(1) + "px";
+      var pw = n.getAttribute("data-pw");
+      if (pw) { pw = pw.split(",").map(Number); n.style.width = (pw[0] * f.s).toFixed(1) + "px"; n.style.height = (pw[1] * f.s).toFixed(1) + "px"; }
       var r = n.getAttribute("data-r");
       if (r) { r = r.split(",").map(Number); n.style.width = (2 * r[0] * f.s).toFixed(1) + "px"; n.style.height = (2 * r[1] * f.s).toFixed(1) + "px"; }
+    });
+    /* prop stickers: keep each one inside the stage (the rim props sit near the edges) */
+    Array.prototype.forEach.call(ui.querySelectorAll(".sd-stk"), function (t) {
+      t.style.marginLeft = "0px"; var r = t.getBoundingClientRect(), dx = 0;
+      if (r.left < 4) dx = 4 - r.left; else if (r.right > W - 4) dx = W - 4 - r.right;
+      if (dx) t.style.marginLeft = dx.toFixed(1) + "px";
     });
     /* tags: start at the region's preferred offset, clamp to the stage, push apart */
     var x0 = land ? col[0] + 8 : 8, x1 = land ? col[1] - 8 : W - 8, yTop = hb + (land ? 44 : 44 * k), yBot = H - 96 * k;
@@ -992,18 +1001,268 @@
     desk.style.setProperty("--fan-h", Math.round(ch + base + 8) + "px");
     var lab = desk.querySelector(".sd-tabl"); if (lab) desk.style.setProperty("--tab-hw", Math.round(lab.offsetWidth / 2) + "px");
   }
+  /* ---------- House desk deal props: tap a prop and it lifts and opens (the typed slip on it is the deal); tap another to compare;
+     drag it to your hands (or tap Sign on the slip) and the slip grows into the contract, is signed and stamped.
+     Every move is one object tweened (WAAPI); the open and the stamp are <video> slots that start and end on the exact stills,
+     with a hard cut when the clip is missing. Never a crossfade between two paintings. ---------- */
+  var PK = { id: null, busy: false, gen: 0 };
+  function pkOn() { return !!document.querySelector("#screen-desk .desk.sd.has-props"); }
+  function pkProp(id) { return LD.seatPropsFor(state).filter(function (p) { return p.id === id; })[0] || null; }
+  function pkRoot() {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return null;
+    var r = desk.querySelector(".sd-peek");
+    if (!r) { r = document.createElement("div"); r.className = "sd-peek"; r.id = "sd-peek"; r.innerHTML = '<svg class="pk-thread" aria-hidden="true"><path/></svg>'; desk.appendChild(r); }
+    return r;
+  }
+  function pkAnim(el, frames, ms, ease) {
+    if (!el || !el.animate || reduced()) { var last = frames[frames.length - 1]; Object.keys(last).forEach(function (k) { if (k !== "offset") el.style[k] = last[k]; }); return Promise.resolve(); }
+    var a = el.animate(frames, { duration: ms, easing: ease || "cubic-bezier(.2,.75,.25,1)", fill: "forwards" });
+    return a.finished.then(function () { var last = frames[frames.length - 1]; Object.keys(last).forEach(function (k) { if (k !== "offset") el.style[k] = last[k]; }); try { a.cancel(); } catch (e) {} }, function () {});
+  }
+  function pkPose(p) { return "translate(" + p.x.toFixed(1) + "px," + p.y.toFixed(1) + "px) rotate(" + (p.r || 0).toFixed(2) + "deg) skewX(" + (p.sk || 0).toFixed(2) + "deg) scale(" + (p.s == null ? 1 : p.s).toFixed(4) + ")"; }
+  function pkWait(ms) { return new Promise(function (res) { setTimeout(res, reduced() ? 0 : ms); }); }
+  /* geometry of one peek for this viewport */
+  function pkLayout(pr) {
+    var W = window.innerWidth, H = window.innerHeight, f = LD.seatFrame(W, H), land = f.land, col = LD.seatColumn(W, H), P = LD.SEAT_PROPS;
+    var desk = document.querySelector("#screen-desk .desk.sd"), hud = desk.querySelector(".sd-hud"), rib = desk.querySelector(".sd-ribbon");
+    var top = Math.max(hud ? hud.getBoundingClientRect().bottom : 0, rib && rib.offsetParent ? rib.getBoundingClientRect().bottom : 0) + 8;
+    var L = land ? col[0] + 10 : 8, R = land ? col[1] - 10 : W - 8, rimTop = 1e4;
+    LD.seatPropsFor(state).forEach(function (q) { rimTop = Math.min(rimTop, LD.seatToScreen(f, q.x, q.y - q.h * 0.42)[1]); });
+    var pinEl = desk.querySelector('.sd-pin[data-deal="' + pr.id + '"]'), pin = null;
+    if (pinEl) { var pb = pinEl.getBoundingClientRect(); pin = [pb.left + pb.width / 2, pb.top + pb.height / 2]; }
+    var nat = P.size[pr.open], r = nat[1] / nat[0];
+    var box = LD.seatPeekBox({ r: r, pin: pin, top: top, bottom: Math.min(rimTop - 4, H * 0.74), left: L, right: R, maxW: land ? Math.min(470, (R - L) * 0.86) : Math.min(470, W * 0.9) }) || { x: L, y: top, w: (R - L) * 0.6, h: (R - L) * 0.6 * r };
+    var ci = P.closedIn[pr.type], cw = ci[2] * box.w, ch = cw * P.size[pr.art][1] / P.size[pr.art][0];
+    var rimC = LD.seatToScreen(f, pr.x, pr.y), rimW = pr.w * f.s;
+    /* the closed art at the rim and inside the box must be the same picture at the same pose: solve the box transform that lands it on the rim */
+    var lc = [ci[0] * box.w + cw / 2, ci[1] * box.h + ch / 2], k = rimW / cw, a = pr.rot * Math.PI / 180;
+    var from = { x: rimC[0] - k * (Math.cos(a) * lc[0] - Math.sin(a) * lc[1]), y: rimC[1] - k * (Math.sin(a) * lc[0] + Math.cos(a) * lc[1]), r: pr.rot, s: k };
+    var g = P.slip[pr.type], kk = W > 500 && !land ? 1.12 : 1;
+    var sw = Math.min(box.w * 0.94, Math.max(g.w * box.w, (g.min || 196) * kk));
+    var slip = { x: box.x + g.x * box.w, y: box.y + g.y * box.h, r: g.r, sk: g.sk, s: 1, w: sw };
+    if (slip.x + sw * Math.cos(g.r * Math.PI / 180) > R) slip.x = Math.max(L, R - sw);
+    var hands = LD.seatToScreen(f, 410, 940);
+    return { W: W, H: H, f: f, land: land, box: box, from: from, closed: { x: ci[0], y: ci[1], w: ci[2] }, pin: pin, slip: slip, top: top, L: L, R: R, hands: hands, kk: kk };
+  }
+  function pkThread(root, lay, on) {
+    var svg = root.querySelector(".pk-thread"), path = svg && svg.querySelector("path"); if (!path) return;
+    if (!on || !lay.pin) { path.setAttribute("d", ""); return; }
+    svg.setAttribute("viewBox", "0 0 " + lay.W + " " + lay.H); svg.setAttribute("width", lay.W); svg.setAttribute("height", lay.H);
+    var b = lay.box, p = lay.pin, ex = Math.max(b.x + 16, Math.min(b.x + b.w - 16, p[0])), ey = b.y + b.h - 6;
+    if (lay.box.side === "left") { ex = b.x + b.w - 6; ey = Math.max(b.y + 16, Math.min(b.y + b.h - 16, p[1])); }
+    if (lay.box.side === "right") { ex = b.x + 6; ey = Math.max(b.y + 16, Math.min(b.y + b.h - 16, p[1])); }
+    path.setAttribute("d", "M" + p[0].toFixed(1) + "," + p[1].toFixed(1) + " Q" + ((p[0] + ex) / 2).toFixed(1) + "," + (Math.max(p[1], ey) + 10).toFixed(1) + " " + ex.toFixed(1) + "," + ey.toFixed(1));
+  }
+  function pkRibbon(text) {
+    var rib = document.querySelector("#screen-desk .desk.sd .sd-ribbon"); if (!rib) return;
+    if (!rib.hasAttribute("data-base")) rib.setAttribute("data-base", rib.textContent);
+    rib.textContent = text == null ? rib.getAttribute("data-base") : text;
+  }
+  function pkRim(id, show) {
+    Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-propimg[data-deal="' + id + '"], #screen-desk .sd-prop[data-deal="' + id + '"]'), function (n) { n.style.visibility = show ? "" : "hidden"; });
+  }
+  function pkClip(art) { return LD.PROP_CLIPS && LD.PROP_CLIPS[art] ? LD.PROP_CLIP_DIR + art + "-open.webm" : null; }
+  /* play a clip over its held stills, or resolve at once (hard cut) when there is none */
+  function pkPlay(host, src) {
+    if (!src || reduced()) return Promise.resolve();
+    return new Promise(function (res) {
+      var v = document.createElement("video"), done = false;
+      v.className = "pk-vid"; v.muted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "auto"; v.src = src;
+      function end() { if (done) return; done = true; res(v); }
+      v.addEventListener("ended", end); v.addEventListener("error", end); setTimeout(end, 2500);
+      host.appendChild(v); var pr = v.play(); if (pr && pr.catch) pr.catch(end);
+    });
+  }
+  function seatPeekKill() {
+    PK.gen++; PK.id = null; PK.busy = false; PK.lay = null; PK.el = null; PK.slip = null;
+    var r = document.querySelector("#screen-desk .sd-peek"); if (r) r.parentNode.removeChild(r);
+    Array.prototype.forEach.call(document.querySelectorAll("#screen-desk .sd-propimg, #screen-desk .sd-prop"), function (n) { n.style.visibility = ""; n.style.transform = n.classList.contains("sd-propimg") ? n.style.transform : ""; });
+  }
+  /* close the open prop back to its rim slot (slip in, hard cut / clip to closed, one tween home) */
+  function seatPeekClose(instant) {
+    var id = PK.id, el = PK.el, slip = PK.slip, lay = PK.lay, root = pkRoot(); if (!id || !el) return Promise.resolve();
+    PK.id = null; PK.el = null; PK.slip = null; PK.lay = null;
+    pkRibbon(null); pkThread(root, lay, false);
+    Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-pin'), function (n) { n.classList.remove("sel"); });
+    if (instant || reduced()) { if (el.parentNode) el.parentNode.removeChild(el); if (slip && slip.parentNode) slip.parentNode.removeChild(slip); pkRim(id, true); return Promise.resolve(); }
+    var s0 = lay.slip;
+    var a = slip ? pkAnim(slip, [{ transform: pkPose(s0), clipPath: "inset(0 0 0 0)" }, { transform: pkPose({ x: s0.x, y: s0.y + 26, r: s0.r, sk: s0.sk }), clipPath: "inset(0 0 100% 0)" }], 130, "ease-in") : Promise.resolve();
+    return a.then(function () {
+      if (slip && slip.parentNode) slip.parentNode.removeChild(slip);
+      el.classList.remove("is-open");
+      return pkAnim(el, [{ transform: pkPose({ x: lay.box.x, y: lay.box.y }) }, { transform: pkPose(lay.from) }], 200, "cubic-bezier(.4,0,.6,1)");
+    }).then(function () { pkRim(id, true); if (el.parentNode) el.parentNode.removeChild(el); });
+  }
+  function seatPeek(id) {
+    if (PK.busy) return;
+    if (PK.id === id) { seatPeekClose(); clearSel(); seatSelSync(); return; }
+    var pr = pkProp(id); if (!pr) return;
+    if (PK.id) seatPeekClose();
+    var root = pkRoot(), lay = pkLayout(pr), gen = ++PK.gen, b = lay.box;
+    PK.id = id; PK.lay = lay; PK.pr = pr;
+    var el = document.createElement("div");
+    el.className = "pk t-" + pr.type; el.setAttribute("data-deal", id);
+    el.style.width = b.w.toFixed(1) + "px"; el.style.height = b.h.toFixed(1) + "px";
+    el.innerHTML = '<img class="pk-closed" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (lay.closed.x * 100).toFixed(2) + "%;top:" + (lay.closed.y * 100).toFixed(2) + "%;width:" + (lay.closed.w * 100).toFixed(2) + '%">' +
+      '<img class="pk-open" src="' + LD.propSrc(pr.open) + '" alt="" draggable="false">';
+    el.style.transform = pkPose(lay.from);
+    root.appendChild(el); PK.el = el;
+    var tmp = document.createElement("div"); tmp.innerHTML = LD.seatSlipHtml(state, id, pr.type); var slip = tmp.firstChild;
+    slip.style.width = lay.slip.w.toFixed(1) + "px"; slip.style.setProperty("--kk", lay.kk); slip.style.transform = pkPose(lay.slip); slip.style.clipPath = "inset(0 0 100% 0)"; slip.style.visibility = "hidden";
+    root.appendChild(slip); PK.slip = slip;
+    /* a tall slip (a crisis with three responses) never runs down over the deal's own pin or the rim props: it rides up instead */
+    var sh = slip.offsetHeight, lim = Math.min(lay.pin ? (lay.box.side === "above" ? lay.pin[1] - 20 : 1e4) : 1e4, lay.H * 0.74);
+    if (lay.slip.y + sh > lim) { lay.slip.y = Math.max(lay.top - 2, lim - sh); slip.style.transform = pkPose(lay.slip); }
+    bindPeek(el, slip, id);
+    pkRim(id, false);
+    Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-pin'), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === id); });
+    pkThread(root, lay, true);
+    pkRibbon(lay.land ? null : (LD.dealById(id).choices ? "Tap a response to answer it" : "Drag to your hands to sign · or tap another"));
+    SFX.play("tick");
+    /* 1 lift (tween) -> 2 open (clip or hard cut) -> 3 slip slides out of its holder (tween) */
+    pkAnim(el, [{ transform: pkPose(lay.from) }, { transform: pkPose({ x: b.x, y: b.y }) }], 230).then(function () {
+      if (gen !== PK.gen) return;
+      return pkPlay(el, pkClip(pr.art)).then(function (v) {
+        if (gen !== PK.gen) return;
+        el.classList.add("is-open"); if (v && v.parentNode) v.parentNode.removeChild(v);
+        slip.style.visibility = "";
+        var s0 = lay.slip;
+        return pkAnim(slip, [{ transform: pkPose({ x: s0.x, y: s0.y + 26, r: s0.r, sk: s0.sk }), clipPath: "inset(0 0 100% 0)" }, { transform: pkPose(s0), clipPath: "inset(0 0 0% 0)" }], 190);
+      });
+    });
+  }
+  /* drag the open prop (slip rides with it) to your hands; tap the slip to read it at full size */
+  function bindPeek(el, slip, id) {
+    var st = null;
+    function pose(dx, dy, sc, o) { var lay = PK.lay, b = lay.box, s = lay.slip;
+      el.style.transform = pkPose({ x: o[0] + (b.x - o[0]) * sc + dx, y: o[1] + (b.y - o[1]) * sc + dy, s: sc });
+      slip.style.transform = pkPose({ x: o[0] + (s.x - o[0]) * sc + dx, y: o[1] + (s.y - o[1]) * sc + dy, r: s.r, sk: s.sk, s: sc }); }
+    function zone(y) { return y > PK.lay.H * (PK.lay.land ? 0.72 : 0.7); }
+    function down(e) {
+      if (PK.busy || PK.id !== id || !el.classList.contains("is-open") || (e.button && e.button > 0)) return;
+      if (e.target.closest && e.target.closest("button")) return;
+      st = { x: e.clientX, y: e.clientY, moved: false, pid: e.pointerId, src: e.currentTarget };
+      try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
+    }
+    function move(e) {
+      if (!st || e.pointerId !== st.pid) return;
+      var dx = e.clientX - st.x, dy = e.clientY - st.y;
+      if (!st.moved && Math.abs(dx) + Math.abs(dy) < 9) return;
+      st.moved = true; e.preventDefault();
+      var lay = PK.lay, prog = Math.max(0, Math.min(1, dy / Math.max(1, lay.hands[1] - lay.box.y - lay.box.h * 0.5))), sc = 1 - 0.3 * prog;
+      pose(dx, dy, sc, [st.x, st.y]); st.dx = dx; st.dy = dy; st.sc = sc;
+      var over = zone(e.clientY); if (over !== st.over) { st.over = over; pkRibbon(lay.land ? null : over ? "Let go to sign" : "Drag to your hands to sign · or tap another"); document.querySelector("#screen-desk .desk.sd").classList.toggle("pk-over", over); }
+    }
+    function up(e) {
+      if (!st || e.pointerId !== st.pid) return;
+      var s = st; st = null;
+      document.querySelector("#screen-desk .desk.sd").classList.remove("pk-over");
+      if (!s.moved) { if (s.src === slip) pkRead(slip); return; }
+      if (zone(e.clientY)) { if (LD.dealById(id).choices) { flash("Pick a response on the telegram first."); pkBack(s); return; } seatSign(id, null, s); return; }
+      pkBack(s);
+    }
+    function pkBack(s) { var lay = PK.lay, b = lay.box, sl = lay.slip, o = [s.x, s.y], sc = s.sc || 1;
+      pkRibbon(lay.land ? null : "Drag to your hands to sign · or tap another");
+      pkAnim(el, [{ transform: pkPose({ x: o[0] + (b.x - o[0]) * sc + s.dx, y: o[1] + (b.y - o[1]) * sc + s.dy, s: sc }) }, { transform: pkPose({ x: b.x, y: b.y }) }], 180);
+      pkAnim(slip, [{ transform: pkPose({ x: o[0] + (sl.x - o[0]) * sc + s.dx, y: o[1] + (sl.y - o[1]) * sc + s.dy, r: sl.r, sk: sl.sk, s: sc }) }, { transform: pkPose(sl) }], 180); }
+    [el, slip].forEach(function (n) { n.addEventListener("pointerdown", down); n.addEventListener("pointermove", move); n.addEventListener("pointerup", up); n.addEventListener("pointercancel", function () { if (st) pkBack(st); st = null; }); n.addEventListener("click", function (e) { e.stopPropagation(); }); });
+    var sign = slip.querySelector("#btn-sign");
+    if (sign) sign.addEventListener("click", function (e) { e.stopPropagation(); tick(); seatSign(id, null); });
+    Array.prototype.forEach.call(slip.querySelectorAll(".ps-ch"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); tick(); seatSign(id, b.getAttribute("data-choice")); }); });
+  }
+  /* the contract pose: the same slip, straightened and grown (its extra rows unfold) */
+  function pkBig(lay) {
+    var W = lay.W, w = lay.land ? Math.min((lay.R - lay.L) * 0.86, 430) : Math.min(W * 0.9, 430), s = w / lay.slip.w;
+    return { x: (lay.land ? (lay.L + lay.R) / 2 : W / 2) - w / 2, y: lay.top + 6, r: -0.8, sk: 0, s: s };
+  }
+  function pkRead(slip) {
+    var lay = PK.lay; if (!lay || PK.busy) return;
+    var more = slip.querySelector(".ps-more"), big = slip.classList.toggle("is-big");
+    var to = big ? pkBig(lay) : lay.slip, fr = big ? lay.slip : pkBig(lay);
+    if (more) { var hh = more.scrollHeight; pkAnim(more, [{ maxHeight: (big ? 0 : hh) + "px" }, { maxHeight: (big ? hh : 0) + "px" }], 260); }
+    pkAnim(slip, [{ transform: pkPose(fr) }, { transform: pkPose(to) }], 260);
+    pkRibbon(lay.land ? null : big ? "Tap Sign, or tap the slip to put it back" : "Drag to your hands to sign · or tap another");
+  }
+  /* sign: others leave the table, the prop goes to your hands, the slip grows into the contract, pen, stamp (clip or tween), then the real deal */
+  function seatSign(id, choice, drag) {
+    if (PK.busy || PK.id !== id) return;
+    var d = LD.dealById(id), sd = LD.dealSlip(state, id);
+    if (!choice && sd && sd.poor) { flash("Need " + sd.poor + " to sign this."); return; }
+    PK.busy = true;
+    var gen = PK.gen, lay = PK.lay, el = PK.el, slip = PK.slip, root = pkRoot(), f = lay.f;
+    root.classList.add("is-signing"); pkThread(root, lay, false); pkRibbon(lay.land ? null : "Signing…");
+    if (reduced()) { PK.busy = false; seatPeekKill(); applyDeal(id, choice || undefined); return; }
+    /* the others slide off the table edge (one tween each) */
+    LD.seatPropsFor(state).forEach(function (p) {
+      if (p.id === id) return;
+      var dir = p.x < 410 ? -1 : 1;
+      Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-propimg[data-deal="' + p.id + '"]'), function (n) {
+        pkAnim(n, [{ transform: "rotate(" + p.rot + "deg)" }, { transform: "translateX(" + (dir * 560) + "px) rotate(" + (p.rot * 3) + "deg)" }], 260, "cubic-bezier(.5,0,.8,.4)"); });
+      var btn = document.querySelector('#screen-desk .sd-prop[data-deal="' + p.id + '"]'); if (btn) btn.style.visibility = "hidden";
+    });
+    /* the prop settles into your hands */
+    var b = lay.box, hs = 0.6, cur = drag ? { x: drag.x + (b.x - drag.x) * (drag.sc || 1) + drag.dx, y: drag.y + (b.y - drag.y) * (drag.sc || 1) + drag.dy, s: drag.sc || 1 } : { x: b.x, y: b.y, s: 1 };
+    var held = { x: lay.hands[0] - b.w * hs / 2, y: lay.hands[1] - b.h * hs * 0.62, s: hs };
+    pkAnim(el, [{ transform: pkPose(cur) }, { transform: pkPose(held) }], 260);
+    /* the slip grows into the contract (one object: pose + its folded rows) */
+    var big = pkBig(lay), sc0 = slip.classList.contains("is-big") ? big : drag ? { x: drag.x + (lay.slip.x - drag.x) * (drag.sc || 1) + drag.dx, y: drag.y + (lay.slip.y - drag.y) * (drag.sc || 1) + drag.dy, r: lay.slip.r, sk: lay.slip.sk, s: drag.sc || 1 } : lay.slip;
+    var more = slip.querySelector(".ps-more");
+    if (more && !slip.classList.contains("is-big")) { var hh = more.scrollHeight; pkAnim(more, [{ maxHeight: "0px" }, { maxHeight: hh + "px" }], 320); }
+    slip.classList.add("is-big", "is-contract");
+    if (choice) Array.prototype.forEach.call(slip.querySelectorAll(".ps-ch"), function (n) { n.classList.toggle("is-chosen", n.getAttribute("data-choice") === choice); });
+    pkAnim(slip, [{ transform: pkPose(sc0) }, { transform: pkPose(big) }], 320).then(function () {
+      if (gen !== PK.gen) return;
+      slip.classList.add("is-pen");
+      return pkWait(420);
+    }).then(function () {
+      if (gen !== PK.gen) return;
+      return seatStamp(root, slip);
+    }).then(function () {
+      if (gen !== PK.gen) return;
+      return pkWait(260);
+    }).then(function () {
+      if (gen !== PK.gen) return;
+      PK.busy = false; seatPeekKill();
+      applyDeal(id, choice || undefined);
+    });
+  }
+  /* the stamp: clip slot (starts and ends on the stamp held above the slip) or a two-tween fallback; the ink is live text and cuts in at impact */
+  function seatStamp(root, slip) {
+    var sr = slip.getBoundingClientRect(), w = Math.min(150, sr.width * 0.36), x = sr.right - w * 1.02, yHover = sr.bottom - w * 1.55 - 40, yDown = sr.bottom - w * 1.18;
+    var st = document.createElement("img"); st.className = "pk-stamp"; st.src = LD.propSrc("stamp"); st.alt = ""; st.style.width = w + "px";
+    st.style.transform = "translate(" + x.toFixed(1) + "px," + yHover.toFixed(1) + "px) rotate(-8deg)";
+    root.appendChild(st);
+    var clip = LD.PROP_CLIPS && LD.PROP_CLIPS.stamp ? LD.PROP_CLIP_DIR + "stamp.webm" : null;
+    if (clip) {
+      /* clip frame: w x 2w, stamp held at the top (stamp-start.png), impact with its foot 0.62w lower, ends empty (stamp-end.png) */
+      var host = document.createElement("div"); host.className = "pk-stamphost"; host.style.transform = "translate(" + x.toFixed(1) + "px," + (yDown - 0.62 * w).toFixed(1) + "px) rotate(-8deg)"; host.style.width = w + "px"; host.style.height = (w * 2) + "px"; root.appendChild(host);
+      st.style.visibility = "hidden";
+      setTimeout(function () { slip.classList.add("is-inked"); }, LD.PROP_CLIPS.stampImpactMs || 300);
+      return pkPlay(host, clip).then(function (v) { if (v && v.parentNode) v.parentNode.removeChild(v); slip.classList.add("is-inked"); host.parentNode.removeChild(host); st.parentNode.removeChild(st); });
+    }
+    return pkAnim(st, [{ transform: "translate(" + x.toFixed(1) + "px," + yHover.toFixed(1) + "px) rotate(-8deg)" }, { transform: "translate(" + x.toFixed(1) + "px," + yDown.toFixed(1) + "px) rotate(-6deg) scale(.96)" }], 150, "cubic-bezier(.6,0,.9,.5)").then(function () {
+      slip.classList.add("is-inked"); SFX.play("pick");
+      var desk = document.querySelector("#screen-desk .desk.sd"); if (desk) { desk.classList.remove("pk-thud"); void desk.offsetWidth; desk.classList.add("pk-thud"); }
+      return pkWait(110);
+    }).then(function () {
+      return pkAnim(st, [{ transform: "translate(" + x.toFixed(1) + "px," + yDown.toFixed(1) + "px) rotate(-6deg) scale(.96)" }, { transform: "translate(" + (x + 60).toFixed(1) + "px," + (yHover - 140).toFixed(1) + "px) rotate(-14deg)" }], 230, "cubic-bezier(.2,.6,.3,1)");
+    }).then(function () { if (st.parentNode) st.parentNode.removeChild(st); });
+  }
+  LD.seatPeek = function (id) { seatPeek(id); };
+  LD.seatPeekState = function () { return { id: PK.id, busy: PK.busy, box: PK.lay ? PK.lay.box : null, pin: PK.lay ? PK.lay.pin : null }; };
   function seatSelSync() {
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     Array.prototype.forEach.call(desk.querySelectorAll("[data-deal]"), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === sel.deal); });
     Array.prototype.forEach.call(desk.querySelectorAll(".sd-region"), function (n) { n.classList.toggle("sel", n.getAttribute("data-region") === sel.region); });
     Array.prototype.forEach.call(desk.querySelectorAll(".sd-net[data-net], .sd-nrow"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
-    var dz = $("dossier"); if (dz) dz.classList.toggle("on", !!(sel.deal || sel.region || sel.net));
+    var dz = $("dossier"); if (dz) dz.classList.toggle("on", !!((sel.deal && !pkOn()) || sel.region || sel.net));
     if (sel.deal || sel.region || sel.net) seatSetFan(false);
+    if (PK.id && sel.deal !== PK.id) seatPeekClose();
   }
   function bindSeated() {
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     function on(selr, fn) { Array.prototype.forEach.call(desk.querySelectorAll(selr), function (n) { n.addEventListener("click", function (e) { e.stopPropagation(); fn(n, e); }); }); }
-    on(".sd-pin, .sd-tag, .sd-qrow", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
+    on(".sd-pin, .sd-tag, .sd-qrow, .sd-prop", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
     on(".sd-region", function (n) { tick(); selectRegion(n.getAttribute("data-region")); });
     on(".sd-net[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
     on(".sd-nrow[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
@@ -1015,6 +1274,8 @@
     [stage, bg].forEach(function (n) { if (n) n.addEventListener("click", function (e) {
       if (e.target.closest && e.target.closest("button")) return;
       if (SD.fan) { seatSetFan(false); return; }
+      if (PK.busy) return;
+      if (PK.id) { clearSel(); seatSelSync(); return; }
       if (sel.deal || sel.region || sel.net) { clearSel(); refreshSelection(); }
     }); });
     /* swipe up on the tab opens the fan; down closes */
@@ -1027,7 +1288,7 @@
     bindDossier();
     if (SD.fan) { SD.fan = false; seatSetFan(true); }
   }
-  window.addEventListener("resize", function () { if (seatedNow()) placeSeated(); if (document.querySelector("#door.sd-fight")) placeSeatFight(); });
+  window.addEventListener("resize", function () { if (seatedNow()) { if (PK.id && !PK.busy) { seatPeekClose(true); clearSel(); seatSelSync(); } placeSeated(); } if (document.querySelector("#door.sd-fight")) placeSeatFight(); });
   /* the fight uses the same framing as the desk, so the room does not move when the visitor sits down */
   function placeSeatFight() {
     var d = doorEl(); if (!d || !d.classList.contains("sd-fight")) return;
@@ -1104,6 +1365,7 @@
   function clearSel() { sel.deal = null; sel.region = null; sel.net = null; }
   function selectDealPin(id) {
     if (state.phase !== "deal") return;
+    if (seatedNow() && pkOn()) { if (PK.busy) return; var again = PK.id === id; clearSel(); if (!again) sel.deal = id; seatSelSync(); if (again) return; seatPeek(id); pennyEmit("pin"); if (!again && LD.dealKind(LD.dealById(id)) === "crisis") pennyTip("crisis"); return; }
     clearSel();
     sel.deal = id;
     refreshSelection();

@@ -880,6 +880,43 @@
     return { id: dealId, kind: kind, label: KIND_LABEL[kind], tag: d.choices ? d.choices.length + " responses" : cardTag(state, d), title: d.title,
       region: rid, regionName: rid ? LD.REGION_NAMES[rid] : "", aria: pinAria(state, dealId) };
   };
+  /* Seated desk props (house rules): the deal as plain rows for the typed slip inside its prop. Chips come from the same
+     payloadChips/regionChips the dossier uses, so the slip and the dossier can never disagree. */
+  function chipList(arr) {
+    var out = [];
+    (arr || []).forEach(function (h) {
+      var m = /class="when">([^<]*)</.exec(h); if (m) { out.when = m[1]; return; }
+      m = /class="fx-chip ([^"]*)">([^<]*)</.exec(h); if (m) out.push({ c: m[1], t: m[2] });
+    });
+    return out;
+  }
+  LD.dealSlip = function (state, dealId) {
+    var d = LD.dealById(dealId); if (!d) return null;
+    var rid = state.world && state.world.pins ? state.world.pins[dealId] : null;
+    var o = { id: dealId, kind: LD.dealKind(d), kicker: d.kicker, region: rid ? LD.REGION_NAMES[rid] : "", title: d.title, body: d.body, fine: d.hint || "",
+      tag: d.choices ? d.choices.length + " responses" : cardTag(state, d) };
+    if (state.fy && state.fy.deck && LD.encounterFor) {
+      var en = LD.encounterFor(state, dealId), EN = LD.ENCOUNTERS && LD.ENCOUNTERS[en];
+      if (EN) o.enc = { id: en, name: EN.name, win: EN.win, art: LD.encArt ? LD.encArt(EN, en) : "" };
+    }
+    function rows(payload, choiceId) {
+      var c = payloadChips(state, d, payload), later = chipList(c.later);
+      return { now: chipList(c.now), later: later, when: later.when || "", map: chipList(regionChips(state, dealId, choiceId).concat(c.world)) };
+    }
+    if (d.choices) {
+      o.choices = d.choices.map(function (c) {
+        var rebate = LD.crisisRebate(state, d, c), blocked = LD.choiceBlocked(state, d, c), poor = c.cost && state.cash < c.cost - rebate;
+        var r = rows(c, c.id);
+        return { id: c.id, label: c.label, blocked: blocked || "", poor: poor ? money(c.cost - rebate) : "", rebate: rebate && !blocked ? money(rebate) : "",
+          now: r.now, later: r.later, when: r.when, map: r.map };
+      });
+    } else {
+      var r = rows(d);
+      o.now = r.now; o.later = r.later; o.when = r.when; o.map = r.map;
+      o.poor = d.cost && state.cash < d.cost ? money(d.cost) : "";
+    }
+    return o;
+  };
   LD.renderExecDossier = renderExecDossier;
   LD.payloadChips = payloadChips;
   LD.deskAnchor = anchor;

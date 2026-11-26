@@ -737,7 +737,7 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
   }
   {
     const html = LD.renderHouseStage(houseRun(), { mode: "after" });
-    ok(/turn-1-before\.webp/.test(html) && /turn-6-after\.webp/.test(html) && (html.match(/class="hv-plate"/g) || []).length === 6,
+    ok(/turn-1-before-clean\.webp/.test(html) && /turn-6-after\.webp/.test(html) && (html.match(/class="hv-plate"/g) || []).length === 6,
       "stage paints the six 1978 turn plates");
     ok(/hv-screen/.test(html) && /feed\/water-empty\.webp/.test(html) && /feed\/power-dark\.webp/.test(html),
       "feed maps Mara's empty-running Water and the dark rooms");

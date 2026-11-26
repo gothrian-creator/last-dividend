@@ -15,7 +15,7 @@ const STOP=process.env.STOP||"deal:3", SEED=+(process.env.SEED||13);
   await p.click("#sd-tab");await p.waitForTimeout(450);
   await p.screenshot({path:`${OUT}/${sz}-2-fan.png`});
   await p.click("#sd-tab");await p.waitForTimeout(400);
-  const tag=await p.$(".sd-tag");if(tag){await tag.click();await p.waitForTimeout(500);}
+  const tag=(await p.$(".sd-prop"))||(await p.$(".sd-tag"));if(tag){await tag.click();await p.waitForTimeout(500);}
   await p.screenshot({path:`${OUT}/${sz}-3-dossier.png`});
   const sign=await p.$("#btn-sign:not([disabled])");if(sign){await sign.click();}else{const c=await p.$("#dossier .dz-choice:not([disabled])");if(c)await c.click();}
   await p.waitForTimeout(1600);

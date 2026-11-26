@@ -4,7 +4,7 @@
   var BASE = "assets/house/1978/";
   LD.HOUSE_TURN_MS = 1000;
   LD.HOUSE_FRAMES = [
-    { id: "turn-1-before", src: BASE + "turn-1-before.webp", at: 0 },
+    { id: "turn-1-before", src: BASE + "turn-1-before-clean.webp", at: 0 }, /* brass pins painted out (turn-1-before.webp kept): matches the glass-pin desk */
     { id: "turn-2-push", src: BASE + "turn-2-push.webp", at: 0.14 },
     { id: "turn-3-spin1", src: BASE + "turn-3-spin1.webp", at: 0.32 },
     /* spin2b: a repaint at the same camera distance as 3 and 5 (the old turn-4-spin2 used a wider camera and is kept, unused) */

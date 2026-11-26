@@ -3366,7 +3366,7 @@
   function clickEl(n) { if (n) n.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
   function pennyCard(kind) {
     if (!state || !state.fy || !state.fy.fight) return null;
-    var cs = Array.prototype.slice.call(document.querySelectorAll("#door .df-hand .dc:not(.no)"));
+    var cs = Array.prototype.slice.call(document.querySelectorAll("#door .df-hand .dc:not(.no), #door .sd-fhand .dc:not(.no)"));
     if (kind === "p") cs = cs.filter(function (c) { return c.querySelector(".dc-p"); });
     return cs[0] || null;
   }
@@ -3476,6 +3476,59 @@
       target: function () { return pq("#bunker-card"); } }
   ];
   var TOUR_TOTAL = 8;
+  /* The same guided first quarter on the seated house desk (the default game since the flip): deal props instead of map
+     pins + dossier, the Bunker behind the chair instead of the rail hatch. The fight, reward and report steps are the
+     shop's own (the fight is the same game). */
+  function tourStep(id) { for (var i = 0; i < TOUR.length; i++) if (TOUR[i].id === id) return TOUR[i]; return null; }
+  function pennyProp() {
+    var best = null;
+    Array.prototype.forEach.call(document.querySelectorAll(".desk.sd .sd-prop[data-deal]"), function (p) {
+      if (!pvis(p)) return;
+      var d = LD.dealById(p.getAttribute("data-deal"));
+      if (!best) best = p;
+      if (LD.dealKind(d) === "claim" && LD.dealKind(LD.dealById(best.getAttribute("data-deal"))) !== "claim") best = p;
+    });
+    return best;
+  }
+  var TOUR_HOUSE = [
+    { id: "era", n: 1, face: "wink", next: true,
+      text: function () { var E = pennyEra(); return "Welcome to Port Calder, <b>" + (E ? E.year + ", " + E.name : "1978") + "</b> ✦ Your climb runs 12 quarters through three eras: <b>1978</b>, <b>2008</b> and <b>today</b>. Each quarter you sign <b>one deal</b> from the props on your desk."; },
+      skip: function () { return state.phase !== "deal"; },
+      target: function () { return pq(".desk.sd .sd-hud"); } },
+    { id: "pin", n: 2, face: "excited", on: "pin", label: "Pick one for me ▸",
+      text: "These are this quarter's <b>deals</b>, one on each prop. Tap one to open it and see what it pays… and who pays for it!",
+      skip: function () { return state.phase !== "deal" || !!pq("#sd-peek #btn-sign"); },
+      target: function () { return pennyProp(); },
+      act: function () { var t = pennyProp(); if (t) selectDealPin(t.getAttribute("data-deal")); } },
+    { id: "sign", n: 2, face: "excited", on: "signed", back: "pin", label: "Sign it for me ▸",
+      text: "The slip says what lands <b>now</b>, what it costs <b>later</b>, and who comes to your <b>door</b>. Love it. Pure synergy! <b>Sign</b> it ♡",
+      skip: function () { return state.phase !== "deal"; },
+      lost: function () { return !pq("#sd-peek #btn-sign"); },
+      target: function () { return pq("#sd-peek #btn-sign"); },
+      act: function () { clickEl(pq("#sd-peek #btn-sign")); } },
+    tourStep("door"), tourStep("intent"), tourStep("win"), tourStep("close"), tourStep("reward"),
+    { id: "bunker", n: 5, face: "wink", next: true,
+      text: function () { var x = pennyExec(); return "Back at the desk. Behind your chair is <b>" + LD.escapeHtml(x.compound || "your bunker") + "</b>: tap <b>Bunker</b> any time to turn round and run the house: rooms, stores and who comes with you."; },
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
+      target: function () { return pq("#house-peek"); } },
+    { id: "office", n: 6, face: "smug", next: true,
+      text: "Your three numbers sit up top. <b>Cash</b> pays for everything. <b>Unrest</b> is the street: the angrier it gets, the harder they knock. <b>Collapse</b> is the city out the window. Either one at 100 ends you.",
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
+      target: function () { return pq(".desk.sd .sd-hud"); } },
+    { id: "rail", n: 6, face: "wink", next: true,
+      text: "Your <b>Deck</b> is under your hands. The <b>Case</b> holds Assets and items, and when the <b>Phone</b> rings, take the call: headhunters hire fixers, old friends offer a <b>Favour</b>.",
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
+      target: function () { return pennyUnion("#btn-portfolio, #btn-phone, #sd-tab"); } },
+    tourStep("endq"), tourStep("react"),
+    /* the house report closes into the chair turn (the TV), not straight back to the deal phase */
+    (function () { var r = tourStep("report"); if (!r) return null; var c = {}; for (var k in r) c[k] = r[k];
+      c.skip = function () { return !reportOpen() && state.turn > PN.startTurn; }; return c; })(),
+    { id: "goal", n: 8, face: "excited", next: true, last: true,
+      text: function () { return "The goal: get all four rooms <b>on</b> (Air, Water, Power, Food) and holding, then <b>seal the doors from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse or Unrest hit 100. Bosses knock at Q4 and Q8. Between climbs, spend your Dividends ◈ in the <b>Summit Lounge</b>. Go get 'em, Executive! ✦"; },
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
+      target: function () { return pq("#house-peek"); } }
+  ].filter(Boolean);
+  function curTour() { return (state && LD.isHouse && LD.isHouse(state)) ? TOUR_HOUSE : TOUR; }
 
   var PENNY_TIPS = {
     crisis: { face: "worried", text: function () { return "Uh-oh, a <b>crisis</b>! You pick a response instead of a plain signature. Paying it off works… until Unrest hits " + LD.mods(state).crisisNoPayAt + ". Then the street stops cashing cheques."; },
@@ -3778,13 +3831,15 @@
     pennyAdvance();
   }
   function pennyGoto(id) {
-    for (var i = 0; i < TOUR.length; i++) if (TOUR[i].id === id) { PN.idx = i; pennyShowStep(TOUR[i]); return; }
+    var T = curTour();
+    for (var i = 0; i < T.length; i++) if (T[i].id === id) { PN.idx = i; pennyShowStep(T[i]); return; }
   }
   function pennyAdvance() {
     PN.idx += 1;
-    while (PN.idx < TOUR.length && TOUR[PN.idx].skip && TOUR[PN.idx].skip()) PN.idx += 1;
-    if (PN.idx >= TOUR.length) { pennyDone(); return; }
-    pennyShowStep(TOUR[PN.idx]);
+    var T = curTour();
+    while (PN.idx < T.length && T[PN.idx].skip && T[PN.idx].skip()) PN.idx += 1;
+    if (PN.idx >= T.length) { pennyDone(); return; }
+    pennyShowStep(T[PN.idx]);
   }
   function pennyNext() {
     if (!PN.on || !PN.cur) return;

@@ -11,6 +11,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 BF = Path("/workspace/last-dividend/mockups/desk-seated-2026-11-25/B-final/layers")
 OUT = ROOT / "assets/house/1978"
+ORIG = ROOT / "art-src/house-originals/1978"
 FIGHT = ROOT / "assets/fight"
 # far rim of the round table (plate coords): an ellipse, top at (380,547)
 RIM_CX, RIM_TOP, RIM_A, RIM_B = 380, 547, 340, 100
@@ -54,10 +55,10 @@ def seat(art):
 def arts():
     return sorted(p.name[4:-10] for p in FIGHT.glob("opp-*-idle.webp"))
 def export():
-    OUT.mkdir(parents=True, exist_ok=True)
+    OUT.mkdir(parents=True, exist_ok=True); ORIG.mkdir(parents=True, exist_ok=True)
     room = Image.open(BF / "room-clean.png").convert("RGB")
     room.save(OUT / "sd-room.webp", quality=86, method=6)
-    tf, top = table_front(); tf.save(OUT / "sd-table.webp", quality=88, method=6)
+    tf, top = table_front(); tf.save(ORIG / "sd-table.webp", quality=88, method=6)  # the original table (with painted pins) is kept in art-src, not shipped
     meta = {"table": [0, top, tf.width, tf.height]}
     for n, src in (("hands-rest", "hands-rest-mara.png"), ("hands-dip", "hands-dipped-mara.png"), ("mara", "mara-ots.png")):
         im = Image.open(BF / src).convert("RGBA"); bb = im.getchannel("A").getbbox()

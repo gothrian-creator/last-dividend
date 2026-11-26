@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// The default (shop) game must look the same as a baseline build: desk, dossier, fight, at the four sizes. DIST_A = baseline, DIST_B = new.
+// The default (shop) game must look the same as a baseline build: desk, dossier, fight, at the four sizes. DIST_A = baseline, DIST_B = new. FREEZE=1 stops CSS animations/transitions so only real layout/paint changes show (timing noise from the map, the tapping executive etc. is otherwise ~0.05%).
 const H=require("../real-input/h.js"),fs=require("fs");const {execFileSync}=require("child_process");
 const A=process.env.DIST_A,B=process.env.DIST_B||"/workspace/last-dividend-v3/dist",OUT=process.env.OUT||"/tmp/shop-same";fs.mkdirSync(OUT,{recursive:true});
 const SIZES=(process.env.SIZES||"360x800,412x915,800x1280,1280x800").split(",");
 async function shoot(dist,tag){const env=await H.start(dist);const errs={};
  for(const sz of SIZES){const [w,h]=sz.split("x").map(Number);const p=await H.page(env,w,h);await p.emulateMedia({reducedMotion:"reduce"});
-  await H.seedRun(p,env.origin,{seed:13,stop:"deal:3",exec:"mara",smart:true});await p.waitForTimeout(1200);
+  await H.seedRun(p,env.origin,{seed:13,stop:"deal:3",exec:"mara",smart:true});if(process.env.FREEZE)await p.addStyleTag({content:"*,*::before,*::after{animation:none!important;transition:none!important}"});await p.waitForTimeout(1200);
   await p.screenshot({path:`${OUT}/${tag}-${sz}-desk.png`});
   const pin=await p.$(".desk .map .pin");if(pin){const bb=await pin.boundingBox();await p.mouse.click(bb.x+bb.width/2,bb.y+bb.height/2);await p.waitForTimeout(900);}
   await p.screenshot({path:`${OUT}/${tag}-${sz}-dossier.png`});

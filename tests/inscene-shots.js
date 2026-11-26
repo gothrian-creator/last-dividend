@@ -1,7 +1,7 @@
 // In-scene fights + Discover rewards + deck pile + vault tab: real-input screenshots.
 // Usage: DIST=dist OUT=<dir> SIZES=412x915,1280x800 node tests/inscene-shots.js
 const H=require("./real-input/h.js"),fs=require("fs");
-const OUT=process.env.OUT||"/workspace/last-dividend/mockups/inoffice-fight-2026-11-23/live";fs.mkdirSync(OUT,{recursive:true});
+const OUT=process.env.OUT||"/workspace/last-dividend/test-output/inscene-shots";fs.mkdirSync(OUT,{recursive:true});
 const SIZES=(process.env.SIZES||"412x915,1280x800").split(",");
 async function vis(p,s){const h=await p.$(s);return h&&await h.isVisible().catch(()=>false)?h:null;}
 async function tap(p,s){const h=await vis(p,s);if(!h)return false;const bb=await h.boundingBox();if(!bb)return false;await p.mouse.click(bb.x+bb.width/2,bb.y+bb.height/2);return true;}

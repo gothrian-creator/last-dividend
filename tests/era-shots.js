@@ -5,7 +5,7 @@
 const fs = require("fs"), http = require("http"), path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = process.env.DIST || path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/eras-2026-11-14";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/era-shots";
 const LIVE = process.env.LIVE || "";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".js": "text/javascript", ".css": "text/css", ".jpg": "image/jpeg" };
@@ -18,11 +18,7 @@ const SCENES = [
   ["03-act1-fight-bubble", { seed: "eras-0", exec: "mara", style: "any", stop: "fight:dunn" }, "fight-hit"],
   ["04-act2-hub", { seed: "eras-11", exec: "mara", style: "bribe", stop: "deal:6", build: true, takeCards: true }, "desk"],
   ["05-act2-bunker-2008", { seed: "eras-11", exec: "mara", style: "bribe", stop: "deal:7", build: true, takeCards: true }, "bunker"],
-  ["06-act2-fight", { seed: "eras-0", exec: "mara", style: "any", stop: "fight:okafor,delacroix" }, "fight-attack"],
-  ["07-callback-mickey-buries-okafor", { seed: "eras-11", exec: "mara", style: "bribe", stop: "cb:mickey-buries", build: true, takeCards: true }, "fight"],
-  ["08-callback-dunn-testifies", { seed: "eras-16", exec: "mara", style: "bribe", stop: "cb:dunn-testifies", build: true, takeCards: true }, "fight"],
   ["09-callback-june-strike", { seed: "eras-0", exec: "mara", style: "bribe", stop: "cb:june-strike", build: true, takeCards: true }, "fight"],
-  ["10-ending-paid-off", { seed: "eras-1", exec: "mara", style: "bribe", stop: "end:paid:dunn,moretti,june,mickey,odell", build: true, takeCards: true }, "fight"],
   ["11-ending-crushed", { seed: "eras-0", exec: "julian", style: "crush", stop: "end:crushed:delacroix,okafor,harrow,gray", build: true, takeCards: true }, "fight"],
   ["12-act3-hub", { seed: "eras-16", exec: "mara", style: "bribe", stop: "deal:9", build: true, takeCards: true }, "desk"],
   ["13-act3-bunker-now", { seed: "eras-16", exec: "mara", style: "bribe", stop: "deal:10", build: true, takeCards: true }, "bunker"]

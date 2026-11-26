@@ -3,6 +3,7 @@
 /* Real path: a saved Reid run at unrest 100 in Q6, Continue, End Quarter -> recap plays, saves, then opens on the final page on revisit. */
 const fs = require("fs"), http = require("http"), path = require("path");
 const DIST = path.resolve(__dirname, "..", "dist");
+fs.mkdirSync("/workspace/last-dividend/test-output/recap-real", { recursive: true });
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 (async () => {
@@ -33,7 +34,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   if (st.final) errors.push("first view should play, not open final");
   if (!st.meta || st.meta.finished !== 1 || !(st.meta.dividends > 10)) errors.push("reward logic changed: " + JSON.stringify(st.meta && { f: st.meta.finished, d: st.meta.dividends }));
   if (!st.seen) errors.push("recap not marked seen");
-  await p.screenshot({ path: "/workspace/last-dividend/mockups/endrun-build-2026-11-15/real-run-recap-playing.png" });
+  await p.screenshot({ path: "/workspace/last-dividend/test-output/recap-real/real-run-recap-playing.png" });
   await sleep(16000);
   const tags = await p.evaluate(() => [...document.querySelectorAll(".rc-tags b")].map((n) => n.textContent));
   console.log("unlock tags", tags);
@@ -43,7 +44,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   await p.evaluate(() => document.getElementById("btn-br-back").click()); await sleep(500);
   const back = await p.evaluate(() => ({ rc: !!document.querySelector("#screen-end.on #rc.final") }));
   if (!back.rc) errors.push("back from Lounge did not open the final page");
-  await p.screenshot({ path: "/workspace/last-dividend/mockups/endrun-build-2026-11-15/real-run-recap-final.png" });
+  await p.screenshot({ path: "/workspace/last-dividend/test-output/recap-real/real-run-recap-final.png" });
   console.log(errors.length ? "ERRORS\n" + errors.join("\n") : "real recap OK");
   await b.close(); server.close(); process.exit(errors.length ? 1 : 0);
 })();

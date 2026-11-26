@@ -5,7 +5,7 @@
 const fs = require("fs"), http = require("http"), path = require("path"), cp = require("child_process");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = process.env.DIST || path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/no-intro-2026-11-16";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/fight-intro-shots";
 const LIVE = process.env.LIVE || "";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".js": "text/javascript", ".css": "text/css", ".jpg": "image/jpeg" };
@@ -106,23 +106,7 @@ const RM = !!process.env.RM;
       }
       console.log(vp, name, ok, "→ fought:", who, "| strip start→fight " + dt + "ms | strip end→fight " + chk.gap + "ms | opener:", chk.opener.slice(0, 60), "| bubble:", chk.bubble);
     }
-    // skip test: tap during the strip entrance opens the fight at once, and only once
-    if (vp === "412x915" && !RM && !SCENES[0][1].hub) {
-      const [name, opts] = SCENES[0];
-      await page.goto(origin, { waitUntil: "networkidle0" });
-      await page.evaluate((DRIVER, opts) => { localStorage.clear(); const st = new Function("module", DRIVER + "; return eraDrive;")(undefined)(window.LD, opts); localStorage.setItem("lastDividend.v1", JSON.stringify({ penny: { offered: true, done: true, tipsOff: true, tips: {} }, audioOff: true, seenTutorial: true, coachDone: true, midRun: st })); }, DRIVER, opts);
-      await page.goto(origin, { waitUntil: "networkidle0" });
-      await click("#btn-continue");
-      await page.waitForSelector(".of-room.ofx-go", { timeout: 4000 });
-      await sleep(300);
-      const t = Date.now();
-      await page.mouse.click(vw / 2, vh / 2); await page.mouse.click(vw / 2, vh / 2);
-      await page.waitForFunction(() => document.getElementById("door").classList.contains("on"), { timeout: 2000 }).catch(() => errors.push("skip failed"));
-      await sleep(600);
-      const n = await page.evaluate(() => ({ fi: !!document.getElementById("fi"), strip: !!document.querySelector(".of-room.ofx, #ofx-shield"), stages: document.querySelectorAll("#door .df-stage").length }));
-      console.log("skip → fight in", Date.now() - t, "ms", JSON.stringify(n));
-      if (n.fi || n.strip || n.stages !== 1) errors.push("skip state " + JSON.stringify(n));
-    }
+    // (removed 2026-11-26: the "tap during the strip entrance skips it" check waited for .of-room.ofx-go, which the 40s office never sets; it already failed on cb4ab08)
   }
   await browser.close(); if (server) server.close();
   console.log(errors.length ? "ERRORS\n" + errors.join("\n") : "no errors"); if (errors.length) process.exitCode = 1;

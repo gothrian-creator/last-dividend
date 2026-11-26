@@ -40,15 +40,6 @@
   }
 
   /* ---- tiny props ---- */
-  function worker(x, y, kind, delay) {
-    var arm = kind === "hammer"
-      ? '<g class="bk-hammer" style="animation-delay:' + delay + 's"><line x1="0" y1="-12" x2="7" y2="-17" stroke="#3b2a1a" stroke-width="2.4" stroke-linecap="round"/><rect x="5" y="-21" width="6" height="4" fill="#5b6b6e"/></g>'
-      : '<rect x="-12" y="-16" width="24" height="3" fill="#c99428"/>';
-    return '<g class="bk-worker' + (kind === "carry" ? " walk" : "") + '" transform="translate(' + x + " " + y + ')" style="animation-delay:' + delay + 's">' +
-      '<rect x="-3" y="-12" width="6" height="10" rx="2" fill="#e05a48"/>' +
-      '<line x1="-2" y1="-2" x2="-3" y2="4" stroke="#0a464e" stroke-width="2.4"/><line x1="2" y1="-2" x2="3" y2="4" stroke="#0a464e" stroke-width="2.4"/>' +
-      '<circle cx="0" cy="-16" r="3.4" fill="#f1c9a5"/><path d="M-4.5 -17 A4.5 4.5 0 0 1 4.5 -17Z" fill="#ffd36a"/>' + arm + "</g>";
-  }
 
   function scaffold(x0, x1) {
     var h = '<g class="bk-scaffold">';
@@ -59,65 +50,7 @@
   }
 
   /* Era props: 1978 civil-defence surplus; 2008 prepper luxury (servers, wine wall, panic room). Act III keeps the techno-luxury set below. */
-  function unitEra(id, i, gold, era) {
-    var x = 40 + i * 62, s = gold ? "#c99428" : "#2a2018";
-    if (era === 1) {
-      if (id === "air") return '<g transform="translate(' + (x + 4) + ' 34)"><rect width="44" height="40" fill="#7d8a5a" stroke="' + s + '" stroke-width="2.5"/><rect x="6" y="6" width="32" height="14" fill="#4c5638"/>' +
-        '<path d="M8 9 h28 M8 13 h28 M8 17 h28" stroke="#2a2f1e" stroke-width="1.4"/><circle cx="22" cy="31" r="7" fill="none" stroke="' + s + '" stroke-width="2.5"/><g><line x1="22" y1="31" x2="29" y2="26" stroke="' + s + '" stroke-width="2.5"/></g><rect x="18" y="-26" width="8" height="26" fill="#9aa08a" stroke="' + s + '" stroke-width="1.5"/><rect x="-2" y="40" width="48" height="18" fill="#6b5a3a"/></g>';
-      if (id === "water") return '<g transform="translate(' + (x + 2) + ' 40)"><rect width="22" height="52" rx="3" fill="#3f6f8a" stroke="' + s + '" stroke-width="2.5"/><rect x="26" width="22" height="52" rx="3" fill="#3f6f8a" stroke="' + s + '" stroke-width="2.5"/>' +
-        '<path d="M0 14 h22 M0 38 h22 M26 14 h22 M26 38 h22" stroke="#24485c" stroke-width="2"/><text x="11" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#f3e3bf">CD</text><text x="37" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#f3e3bf">H₂O</text></g>';
-      if (id === "power") return '<g transform="translate(' + x + ' 48)"><rect width="54" height="40" rx="3" fill="#6b7a4a" stroke="' + s + '" stroke-width="2.5"/><rect x="6" y="8" width="20" height="12" fill="#2a2f1e"/><circle cx="40" cy="22" r="9" fill="#c9b27a" stroke="' + s + '" stroke-width="2"/>' +
-        '<rect x="44" y="-26" width="5" height="26" fill="#3a3a32"/><ellipse class="bk-puff" cx="47" cy="-30" rx="6" ry="4" fill="#9a9488" opacity="0.7"/><rect x="0" y="40" width="54" height="5" fill="#3a3326"/></g>';
-      var p = '<g transform="translate(' + x + ' 26)"><rect x="0" y="0" width="52" height="66" fill="#6b4f30" stroke="' + s + '" stroke-width="2.5"/>';
-      [12, 34, 56].forEach(function (yy) { p += '<rect x="2" y="' + yy + '" width="48" height="3" fill="#3a2a18"/>'; for (var c = 0; c < 5; c++) p += '<rect x="' + (5 + c * 9) + '" y="' + (yy - 9) + '" width="7" height="9" rx="1" fill="' + (["#c9b27a", "#b84a2e", "#d9c79a", "#7d8a5a", "#c9b27a"][c]) + '" stroke="#2a2018" stroke-width="0.8"/>'; });
-      return p + "</g>";
-    }
-    if (id === "air") return '<g transform="translate(' + (x + 2) + ' 36)"><rect width="50" height="44" rx="4" fill="#d6dbe0" stroke="' + s + '" stroke-width="2.5"/>' +
-      '<g stroke="#8a96a0" stroke-width="2">' + [8, 14, 20, 26, 32, 38].map(function (yy) { return '<line x1="6" y1="' + yy + '" x2="44" y2="' + yy + '"/>'; }).join("") + '</g><circle cx="42" cy="6" r="2.4" fill="#2ecc71"/><rect x="-2" y="44" width="54" height="12" fill="#8a96a0"/></g>';
-    if (id === "water") { var w = '<g transform="translate(' + x + ' 30)"><rect width="52" height="62" fill="#c9d2d8" stroke="' + s + '" stroke-width="2"/>';
-      [[4, 6], [27, 6], [4, 34], [27, 34]].forEach(function (pt) { w += '<rect x="' + pt[0] + '" y="' + pt[1] + '" width="21" height="24" rx="6" fill="#7fc8e8" stroke="#3a7fa0" stroke-width="1.5"/><rect x="' + (pt[0] + 7) + '" y="' + (pt[1] - 3) + '" width="7" height="4" fill="#2a6f9a"/>'; });
-      return w + "</g>"; }
-    if (id === "power") { var sv = '<g transform="translate(' + (x + 6) + ' 22)"><rect width="40" height="70" rx="2" fill="#1d2228" stroke="' + s + '" stroke-width="2.5"/>';
-      for (var r = 0; r < 6; r++) sv += '<rect x="4" y="' + (5 + r * 11) + '" width="32" height="8" fill="#2c333b"/><circle class="bk-led" style="animation-delay:' + (r * 0.23).toFixed(2) + 's" cx="31" cy="' + (9 + r * 11) + '" r="1.6" fill="' + (r % 3 ? "#2ecc71" : "#4aa8ff") + '"/>';
-      return sv + "</g>"; }
-    var wn = '<g transform="translate(' + x + ' 26)"><rect width="52" height="66" fill="#5a2a2a" stroke="' + s + '" stroke-width="2.5"/>';
-    for (var ry = 0; ry < 6; ry++) for (var rx = 0; rx < 5; rx++) wn += '<circle cx="' + (6 + rx * 10) + '" cy="' + (7 + ry * 10.5) + '" r="3.4" fill="' + ((rx + ry) % 3 ? "#2a1414" : "#7a1e2e") + '" stroke="#c9a25a" stroke-width="0.6"/>';
-    return wn + "</g>";
-  }
-  function unit(id, i, gold, era) {
-    if (era === 1 || era === 2) return unitEra(id, i, gold, era);
-    var x = 40 + i * 62, s = gold ? "#c99428" : "#0a464e";
-    if (id === "air") {
-      return '<g transform="translate(' + (x + 22) + ' 64)"><rect x="-6" y="-52" width="12" height="30" fill="#cfd8d6" stroke="' + s + '" stroke-width="1.5"/>' +
-        '<circle r="22" fill="#eef4f2" stroke="' + s + '" stroke-width="3"/><g class="bk-spin">' +
-        '<ellipse cx="0" cy="-10" rx="5" ry="11" fill="#19b3a6"/><ellipse cx="0" cy="-10" rx="5" ry="11" fill="#19b3a6" transform="rotate(120)"/><ellipse cx="0" cy="-10" rx="5" ry="11" fill="#19b3a6" transform="rotate(240)"/></g>' +
-        '<circle r="4" fill="' + s + '"/><rect x="-20" y="24" width="40" height="6" rx="2" fill="#8fa5a2"/></g>';
-    }
-    if (id === "water") {
-      return '<g transform="translate(' + (x + 4) + ' 30)"><rect width="38" height="62" rx="9" fill="#eaf7f7" stroke="' + s + '" stroke-width="3"/>' +
-        '<rect x="3" y="26" width="32" height="33" rx="6" fill="#2bb5c8"/><path class="bk-wave" d="M3 28 q8 -5 16 0 t16 0 t16 0 v6 h-48z" fill="#7fe0ea"/>' +
-        '<rect x="38" y="44" width="22" height="5" fill="#8fa5a2"/></g>';
-    }
-    if (id === "power") {
-      return '<g transform="translate(' + (x + 2) + ' 48)"><rect width="50" height="44" rx="5" fill="#f5e6be" stroke="' + s + '" stroke-width="3"/>' +
-        '<line x1="8" y1="10" x2="20" y2="10" stroke="' + s + '" stroke-width="2"/><line x1="8" y1="16" x2="20" y2="16" stroke="' + s + '" stroke-width="2"/>' +
-        '<path class="bk-bolt" d="M33 6 L25 24 L32 24 L28 38 L40 18 L33 18 L37 6Z" fill="#ffb12e"/>' +
-        '<g class="bk-charge"><rect x="8" y="26" width="5" height="12" fill="#19b3a6"/><rect x="15" y="26" width="5" height="12" fill="#19b3a6"/></g></g>';
-    }
-    /* food */
-    var p = '<g transform="translate(' + x + ' 30)"><rect x="0" y="-4" width="50" height="5" rx="2" class="bk-grow" fill="#ff8a6a"/>' +
-      '<rect x="0" y="22" width="50" height="4" fill="' + s + '"/><rect x="0" y="54" width="50" height="4" fill="' + s + '"/>' +
-      '<line x1="2" y1="0" x2="2" y2="62" stroke="' + s + '" stroke-width="3"/><line x1="48" y1="0" x2="48" y2="62" stroke="' + s + '" stroke-width="3"/>';
-    [8, 20, 32, 42].forEach(function (cx, k) {
-      p += '<g class="bk-sway" style="animation-delay:' + (k * 0.3) + 's"><circle cx="' + cx + '" cy="16" r="6" fill="#56b85c"/><circle cx="' + cx + '" cy="48" r="6" fill="#7ccf62"/></g>';
-    });
-    return p + "</g>";
-  }
 
-  function blueprint(id) {
-    return '<g class="bk-blueprint" opacity="0.6"><rect x="60" y="36" width="130" height="56" rx="8" fill="none" stroke="#7fe0ea" stroke-width="2" stroke-dasharray="6 5"/>' +
-      '<text x="125" y="72" text-anchor="middle" font-size="26" font-weight="700" fill="#7fe0ea">' + ICON[id] + "</text></g>";
-  }
 
   var ROOM_PLATES = "assets/vault/room-";
   function roomPlate(state, id, s, sealed) {
@@ -458,7 +391,6 @@
   LD.renderBunkerPanel = renderBunkerPanel;
   LD.bunkerRoomStage = roomStage;
   /* Back-compat name used by earlier tests/UI. */
-  LD.renderBunkerSheet = function (state, mode) { return renderBunkerView(state, { mode: mode }); };
 
   if (typeof module !== "undefined" && module.exports) module.exports = LD;
 })(typeof globalThis !== "undefined" ? globalThis : this);

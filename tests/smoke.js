@@ -7,7 +7,7 @@ const { spawnSync } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
-const SHOT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/cleanup-2026-11-14";
+const SHOT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/smoke";
 const PUPPETEER = process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core";
 const CHROME = "/usr/bin/google-chrome";
 

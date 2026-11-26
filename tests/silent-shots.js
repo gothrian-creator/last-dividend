@@ -4,7 +4,7 @@
 const fs = require("fs"), http = require("http"), path = require("path"), cp = require("child_process");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = process.env.DIST || path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/lore-2026-11-16";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/silent-shots";
 const LIVE = process.env.LIVE || "";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".js": "text/javascript", ".css": "text/css", ".jpg": "image/jpeg" };
@@ -12,7 +12,6 @@ const DRIVER = fs.readFileSync(path.join(__dirname, "era-driver.js"), "utf8");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SCENES = JSON.parse(process.env.SCENES || "null") || [
   ["benny-1978", { seed: "eras-0", exec: "mara", style: "any", stop: "fight:benny", hand: ["glance", "smirk", "stoop", "frontpage", "talking"] }],
-  ["honoria-now", { seed: "eras-2", exec: "reid", style: "any", stop: "fight:honoria", hand: ["played", "watch", "ratio", "deepfake", "talking"] }]
 ];
 const VPS = (process.env.VPS || "360x800,412x915,800x1280,1280x800").split(",").map((s) => s.split("x").map(Number));
 const VIDEO = (process.env.VIDEO || "412x915").split(",");

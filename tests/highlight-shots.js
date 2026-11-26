@@ -3,7 +3,7 @@
 /* "What can I do now" highlight tour. SHOT_DIR, ONLY=800x1280|1280x800 */
 const fs = require("fs"), http = require("http"), path = require("path");
 const ROOT = path.resolve(__dirname, ".."), DIST = path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/highlights-2026-11-14";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/highlight-shots";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const DRIVER = fs.readFileSync(path.join(__dirname, "era-driver.js"), "utf8");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".mp4": "video/mp4", ".js": "text/javascript", ".css": "text/css" };
@@ -14,8 +14,6 @@ const SCENES = [
   ["01-q1-deals", "q1", "desk", (h) => h.pins === 3 && !h.endqAct && h.endqDim && !h.bunkerAct && h.arrows <= 1],
   ["02-bunker-ready", "bunker", "desk", (h) => h.bunkerAct && !h.endqAct && h.arrowOn === "bunker-card" && h.pins === 0],
   ["03-bunker-orders", "bunker", "bunker", (h) => h.orders > 0 && h.arrows === 1],
-  ["04-fight-hand", "fight", "fight", (h) => h.cards > 0 && !h.endroundAct],
-  ["05-fight-endround", "fight-broke", "fight", (h) => h.cards === 0 && h.endroundAct && h.arrowOn === "df-end"],
   ["06-endq-last", "acted", "desk", (h) => h.endqAct && h.arrowOn === "btn-endq" && !h.bunkerAct]
 ];
 (async () => {

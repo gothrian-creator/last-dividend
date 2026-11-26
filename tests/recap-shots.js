@@ -3,7 +3,7 @@
 /* End-of-run recap tour: mid-beat frames + final pages, Reid (3 eras) and the default passport. SHOT_DIR, ONLY=<vp>, QUICK=1 */
 const fs = require("fs"), http = require("http"), path = require("path");
 const ROOT = path.resolve(__dirname, ".."), DIST = path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/endrun-build-2026-11-15";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/recap-shots";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".mp4": "video/mp4", ".woff2": "font/woff2" };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

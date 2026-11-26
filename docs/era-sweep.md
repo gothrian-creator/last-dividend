@@ -312,7 +312,7 @@ Run Sat 14 Nov 2026, about 20:30 CET, against https://gothrian-creator.github.io
 | ✅ | Live `index.html` byte-identical to local build | IDENTICAL (1,226,633 bytes) |
 | ✅ | All fight art and bunker plates served (`assets/fight/*.webp` + `bunker-1/2.webp`) | 134/134 HTTP 200 |
 | ✅ | External requests from the page | None (offline single page; only the `w3.org` SVG namespace strings) |
-| ✅ | `era-shots.js` with `LIVE=` (13 scenes × 800x1280 + 1280x800, no-scroll asserted) | ERA SHOTS OK, 26 shots in `mockups/eras-2026-11-14/live/` |
+| ✅ | `era-shots.js` with `LIVE=` (13 scenes × 800x1280 + 1280x800, no-scroll asserted) | ERA SHOTS OK, 26 shots in `test-output/era-shots/live/` (was mockups/eras-2026-11-14/live/, archived) |
 | ✅ | Act I/II/III hubs and bunkers wear their era; Boardroom/menus stay canonical | Checked visually |
 | ✅ | Callbacks show the A FAMILIAR FACE banner live (Dunn, June, Mickey) | Checked visually |
 | ✅ | Local suites before deploy: run-tests (33), smoke, shots.js, sim-eras (5,668 checks, 36 runs) | All OK |

@@ -4,7 +4,7 @@
 const fs = require("fs"), http = require("http"), path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = process.env.DIST || path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/no-rivals-2026-11-16/after";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/hub-shots";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".js": "text/javascript", ".css": "text/css", ".jpg": "image/jpeg" };
 const DRIVER = fs.readFileSync(path.join(__dirname, "era-driver.js"), "utf8");

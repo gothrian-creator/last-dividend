@@ -386,26 +386,7 @@
       '<div class="m-bar"><span style="width:' + pct + '%"></span>' + tk + "</div>" + (extra ? '<div class="m-sub">' + extra + "</div>" : "") + "</div>";
   }
 
-  function sparkline(state) {
-    var hist = (state.world && state.world.history) || [];
-    var pts = hist.map(function (p) { return p.cash; });
-    if (pts[pts.length - 1] !== state.cash) pts.push(state.cash);
-    if (pts.length < 2) pts.unshift(pts[0] || 0);
-    var max = Math.max.apply(null, pts.concat([10])), min = Math.min.apply(null, pts.concat([0]));
-    var w = 220, hh = 54;
-    var step = w / (pts.length - 1);
-    var d = pts.map(function (v, i) {
-      var y = hh - 6 - ((v - min) / ((max - min) || 1)) * (hh - 12);
-      return (i ? "L" : "M") + (i * step).toFixed(1) + " " + y.toFixed(1);
-    }).join(" ");
-    var up = pts[pts.length - 1] >= pts[pts.length - 2];
-    return '<svg class="spark" viewBox="0 0 ' + w + " " + hh + '" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="' + d + " L" + w + " " + hh + " L0 " + hh + 'Z"/><path class="line' + (up ? " up" : " down") + '" d="' + d + '"/></svg>';
-  }
 
-  function bunkerTally(state) {
-    var r = LD.readinessSummary(state);
-    return r.ready + "/4 ready";
-  }
 
   function regionInText(text) {
     var found = null;

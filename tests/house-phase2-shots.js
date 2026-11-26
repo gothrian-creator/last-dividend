@@ -5,7 +5,7 @@ const fs = require("fs"), http = require("http"), path = require("path");
 const { execFileSync } = require("child_process");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = process.env.DIST || path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/bunker-rethink-2026-11-24/phase2-shots";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/house-phase2-shots";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".js": "text/javascript", ".css": "text/css" };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

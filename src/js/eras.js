@@ -145,10 +145,6 @@
     if (typeof document !== "undefined" && document.body && document.body.setAttribute) document.body.setAttribute("data-era", String(act));
     return act;
   };
-  LD.eraDealChoice = function (dealId, choiceId, label, state) {
-    var r = LD.ERA_NAMES.deal[dealId], a = state ? LD.eraOf(state) : LD.eraNow; if (!r || !a || a >= 3) return label;
-    var o = r[a - 1]; return o && o.choice && o.choice[choiceId] ? o.choice[choiceId] : label;
-  };
 
   /* ---------- Named moves (intents) per opponent ---------- */
   /* Base meters stay the same as the generic encounter so balance holds; twists add character:
@@ -309,7 +305,6 @@
   var BOSS_OPP = { earnings: "ashby_b", shortseller: "sorel_b", strike: "varga_b", bid: "crowe_b", crash: "ticker_b" };
 
   function fates(state) { var f = state.fy; f.fates = f.fates || {}; return f.fates; }
-  LD.oppFates = function (state) { return state && state.fy ? fates(state) : {}; };
   function fate(state, id) { var x = state && state.fy && state.fy.fates; return x ? x[id] || null : null; }
   LD.oppFate = fate;
   function met(state, id) { var m = state.fy.met || {}; return !!m[id]; }

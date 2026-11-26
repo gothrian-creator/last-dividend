@@ -72,7 +72,6 @@ function runOne(seed, exec, style) {
     }
     if (f && f.memo) { let r = LD.fyMemo(state, "b"); if (!r.ok) r = LD.fyMemo(state, "a"); state = r.state; continue; }
     if (f && f.draft) { const r = WANT[style] && f.draft.offer && f.draft.offer[0] ? LD.fyPick(state, f.draft.offer[0]) : null; state = r && r.ok ? r.state : LD.fyPick(state, null).state; continue; }
-    if (f && f.loot) { const r = LD.fyTakeLoot(state, false); if (r.ok) { state = r.state; continue; } }
     if (state.phase === "deal") {
       let done = false;
       for (const id of state.offered) { const d = LD.dealById(id); for (const c of (d.choices || [{ id: null }])) { const r = LD.selectDeal(state, id, c.id); if (r.ok) { state = r.state; done = true; break; } } if (done) break; }

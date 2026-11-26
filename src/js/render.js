@@ -105,116 +105,12 @@
     };
   }
 
-  function barPct(n, max) {
-    return Math.max(0, Math.min(100, Math.round((n / max) * 100)));
-  }
 
-  function renderChrome(state) {
-    var exec = LD.execById(state.executiveId);
-    var html = '<div class="chrome">';
-    html += "<div><div class='kicker'>" + escapeHtml(exec.firm) + "</div>";
-    html += "<h2>" + escapeHtml(exec.name) + "</h2>";
-    html += "<div class='who'>" + escapeHtml(exec.title) + " · seed " + escapeHtml(String(state.seedLabel)) + "</div></div>";
-    html += "<div class='q-badge' aria-label='Quarter " + state.turn + "'>Q" + state.turn + "</div></div>";
 
-    html += '<div class="stats">';
-    html += statBox("cash", "Cash", state.cash, 100);
-    html += statBox("unrest", "Unrest", state.unrest, LD.MAX_UNREST);
-    html += statBox("collapse", "Collapse", state.collapse, LD.MAX_COLLAPSE);
-    html += "</div>";
-    var fc = LD.forecastQuarters(state);
-    html += '<p class="forecast">At the current drift, breach in about ' + fc + " quarter" + (fc === 1 ? "" : "s") + ". Delayed deals are not included in this estimate.</p>";
-    return html;
-  }
 
-  function statBox(cls, label, val, max) {
-    var h = '<div class="stat ' + cls + '"><div class="lbl">' + label + '</div><div class="val">' + val + "</div>";
-    h += '<div class="bar" aria-hidden="true"><span style="width:' + barPct(val, max) + '%"></span></div></div>';
-    return h;
-  }
 
-  function renderChips(state) {
-    var html = '<div class="chips" aria-label="Bunker systems">';
-    LD.SYSTEMS.forEach(function (s) {
-      var st = systemStatus(state, s.id);
-      var sys = state.bunker[s.id];
-      var installed = sys.level > 0;
-      html += '<div class="chip ' + st + '"><div class="nm' + (installed ? " accent" : "") + '">' + escapeHtml(s.name) + "</div>";
-      html += '<div class="lv">Lv ' + sys.level + "</div>";
-      html += '<div class="q">' + escapeHtml(systemDetail(state, s.id, true)) + "</div></div>";
-    });
-    html += "</div>";
-    return html;
-  }
 
-  function renderPending(state) {
-    if (!state.pending || !state.pending.length) return "";
-    var parts = state.pending.map(function (p) {
-      var bits = [escapeHtml(p.source) + " due Q" + p.due];
-      if (p.install) bits.push("shipment for " + p.install.id + " L" + p.install.level);
-      if (p.strain) {
-        Object.keys(p.strain).forEach(function (g) {
-          bits.push(g + " network tightens");
-        });
-      }
-      return bits.join(" — ");
-    });
-    return '<div class="pending"><strong>Still outstanding.</strong> ' + parts.join(" · ") + "</div>";
-  }
 
-  function renderContracts(state) {
-    if (LD.ensureSupply) LD.ensureSupply(state);
-    var html = '<section class="contracts" aria-label="Public supply contracts">';
-    html += '<div class="kicker">Public networks you still buy from</div>';
-    if (state.converting) {
-      html += '<p class="convert-banner">Private supply conversion is active. Further deals pay ' + Math.round(LD.conversionRate(state) * 100) + '% cash. Installs ignore network damage and arrive this quarter.</p>';
-    }
-    html += '<div class="contract-grid">';
-    LD.SYSTEMS.forEach(function (s) {
-      var level = LD.gridLevel ? LD.gridLevel(state, s.id) : 0;
-      var label = LD.gridLabel ? LD.gridLabel(level) : "clear";
-      var inbound = inboundFor(state, s.id);
-      var coming = "";
-      (state.pending || []).forEach(function (item) {
-        if (item.strain && item.strain[s.id]) coming = "tightens Q" + item.due;
-        if (item.ease && item.ease[s.id]) coming = "eases Q" + item.due;
-      });
-      html += '<div class="contract ' + label + '"><div class="nm">' + escapeHtml(s.name) + "</div>";
-      html += '<div class="lv">' + escapeHtml(label) + "</div>";
-      if (coming) html += '<div class="q">' + escapeHtml(coming) + "</div>";
-      else if (inbound) html += '<div class="q">shipment Q' + inbound.due + "</div>";
-      else if (level >= 2) html += '<div class="q">+14 and delayed</div>';
-      else if (level >= 1) html += '<div class="q">+8 to install</div>';
-      else html += '<div class="q">clear rate</div>';
-      html += "</div>";
-    });
-    html += "</div></section>";
-    return html;
-  }
-
-  function dealExtraHint(state, deal) {
-    var bits = [];
-    if (state.converting && deal.immediate && deal.immediate.cash > 0 && LD.dealCashAmount) {
-      bits.push("Pays " + LD.dealCashAmount(state, deal.immediate.cash) + " after conversion (" + Math.round(LD.conversionRate(state) * 100) + "%).");
-    }
-    if (deal.choices) {
-      bits.push("A choice here can ease or strain a public network at close.");
-    } else if (LD.defaultSupply) {
-      var supply = LD.defaultSupply(deal, deal);
-      if (supply.strain) {
-        Object.keys(supply.strain).forEach(function (g) {
-          var next = Math.min(LD.GRID_DISRUPTED, (LD.gridLevel(state, g) || 0) + supply.strain[g]);
-          bits.push(g + " supply will be " + LD.gridLabel(next) + " at close.");
-        });
-      }
-      if (supply.ease) {
-        Object.keys(supply.ease).forEach(function (g) {
-          bits.push("eases the " + g + " network now.");
-        });
-      }
-    }
-    return bits.join(" ");
-  }
 
   function conversionSecureCost(state, systemId, quality) {
     var clone = LD.deepClone(state);
@@ -222,34 +118,8 @@
     return LD.upgradeCost(clone, systemId, clone.bunker[systemId].level + 1, quality);
   }
 
-  function renderLog(state) {
-    var html = '<div class="log"><div class="kicker">Ledger</div><ul>';
-    (state.log || []).slice(0, 5).forEach(function (l) {
-      html += "<li>Q" + l.turn + " — " + escapeHtml(l.text) + "</li>";
-    });
-    html += "</ul></div>";
-    return html;
-  }
 
-  function renderPlayNav() {
-    return '<div class="footer-nav"><button class="btn btn-ghost" id="btn-play-how">How to play</button>' +
-      '<button class="btn btn-danger" id="btn-abandon">Abandon run</button></div>';
-  }
 
-  var titleDemo = null;
-  function titleMap() {
-    if (!LD.renderMap || !LD.WORLD_MAP || !LD.createRun) {
-      return '<img src="' + escapeHtml(assetUrl("hero-title")) + '" alt="">';
-    }
-    if (!titleDemo) {
-      titleDemo = LD.createRun({ seed: "brighter-tomorrow", executiveId: "mara" });
-      titleDemo.phase = "bunker";
-      ["eu", "na", "oc"].forEach(function (id) { titleDemo.world.regions[id].owned = true; });
-      titleDemo.world.regions.eu.plant = true;
-      titleDemo.collapse = 60;
-    }
-    return '<div class="board-tilt"><div class="board-slab">' + LD.renderMap(titleDemo, { idPrefix: "t" }) + "</div></div>";
-  }
 
   /* ---------- Journey: resource tokens (painted sprite) ---------- */
   var TOKENS = ["cash", "div", "unrest", "collapse", "bunker", "quarter", "scrutiny", "case"];
@@ -267,14 +137,6 @@
     return "ok";
   }
   LD.resLevel = resLevel;
-  var RES_TOK = { cash: "cash", unrest: "unrest", collapse: "collapse", div: "div", bunker: "bunker", quarter: "quarter", scrutiny: "scrutiny", case: "case", heat: "scrutiny" };
-  function resPill(kind, val, tip, opts) {
-    opts = opts || {};
-    var lvl = opts.lvl || resLevel(kind, typeof val === "number" ? val : 0);
-    var shown = opts.text != null ? opts.text : (kind === "cash" ? "$" + val + "M" : String(val));
-    return '<span class="rs rs-' + kind + " lvl-" + lvl + (opts.cls ? " " + opts.cls : "") + '" data-tip="' + escapeHtml(tip || "") + '" data-num="' + (typeof val === "number" ? val : "") + '" data-kind="' + kind + '" role="button" tabindex="0" aria-label="' + escapeHtml(tip || shown) + '">' + tok(RES_TOK[kind] || "cash") + "<b>" + escapeHtml(shown) + "</b>" + (opts.label ? "<small>" + escapeHtml(opts.label) + "</small>" : "") + "</span>";
-  }
-  LD.resPill = resPill;
 
   /* ---------- Journey title: the climb from 1978 to the bunker ---------- */
   var JOURNEY_STOPS = [
@@ -755,56 +617,7 @@
     return html;
   }
 
-  function renderDeals(state, crisisOpen) {
-    var html = '<div class="banner"><h2>Three deals. Choose one.</h2><span class="ap">1 AP</span></div>';
-    html += '<div class="deals">';
-    state.offered.forEach(function (id) {
-      var d = LD.dealById(id);
-      if (!d) return;
-      var art = dealArtKey(id);
-      var open = crisisOpen === id;
-      html += "<div>";
-      html += '<button class="deal' + (d.isCrisis ? " crisis" : "") + '" data-deal="' + id + '">';
-      html += '<div class="deal-layout">';
-      if (art) {
-        html += '<img class="deal-art" src="' + escapeHtml(assetUrl(art)) + '" alt="">';
-      } else {
-        html += '<div class="deal-fallback" aria-hidden="true"></div>';
-      }
-      html += '<div class="deal-body"><div class="kicker">' + escapeHtml(d.kicker) + (d.isCrisis ? " · crisis" : "") + "</div>";
-      html += "<h3>" + escapeHtml(d.title) + "</h3>";
-      html += "<p>" + escapeHtml(d.body) + "</p>";
-      var extra = dealExtraHint(state, d);
-      html += '<div class="hint">' + escapeHtml(d.hint) + (extra ? " " + escapeHtml(extra) : "") + "</div></div></div></button>";
-      if (d.choices && open) {
-        html += '<div class="choices">';
-        d.choices.forEach(function (c) {
-          var poor = c.cost && state.cash < c.cost;
-          html += '<button class="choice" data-deal="' + id + '" data-choice="' + c.id + '"' + (poor ? " disabled" : "") + ">";
-          html += "<strong>" + escapeHtml(c.label) + (poor ? " — not enough cash" : "") + "</strong>";
-          html += "<span>" + escapeHtml(c.hint) + "</span></button>";
-        });
-        html += "</div>";
-      }
-      html += "</div>";
-    });
-    html += "</div>";
-    return html;
-  }
 
-  function renderDealScreen(state, crisisOpen) {
-    var html = '<div class="page play"><div class="page-inner">';
-    html += renderChrome(state);
-    html += renderContracts(state);
-    html += '<div class="hero-frame deal"><img src="' + escapeHtml(assetUrl("hero-deal")) + '" alt="A financial-report spread of municipal works beside a private shelter ledger."></div>';
-    html += renderChips(state);
-    html += renderPending(state);
-    html += renderDeals(state, crisisOpen);
-    html += renderLog(state);
-    html += renderPlayNav();
-    html += "</div></div>";
-    return html;
-  }
 
   function renderReadiness(state) {
     var r = readinessSummary(state);
@@ -878,19 +691,6 @@
     return html;
   }
 
-  function renderBunkerScreen(state) {
-    var html = '<div class="page play"><div class="page-inner">';
-    html += renderChrome(state);
-    html += renderContracts(state);
-    html += '<div class="hero-frame bunker"><img src="' + escapeHtml(assetUrl("hero-bunker")) + '" alt="A four-room bunker cutaway showing air, water, power, and food."></div>';
-    html += renderChips(state);
-    html += renderPending(state);
-    html += renderBunkerPanel(state);
-    html += renderLog(state);
-    html += renderPlayNav();
-    html += "</div></div>";
-    return html;
-  }
 
   function evacConfirmBody(state) {
     var r = readinessSummary(state);
@@ -918,14 +718,10 @@
   LD.renderTitle = renderTitle;
   LD.renderTutorial = renderTutorial;
   LD.renderExec = renderExec;
-  LD.renderDealScreen = renderDealScreen;
-  LD.renderBunkerScreen = renderBunkerScreen;
   LD.renderEnd = renderEnd;
   LD.renderHistory = renderHistory;
   LD.renderBoardroom = renderBoardroom;
   LD.evacConfirmBody = evacConfirmBody;
-  LD.renderChrome = renderChrome;
-  LD.renderChips = renderChips;
   LD.renderReadiness = renderReadiness;
 
   if (typeof module !== "undefined" && module.exports) {

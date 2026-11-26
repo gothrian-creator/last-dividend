@@ -7,7 +7,7 @@ const SIZES=(process.env.SIZES||"360x800,412x915,800x1280,800x1200,800x1150,800x
 (async()=>{const env=await H.start(process.env.DIST||"/workspace/last-dividend-v3/dist");
  for(const sz of SIZES){const [w,h]=sz.split("x").map(Number);
   const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:13,stop:"deal:3",exec:process.env.EXEC||"mara",smart:true});await p.waitForTimeout(500);
-  await ((await p.$(".sd-prop"))||(await p.$(".sd-tag"))).click();await p.waitForTimeout(500);await p.click("#btn-sign");await p.waitForTimeout(2600);
+  await (await p.$(".sd-prop")).click();await p.waitForTimeout(500);await p.click("#btn-sign");await p.waitForTimeout(2600);
   ok(await p.$("#door.sd-fight"),sz+" seated fight open");
   const arts=await p.evaluate(()=>Object.keys(LD.SEAT.opp));
   for(const art of (process.env.ARTS?process.env.ARTS.split(","):arts)){

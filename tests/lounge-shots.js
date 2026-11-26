@@ -3,7 +3,7 @@
 /* Summit Lounge (concierge key rack) screenshot tour. SHOT_DIR, ONLY=800x1280|1280x800|390x844 */
 const fs = require("fs"), http = require("http"), path = require("path");
 const ROOT = path.resolve(__dirname, ".."), DIST = path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/lounge-build-2026-11-15";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/lounge-shots";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".mp4": "video/mp4", ".js": "text/javascript", ".css": "text/css" };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

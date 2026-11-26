@@ -12,7 +12,7 @@
     /* the same room painted wider (outpainted from sd-room, lined up by feature match); plate x 0 sits at x0 */
     roomWide: { src: BASE + "sd-room-wide.webp", x0: 640, w: 2000 },
     table: { src: BASE + "sd-table-clean.webp", box: [0, 545, 720, 597] },
-    /* sd-table.webp (painted brass pins) is kept; the house desk now draws glass pins over sd-table-clean.webp */
+    /* sd-table.webp (painted brass pins) is kept in art-src/house-originals, not shipped; the house desk draws glass pins over sd-table-clean.webp */
     hands: { rest: { src: BASE + "sd-hands-rest-mara.webp", box: [100, 770, 614, 372] }, dip: { src: BASE + "sd-hands-dip-mara.webp", box: [100, 879, 620, 263] } },
     mara: { src: BASE + "sd-mara-ots.webp", box: [181, 389, 539, 891] },
     /* map pins on the painted table map. p: 1 = a painted brass pin sits there; 0 = we add one. */
@@ -101,8 +101,6 @@
       hands: { a: t < 0.42 ? 1 : 0, dy: 580 * hu, blur: 2.5 * Math.sin(Math.PI * hu) } };
   };
   /* Pin tags: where each tag sits relative to its pin, in screen px at scale 1 (tag centre). */
-  var TAG_AT = { na: [-62, -118], sam: [-58, 92], eu: [-6, -150], me: [58, -128], ea: [76, -96], af: [6, 104], sa: [74, 82], oc: [70, 106] };
-  LD.seatTagAt = function (rid, k) { var o = TAG_AT[rid] || [0, -110]; return [o[0] * k, o[1] * k]; };
 
 
   /* ---------- Deal props (house desk): the deal lies on the table as a prop; tap to open it, drag it to your hands to sign ----------
@@ -281,9 +279,6 @@
     var p = SEAT.pins[info.region] || SEAT.pins.eu;
     return '<button type="button" class="sd-pin k-' + info.kind + " add" + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-plate="' + p[0] + "," + p[1] + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><i></i></button>';
   }
-  function tagHtml(info, i, sel) {
-    return '<button type="button" class="sd-tag k-' + info.kind + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-rid="' + esc(info.region || "") + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><b>' + esc(info.label) + "</b><em>" + esc(info.tag) + "</em></button>";
-  }
   function deckCards(state) {
     var f = state.fy; if (!f || !f.deck) return "";
     var h = "";
@@ -326,16 +321,14 @@
       under += '<img class="sd-propimg" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + 'deg)">';
     });
     h += LD.seatStage({ under: under });
-    /* screen-space layer: lines, pins, tags, region taps */
+    /* screen-space layer: pins, props, region taps */
     h += '<div class="sd-ui">';
-    h += '<svg class="sd-lines" aria-hidden="true"></svg>';
     Object.keys(SEAT.regions).forEach(function (rid) {
       var r = SEAT.regions[rid], st = state.world && state.world.regions ? state.world.regions[rid] : null;
       var lvl = st && LD.stressLabel ? LD.stressLabel(st.stress) : "calm";
       h += '<button type="button" class="sd-region s-' + lvl + (st && st.owned ? " owned" : "") + (sel.region === rid ? " sel" : "") + '" data-region="' + rid + '" data-plate="' + r[0] + "," + r[1] + '" data-r="' + r[2] + "," + r[3] + '" aria-label="' + esc(LD.REGION_NAMES[rid] + (st && st.owned ? ", yours" : "") + ", " + lvl) + '">' + (st && st.owned ? '<i class="sd-flag"></i>' : "") + "</button>";
     });
     infos.forEach(function (x, i) { h += pinHtml(state, x, i, sel.deal); });
-    infos.forEach(function (x, i) { h += tagHtml(x, i, sel.deal); });
     props.forEach(function (pr, i) {
       var x = infos.filter(function (n) { return n.id === pr.id; })[0], sd = LD.dealSlip(state, pr.id), neg = /^[−-]/.test(x.tag);
       h += '<button type="button" class="sd-prop k-' + x.kind + " t-" + pr.type + (sel.deal === pr.id ? " sel" : "") + '" data-deal="' + pr.id + '" data-plate="' + pr.x + "," + pr.y + '" data-pw="' + pr.w.toFixed(1) + "," + pr.h.toFixed(1) + '" style="--rot:' + pr.rot + "deg;--i:" + i + '" aria-label="' + esc(x.aria) + '">' +

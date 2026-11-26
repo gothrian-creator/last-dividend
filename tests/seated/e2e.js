@@ -10,7 +10,7 @@ const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right
  for(const sz of SIZES){const [w,h]=sz.split("x").map(Number);
   const p=await H.page(env,w,h);await seedHouse(p,env.origin,{seed:13,stop:"deal:3",exec:process.env.EXEC||"mara",smart:true});await p.waitForTimeout(700);
   const d=await p.evaluate(()=>{const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right,b:r.bottom};};
-    const hud=R(document.querySelector(".desk.sd .sd-hud"));const tags=[...document.querySelectorAll(document.querySelector(".sd-prop")?".sd-prop .sd-stk":".sd-tag")].map(R);
+    const hud=R(document.querySelector(".desk.sd .sd-hud"));const tags=[...document.querySelectorAll(".sd-prop .sd-stk")].map(R);
     const ov=(a,b)=>Math.min(a.r,b.r)-Math.max(a.l,b.l)>1&&Math.min(a.b,b.b)-Math.max(a.t,b.t)>1;let tagOv=0;
     for(let i=0;i<tags.length;i++)for(let j=i+1;j<tags.length;j++)if(ov(tags[i],tags[j]))tagOv++;
     const hudKids=[...document.querySelectorAll(".desk.sd .sd-hud .sd-meter, .desk.sd .sd-hud .sd-net, .desk.sd .sd-hud .sd-cash")].map(R);
@@ -34,7 +34,7 @@ const R=e=>{const r=e.getBoundingClientRect();return {l:r.left,t:r.top,r:r.right
     await p.mouse.click((L.l+L.r)/2,L.t+(L.b-L.t)*0.6);await p.waitForTimeout(300);ok(!(await p.$("#sd-fan .dc.is-lift")),sz+" tapping the lifted card sets it back"); }
   await p.click("#sd-tab");await p.waitForTimeout(400);
   // dossier
-  await ((await p.$(".sd-prop"))||(await p.$(".sd-tag"))).click();await p.waitForTimeout(500);
+  await (await p.$(".sd-prop")).click();await p.waitForTimeout(500);
   const z=await p.evaluate(()=>{const sl=document.querySelector("#sd-peek .pk-slip");if(sl){const t=getComputedStyle(sl.querySelector(".ps-t"));
       return {props:true,on:!document.getElementById("dossier").classList.contains("on"),sign:!!sl.querySelector("#btn-sign"),h3:t.color,fs:parseFloat(t.fontSize)};}
     const dz=document.getElementById("dossier"),dd=dz.querySelector(".dz"),cs=getComputedStyle(dd),h3=getComputedStyle(dz.querySelector("h3"));

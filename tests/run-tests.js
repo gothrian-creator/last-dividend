@@ -840,15 +840,15 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     ok(opaque, "pull-back hands are never see-through (opacity only 1 or 0)");
     ok(goneOk, "pull-back hands are below the plate before they switch off");
     const html = LD.renderSeatedDesk(hm, { land: false });
-    const pins = (html.match(/class="sd-pin /g) || []).length, tags = (html.match(/class="sd-tag /g) || []).length;
-    ok(hm.phase === "deal" && pins === hm.offered.length && tags === hm.offered.length, "every offered deal gets a pin and a tag on the table map (" + pins + ")");
+    const pins = (html.match(/class="sd-pin /g) || []).length, props = (html.match(/class="sd-prop /g) || []).length;
+    ok(hm.phase === "deal" && pins === hm.offered.length && props === Math.min(3, hm.offered.length) && !/sd-tag|sd-lines/.test(html), "every offered deal gets a pin and a prop on the table map, and the old wall tags and lines are gone (" + pins + ")");
     ok(/id="house-peek"/.test(html) && /id="sd-tab"/.test(html) && /id="sd-fan"/.test(html) && /id="fx"/.test(html) && /id="dossier"/.test(html), "seated desk has bunker swivel, deck tab, fan, fx layer and dossier");
     ok(!/desk-head|class="board/.test(html), "seated desk does not pull in the old dashboard header or board");
     ok(/sd-quarter/.test(LD.renderSeatedDesk(hm, { land: true })) && !/sd-quarter/.test(html), "landscape gets the This quarter panel, portrait does not");
     ok(/is-closing/.test(LD.renderSeatedDesk(hm, { closing: true })), "end-of-quarter hides the next quarter's deals");
     Object.keys(LD.OPPONENTS).forEach((id) => { const art = LD.OPPONENTS[id].art; ok(!!LD.SEAT.opp[art], "seated box for " + art); });
     const assets = path.join(__dirname, "..", "assets");
-    ["sd-room", "sd-table", "sd-hands-rest-mara", "sd-hands-dip-mara", "sd-mara-ots"].forEach((n) => ok(fs.existsSync(path.join(assets, "house/1978", n + ".webp")), "seated layer " + n + " ships"));
+    ["sd-room", "sd-table-clean", "sd-hands-rest-mara", "sd-hands-dip-mara", "sd-mara-ots"].forEach((n) => ok(fs.existsSync(path.join(assets, "house/1978", n + ".webp")), "seated layer " + n + " ships"));
     const shopHtml = LD.renderDesk ? LD.renderDesk(LD.createRun({ seed: "seat-shop2", executiveId: "mara", rating: 0, perks: [], packs: [], level: 1 }), {}) : "";
     if (shopHtml) ok(!/class="desk sd/.test(shopHtml) && !/sd-hud/.test(shopHtml), "shop desk render is the old desk");
   }

@@ -4,7 +4,8 @@
 const fs = require("fs"), http = require("http"), path = require("path"), { execFileSync } = require("child_process");
 const ROOT = path.resolve(__dirname, ".."), DIST = path.join(ROOT, "dist");
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
-const Q = process.env.Q || "recap=reid&end=lose&era=2", OUT = process.env.OUT || "/workspace/last-dividend/mockups/endrun-build-2026-11-15/reid-2008-recap.mp4";
+const Q = process.env.Q || "recap=reid&end=lose&era=2", OUT = process.env.OUT || "/workspace/last-dividend/test-output/recap-record/reid-2008-recap.mp4";
+fs.mkdirSync(path.dirname(OUT), { recursive: true });
 const W = +process.env.W || 800, H = +process.env.H || 1280, SECS = +process.env.SECS || 17;
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".woff2": "font/woff2" };
 (async () => {

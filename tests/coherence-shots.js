@@ -5,7 +5,7 @@
 const fs = require("fs"), http = require("http"), path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = process.env.DIST || path.join(ROOT, "dist");
-const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/mockups/coherence-2026-11-16/after";
+const OUT = process.env.SHOT_DIR || "/workspace/last-dividend/test-output/coherence-shots";
 const puppeteer = require(process.env.PPTR || "/workspace/tools/node_modules/puppeteer-core");
 const MIME = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".js": "text/javascript", ".css": "text/css", ".jpg": "image/jpeg" };
 const DRIVER = fs.readFileSync(path.join(__dirname, "era-driver.js"), "utf8");
@@ -13,7 +13,6 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SCENES = [
   ["dana-clinic-lot", { seed: "eras-0", exec: "mara", style: "any", stop: "fight:gray" }, { opp: "dana", deal: "rezoning-clinic" }],
   ["pops-safety-staff", { seed: "eras-0", exec: "mara", style: "any", stop: "fight:dunn" }, { opp: "pops", deal: "cut-safety" }],
-  ["theo-aquifer", { seed: "eras-3", exec: "mara", style: "any", stop: "fight:theo" }, { opp: "theo", deal: "aquifer-tap" }]
 ];
 (async () => {
   const server = http.createServer((req, res) => {

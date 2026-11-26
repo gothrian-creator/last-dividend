@@ -1064,19 +1064,7 @@
     return !state.ended && state.phase === "bunker" && state.turn >= LD.MIN_EVAC_TURN && !(LD.fyBusy && LD.fyBusy(state));
   }
 
-  function restart(state, opts) {
-    opts = opts || {};
-    return createRun({
-      seed: opts.seed != null ? opts.seed : (Date.now() >>> 0),
-      executiveId: opts.executiveId || (state && state.executiveId) || "mara",
-      rating: opts.rating != null ? opts.rating : (state && state.rating) || 0,
-      perks: opts.perks || (state && state.perks) || []
-    });
-  }
 
-  function snapshot(state) {
-    return deepClone(state);
-  }
 
   function isExecutiveUnlocked(id, meta) {
     var exec = execById(id);
@@ -1116,8 +1104,6 @@
   LD.closeQuarter = closeQuarter;
   LD.attemptEvacuation = attemptEvacuation;
   LD.canEvacuate = canEvacuate;
-  LD.restart = restart;
-  LD.snapshot = snapshot;
   LD.forecastQuarters = forecastQuarters;
   LD.isExecutiveUnlocked = isExecutiveUnlocked;
   LD.eligibleDeal = eligibleDeal;

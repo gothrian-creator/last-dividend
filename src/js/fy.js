@@ -189,38 +189,7 @@
   LD.doorQuiet = function (state) { var f = fy(state); return !!(f && (f.quietQ === state.turn || has(state, "soundproof"))); };
 
   /* Loot: boss wins, some memos and some deals drop an office item. */
-  function rollLoot(state, src) {
-    var f = fy(state); if (!f || f.loot || state.ended) return null;
-    var rng = fyRng(state, "loot:" + src + ":" + state.turn + ":" + (f.lootN || 0));
-    var held = {}; f.drawer.forEach(function (d) { held[d.id] = 1; });
-    var W = { C: 50, U: 38, R: src === "boss" ? 30 : 12 };
-    var pool = []; LD.ITEMS.forEach(function (it) { if (!held[it.id]) for (var i = 0; i < W[it.r]; i++) pool.push(it.id); });
-    if (!pool.length) return null;
-    var id = pool[Math.floor(rng() * pool.length)];
-    f.loot = { id: id, src: src, q: state.turn }; f.lootN = (f.lootN || 0) + 1;
-    state.log.unshift({ turn: state.turn, text: "Loot: " + ITEM_BY[id].name + " (" + ({ boss: "boss beaten", memo: "board memo", deal: "deal perk" })[src] + ")." });
-    return f.loot;
-  }
-  LD.fyRollLoot = rollLoot;
   /* keep: true keeps it (replaceId when the drawer is full), false sells it. */
-  LD.fyTakeLoot = function (state, keep, replaceId) {
-    state = clone(state);
-    var f = fy(state); if (!f || !f.loot) return { ok: false, error: "No loot on the desk.", state: state };
-    var it = ITEM_BY[f.loot.id], sold = null, text;
-    if (!keep) { state.cash += LD.ITEM_SELL[it.r]; text = "Sold " + it.name + " for $" + LD.ITEM_SELL[it.r] + "M."; }
-    else {
-      if (f.drawer.length >= f.dcap) {
-        if (!replaceId || !hasItem(state, replaceId)) return { ok: false, error: "Your drawer is full. Choose an item to sell.", state: state, needReplace: true };
-        var ri = ITEM_BY[replaceId]; f.drawer = f.drawer.filter(function (d) { return d.id !== replaceId; });
-        state.cash += LD.ITEM_SELL[ri.r]; sold = ri;
-      }
-      f.drawer.push({ id: it.id, used: null });
-      text = it.name + " goes in the drawer" + (sold ? ", " + sold.name + " sold (+$" + LD.ITEM_SELL[sold.r] + "M)" : "") + ".";
-    }
-    f.loot = null;
-    state.log.unshift({ turn: state.turn, text: text });
-    return { ok: true, state: state, text: text, item: it, kept: !!keep, sold: sold };
-  };
 
   /* ---------- Bosses ---------- */
   LD.BOSSES = {
@@ -259,7 +228,6 @@
   function fy(state) { return state && state.fy; }
   function has(state, id) { var f = fy(state); if (!f) return false; for (var i = 0; i < f.hand.length; i++) if (f.hand[i].id === id) return true; return false; }
   LD.has = has;
-  function hasActive(state, id) { var f = fy(state); if (!f) return false; for (var i = 0; i < f.hand.length; i++) if (f.hand[i].id === id && ((id !== "audit" && id !== "toxic") || f.hand[i].actOf === f.act)) return true; return false; }
   function archCount(state, arch) { return fy(state) ? fy(state).hand.filter(function (h) { var c = cardById(h.id); return c && c.arch === arch; }).length : 0; }
   /* Drop 1: Cartels (set bonuses) are cut; synergies live on cards. */
   function setOn() { return false; }
@@ -345,7 +313,6 @@
   LD.levelCost = levelCost;
   LD.levelFromXp = levelFromXp;
   LD.execLevel = function (meta, execId) { return levelFromXp(((meta && meta.xp) || {})[execId] | 0).level; };
-  LD.perksAt = function (lv) { return LD.LEVEL_PERKS.filter(function (p) { return p.lv <= lv; }); };
 
   /* ---------- Seeded draws ---------- */
   function fyRng(state, salt) { return LD.createRng(LD.hashString("fy:" + state.seed + ":" + salt)); }
@@ -1178,12 +1145,6 @@
   };
   function galOf(id, o) { o = o || cv(id); if (!o) return 0; if (o.g !== undefined) return o.g; return G_BY_P[presOf(id)] || 0; }
   LD.cardGallery = galOf;
-  LD.cardCostText = function (id, up) {
-    var o = cv(id, up); if (!o) return "";
-    if (o.unplay) return "—";
-    if (o.cash) return "$" + o.cash + "M";
-    return o.cost + "◆";
-  };
 
   /* Fixers are card packages with a face. Hiring adds their cards; firing takes them away. */
   LD.FIXERS = [
@@ -1979,12 +1940,6 @@
     return true;
   }
   LD.fyUpgradeV2 = upgradeV2;
-  LD.fyDeckSummary = function (state) {
-    var f = fy(state); if (!f || !f.deck) return null;
-    var curses = f.deck.filter(function (c) { return isCurse(c.id); }).length;
-    var fg = f.fight && !f.fight.done ? f.fight : null;
-    return { size: f.deck.length, curses: curses, up: f.deck.filter(function (c) { return c.up; }).length, draw: fg ? fg.draw.length : f.deck.length, disc: fg ? fg.disc.length : 0, hand: fg ? fg.hand.length : 0 };
-  };
 
   /* ---------- Rewards ---------- */
   LD.FIRST_CLEAR = function (tier) { return { div: 25 + 10 * tier, xp: 50 + 25 * tier }; };

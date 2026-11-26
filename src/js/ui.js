@@ -700,7 +700,6 @@
 
   /* ---------- Desk (world map) ---------- */
   var sel = { deal: null, region: null, net: null, choice: null };
-  var bunkerMode = "install";
   var hidePins = false;
   var lens = "none";
   var mq = window.matchMedia ? window.matchMedia("(orientation: landscape) and (min-width: 900px)") : null;
@@ -835,7 +834,7 @@
       if (x[0] === "cash" && x[1] > 0) SFX.play("coin");
     });
   }
-  /* Plate -> screen for the rig and every data-plate element; tags placed beside their pins without overlaps. */
+  /* Plate -> screen for the rig and every data-plate element. */
   function placeSeated() {
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     var W = window.innerWidth, H = window.innerHeight, k = seatK(W, H), f = LD.seatFrame(W, H), land = f.land;
@@ -862,37 +861,6 @@
       if (r.left < 4) dx = 4 - r.left; else if (r.right > W - 4) dx = W - 4 - r.right;
       if (dx) t.style.marginLeft = dx.toFixed(1) + "px";
     });
-    /* tags: start at the region's preferred offset, clamp to the stage, push apart */
-    var x0 = land ? col[0] + 8 : 8, x1 = land ? col[1] - 8 : W - 8, yTop = hb + (land ? 44 : 44 * k), yBot = H - 96 * k;
-    var boxes = [];
-    Array.prototype.forEach.call(ui.querySelectorAll(".sd-tag"), function (t) {
-      var pin = ui.querySelector('.sd-pin[data-deal="' + t.getAttribute("data-deal") + '"]'); if (!pin) return;
-      var px = parseFloat(pin.style.left), py = parseFloat(pin.style.top), o = LD.seatTagAt(t.getAttribute("data-rid"), k);
-      var w = t.offsetWidth, h = t.offsetHeight;
-      var cx = Math.max(x0 + w / 2, Math.min(x1 - w / 2, px + o[0])), cy = Math.max(yTop + h / 2, Math.min(yBot - h / 2, py + o[1]));
-      boxes.push({ t: t, px: px, py: py, cx: cx, cy: cy, w: w, h: h });
-    });
-    for (var it = 0; it < 24; it++) {
-      var moved = false;
-      for (var i = 0; i < boxes.length; i++) for (var j = i + 1; j < boxes.length; j++) {
-        var a = boxes[i], b = boxes[j], ox = (a.w + b.w) / 2 + 6 - Math.abs(a.cx - b.cx), oy = (a.h + b.h) / 2 + 6 - Math.abs(a.cy - b.cy);
-        if (ox > 0 && oy > 0) {
-          moved = true;
-          if (ox < oy) { var sx = a.cx < b.cx ? -1 : 1; a.cx += sx * ox / 2; b.cx -= sx * ox / 2; }
-          else { var sy = a.cy < b.cy ? -1 : 1; a.cy += sy * oy / 2; b.cy -= sy * oy / 2; }
-          [a, b].forEach(function (c) { c.cx = Math.max(x0 + c.w / 2, Math.min(x1 - c.w / 2, c.cx)); c.cy = Math.max(yTop + c.h / 2, Math.min(yBot - c.h / 2, c.cy)); });
-        }
-      }
-      if (!moved) break;
-    }
-    var svg = ui.querySelector(".sd-lines"), lines = "";
-    boxes.forEach(function (b) {
-      b.t.style.left = (b.cx - b.w / 2).toFixed(1) + "px"; b.t.style.top = (b.cy - b.h / 2).toFixed(1) + "px";
-      var ex = Math.max(b.cx - b.w / 2 + 10, Math.min(b.cx + b.w / 2 - 10, b.px)), ey = b.py < b.cy ? b.cy - b.h / 2 : b.cy + b.h / 2;
-      if (Math.abs(b.py - b.cy) < b.h / 2) { ey = b.cy; ex = b.px < b.cx ? b.cx - b.w / 2 : b.cx + b.w / 2; }
-      lines += '<line x1="' + b.px.toFixed(1) + '" y1="' + b.py.toFixed(1) + '" x2="' + ex.toFixed(1) + '" y2="' + ey.toFixed(1) + '" data-deal="' + b.t.getAttribute("data-deal") + '"/>';
-    });
-    if (svg) { svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("width", W); svg.setAttribute("height", H); svg.innerHTML = lines; }
   }
   /* Landscape: the room carries on behind the side panels (a wider painting of the same office, lined up with the plate). */
   function seatWide(root, f, t) {
@@ -1293,7 +1261,7 @@
   function bindSeated() {
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     function on(selr, fn) { Array.prototype.forEach.call(desk.querySelectorAll(selr), function (n) { n.addEventListener("click", function (e) { e.stopPropagation(); fn(n, e); }); }); }
-    on(".sd-pin, .sd-tag, .sd-qrow, .sd-prop", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
+    on(".sd-pin, .sd-qrow, .sd-prop", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
     on(".sd-region", function (n) { tick(); selectRegion(n.getAttribute("data-region")); });
     on(".sd-net[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
     on(".sd-nrow[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
@@ -2098,9 +2066,6 @@
       if (HV.turning) { tick(); skipHouseTurn(); }
     });
   }
-  function removeHousePeek() {
-    Array.prototype.forEach.call(document.querySelectorAll("#house-peek"), function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
-  }
   window.addEventListener("resize", function () { if (HV.open || HV.facing) sizeHouseRig(); });
   LD.houseUi = {
     open: openHouse, close: closeHouse, skip: skipHouseTurn, refresh: refreshHouseChrome,
@@ -2391,16 +2356,6 @@
     $("overlay").classList.add("memo-mode");
     SFX.play("flip");
   }
-  function openDraft() {
-    dr.sel = null; dr.replacing = false; dr.reveal = !reduced();
-    codexMark(state.fy.draft.offer, false);
-    paintDraft();
-    dr.reveal = false;
-    var n = state.fy.draft.offer.length;
-    for (var i = 0; i < n; i++) SFX.play("flip", i);
-    if (state.fy.draft.offer.some(function (id) { var c = LD.assetById(id); return c && (c.r === "R" || c.r === "L"); })) SFX.play("rare");
-    setTimeout(function () { if (state && state.fy && state.fy.draft) pennyTip("draft"); }, 450);
-  }
   function paintDraft() {
     showFy(LD.renderDraft(state, dr), "", function () {
       Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-asset]"), function (b) {
@@ -2480,31 +2435,6 @@
     floatCenter(res.text, "cash", 350, 40);
     if (id === "doorman" || id === "security") officeReact("glee");
     if (fromDraft && state.fy.draft) setTimeout(paintDraft, 900);
-  }
-  function openLoot(swapSel) {
-    var L = state.fy && state.fy.loot; if (!L) return;
-    var it = LD.itemById(L.id), f = state.fy, full = f.drawer.length >= f.dcap;
-    codexMark([L.id], false);
-    var acts = (full ? "" : '<button class="btn btn-coral" id="lt-keep">Keep · drawer ' + (f.drawer.length + 1) + "/" + f.dcap + "</button>") +
-      '<button class="btn" id="lt-sell">Sell it · +$' + LD.ITEM_SELL[it.r] + "M</button>";
-    showFy(LD.renderLoot(state, { reveal: !reduced() }), acts, function () {
-      function take(keep, rep) {
-        tick();
-        var prev = state;
-        var res = LD.fyTakeLoot(state, keep, rep);
-        if (!res.ok) { flash(res.error); return; }
-        state = res.state; persistRun(); hideOverlay(); renderDesk(prev);
-        if (keep) { codexMark([it.id], true); SFX.play("item"); floatCenter(it.icon + " " + it.name + " · in the drawer", "good big"); }
-        else floatCenter("Sold +$" + LD.ITEM_SELL[it.r] + "M", "cash");
-        var chip = $("btn-portfolio"); if (chip) { chip.classList.remove("pop"); void chip.offsetWidth; chip.classList.add("pop"); }
-        fyNext(900);
-      }
-      var k = $("lt-keep"); if (k) k.addEventListener("click", function () { take(true); });
-      $("lt-sell").addEventListener("click", function () { take(false); });
-      Array.prototype.forEach.call(document.querySelectorAll("#overlay [data-swap]"), function (b) { b.addEventListener("click", function () { take(true, b.getAttribute("data-swap")); }); });
-    }, true);
-    $("overlay").classList.add("loot-mode");
-    SFX.play("loot");
   }
   /* ---------- Drop 1: the door, the reward, the deck ---------- */
   var DF = { logT: null, busy: false, start: null, arm: 0, say: null, cbHide: false };
@@ -3918,12 +3848,6 @@
     var m = pennyMeta();
     if (m.penny.offered || m.penny.done) return false;
     return (m.finished | 0) === 0 && (!m.history || !m.history.length);
-  }
-  function pennyAutoOffer() {
-    if (!pennyShouldOffer()) return false;
-    pennySave(function (p) { p.offered = true; });
-    pennyStart({ offer: true });
-    return true;
   }
 
   document.addEventListener("pointerdown", function (e) {

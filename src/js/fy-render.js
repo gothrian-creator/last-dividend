@@ -129,20 +129,6 @@
   }
 
   /* Loot reveal */
-  LD.renderLoot = function (state, ui) {
-    ui = ui || {};
-    var f = state.fy, L = f.loot; if (!L) return "";
-    var it = LD.itemById(L.id), full = f.drawer.length >= f.dcap;
-    var src = { boss: "Boss beaten", memo: "A board memo sweetener", deal: "A deal perk" }[L.src] || "Loot";
-    var h = '<div class="loot ' + RCLS[it.r] + (ui.reveal ? " reveal" : "") + '"><div class="dz-k">Loot · ' + esc(src) + "</div>";
-    h += '<div class="loot-card"><div class="loot-rays" aria-hidden="true"></div><div class="loot-ico" aria-hidden="true">' + IA(it) + "</div><b>" + esc(it.name) + '</b><em>' + esc(LD.RARITY[it.r].name) + " · " + (it.office ? "Office fixture" : it.per === "act" ? "Once per act" : "Once per run") + "</em><p>" + esc(it.text) + "</p></div>";
-    if (full) {
-      h += '<p class="fy-rq">Drawer full (' + f.drawer.length + "/" + f.dcap + "). Swap one out (sold for cash), or sell the new item.</p><div class=\"loot-swap\">";
-      f.drawer.forEach(function (d) { var o = LD.itemById(d.id); h += '<button class="bc-tile ' + RCLS[o.r] + '" data-swap="' + o.id + '"><span class="bc-ico">' + IA(o) + '</span><span class="bc-nm">Swap ' + esc(o.name) + " · +$" + LD.ITEM_SELL[o.r] + "M</span></button>"; });
-      h += "</div>";
-    }
-    return h + "</div>";
-  };
 
   /* Office explain sheet: what the room is telling you */
   LD.officeExplain = function (state) {
@@ -186,14 +172,6 @@
     if (fc.collapse) b.push((fc.collapse > 0 ? "+" : "−") + Math.abs(fc.collapse) + " collapse");
     return b.join(" · ");
   }
-  function portfolioChip(state) {
-    var f = state.fy; if (!f) return "";
-    var icons = f.hand.map(function (hd) { var c = LD.assetById(hd.id); return c ? '<i class="' + (c.liability ? "liab" : "") + '">' + IA(c) + "</i>" : ""; }).join("");
-    var fc = LD.fyForecast(state), ft = fcText(fc);
-    var rd = (f.drawer || []).filter(function (d) { return LD.itemReady(state, d); }).length;
-    return '<button class="pf-chip" id="btn-portfolio" aria-label="Briefcase, ' + LD.fySlotsUsed(state) + " of " + f.cap + " slots" + (rd ? ", " + rd + " drawer item" + (rd > 1 ? "s" : "") + " ready" : "") + (ft ? ". At quarter close: " + ft : "") + '">💼 ' + LD.fySlotsUsed(state) + "/" + f.cap + (rd ? '<span class="pf-act">⚡' + rd + "</span>" : "") +
-      (ft ? '<span class="pf-fc ' + (fc.cash - fc.unrest - 2 * fc.collapse >= 0 ? "up" : "down") + '" title="At quarter close: ' + esc(ft) + '">▸ ' + esc(ft.split(" · ")[0]) + (ft.indexOf(" · ") > 0 ? " +" : "") + "</span>" : '<span class="pf-icons">' + icons + "</span>") + "</button>";
-  }
   /* Quarter-close forecast as a plain tag in the office header (the briefcase button moved to the side rail). */
   function forecastTag(state) {
     if (!state.fy) return "";
@@ -201,95 +179,9 @@
     if (!ft) return "";
     return '<span class="of-fc pf-fc ' + (fc.cash - fc.unrest - 2 * fc.collapse >= 0 ? "up" : "down") + '" title="At quarter close: ' + esc(ft) + '" aria-label="At quarter close: ' + esc(ft) + '">▸ ' + esc(ft.split(" · ")[0]) + (ft.indexOf(" · ") > 0 ? " +" : "") + "</span>";
   }
-  LD.fyForecastText = function (state) { return fcText(LD.fyForecast(state)); };
 
   /* ---------- The office: executive, door (unrest), window on the mainland (collapse), desk (cash) ----------
      Layered markup with data-art slots so painted art can replace each layer later. */
-  var EXEC_LOOK = {
-    mara: { skin: "#e8b48f", hair: "#3a2416", suit: "#0f5a4c", style: "bob" },
-    reid: { skin: "#f0c7a2", hair: "#c9a25a", suit: "#1d2f4a", style: "short" },
-    imani: { skin: "#8a5a3c", hair: "#1b120c", suit: "#5a1f3a", style: "puff" },
-    julian: { skin: "#f2cfb0", hair: "#6b4a2b", suit: "#2a2a2a", style: "side" },
-    soren: { skin: "#f5d6bd", hair: "#e9e2cf", suit: "#24414f", style: "short" },
-    cassius: { skin: "#b07a52", hair: "#2a1d14", suit: "#3b2f12", style: "bald" }
-  };
-  function hairSvg(look) {
-    var c = look.hair;
-    if (look.style === "bob") return '<path d="M30 40 Q30 18 50 17 Q70 18 70 40 L70 52 Q66 44 64 34 Q50 30 36 34 Q34 44 30 52Z" fill="' + c + '"/>';
-    if (look.style === "puff") return '<circle cx="50" cy="24" r="17" fill="' + c + '"/><circle cx="35" cy="31" r="9" fill="' + c + '"/><circle cx="65" cy="31" r="9" fill="' + c + '"/>';
-    if (look.style === "side") return '<path d="M32 36 Q34 18 52 18 Q68 19 69 34 Q58 26 44 30 Q38 31 32 36Z" fill="' + c + '"/>';
-    if (look.style === "bald") return '<path d="M33 34 Q36 22 50 21 Q64 22 67 34 Q60 28 50 28 Q40 28 33 34Z" fill="' + c + '" opacity="0.55"/>';
-    return '<path d="M33 35 Q34 19 50 19 Q66 19 67 35 Q60 27 50 27 Q40 27 33 35Z" fill="' + c + '"/>';
-  }
-  function execSvg(state) {
-    var look = EXEC_LOOK[state.executiveId] || EXEC_LOOK.mara;
-    var h = '<svg class="of-fig" viewBox="0 0 100 100" aria-hidden="true">';
-    h += '<rect class="of-chair" x="22" y="34" width="56" height="66" rx="14"/>';
-    h += '<path d="M24 100 Q24 66 50 64 Q76 66 76 100Z" fill="' + look.suit + '"/>';
-    h += '<path d="M44 66 L50 80 L56 66Z" fill="#f4efe2"/><path d="M48.5 68 L50 84 L51.5 68Z" fill="#b8323a"/>';
-    h += '<rect x="45" y="54" width="10" height="12" fill="' + look.skin + '"/>';
-    h += '<ellipse cx="50" cy="40" rx="17" ry="19" fill="' + look.skin + '"/>';
-    h += hairSvg(look);
-    /* faces: one group per mood/reaction, CSS shows the right one */
-    h += '<g class="fc fc-confident"><path d="M40 37 Q43 35 46 37 M54 37 Q57 35 60 37" stroke="#2a1a10" stroke-width="1.6" fill="none"/><circle cx="43" cy="41" r="1.7" fill="#1a110a"/><circle cx="57" cy="41" r="1.7" fill="#1a110a"/><path d="M42 49 Q50 55 58 49" stroke="#7a2a20" stroke-width="2" fill="none" stroke-linecap="round"/></g>';
-    h += '<g class="fc fc-nervous"><path d="M40 35 L46 37 M60 35 L54 37" stroke="#2a1a10" stroke-width="1.6"/><circle cx="43" cy="41" r="1.7" fill="#1a110a"/><circle cx="57" cy="41" r="1.7" fill="#1a110a"/><path d="M43 51 Q46 49 50 51 Q54 53 57 51" stroke="#7a2a20" stroke-width="1.8" fill="none"/><path class="sweat" d="M66 32 Q68 37 66 39 Q64 37 66 32Z" fill="#9fe0ff"/></g>';
-    h += '<g class="fc fc-panic"><path d="M39 36 L46 33 M61 36 L54 33" stroke="#2a1a10" stroke-width="1.8"/><circle cx="43" cy="41" r="2.6" fill="#fff" stroke="#1a110a" stroke-width="1"/><circle cx="57" cy="41" r="2.6" fill="#fff" stroke="#1a110a" stroke-width="1"/><circle cx="43" cy="41" r="1" fill="#1a110a"/><circle cx="57" cy="41" r="1" fill="#1a110a"/><ellipse cx="50" cy="51" rx="4" ry="5" fill="#4a1410"/><path class="sweat" d="M67 30 Q69 36 67 38 Q65 36 67 30Z M32 33 Q34 38 32 40 Q30 38 32 33Z" fill="#9fe0ff"/></g>';
-    h += '<g class="fc fc-glee"><path d="M40 36 Q43 33 46 36 M54 36 Q57 33 60 36" stroke="#2a1a10" stroke-width="1.6" fill="none"/><path d="M40 41 Q43 38 46 41 M54 41 Q57 38 60 41" stroke="#1a110a" stroke-width="1.8" fill="none"/><path d="M41 48 Q50 58 59 48Z" fill="#5a1a14"/><text x="74" y="30" font-size="13" fill="#f3d98f">$</text></g>';
-    h += '<g class="fc fc-shock"><path d="M39 34 Q43 31 46 34 M54 34 Q57 31 61 34" stroke="#2a1a10" stroke-width="1.6" fill="none"/><circle cx="43" cy="41" r="2.4" fill="#fff" stroke="#1a110a"/><circle cx="57" cy="41" r="2.4" fill="#fff" stroke="#1a110a"/><circle cx="43" cy="41" r="1" fill="#1a110a"/><circle cx="57" cy="41" r="1" fill="#1a110a"/><rect x="46" y="48" width="8" height="6" rx="3" fill="#4a1410"/></g>';
-    return h + "</svg>";
-  }
-  function citySvg(stage, decay, holo, era) {
-    var st = holo ? 0 : stage, dv = holo ? 0 : decay;
-    var h = '<svg class="of-city" viewBox="0 0 200 110" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
-    h += '<rect class="sky" x="0" y="0" width="200" height="110"/>';
-    h += '<circle class="sun" cx="160" cy="' + (22 + st * 4) + '" r="9"/>';
-    var B = [[4, 48, 12], [17, 40, 9], [27, 54, 14], [42, 34, 8], [51, 46, 12], [64, 28, 10], [75, 44, 13], [89, 36, 9], [99, 52, 12], [112, 30, 11], [124, 42, 9], [134, 50, 13], [148, 38, 10], [159, 47, 12], [172, 33, 9], [182, 45, 14]];
-    var darkN = Math.round(Math.max(0, Math.min(1, (dv - 12) / 80)) * B.length);
-    var order = [5, 11, 2, 14, 8, 0, 12, 3, 9, 15, 6, 1, 13, 4, 10, 7];
-    var dark = {}; for (var i = 0; i < darkN; i++) dark[order[i]] = 1;
-    h += '<g class="skyline">';
-    B.forEach(function (b, i) {
-      var x = b[0], top = 80 - b[1], w = b[2];
-      h += '<g class="bd' + (dark[i] ? " dark" : "") + '"><rect x="' + x + '" y="' + top + '" width="' + w + '" height="' + b[1] + '"/>';
-      for (var yy = top + 4; yy < 76; yy += 6) for (var xx = x + 2; xx < x + w - 2; xx += 4) if ((xx * 7 + yy * 3 + i) % 5 !== 0) h += '<rect class="win" x="' + xx + '" y="' + yy + '" width="1.6" height="2.4"/>';
-      h += "</g>";
-    });
-    h += "</g>";
-    var fires = [0, 0, 1, 3, 5][st] + (st >= 2 && dv > 70 ? 1 : 0);
-    var fx = [66, 136, 30, 101, 175, 53];
-    for (var k = 0; k < Math.min(fires, fx.length); k++) h += '<g class="fire" style="--k:' + k + '"><path d="M' + fx[k] + ' 62 q3 -9 6 0 q-1 5 -3 6 q-2 -1 -3 -6Z"/><ellipse class="plume" cx="' + (fx[k] + 4) + '" cy="44" rx="10" ry="7"/></g>';
-    /* Era props in the window: 1978 smokestacks and a strike banner; 2008 cranes and a jumbotron; now a sea wall and drones. */
-    if (era === 1) h += '<g class="era-props e1"><rect class="stack" x="56" y="22" width="5" height="58"/><rect class="stack" x="66" y="30" width="4" height="50"/><rect class="stack" x="140" y="26" width="5" height="54"/>' +
-      '<ellipse class="smoke" cx="60" cy="16" rx="9" ry="5"/><ellipse class="smoke" cx="70" cy="10" rx="12" ry="6"/><ellipse class="smoke" cx="146" cy="19" rx="10" ry="5"/>' +
-      '<rect class="banner" x="96" y="58" width="30" height="8"/><text class="banner-t" x="111" y="64" text-anchor="middle">ON STRIKE</text></g>';
-    if (era === 2) h += '<g class="era-props e2"><path class="crane" d="M36 80 V20 M30 22 H70 M66 22 V40 M36 20 L44 28" /><path class="crane" d="M150 80 V28 M146 30 H182 M178 30 V46"/>' +
-      '<rect class="jumbo" x="104" y="40" width="26" height="14"/><text class="jumbo-t" x="117" y="49" text-anchor="middle">▼ 777</text>' +
-      '<rect class="sign" x="82" y="70" width="14" height="6"/><text class="sign-t" x="89" y="74.6" text-anchor="middle">FORECLOSED</text></g>';
-    if (era === 3) h += '<g class="era-props e3"><rect class="wall" x="0" y="76" width="200" height="5"/><path class="drone" d="M40 18 h8 M44 18 v2 M120 12 h8 M124 12 v2 M84 26 h6 M87 26 v2"/></g>';
-    h += '<rect class="smog" x="0" y="0" width="200" height="82"/>';
-    h += '<rect class="sea" x="0" y="80" width="200" height="30"/>';
-    h += '<path class="flood" d="M0 80 Q25 76 50 80 T100 80 T150 80 T200 80 V84 H0Z"/>';
-    h += '<path class="glint" d="M20 92 h18 M70 98 h24 M130 90 h16 M160 101 h22"/>';
-    h += '<path class="isle" d="M0 110 V100 Q30 94 62 104 L70 110Z"/><path class="palm" d="M18 100 Q19 90 21 84 M21 84 q-8 -1 -12 3 M21 84 q7 -3 12 1 M21 84 q-3 -6 -8 -7 M21 84 q4 -6 9 -6"/>';
-    if (holo) h += '<rect class="scan" x="0" y="0" width="200" height="110"/>';
-    return h + "</svg>";
-  }
-  function doorSvg(lv, quiet, padded, era) {
-    var e = Math.max(1, Math.min(3, era || 3));
-    var h = '<svg class="of-doorsvg" viewBox="0 0 60 100" aria-hidden="true">';
-    h += '<image class="dimg-open" href="assets/office/door-e' + e + '-open.webp" x="2" y="2" width="56" height="98" preserveAspectRatio="xMidYMax meet"/>';
-    h += '<rect class="dframe" x="4" y="4" width="52" height="96" rx="3"/>';
-    h += '<g class="dleaf"><image class="dimg-closed" href="assets/office/door-e' + e + '-closed.webp" x="2" y="2" width="56" height="98" preserveAspectRatio="xMidYMax meet"/><rect class="dpanel" x="9" y="9" width="42" height="88" rx="2"/>';
-    if (padded) { for (var r = 0; r < 4; r++) for (var c = 0; c < 3; c++) h += '<circle class="stud" cx="' + (16 + c * 14) + '" cy="' + (20 + r * 20) + '" r="1.6"/>'; }
-    h += '<rect class="glass" x="16" y="15" width="28" height="30" rx="2"/>';
-    h += '<g class="sign"><rect x="21" y="18" width="18" height="11"/><rect x="29" y="29" width="2" height="16"/></g>';
-    h += '<g class="heads"><circle cx="22" cy="40" r="5"/><circle cx="36" cy="38" r="6"/></g>';
-    h += '<circle class="knob" cx="44" cy="58" r="2.6"/><rect class="plate" x="22" y="56" width="16" height="5" rx="1"/></g>';
-    h += '<rect class="gap" x="9" y="96" width="42" height="3"/>';
-    h += '<g class="feet"><rect x="16" y="96" width="7" height="3"/><rect x="34" y="96" width="8" height="3"/></g>';
-    h += "</svg>";
-    return h;
-  }
   function ogauge(cls, icon, label, num, isMoney, sub, title) {
     var pct = isMoney ? Math.max(0, Math.min(100, num)) : Math.max(0, Math.min(100, num));
     var lvl = LD.resLevel ? LD.resLevel(cls, num) : "ok";
@@ -313,42 +205,18 @@
     var h = '<div class="panel-k of-head"><span class="of-q">' + (LD.tok ? LD.tok("quarter") : "") + "Q" + state.turn + '<span class="of-ht"> · Office</span></span>' + cashG + '<span class="of-tools">' + forecastTag(state) + "</span></div>";
     var exk = execArt(state.executiveId);
     h += '<div class="of-room ex-' + exk + " mood-" + mood + " door-" + door + " city-" + (holo ? 0 : stage) + (holo ? " holo" : "") + (quiet ? " quiet" : "") + (padded ? " padded" : "") + '" data-door="' + door + '" data-city="' + stage + '" data-mood="' + mood + '">';
-    if (LD.O4 && o.o4 !== false) {
-      /* The 40s office: office.js paints the room and walks the executive into the slot; the meters stay real DOM on top. */
-      var dn4 = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
-      h = h.replace('<div class="of-room ', '<div class="of-room o4 ');
-      h += '<div class="o4-slot"></div>' + (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "");
-      /* framed assets on the wall: gilt frames, empty ones visible so a fresh pick has somewhere to land */
-      if (f.hand) { h += '<div class="of-wallart o4-wa" aria-hidden="true">'; for (var wj = 0; wj < (f.cap || 5); wj++) { var wb = f.hand[wj] && LD.assetById(f.hand[wj].id); h += wb ? '<i title="' + esc(wb.name) + '">' + IA(wb) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
-      h += '<div class="of-window o4-w">' + ogauge("collapse", "☢", "Collapse", state.collapse, false,
-        (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
-        "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
-      h += '<div class="of-door o4-d">' + (door >= 3 && !quiet ? '<span class="of-voices" aria-hidden="true">“Open up!”</span>' : "") + ogauge("unrest", "✊", "Unrest", state.unrest, false, dn4,
-        "Unrest " + state.unrest + "/100 · " + dn4 + ". Crisis deals likely from 48; crises cannot be paid off from " + m.crisisNoPayAt + "; the board removes you at " + LD.MAX_UNREST + ".") + "</div>";
-      return h + "</div>";
-    }
-    h += '<div class="of-layer of-wall" data-art="office-wall" aria-hidden="true"></div>';
-    if (f.hand) { h += '<div class="of-wallart" aria-hidden="true">'; for (var wi = 0; wi < (f.cap || 5); wi++) { var wa = f.hand[wi] && LD.assetById(f.hand[wi].id); h += wa ? "<i>" + IA(wa) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
-    /* Window */
-    h += '<div class="of-window" data-art="office-window"><div class="of-glass">' + citySvg(stage, decay, holo, ERA ? ERA.act : 3) + '</div>' +
-      (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "") +
-      ogauge("collapse", "☢", "Collapse", state.collapse, false,
-        (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
-        "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
-    /* Executive */
-    h += '<div class="of-exec" data-art="office-exec" aria-label="' + esc(exec.name) + ", " + ({ confident: "confident", nervous: "nervous", panic: "panicking" })[mood] + '">' + '<i class="of-plant" aria-hidden="true"></i><i class="of-sig of-sig-wall" aria-hidden="true"></i>' + (function () { var fa = LD.execFrontArt(state.executiveId); return '<img class="of-portrait" src="' + fa.src + '" alt="" draggable="false" style="--ar:' + fa.ar + '"><span class="of-mood" aria-hidden="true"></span>'; })() + "</div>";
-    /* Desk + cash */
-    var bills = Math.max(0, Math.min(8, Math.round(state.cash / 8)));
-    var stack = ""; for (var i = 0; i < bills; i++) stack += '<rect x="' + (6 + (i % 2) * 3) + '" y="' + (26 - i * 3.2) + '" width="26" height="3" rx="0.8"/>';
-    h += '<div class="of-desk" data-art="office-desk"><svg class="of-desksvg" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><rect class="dtop" x="0" y="4" width="120" height="30" rx="2"/><g class="stack">' + stack + '</g><rect class="lamp" x="96" y="0" width="3" height="10"/><path class="lampshade" d="M90 2 h15 l-3 -6 h-9z"/></svg><i class="of-sig of-sig-desk" aria-hidden="true"></i><i class="of-sig of-sig-floor" aria-hidden="true"></i></div>';
-    /* Door + unrest */
-    var dn = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
-    h += '<div class="of-door" data-art="office-door">' + doorSvg(door, quiet, padded, ERA ? ERA.act : 3) + '<span class="of-knock" aria-hidden="true">' + (door >= 3 ? "BANG!" : door >= 2 ? "THUD" : "knock") + "</span>" +
-      (door >= 3 && !quiet ? '<span class="of-voices" aria-hidden="true">“Open up!”</span>' : "") +
-      ogauge("unrest", "✊", "Unrest", state.unrest, false, dn,
-        "Unrest " + state.unrest + "/100 · " + dn + ". Crisis deals likely from 48; crises cannot be paid off from " + m.crisisNoPayAt + "; the board removes you at " + LD.MAX_UNREST + ".") + "</div>";
-    h += "</div>";
-    return h;
+    /* The 40s office: office.js paints the room and walks the executive into the slot; the meters stay real DOM on top. */
+    var dn4 = quiet ? (padded ? "Soundproofed" : "Quiet (doorman paid)") : LD.DOOR_NAMES[door];
+    h = h.replace('<div class="of-room ', '<div class="of-room o4 ');
+    h += '<div class="o4-slot"></div>' + (holo ? '<span class="of-tag holo-tag">HOLO-VIEW</span>' : "");
+    /* framed assets on the wall: gilt frames, empty ones visible so a fresh pick has somewhere to land */
+    if (f.hand) { h += '<div class="of-wallart o4-wa" aria-hidden="true">'; for (var wj = 0; wj < (f.cap || 5); wj++) { var wb = f.hand[wj] && LD.assetById(f.hand[wj].id); h += wb ? '<i title="' + esc(wb.name) + '">' + IA(wb) + "</i>" : '<i class="empty"></i>'; } h += "</div>"; }
+    h += '<div class="of-window o4-w">' + ogauge("collapse", "☢", "Collapse", state.collapse, false,
+      (holo ? "Holo-View · real: " : "") + LD.CITY_NAMES[stage] + " · ~" + LD.forecastQuarters(state) + "Q to breach",
+      "Collapse " + state.collapse + "/100 · rises about +" + LD.collapseTickAmountPreview(state) + " a quarter · breach in ~" + LD.forecastQuarters(state) + " quarters. Crisis deals likely from 55. The mainland: " + LD.CITY_NAMES[stage] + (stage >= 2 ? " (unrest +" + (stage - 1) + " a quarter)" : "") + ".") + "</div>";
+    h += '<div class="of-door o4-d">' + (door >= 3 && !quiet ? '<span class="of-voices" aria-hidden="true">“Open up!”</span>' : "") + ogauge("unrest", "✊", "Unrest", state.unrest, false, dn4,
+      "Unrest " + state.unrest + "/100 · " + dn4 + ". Crisis deals likely from 48; crises cannot be paid off from " + m.crisisNoPayAt + "; the board removes you at " + LD.MAX_UNREST + ".") + "</div>";
+    return h + "</div>";
   };
 
 
@@ -511,12 +379,11 @@
   };
   var ART_AR = { ashby: 0.575, brennan: 0.69, crowe: 0.571, hale: 0.667, okafor: 0.485, dunn: 0.526, moretti: 0.522, june: 0.575, mickey: 0.534, odell: 0.583, delacroix: 0.521, harrow: 0.52, gray: 0.52, rosa: 0.63, sorel: 0.71, ticker: 0.606, varga: 0.854,
     "back-cassius": 0.817, "back-imani": 0.778, "back-julian": 0.817, "back-mara": 0.778, "back-reid": 0.778, "back-soren": 0.817,
-    "front-cassius": 0.867, "front-imani": 0.764, "front-julian": 0.867, "front-mara": 0.764, "front-reid": 0.764, "front-soren": 0.867 };
+    };
   var POSES = ["idle", "attack", "hit", "block", "defeated"];
   LD.FACTIONS = FACTIONS;
   LD.factionFor = function (enc) { return FACTIONS[enc] || FACTIONS.regulator; };
   function execArt(id) { return ART_AR["back-" + id] ? id : "mara"; }
-  LD.execFrontArt = function (id) { var k = execArt(id); return { src: "assets/fight/front-" + k + ".webp", ar: ART_AR["front-" + k] }; };
   /* The face at the door: the act cast (eras.js) or the old faction table for saves from before the eras. */
   LD.fightFace = function (fg) {
     var O = fg && fg.opp && LD.oppById ? LD.oppById(fg.opp) : null;
@@ -535,7 +402,6 @@
   }
   /* Opponent art drawn head to toe (the rest are framed to the old 3/4 crop and stand a little lower, fading at the knee). */
   var FULL_BODY = { benny: 1, dana: 1, gil: 1, grace: 1, honoria: 1, pip: 1, pops: 1, theo: 1 };
-  LD.oppFullBody = function (art) { return !!FULL_BODY[art]; };
   var VENUE_PILL = { home: "At your desk", lobby: "At the glass" };
   /* The fight happens in the scene: a visitor stands in your own office (the live 40s room, borrowed by office.js),
      or you have gone out to their room and stand there full-body. Cards fly into it; the hand stays docked below. */
@@ -854,7 +720,6 @@
 
   LD.renderDraft = renderDraft;
   LD.renderPortfolio = renderPortfolio;
-  LD.portfolioChip = portfolioChip;
   LD.actChip = actChip;
   LD.renderBossCard = bossCard;
   LD.fyDossier = fyDossier;

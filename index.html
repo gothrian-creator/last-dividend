@@ -6561,6 +6561,24 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     }
   ];
 
+  LD.TUTORIAL_SHOP = LD.TUTORIAL;
+  /* The rulebook for the house desk (the default game since the flip). ui.js picks the set by the run's ruleset. */
+  LD.TUTORIAL_HOUSE = [
+    {
+      title: "One deal a quarter",
+      body: "Each quarter three deals sit on your desk, one in each prop: a briefcase, a dossier, a ledger. Open one to read its slip, then stamp it. You sign one. Money often arrives now. Public consequences often arrive later, and the street remembers."
+    },
+    LD.TUTORIAL[2],
+    {
+      title: "The house behind your chair",
+      body: "Turn round (the Bunker button) and you see the house. The rooms your executive starts with are already running. Over the climb, people come to the door: an engineer, a cistern hand, a cook, an intake technician and a reporter. Let one in and their room comes on. A promise can come with them: keep your word, or it costs you. Everyone inside eats, so the stores rise with your income and fall with every mouth."
+    },
+    {
+      title: "Then seal the doors",
+      body: "You win when all four rooms, Air, Water, Power and Food, are on and holding when the doors close. You may seal from quarter " + LD.MIN_EVAC_TURN + ". Rushed, cheap work can fail at the seal unless someone inside keeps it running. Collapse at 100 forces the doors. Unrest at 100 means you never reach them."
+    }
+  ];
+
   if (typeof module !== "undefined" && module.exports) {
     module.exports = LD;
   }
@@ -10439,25 +10457,49 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 })(typeof globalThis !== "undefined" ? globalThis : this);
 
   </script>
-  <script>/* Last Dividend — house rules (Phase 1). Feature flag LD.HOUSE_RULES defaults off.
-   New runs stamp state.ruleset at createRun. Shop runs are unchanged, including Go private. */
+  <script>/* Last Dividend — house rules. Since the 2026-11-26 flip the seated house desk is the DEFAULT game (LD.HOUSE_RULES on).
+   New runs stamp state.ruleset at createRun, so a saved run keeps the rules it started with: an old shop save resumes
+   as the shop game until it ends, and every new run after that is a house run. */
 (function () {
-  LD.HOUSE_RULES = false;
+  LD.HOUSE_RULES = true;
   LD.HOUSE_SAVE_KEY = "lastDividend.house.v1";
   function devQuery() { try { return (typeof location !== "undefined" && location && location.search) ? String(location.search) : ""; } catch (e) { return ""; } }
-  /* The test link (?house=1) turns house rules on for that page load only, and keeps its run in its own save slot so a phone's
-     real save is never touched. Nothing in the game links to it. */
+  /* ?classic=1 (or ?house=0) = the old shop game for new runs: the fallback hatch, kept through the soak.
+     ?house=1 = the old test link: house rules in its own save slot, so a tester's slot keeps working as before.
+     The default (no query) uses the main save, lastDividend.v1. */
+  LD.CLASSIC = false;
   LD.applyDevHouseFlag = function () {
     try {
       var q = devQuery();
-      if (/[?&]house=1(?:&|$)/.test(q)) { LD.HOUSE_RULES = true; LD.SAVE_KEY = LD.HOUSE_SAVE_KEY; }
-      else if (/[?&]house=0(?:&|$)/.test(q)) LD.HOUSE_RULES = false;
+      if (/[?&](?:classic=1|house=0)(?:&|$)/.test(q)) { LD.HOUSE_RULES = false; LD.CLASSIC = true; }
+      else if (/[?&]house=1(?:&|$)/.test(q)) { LD.HOUSE_RULES = true; LD.SAVE_KEY = LD.HOUSE_SAVE_KEY; }
+      else LD.HOUSE_RULES = true;
     } catch (e) {}
     return LD.HOUSE_RULES;
   };
+  /* One-time, non-destructive: a player who was on the ?house=1 test slot keeps that run and those climbs in the main
+     save the first time they open the default game. The test slot itself is left as it is. */
+  LD.mergeHouseSlot = function () {
+    try {
+      if (typeof localStorage === "undefined" || LD.SAVE_KEY === LD.HOUSE_SAVE_KEY) return false;
+      var hr = localStorage.getItem(LD.HOUSE_SAVE_KEY); if (!hr) return false;
+      var mr = localStorage.getItem(LD.SAVE_KEY), m = mr ? JSON.parse(mr) : {};
+      if (m.houseSlotMerged) return false;
+      var h = JSON.parse(hr) || {}, did = false;
+      if (!m.midRun && h.midRun && h.midRun.ruleset === "house") { m.midRun = h.midRun; did = true; }
+      if (Array.isArray(h.history) && h.history.length) {
+        m.history = (Array.isArray(m.history) ? m.history : []).concat(h.history);
+        m.finished = (m.finished | 0) + (h.finished | 0); m.wins = (m.wins | 0) + (h.wins | 0); did = true;
+      }
+      if (!mr) ["penny", "seenTutorial", "coachDone", "audioOff"].forEach(function (k) { if (h[k] !== undefined) m[k] = h[k]; });
+      m.houseSlotMerged = true;
+      localStorage.setItem(LD.SAVE_KEY, JSON.stringify(m));
+      return did;
+    } catch (e) { return false; }
+  };
   LD.devHouseVisible = function () { return /[?&]house=/.test(devQuery()); };
   LD.setDevHouseFlag = function (on) { LD.HOUSE_RULES = !!on; return LD.HOUSE_RULES; };
-  if (typeof document !== "undefined") LD.applyDevHouseFlag();
+  if (typeof document !== "undefined") { LD.applyDevHouseFlag(); LD.mergeHouseSlot(); }
 
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
@@ -14331,7 +14373,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     h += '<div class="dz-k">Executive dossier</div>';
     h += '<div class="exec-id"><div class="avatar" aria-hidden="true">' + esc(initials) + '</div><div><h3>' + esc(exec.name) + "</h3>" +
       '<div class="exec-t">' + esc(exec.title) + "<br>" + esc(exec.firm) + "</div></div></div>";
-    h += '<div class="target"><span>◎</span><b>Goal</b> All 4 bunker systems at Lv 2+, then seal (from Q' + LD.MIN_EVAC_TURN + ").</div>";
+    h += '<div class="target"><span>◎</span><b>Goal</b> ' + (LD.isHouse && LD.isHouse(state) ? "All 4 rooms on and holding" : "All 4 bunker systems at Lv 2+") + ", then seal (from Q" + LD.MIN_EVAC_TURN + ").</div>";
     if (LD.fyDossier) h += LD.fyDossier(state);
     var md = LD.mandateById(state.mandate);
     if (md) h += '<div class="target mandate"><span>◈</span><b>Board mandate</b> ' + esc(md.text) + " · +" + LD.MANDATE_BONUS + " ◈ on a win</div>";
@@ -15952,7 +15994,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       h += '<p class="sd-signed">Signed: <b>' + esc(LD.dealById(state.lastDealId).title) + "</b></p>";
     }
     var canEnd = state.phase === "bunker" && !(LD.fyBusy && LD.fyBusy(state));
-    h += '<button type="button" class="sd-endq" id="btn-endq"' + (canEnd ? "" : " disabled") + "><b>End quarter</b><small>" + (canEnd ? "Close Q" + state.turn + " and read the report" : "Pick a deal on the map first") + "</small></button>";
+    h += '<button type="button" class="sd-endq" id="btn-endq"' + (canEnd ? "" : " disabled") + "><b>End quarter</b><small>" + (canEnd ? "Close Q" + state.turn + " and read the report" : "Sign a deal on your desk first") + "</small></button>";
     /* landscape has the room for words: the four public networks, by name and state (the HUD only has room for jewels) */
     h += '<div class="sd-nlist"><h5>Public networks</h5>';
     ["air", "water", "power", "food"].forEach(function (id) {
@@ -15989,7 +16031,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
         '<span class="sd-stk"><b>' + esc(sd.kicker) + "</b><em" + (neg ? ' class="neg"' : "") + ">" + esc(x.tag) + "</em></span></button>";
     });
     h += "</div>";
-    if (!ui.land) h += '<div class="sd-ribbon" role="status">' + (deal ? "Q" + state.turn + " · pick 1 of " + infos.length + " deals on the map" : state.ended ? "The run is over" : "Q" + state.turn + " · deal signed") + "</div>";
+    if (!ui.land) h += '<div class="sd-ribbon" role="status">' + (deal ? "Q" + state.turn + " · pick 1 of " + infos.length + " deals on your desk" : state.ended ? "The run is over" : "Q" + state.turn + " · deal signed") + "</div>";
     h += LD.seatHud(state);
     /* landscape side panels: the dossier (left), this quarter (right) */
     if (ui.land) h += quarterList(state, infos, sel.deal);
@@ -17455,6 +17497,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   }
 
   function renderTutorial() {
+    LD.TUTORIAL = (state && !state.ended ? LD.isHouse(state) : LD.HOUSE_RULES) ? LD.TUTORIAL_HOUSE : LD.TUTORIAL_SHOP;
     $("screen-tutorial").innerHTML = LD.renderTutorial(tutorialPage);
     function finish() {
       var meta = loadMeta();
@@ -20363,7 +20406,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   function clickEl(n) { if (n) n.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
   function pennyCard(kind) {
     if (!state || !state.fy || !state.fy.fight) return null;
-    var cs = Array.prototype.slice.call(document.querySelectorAll("#door .df-hand .dc:not(.no)"));
+    var cs = Array.prototype.slice.call(document.querySelectorAll("#door .df-hand .dc:not(.no), #door .sd-fhand .dc:not(.no)"));
     if (kind === "p") cs = cs.filter(function (c) { return c.querySelector(".dc-p"); });
     return cs[0] || null;
   }
@@ -20422,7 +20465,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       target: function () { return pq("#df-close"); },
       act: function () { clickEl(pq("#df-close")); } },
     { id: "reward", n: 4, face: "excited", on: "reward-done", label: "Pick for me ▸",
-      text: function () { if (pq("#door .rw-item")) return "Loot! An <b>item</b> for your briefcase: keep it for a rainy quarter (the Case button on the rail), or sell it for cash. Assets and cards come next."; return pq("#door .rw-assets") ? "Loot! Frame one <b>Asset</b> on your office wall: it pays every quarter (read the small print). Next comes a card: add one, <b>shred</b> one, or skip for cash." : "Your <b>reward</b>: add a card to your deck, <b>shred</b> a weak one, or skip for cash. A lean deck draws its best cards more often!"; },
+      text: function () { if (pq("#door .rw-item")) return "Loot! An <b>item</b> for your briefcase: keep it for a rainy quarter (the Case button), or sell it for cash. Assets and cards come next."; return pq("#door .rw-assets") ? "Loot! Frame one <b>Asset</b> on your office wall: it pays every quarter (read the small print). Next comes a card: add one, <b>shred</b> one, or skip for cash." : "Your <b>reward</b>: add a card to your deck, <b>shred</b> a weak one, or skip for cash. A lean deck draws its best cards more often!"; },
       skip: function () { return !(state.fy && state.fy.reward); },
       target: function () { return (pq("#door .rw-item") ? pennyUnion("#door .rw-item, #door .rw-foot .btn") : null) || pennyUnion("#door .rw-assets [data-asset]") || pennyUnion("#door .rw-cards [data-card]") || pq("#door .rw-in"); },
       act: function () { var a = pq("#door [data-asset]"); if (a) { clickEl(a); return; } var k = pq("#rw-keep"); if (k) { clickEl(k); return; } var c = pq("#door [data-card]"); if (c) { clickEl(c); setTimeout(function () { clickEl(pq("#rw-take")); }, 80); } } },
@@ -20473,6 +20516,59 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       target: function () { return pq("#bunker-card"); } }
   ];
   var TOUR_TOTAL = 8;
+  /* The same guided first quarter on the seated house desk (the default game since the flip): deal props instead of map
+     pins + dossier, the Bunker behind the chair instead of the rail hatch. The fight, reward and report steps are the
+     shop's own (the fight is the same game). */
+  function tourStep(id) { for (var i = 0; i < TOUR.length; i++) if (TOUR[i].id === id) return TOUR[i]; return null; }
+  function pennyProp() {
+    var best = null;
+    Array.prototype.forEach.call(document.querySelectorAll(".desk.sd .sd-prop[data-deal]"), function (p) {
+      if (!pvis(p)) return;
+      var d = LD.dealById(p.getAttribute("data-deal"));
+      if (!best) best = p;
+      if (LD.dealKind(d) === "claim" && LD.dealKind(LD.dealById(best.getAttribute("data-deal"))) !== "claim") best = p;
+    });
+    return best;
+  }
+  var TOUR_HOUSE = [
+    { id: "era", n: 1, face: "wink", next: true,
+      text: function () { var E = pennyEra(); return "Welcome to Port Calder, <b>" + (E ? E.year + ", " + E.name : "1978") + "</b> ✦ Your climb runs 12 quarters through three eras: <b>1978</b>, <b>2008</b> and <b>today</b>. Each quarter you sign <b>one deal</b> from the props on your desk."; },
+      skip: function () { return state.phase !== "deal"; },
+      target: function () { return pq(".desk.sd .sd-hud"); } },
+    { id: "pin", n: 2, face: "excited", on: "pin", label: "Pick one for me ▸",
+      text: "These are this quarter's <b>deals</b>, one on each prop. Tap one to open it and see what it pays… and who pays for it!",
+      skip: function () { return state.phase !== "deal" || !!pq("#sd-peek #btn-sign"); },
+      target: function () { return pennyProp(); },
+      act: function () { var t = pennyProp(); if (t) selectDealPin(t.getAttribute("data-deal")); } },
+    { id: "sign", n: 2, face: "excited", on: "signed", back: "pin", label: "Sign it for me ▸",
+      text: "The slip says what lands <b>now</b>, what it costs <b>later</b>, and who comes to your <b>door</b>. Love it. Pure synergy! <b>Sign</b> it ♡",
+      skip: function () { return state.phase !== "deal"; },
+      lost: function () { return !pq("#sd-peek #btn-sign"); },
+      target: function () { return pq("#sd-peek #btn-sign"); },
+      act: function () { clickEl(pq("#sd-peek #btn-sign")); } },
+    tourStep("door"), tourStep("intent"), tourStep("win"), tourStep("close"), tourStep("reward"),
+    { id: "bunker", n: 5, face: "wink", next: true,
+      text: function () { var x = pennyExec(); return "Back at the desk. Behind your chair is <b>" + LD.escapeHtml(x.compound || "your bunker") + "</b>: tap <b>Bunker</b> any time to turn round and run the house: rooms, stores and who comes with you."; },
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
+      target: function () { return pq("#house-peek"); } },
+    { id: "office", n: 6, face: "smug", next: true,
+      text: "Your three numbers sit up top. <b>Cash</b> pays for everything. <b>Unrest</b> is the street: the angrier it gets, the harder they knock. <b>Collapse</b> is the city out the window. Either one at 100 ends you.",
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
+      target: function () { return pq(".desk.sd .sd-hud"); } },
+    { id: "rail", n: 6, face: "wink", next: true,
+      text: "Your <b>Deck</b> is under your hands. The <b>Case</b> holds Assets and items, and when the <b>Phone</b> rings, take the call: headhunters hire fixers, old friends offer a <b>Favour</b>.",
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
+      target: function () { return pennyUnion("#btn-portfolio, #btn-phone, #sd-tab"); } },
+    tourStep("endq"), tourStep("react"),
+    /* the house report closes into the chair turn (the TV), not straight back to the deal phase */
+    (function () { var r = tourStep("report"); if (!r) return null; var c = {}; for (var k in r) c[k] = r[k];
+      c.skip = function () { return !reportOpen() && state.turn > PN.startTurn; }; return c; })(),
+    { id: "goal", n: 8, face: "excited", next: true, last: true,
+      text: function () { return "The goal: get all four rooms <b>on</b> (Air, Water, Power, Food) and holding, then <b>seal the doors from Q" + LD.MIN_EVAC_TURN + "</b>, before Collapse or Unrest hit 100. Bosses knock at Q4 and Q8. Between climbs, spend your Dividends ◈ in the <b>Summit Lounge</b>. Go get 'em, Executive! ✦"; },
+      wait: function () { return !!pq("#overlay.on") || doorOpen(); },
+      target: function () { return pq("#house-peek"); } }
+  ].filter(Boolean);
+  function curTour() { return (state && LD.isHouse && LD.isHouse(state)) ? TOUR_HOUSE : TOUR; }
 
   var PENNY_TIPS = {
     crisis: { face: "worried", text: function () { return "Uh-oh, a <b>crisis</b>! You pick a response instead of a plain signature. Paying it off works… until Unrest hits " + LD.mods(state).crisisNoPayAt + ". Then the street stops cashing cheques."; },
@@ -20487,8 +20583,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       target: function () { return pq("#door .df-stage"); } },
     reward: { face: "excited", text: function () { return "Your <b>reward</b>! Add a card, <b>shred</b> one (it gets pricier each time), or skip for cash. Bosses and the Hearing also frame an <b>Asset</b> on your wall."; },
       target: function () { return pq("#door .rw-in"); } },
-    boss: { face: "worried", text: function () { return "Every act ends in a <b>boss quarter</b>. Tap the red marker on the timeline any time to see what it wants. Q4 and Q8 are card fights at the door: beat them for a rare card, an Asset and loot. Miss and… well, the board remembers."; },
-      target: function () { return pq(".desk #rail-wrap .rm.boss") || pq("#rail-wrap"); } },
+    boss: { face: "worried", text: function () { return "Every act ends in a <b>boss quarter</b>. " + (state && LD.isHouse(state) ? "" : "Tap the red marker on the timeline any time to see what it wants. ") + "Q4 and Q8 are card fights at the door: beat them for a rare card, an Asset and loot. Miss and… well, the board remembers."; },
+      target: function () { return pq(".desk #rail-wrap .rm.boss") || pq("#rail-wrap") || pq(".desk.sd .sd-hud"); } },
     ratings: { face: "smug", text: function () { return "<b>Credit ratings</b>: win at a rating to unlock the next one, from AAA all the way down to D. Every tier adds a new rule, and exits there pay a lot more. No pressure ♡"; },
       target: function () { return pq("#screen-exec .rating-row"); } }
   };
@@ -20775,13 +20871,15 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     pennyAdvance();
   }
   function pennyGoto(id) {
-    for (var i = 0; i < TOUR.length; i++) if (TOUR[i].id === id) { PN.idx = i; pennyShowStep(TOUR[i]); return; }
+    var T = curTour();
+    for (var i = 0; i < T.length; i++) if (T[i].id === id) { PN.idx = i; pennyShowStep(T[i]); return; }
   }
   function pennyAdvance() {
     PN.idx += 1;
-    while (PN.idx < TOUR.length && TOUR[PN.idx].skip && TOUR[PN.idx].skip()) PN.idx += 1;
-    if (PN.idx >= TOUR.length) { pennyDone(); return; }
-    pennyShowStep(TOUR[PN.idx]);
+    var T = curTour();
+    while (PN.idx < T.length && T[PN.idx].skip && T[PN.idx].skip()) PN.idx += 1;
+    if (PN.idx >= T.length) { pennyDone(); return; }
+    pennyShowStep(T[PN.idx]);
   }
   function pennyNext() {
     if (!PN.on || !PN.cur) return;
@@ -20880,7 +20978,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
         "<div class='bro-folds'>" +
         "<section class='bro-p'><img src='" + assetUrlP("penny-wink") + "' alt=''><h3>Guided tour</h3><p>Penny walks you through a real first quarter in 1978, one tap at a time.</p></section>" +
         "<section class='bro-p'><div class='bro-ico'>" + "<svg viewBox='0 0 32 32' aria-hidden='true'><path d='M4 7l8-2 8 2 8-2v20l-8 2-8-2-8 2z' class='i-fill'/><path d='M4 7l8-2 8 2 8-2v20l-8 2-8-2-8 2zM12 5v20M20 7v20' class='i-line'/></svg>" + "</div><h3>The rulebook</h3><p>Deals, door fights, the bunker and the board, page by page.</p></section>" +
-        "<section class='bro-p bro-pack'><h3>What to pack</h3><ul><li><b>One deal a quarter</b> on the map.</li><li><b>Fights at the door:</b> Pressure to 0.</li><li><b>Climb the eras:</b> 1978, 2008, Today.</li><li><b>Seal the bunker</b> before the doors close.</li></ul></section>" +
+        "<section class='bro-p bro-pack'><h3>What to pack</h3><ul><li><b>One deal a quarter</b> " + (LD.HOUSE_RULES ? "on your desk" : "on the map") + ".</li><li><b>Fights at the door:</b> Pressure to 0.</li><li><b>Climb the eras:</b> 1978, 2008, Today.</li><li><b>Seal the bunker</b> before the doors close.</li></ul></section>" +
         "</div>" + warn + "</div>";
     showOverlay(inRun ? "How to play" : "", body,
       '<button class="btn btn-coral" id="ht-penny">' + (inRun ? "Replay Penny's tour" : "Take the guided tour") + '</button><button class="btn" id="ht-rules">Read the rulebook</button><button class="btn btn-ghost" id="ht-close">' + (inRun ? "Back" : "Fold it up") + "</button>",

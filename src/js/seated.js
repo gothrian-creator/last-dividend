@@ -127,8 +127,8 @@
     policy: { x: 0.15, y: 0.15, w: 0.66, r: 1.2, sk: 0, hold: "rider" }, ledger: { x: 0.1, y: 0.52, w: 0.7, r: -3, sk: 0, hold: "page", wide: true },
     telegram: { x: 0.12, y: 0.27, w: 0.76, r: -1.5, sk: 0, hold: "strips" } };
   /* finished reveal clips: set an art name true once assets/house/props/clips/<art>-open.webm is in (see the video-stills README) */
-  /* shipped: briefcase (+oxblood, black), dossier (+red), cheque. Hard cut by choice: policy (page dissolves mid-flip), deed (seal turns blue, the roll vanishes), ledger (envelope interior generated blue = holes, cash dissolves in), telegram (wax bits / second seal vanish), cheque-blue (pages tint blue mid-clip). Stamp: a single-object tween (the clip never drops). */
-  LD.PROP_CLIPS = { stamp: false, briefcase: true, "briefcase-oxblood": true, "briefcase-black": true, dossier: true, "dossier-red": true, cheque: true };
+  /* shipped: briefcase (+oxblood, black), dossier (+red), cheque, ledger (green retake; cash kept solid + recoloured to the still). Hard cut by choice: policy (retake: the sheet flies off-frame, a see-through strip at the top), deed (retake: the seal goes dark and the map dissolves in through the paper), telegram (retake: the seal splits into two/three and a faded wax disc ghosts), cheque-blue (pages tint blue mid-clip), stamp (tween) */
+  LD.PROP_CLIPS = { stamp: false, briefcase: true, "briefcase-oxblood": true, "briefcase-black": true, dossier: true, "dossier-red": true, cheque: true, ledger: true };
   LD.PROP_CLIP_DIR = PROP_DIR + "clips/";
   LD.SEAT_PROPS = { dir: PROP_DIR, size: PSIZE, w: PROP_W, rim: RIM, closedIn: CLOSED_IN, slip: SLIP };
   LD.propTypeOf = function (d) {

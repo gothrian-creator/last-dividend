@@ -1,16 +1,34 @@
 #!/usr/bin/env node
-// Mara's era turn clips (1978 board, 2008 island, Now wall panel) at the five sizes: the clip is preloaded, plays over the start plate,
+// Mara's era turn clips (1978 board, 2008 island, Now wall panel) at the test sizes (including a tablet-with-chrome 800x1130): the clip is preloaded, plays over the start plate,
 // lands on the era's end plate and the feed/era layer; Now lays the present-day feed on the frameless panel with Mara's foreground above
 // it (no old TV plate, no 1978 feeds). Fallbacks: clip blocked -> plate crossfade; Skip mid-clip; reduced motion; another exec (no clip).
 // Also the knock on the seated desk. SHOTS=dir saves screens. Exit 1 on any failure.
 const H=require("../real-input/h.js"),fs=require("fs");const {seedHouse}=require("./probe.js");
-const SIZES=(process.env.SIZES||"360x800,412x915,800x1150,800x1280,1280x800").split(",");const SHOTS=process.env.SHOTS;if(SHOTS)fs.mkdirSync(SHOTS,{recursive:true});
+const SIZES=(process.env.SIZES||"360x800,412x915,800x1130,800x1150,800x1280,1280x800").split(",");const SHOTS=process.env.SHOTS;if(SHOTS)fs.mkdirSync(SHOTS,{recursive:true});
 let bad=0,n=0;function ok(c,m){n++;if(!c){bad++;console.log("FAIL",m);}}
 const ERA={2:{key:"1978",end:"board-after.webp",scr:/is-board is-full/},6:{key:"2008",end:"2008-end.webp",scr:/is-isle is-full/},10:{key:"now",end:"now-end.webp",scr:/^hv-screen/}};
 async function seed(p,O,t,o){await seedHouse(p,O,Object.assign({seed:13,stop:"deal:"+(t>8?6:t),exec:"mara",smart:true,build:true,patch:t>8?"st.turn="+t+";":undefined},o||{}));}
 async function ready(p){for(let i=0;i<40;i++){const c=await p.evaluate(()=>LD.houseUi.clip());if(c.ready)return c;await p.waitForTimeout(150);}return p.evaluate(()=>LD.houseUi.clip());}
 async function peek(p){const b=await p.$("#house-peek");if(b&&await b.isVisible()){await b.click({timeout:2000});return true;}return false;}
 async function after(p){for(let i=0;i<40;i++){if(await p.$("#hv-back"))return true;await p.waitForTimeout(150);}return false;}
+async function framing(p,tag){
+  const r=await p.evaluate(()=>{
+    const vw=innerWidth,vh=innerHeight,box=el=>{if(!el)return null;const r=el.getBoundingClientRect();return {x:r.left,y:r.top,w:r.width,h:r.height,b:r.bottom,rgt:r.right};};
+    const hits=(a,b)=>a&&b&&a.x<b.rgt&&b.x<a.rgt&&a.y<b.b&&b.y<a.b;
+    const hud=box(document.querySelector("#house-root .sd-hud, #house-root .hv-hud"));
+    const goal=box(document.querySelector("#house-root .hv-goal"));
+    const items=[...document.querySelectorAll("#house-root .hv-eslot, #house-root .hv-echip, #house-root .hv-pips, #house-root.is-now-panel .hv-cell")].map(e=>({t:(e.textContent||e.className||"").trim().slice(0,48),...box(e)}));
+    const issues=[];
+    for(const it of items){
+      if(it.y<-1||it.b>vh+1||it.x<-1||it.rgt>vw+1) issues.push("clipped "+it.t);
+      if(hits(it,hud)) issues.push("under HUD "+it.t);
+      if(hits(it,goal)) issues.push("overlaps goal "+it.t);
+    }
+    if(goal&&(goal.y<-1||goal.b>vh+1||hits(goal,hud))) issues.push("goal not clear");
+    return issues;
+  });
+  ok(!r.length,tag+" cells, labels and goal sit clear of the HUD "+(r.join("; ")||"ok"));
+}
 const plates=p=>p.evaluate(()=>[...document.querySelectorAll("#house-root .hv-plate")].map(i=>i.getAttribute("src")));
 (async()=>{const env=await H.start(process.env.DIST||"/workspace/last-dividend-v3/dist");const O=env.origin;
  for(const sz of SIZES){const [W,Hh]=sz.split("x").map(Number);
@@ -36,6 +54,7 @@ const plates=p=>p.evaluate(()=>[...document.querySelectorAll("#house-root .hv-pl
        const b=cells.map(e=>e.getBoundingClientRect());const pt=(x,y)=>{const o=inv.transformPoint(new DOMPoint(x,y));return [Math.round(o.x),Math.round(o.y)];};
        return [pt(b[0].left,b[0].top),pt(b[2].left,b[2].bottom)];});
      ok(Math.abs(q[0][0]-73)<=3&&Math.abs(q[0][1]-225)<=3&&Math.abs(q[1][0]-73)<=3&&Math.abs(q[1][1]-651)<=3,tag+" feed mapped onto the panel "+JSON.stringify(q));}
+   await framing(p,tag);
    if(SHOTS)await p.screenshot({path:`${SHOTS}/turn-${E.key}-${sz}-after.png`});
    // turn back: the reverse plate path back to the desk
    await p.click("#hv-back");let back=false;for(let i=0;i<30&&!back;i++){await p.waitForTimeout(120);back=await p.evaluate(()=>!document.querySelector("#house-root .hv-root"));}

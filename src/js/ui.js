@@ -1895,22 +1895,47 @@
     return true;
   }
   /* The plate is 720x1280 portrait. Phones show the whole width bar a sliver of left bezel (Mara's head stays in), with the top blended into
-     the backdrop when the screen is taller than the plate. Landscape shows the full chair base and trims only the ceiling. */
+     the backdrop when the screen is taller than the plate. Landscape shows the full chair base and trims only the ceiling.
+     On shorter portrait (a tablet with browser chrome, ~800x1130) a width-fit would slide the board / island chips / Now panel under the
+     cash bar and the goal ribbon; sizeHouseRig then shifts (and only if needed, scales) so a keep-region of plate px stays in the safe
+     band below the HUD and goal. The clip lives in the same .hv-rig, so it lands on the same framing. */
   function houseIsLandscape() { return window.innerWidth >= window.innerHeight * 1.2; }
+  /* plate-px [top, bottom] that must stay clear of the HUD, the goal ribbon and the dock */
+  function housePlateKeep() {
+    var root = document.querySelector("#house-root .hv-root");
+    if (root && root.classList.contains("is-now-panel")) return [220, 660]; /* wall panel (74,226)–(527,650) */
+    if (root && root.classList.contains("is-era-full") && root.classList.contains("is-era-2")) return [330, 860]; /* island chips + pips */
+    if (root && root.classList.contains("is-era-full")) return [288, 640]; /* 1978 board panels and their pips */
+    return [318, 642]; /* shared CRT glass */
+  }
   function sizeHouseRig() {
     var clip = document.querySelector("#house-root .hv-clip");
     var rig = document.querySelector("#house-root .hv-rig");
     if (!clip || !rig) return;
     var r = clip.getBoundingClientRect();
-    var w = r.width, h = r.height, s, tx, ty;
-    if (houseIsLandscape()) {
+    var w = r.width, h = r.height, s, tx, ty, land = houseIsLandscape();
+    if (land) {
       s = h / 1090; tx = (w - 720 * s) / 2; ty = -190 * s;
-      /* the 1978 board and the 2008 island stand higher than the TV: keep their top row clear of the HUD */
       if (document.querySelector("#house-root .hv-root.is-era-full")) ty = -110 * s;
     } else {
       s = Math.min(w / 658, Math.max(w / 720, h / 1280));
       tx = Math.max(w - 720 * s, Math.min(0, w - 713 * s));
       ty = h - 1280 * s;
+    }
+    var keep = housePlateKeep();
+    /* portrait: goal sits at 116px, ~28px tall; tablet HUD is 100px, phone 112px. Landscape: the seated HUD still spans the plate, goal is at the bottom. */
+    var safeTop = land ? 112 : 156, safeBot = land ? h - 50 : h - 72;
+    if (keep[0] * s + ty < safeTop) ty = safeTop - keep[0] * s;
+    if (keep[1] * s + ty > safeBot) {
+      var need = keep[1] * s + ty - safeBot;
+      var slack = keep[0] * s + ty - safeTop;
+      if (need <= slack) ty -= need;
+      else {
+        s = (safeBot - safeTop) / (keep[1] - keep[0]);
+        if (land) tx = (w - 720 * s) / 2;
+        else tx = Math.max(w - 720 * s, Math.min(0, w - 713 * s));
+        ty = safeTop - keep[0] * s;
+      }
     }
     rig.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + s + ")";
   }

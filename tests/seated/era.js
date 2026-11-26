@@ -7,6 +7,7 @@ const SIZES=(process.env.SIZES||"360x800,412x915,800x1150,800x1280,1280x800").sp
 let bad=0,n=0;function ok(c,m){n++;if(!c){bad++;console.log("FAIL",m);}}
 const inter=(a,b)=>Math.max(0,Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y));
 async function openHouse(p){for(let i=0;i<8;i++){if(await p.$("#hv-back"))break;const b=await p.$("#house-peek");if(b&&await b.isVisible()){await b.click({timeout:1500}).catch(()=>{});}await p.waitForTimeout(900);}await p.waitForTimeout(500);return !!(await p.$("#hv-back"));}
+async function cards(p){for(let i=0;i<3;i++){const a=await p.$("#hv-admit:not([disabled])")||await p.$("#hv-turnaway");if(a){await p.waitForTimeout(600);await a.click({timeout:2000}).catch(()=>{});await p.waitForTimeout(1000);continue;}const k=await p.$("#hv-keep:not([disabled])")||await p.$("#hv-break");if(k){await p.waitForTimeout(600);await k.click({timeout:2000}).catch(()=>{});await p.waitForTimeout(1000);continue;}break;}}
 async function layout(p,W,H,tag){
   const r=await p.evaluate(()=>{const bb=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
     const chips=[...document.querySelectorAll("#house-root .hv-eslot .hv-echip")].map(bb);const card=document.querySelector("#house-root .hv-ecard");const hud=document.querySelector("#house-root .sd-hud, #house-root .hv-hud");
@@ -32,10 +33,10 @@ async function layout(p,W,H,tag){
    ok(!p.errs.length,sz+" t"+t+" no page errors "+p.errs.slice(0,2));await p.ctx.close();}}
  // a real order through the UI (412x915, Q2 after the deal)
  {const p=await H.page(env,412,915);await seedHouse(p,O,{seed:13,stop:"deal:2",exec:"mara",smart:true,patch:"st.phase='bunker';st.dealPickedThisTurn=true;st.cash=Math.max(st.cash,60);"});
-  await openHouse(p);const before=await p.evaluate(()=>JSON.parse(localStorage.getItem(LD.HOUSE_SAVE_KEY)).midRun.house.era);
+  await openHouse(p);await cards(p);const before=await p.evaluate(()=>JSON.parse(localStorage.getItem(LD.HOUSE_SAVE_KEY)).midRun.house.era);
   ok(before&&before.v===2,"order: fresh-seeded run has the v2 era block");
   const btn=await p.$("#house-root .hv-era-up.btn-coral");ok(!!btn,"order: an order button is live after the deal");
-  if(btn){const k=await btn.getAttribute("data-eslot");await btn.click();await p.waitForTimeout(900);
+  if(btn){const k=await btn.getAttribute("data-eslot");await p.click("#house-root .hv-era-up.btn-coral",{timeout:5000});await p.waitForTimeout(900);
    const after=await p.evaluate(()=>JSON.parse(localStorage.getItem(LD.HOUSE_SAVE_KEY)).midRun.house.era);
    ok(after.company[k].build===before.company[k].lv+1&&after.actQ===2,"order: "+k+" is building and saved "+JSON.stringify(after.company[k]));
    ok(!(await p.$("#house-root .hv-era-up.btn-coral")),"order: one order a quarter (no live button after)");

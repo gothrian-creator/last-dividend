@@ -817,6 +817,7 @@
     placeSeated();
     if (from) seatDeltas(from);
     preloadHousePlates();
+    if (el.querySelector(".desk.sd.has-props")) { LD.seatPropsFor(state).forEach(function (q) { pkPreload(q.art); }); pkPreload("stamp"); }
     if (HV.facing && !HV.turning) refreshHouseChrome();
   }
   /* cash / unrest / collapse changes float off the HUD */
@@ -1061,16 +1062,44 @@
   function pkRim(id, show) {
     Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-propimg[data-deal="' + id + '"], #screen-desk .sd-prop[data-deal="' + id + '"]'), function (n) { n.style.visibility = show ? "" : "hidden"; });
   }
-  function pkClip(art) { return LD.PROP_CLIPS && LD.PROP_CLIPS[art] ? LD.PROP_CLIP_DIR + art + "-open.webm" : null; }
-  /* play a clip over its held stills, or resolve at once (hard cut) when there is none */
-  function pkPlay(host, src) {
+  /* reveal / stamp clips: VP9-alpha WebM, fetched into memory when the desk renders so a tap never waits on the network.
+     A clip only plays once it is fully loaded; otherwise (or on Apple WebKit, which has no WebM alpha) the move is the hard cut. */
+  var PKV = {};
+  function pkClipsOk() {
+    if (PKV.ok != null) return PKV.ok;
+    var v = document.createElement("video"), can = false;
+    try { can = !!(v.canPlayType && v.canPlayType('video/webm; codecs="vp9"')); } catch (e) {}
+    PKV.ok = can && !/Apple/.test(navigator.vendor || "") && !!window.fetch && !!(window.URL && URL.createObjectURL);
+    return PKV.ok;
+  }
+  function pkClipFile(art) { return LD.PROP_CLIP_DIR + (art === "stamp" ? "stamp.webm" : art + "-open.webm"); }
+  function pkPreload(art) {
+    if (!LD.PROP_CLIPS || !LD.PROP_CLIPS[art] || PKV[art] || !pkClipsOk() || reduced()) return;
+    var rec = PKV[art] = { url: null };
+    fetch(pkClipFile(art)).then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) { if (b && b.size) rec.url = URL.createObjectURL(b); }).catch(function () {});
+  }
+  function pkClip(art) { var r = PKV[art]; return r && r.url ? r.url : null; }
+  LD.seatClipUrl = function (art) { return pkClip(art); };
+  LD.seatClipState = function () { var o = { ok: pkClipsOk(), ready: [] }; for (var k in PKV) if (k !== "ok" && PKV[k] && PKV[k].url) o.ready.push(k); return o; };
+  /* play a clip over its held stills, or resolve at once (hard cut) when there is none. The clip's first frame is the
+     still under it, so the still is only hidden once the video has put a frame up; its last frame is the still that replaces it.
+     nat = the still's pixel size (the encode is padded to even sizes, so the video is stretched by its own size / nat) */
+  function pkPlay(host, src, nat) {
     if (!src || reduced()) return Promise.resolve();
     return new Promise(function (res) {
       var v = document.createElement("video"), done = false;
-      v.className = "pk-vid"; v.muted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "auto"; v.src = src;
+      v.className = "pk-vid"; v.muted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "auto"; v.disablePictureInPicture = true;
       function end() { if (done) return; done = true; res(v); }
-      v.addEventListener("ended", end); v.addEventListener("error", end); setTimeout(end, 2500);
-      host.appendChild(v); var pr = v.play(); if (pr && pr.catch) pr.catch(end);
+      function shown() { if (!done) host.classList.add("is-vid"); }
+      v.addEventListener("loadedmetadata", function () {
+        if (nat && v.videoWidth) { v.style.width = (v.videoWidth / nat[0] * 100).toFixed(3) + "%"; v.style.height = (v.videoHeight / nat[1] * 100).toFixed(3) + "%"; }
+      });
+      /* frame 0 and 1 are the closed still (1 is pulled onto it), so the still only steps aside once the clip has truly moved on */
+      if (v.requestVideoFrameCallback) { var wait = function (now, md) { if (md && md.mediaTime > 0.02 && v.readyState >= 2) shown(); else if (!done) v.requestVideoFrameCallback(wait); }; v.requestVideoFrameCallback(wait); }
+      else v.addEventListener("playing", function () { setTimeout(shown, 40); });
+      v.addEventListener("ended", end); v.addEventListener("error", end); setTimeout(end, 2500 / (LD.PK_RATE || 1));
+      v.src = src; host.appendChild(v); if (LD.PK_RATE) { try { v.defaultPlaybackRate = v.playbackRate = LD.PK_RATE; } catch (e) {} } /* test hook: slow clips to inspect the swaps */
+      var pr = v.play(); if (pr && pr.catch) pr.catch(end);
     });
   }
   function seatPeekKill() {
@@ -1122,9 +1151,9 @@
     /* 1 lift (tween) -> 2 open (clip or hard cut) -> 3 slip slides out of its holder (tween) */
     pkAnim(el, [{ transform: pkPose(lay.from) }, { transform: pkPose({ x: b.x, y: b.y }) }], 230).then(function () {
       if (gen !== PK.gen) return;
-      return pkPlay(el, pkClip(pr.art)).then(function (v) {
+      return pkPlay(el, pkClip(pr.art), LD.SEAT_PROPS.size[pr.open]).then(function (v) {
         if (gen !== PK.gen) return;
-        el.classList.add("is-open"); if (v && v.parentNode) v.parentNode.removeChild(v);
+        el.classList.add("is-open"); el.classList.remove("is-vid"); if (v && v.parentNode) v.parentNode.removeChild(v);
         slip.style.visibility = "";
         var s0 = lay.slip;
         return pkAnim(slip, [{ transform: pkPose({ x: s0.x, y: s0.y + 26, r: s0.r, sk: s0.sk }), clipPath: "inset(0 0 100% 0)" }, { transform: pkPose(s0), clipPath: "inset(0 0 0% 0)" }], 190);
@@ -1232,20 +1261,22 @@
     var st = document.createElement("img"); st.className = "pk-stamp"; st.src = LD.propSrc("stamp"); st.alt = ""; st.style.width = w + "px";
     st.style.transform = "translate(" + x.toFixed(1) + "px," + yHover.toFixed(1) + "px) rotate(-8deg)";
     root.appendChild(st);
-    var clip = LD.PROP_CLIPS && LD.PROP_CLIPS.stamp ? LD.PROP_CLIP_DIR + "stamp.webm" : null;
+    var clip = pkClip("stamp");
     if (clip) {
       /* clip frame: w x 2w, stamp held at the top (stamp-start.png), impact with its foot 0.62w lower, ends empty (stamp-end.png) */
       var host = document.createElement("div"); host.className = "pk-stamphost"; host.style.transform = "translate(" + x.toFixed(1) + "px," + (yDown - 0.62 * w).toFixed(1) + "px) rotate(-8deg)"; host.style.width = w + "px"; host.style.height = (w * 2) + "px"; root.appendChild(host);
       st.style.visibility = "hidden";
       setTimeout(function () { slip.classList.add("is-inked"); }, LD.PROP_CLIPS.stampImpactMs || 300);
-      return pkPlay(host, clip).then(function (v) { if (v && v.parentNode) v.parentNode.removeChild(v); slip.classList.add("is-inked"); host.parentNode.removeChild(host); st.parentNode.removeChild(st); });
+      return pkPlay(host, clip, [512, 1024]).then(function (v) { if (v && v.parentNode) v.parentNode.removeChild(v); slip.classList.add("is-inked"); host.parentNode.removeChild(host); st.parentNode.removeChild(st); });
     }
     return pkAnim(st, [{ transform: "translate(" + x.toFixed(1) + "px," + yHover.toFixed(1) + "px) rotate(-8deg)" }, { transform: "translate(" + x.toFixed(1) + "px," + yDown.toFixed(1) + "px) rotate(-6deg) scale(.96)" }], 150, "cubic-bezier(.6,0,.9,.5)").then(function () {
       slip.classList.add("is-inked"); SFX.play("pick");
       var desk = document.querySelector("#screen-desk .desk.sd"); if (desk) { desk.classList.remove("pk-thud"); void desk.offsetWidth; desk.classList.add("pk-thud"); }
-      return pkWait(110);
+      /* impact: one squash of the same stamp (wider, shorter, foot planted) and back, then the lift */
+      var dn = "translate(" + x.toFixed(1) + "px," + yDown.toFixed(1) + "px) rotate(-6deg) ";
+      return pkAnim(st, [{ transform: dn + "scale(.96)" }, { transform: "translate(" + (x - w * 0.03).toFixed(1) + "px," + (yDown + w * 0.13).toFixed(1) + "px) rotate(-6deg) scale(1.02,.86)" }, { transform: dn + "scale(.97)" }], 120, "ease-out");
     }).then(function () {
-      return pkAnim(st, [{ transform: "translate(" + x.toFixed(1) + "px," + yDown.toFixed(1) + "px) rotate(-6deg) scale(.96)" }, { transform: "translate(" + (x + 60).toFixed(1) + "px," + (yHover - 140).toFixed(1) + "px) rotate(-14deg)" }], 230, "cubic-bezier(.2,.6,.3,1)");
+      return pkAnim(st, [{ transform: "translate(" + x.toFixed(1) + "px," + yDown.toFixed(1) + "px) rotate(-6deg) scale(.97)" }, { transform: "translate(" + (x + 60).toFixed(1) + "px," + (yHover - 140).toFixed(1) + "px) rotate(-14deg)" }], 230, "cubic-bezier(.2,.6,.3,1)");
     }).then(function () { if (st.parentNode) st.parentNode.removeChild(st); });
   }
   LD.seatPeek = function (id) { seatPeek(id); };

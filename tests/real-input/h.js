@@ -15,7 +15,7 @@ exports.start=async function(dist){
 };
 exports.page=async function(env,w,h){
   const touch=w<1100||h>w;
-  const ctx=await env.browser.newContext({viewport:{width:w,height:h},hasTouch:touch,isMobile:w<700,deviceScaleFactor:1});
+  const ctx=await env.browser.newContext({viewport:{width:w,height:h},hasTouch:touch,isMobile:w<700,deviceScaleFactor:+(process.env.DPR||1)});
   const page=await ctx.newPage(); page.errs=[]; page.setDefaultTimeout(8000);
   page.on("console",m=>{if(m.type()==="error")page.errs.push("console: "+m.text())});
   page.on("pageerror",e=>page.errs.push("pageerror: "+e));

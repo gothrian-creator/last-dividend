@@ -129,7 +129,8 @@
     policy: { x: 0.15, y: 0.15, w: 0.66, r: 1.2, sk: 0, hold: "rider" }, ledger: { x: 0.1, y: 0.52, w: 0.7, r: -3, sk: 0, hold: "page", wide: true },
     telegram: { x: 0.12, y: 0.27, w: 0.76, r: -1.5, sk: 0, hold: "strips" } };
   /* finished reveal clips: set an art name true once assets/house/props/clips/<art>-open.webm is in (see the video-stills README) */
-  LD.PROP_CLIPS = { stamp: false };
+  /* shipped: briefcase (+oxblood, black), dossier (+red), cheque. Hard cut by choice: policy (page dissolves mid-flip), deed (seal turns blue, the roll vanishes), ledger (envelope interior generated blue = holes, cash dissolves in), telegram (wax bits / second seal vanish), cheque-blue (pages tint blue mid-clip). Stamp: a single-object tween (the clip never drops). */
+  LD.PROP_CLIPS = { stamp: false, briefcase: true, "briefcase-oxblood": true, "briefcase-black": true, dossier: true, "dossier-red": true, cheque: true };
   LD.PROP_CLIP_DIR = PROP_DIR + "clips/";
   LD.SEAT_PROPS = { dir: PROP_DIR, size: PSIZE, w: PROP_W, rim: RIM, closedIn: CLOSED_IN, slip: SLIP };
   LD.propTypeOf = function (d) {

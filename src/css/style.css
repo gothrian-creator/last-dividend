@@ -6405,3 +6405,6 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .pk-slip .ps-ch.dz-choice[disabled] { opacity: 0.6; }
 /* the chair turn's painted frames have no props on the table: the rim props leave with the cut, never ghost over frame 1 */
 .desk.sd.is-pulling .sd-propimg { visibility: hidden; }
+/* a reveal clip is up: its first frame is the closed still, so the still underneath steps aside only once the video shows */
+.pk.is-vid .pk-closed { visibility: hidden; }
+.pk-vid { right: auto; bottom: auto; }

@@ -5863,9 +5863,11 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .sd-mara { opacity: 0; transform-origin: 339px -139px; will-change: transform, opacity, filter; } /* anchor (520,250) in plate space, relative to the layer box */
 .sd-hands { opacity: var(--ha, 1); will-change: transform, opacity; transition: opacity 0.22s ease, transform 0.26s cubic-bezier(.3,.7,.2,1); }
 .desk.sd.is-pulling .sd-hands { transition: none; }
-.desk.sd .sd-hands-dip { opacity: 0; transform: translateY(40px); }
-.desk.sd.is-fan:not(.is-pulling) .sd-hands-rest { opacity: 0; transform: translateY(60px); }
-.desk.sd.is-fan:not(.is-pulling) .sd-hands-dip { opacity: 1; transform: none; }
+/* rest <-> dip: one pair of hands slides out of frame, the other slides in (no crossfade between the two paintings) */
+.desk.sd .sd-hands-rest { transition: transform 0.22s cubic-bezier(.4,0,.6,1); }
+.desk.sd .sd-hands-dip { opacity: 0; transform: translateY(263px); transition: transform 0.24s cubic-bezier(.3,.7,.2,1) 0.06s, opacity 0s linear 0.3s; }
+.desk.sd.is-fan:not(.is-pulling) .sd-hands-rest, .desk.sd.has-props:not(.is-pulling) .sd-hands-rest { transform: translateY(372px); }
+.desk.sd.is-fan:not(.is-pulling) .sd-hands-dip, .desk.sd.has-props:not(.is-pulling) .sd-hands-dip { opacity: var(--ha, 1); transform: none; transition: transform 0.24s cubic-bezier(.3,.7,.2,1) 0.06s, opacity 0s; }
 
 /* HUD: the locked MG-1 bar. Phone: two rows. Wider: one row. */
 .sd-hud { position: absolute; left: 0; right: 0; top: 0; z-index: 20; height: 112px; --hud-bg: #faf3e2; box-sizing: border-box; padding: 0 12px; display: grid;
@@ -6316,6 +6318,105 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 /* landscape: the side panels meet the stage edge, so the stage reads as framed and no seam of room shows between */
 .desk.sd.is-land .sd-dossier.dossier { width: calc(var(--col-l) - 24px); bottom: 24px; max-height: none; }
 .desk.sd.is-land .sd-quarter { width: calc(var(--col-r) - 24px); }
+
+/* ---------- House desk deal props (house rules only: .desk.sd exists only on ?house=1 runs) ---------- */
+@font-face { font-family: "LD Type"; src: url("assets/fonts/courierprime-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "LD Type"; src: url("assets/fonts/courierprime-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+.desk.sd.has-props .sd-tag, .desk.sd.has-props .sd-lines { display: none; }
+.sd-propimg { position: absolute; pointer-events: none; transform-origin: 50% 50%; filter: drop-shadow(0 6px 5px rgba(40, 22, 8, 0.5)); }
+.sd-prop { position: absolute; padding: 0; border: 0; background: none; pointer-events: auto; cursor: pointer; transform: translate(-50%, -50%) rotate(var(--rot)); -webkit-tap-highlight-color: transparent; }
+.sd-prop:focus-visible { outline: 2px solid #f3d27a; outline-offset: 2px; }
+/* the sticker on each prop: a typed paper label, department and amount */
+.sd-stk { position: absolute; left: 2%; top: -10%; display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 6px 2px; transform: rotate(-6deg); white-space: nowrap;
+  background: #efe2c1 linear-gradient(180deg, rgba(255, 250, 236, 0.5), rgba(160, 120, 60, 0.12)); color: #3a2a16; box-shadow: 0 1px 1px rgba(40, 24, 8, 0.45);
+  font: 700 calc(10px * var(--k))/1.05 "LD Type", "Courier New", monospace; letter-spacing: 0.04em; text-transform: uppercase; pointer-events: none; }
+.sd-stk em { font-style: normal; font-size: calc(12px * var(--k)); letter-spacing: 0; color: #1f1a16; }
+.sd-stk em.neg { color: #9a2a1c; }
+.sd-prop.k-crisis .sd-stk em { color: #9a2a1c; }
+/* glass pins: a clear dome, one matte highlight, a thin ring in the deal's colour; quiet at rest */
+.desk.sd .sd-pin { --ring: #8a7a5a; } .desk.sd .sd-pin.k-squeeze, .desk.sd .sd-pin.k-crisis { --ring: #b4482e; } .desk.sd .sd-pin.k-claim { --ring: #2a7d84; } .desk.sd .sd-pin.k-calm { --ring: #5f8f40; }
+.desk.sd .sd-pin i, .desk.sd .sd-pin.add i { width: calc(13px * var(--k)); height: calc(13px * var(--k)); animation: none; transform: translate(-50%, -62%);
+  background: radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.55) 0 14%, rgba(255, 255, 255, 0.16) 15% 58%, rgba(255, 255, 255, 0.06) 59%);
+  box-shadow: inset 0 0 0 calc(2px * var(--k)) var(--ring), 0 0 0 1px rgba(255, 250, 235, 0.75), 1px 3px 3px rgba(40, 22, 8, 0.35); }
+.desk.sd .sd-pin i::after { content: ""; position: absolute; left: 50%; top: 92%; width: 1.4px; height: calc(7px * var(--k)); margin-left: -0.7px; background: linear-gradient(#e8e2d0, #8d8678); opacity: 0.85; }
+.desk.sd .sd-pin.sel i { box-shadow: inset 0 0 0 calc(2.4px * var(--k)) var(--ring), 0 0 0 1.5px #fffaf0, 0 0 0 calc(6px * var(--k)) rgba(255, 240, 200, 0.35), 1px 3px 3px rgba(40, 22, 8, 0.35); }
+/* owned regions: a quiet glass marker in the same family (no red flag) */
+.desk.sd .sd-flag { left: 32%; top: 26%; width: calc(9px * var(--k)); height: calc(9px * var(--k)); border-radius: 50%; background: radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.5) 0 16%, rgba(255, 255, 255, 0.12) 17% 60%, rgba(255, 255, 255, 0.04) 61%);
+  box-shadow: inset 0 0 0 calc(1.6px * var(--k)) rgba(31, 85, 90, 0.85), 0 0 0 1px rgba(255, 250, 235, 0.55), 1px 2px 2px rgba(40, 22, 8, 0.3); }
+.desk.sd .sd-flag::after { display: none; }
+/* the peek layer */
+.sd-peek { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+.sd-peek.is-signing { z-index: 13; pointer-events: auto; }
+.pk-thread { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.pk-thread path { fill: none; stroke: #9b2a1e; stroke-width: 1.4; stroke-linecap: round; opacity: 0.9; }
+.pk { position: absolute; left: 0; top: 0; transform-origin: 0 0; pointer-events: auto; touch-action: none; cursor: grab; filter: drop-shadow(0 22px 16px rgba(30, 15, 5, 0.5)); }
+.pk img { position: absolute; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+.pk-closed { height: auto; }
+.pk-open { left: 0; top: 0; width: 100%; height: 100%; visibility: hidden; }
+.pk.is-open .pk-open { visibility: visible; } .pk.is-open .pk-closed { visibility: hidden; }
+.pk-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+/* the typed slip: aged paper on the prop, live text (no UI box: no border, only the contact shadow paper makes) */
+.pk-slip { position: absolute; left: 0; top: 0; transform-origin: 0 0; pointer-events: auto; touch-action: none; box-sizing: border-box; cursor: pointer;
+  padding: calc(9px * var(--kk)) calc(11px * var(--kk)) calc(7px * var(--kk)); color: #2a2420; font: 400 calc(12px * var(--kk))/1.28 "LD Type", "Courier New", monospace;
+  background-color: #ecdfbf; background-image: radial-gradient(ellipse at 28% 18%, rgba(255, 251, 238, 0.6), rgba(255, 251, 238, 0) 62%), linear-gradient(180deg, rgba(140, 100, 40, 0), rgba(140, 100, 40, 0.13)),
+    repeating-linear-gradient(91deg, rgba(90, 60, 20, 0.03) 0 1px, rgba(0, 0, 0, 0) 1px 4px);
+  box-shadow: 0 1px 0 rgba(70, 46, 16, 0.35), 0 2px 3px rgba(40, 25, 10, 0.2); }
+.pk-slip .ps-k { font: 700 calc(10px * var(--kk))/1.2 "LD Type", monospace; letter-spacing: 0.07em; text-transform: uppercase; color: #6a4a22; }
+.pk-slip .ps-t { margin: calc(3px * var(--kk)) 0 calc(5px * var(--kk)); font: 700 calc(14.5px * var(--kk))/1.12 "LD Type", monospace; color: #1d1814; }
+.pk-slip .ps-r { display: flex; gap: calc(6px * var(--kk)); align-items: baseline; margin: calc(2px * var(--kk)) 0; }
+.pk-slip .ps-r > i { flex: 0 0 calc(64px * var(--kk)); font: 700 calc(9.5px * var(--kk))/1.2 "LD Type", monospace; letter-spacing: 0.05em; text-transform: uppercase; color: #7a6040; font-style: normal; }
+.pk-slip .ps-pay b { font: 700 calc(16px * var(--kk))/1 "LD Type", monospace; color: #1d1814; }
+.pk-slip .ps-x, .pk-slip .ps-pay b.ps-x { color: #9a2a1c; } .pk-slip .ps-g { color: #1d1814; font-weight: 700; } .pk-slip .ps-m { color: #5a4a30; }
+.pk-slip .ps-enc span { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
+.pk-slip .ps-ic { display: inline-flex; width: calc(19px * var(--kk)); height: calc(19px * var(--kk)); } .pk-slip .ps-ic img, .pk-slip .ps-ic svg { width: 100%; height: 100%; border-radius: 50%; filter: sepia(0.35) saturate(0.8); }
+.pk-slip .ps-more { max-height: 0; overflow: hidden; }
+.pk-slip .ps-fine { margin: calc(4px * var(--kk)) 0 0; font-size: calc(10.5px * var(--kk)); line-height: 1.3; color: #5a4a30; }
+.pk-slip .ps-sign { display: flex; align-items: flex-end; gap: 6px; width: 100%; min-height: calc(30px * var(--kk)); margin: calc(4px * var(--kk)) 0 0; padding: 0; border: 0; background: none; color: #6a4a22; cursor: pointer;
+  font: 700 calc(10px * var(--kk))/1 "LD Type", monospace; letter-spacing: 0.08em; text-transform: uppercase; text-align: left; }
+.pk-slip .ps-sign i { font-style: normal; padding-bottom: 2px; }
+.pk-slip .ps-sign[disabled] { color: #9a2a1c; cursor: default; }
+.pk-slip .ps-line { position: relative; flex: 1; height: calc(22px * var(--kk)); border-bottom: 1.5px solid #5a4630; }
+.pk-slip .ps-line svg { position: absolute; left: 4%; top: 0; width: 70%; height: 100%; overflow: visible; }
+.pk-slip .ps-line path { fill: none; stroke: #1c2f5a; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 100; }
+.pk-slip.is-pen .ps-line path { transition: stroke-dashoffset 0.4s ease-out; stroke-dashoffset: 0; }
+.pk-slip .ps-ink { position: absolute; right: 9%; bottom: 16%; padding: 3px 9px 1px; border: 3px double #b8261a; border-radius: 3px; color: #b8261a; font: 900 calc(19px * var(--kk))/1 var(--font-serif); letter-spacing: 0.12em;
+  text-transform: uppercase; transform: rotate(-11deg); opacity: 0; mix-blend-mode: multiply; pointer-events: none; }
+.pk-slip.is-inked .ps-ink { opacity: 0.86; }
+/* how each slip is held on its prop */
+.pk-slip.h-clip::before, .pk-slip.h-rider::before { content: ""; position: absolute; left: calc(18px * var(--kk)); top: calc(-11px * var(--kk)); width: calc(10px * var(--kk)); height: calc(28px * var(--kk)); border: 2px solid #8f949a; border-bottom-color: transparent; border-radius: 6px; transform: rotate(-8deg); }
+.pk-slip.h-pin::before { content: ""; position: absolute; left: 50%; top: calc(4px * var(--kk)); width: calc(8px * var(--kk)); height: calc(8px * var(--kk)); margin-left: -4px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f6e2a8, #b88a36 60%, #6a4a18); box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
+.pk-slip.h-pin .ps-k { padding-top: calc(8px * var(--kk)); }
+.pk-slip.h-lid { box-shadow: 0 1px 0 rgba(70, 46, 16, 0.3), 0 1px 2px rgba(40, 25, 10, 0.18); }
+.pk-slip.h-page { background-color: #efe4c6; }
+/* typed straight onto the painted paper (the cheque, the ledger page): ink only, multiplied into the art */
+.pk-slip.h-print { background: none; box-shadow: none; mix-blend-mode: multiply; padding: 2px 4px; }
+.pk-slip.h-print .ps-line { border-bottom-color: #3a3028; }
+.pk-slip.is-contract.h-print, .pk-slip.is-big.h-print { mix-blend-mode: normal; background-color: #ecdfbf; box-shadow: 0 1px 0 rgba(70, 46, 16, 0.35), 0 2px 3px rgba(40, 25, 10, 0.2); padding: calc(9px * var(--kk)) calc(11px * var(--kk)) calc(7px * var(--kk)); }
+.pk-slip.is-wide:not(.is-big) { display: grid; grid-template-columns: 1fr 1fr; column-gap: 10px; }
+.pk-slip.is-wide:not(.is-big) .ps-k, .pk-slip.is-wide:not(.is-big) .ps-t, .pk-slip.is-wide:not(.is-big) .ps-more, .pk-slip.is-wide:not(.is-big) .ps-ink { grid-column: 1 / -1; }
+.pk-slip.is-wide:not(.is-big) .ps-r > i { flex-basis: auto; }
+.pk-slip.is-crisis .ps-ch b { font-size: calc(11.5px * var(--kk)); } .pk-slip.is-crisis .ps-cr { font-size: calc(10px * var(--kk)); }
+/* telegram: the reply form with typed strips pasted on it */
+.pk-slip.h-strips { padding: 2px 0; background: none; box-shadow: none; }
+.pk-slip.h-strips .ps-k, .pk-slip.h-strips .ps-t, .pk-slip.h-strips .ps-r, .pk-slip.h-strips .ps-ch, .pk-slip.h-strips .ps-fine { width: fit-content; max-width: 100%; box-sizing: border-box; margin: 0 0 calc(3px * var(--kk)); padding: 2px 6px 1px;
+  background: #f4e8c8; box-shadow: 0 1px 0 rgba(70, 46, 16, 0.25); }
+.pk-slip.h-strips .ps-r { width: auto; }
+.pk-slip .ps-chs { display: flex; flex-direction: column; }
+.pk-slip .ps-ch { display: block; width: 100%; min-height: calc(40px * var(--kk)); text-align: left; border: 0; color: inherit; font: inherit; cursor: pointer; }
+.pk-slip .ps-ch b { display: block; font-weight: 700; } .pk-slip .ps-ch em { font-style: normal; color: #9a2a1c; }
+.pk-slip .ps-cr { display: block; font-size: calc(10.5px * var(--kk)); line-height: 1.25; color: #3a3028; } .pk-slip .ps-cr i { font-style: normal; font-weight: 700; color: #7a6040; }
+.pk-slip .ps-ch[disabled] { text-decoration: line-through; opacity: 0.6; cursor: default; }
+.pk-slip.is-contract .ps-ch:not(.is-chosen) { opacity: 0.4; } .pk-slip .ps-ch.is-chosen b { text-decoration: underline; text-decoration-color: #1c2f5a; text-decoration-thickness: 2px; }
+.pk-stamp { position: absolute; left: 0; top: 0; z-index: 2; transform-origin: 0 0; pointer-events: none; filter: drop-shadow(0 14px 10px rgba(0, 0, 0, 0.4)); }
+.pk-stamphost { position: absolute; left: 0; top: 0; z-index: 2; transform-origin: 0 0; pointer-events: none; }
+.desk.sd.pk-thud .sd-clip { animation: pkThud 0.18s ease-out; }
+@keyframes pkThud { 0% { transform: translate(0, 0); } 35% { transform: translate(2px, 3px); } 100% { transform: translate(0, 0); } }
+@media (prefers-reduced-motion: reduce) { .desk.sd.pk-thud .sd-clip { animation: none; } .pk-slip.is-pen .ps-line path { transition: none; } }
+.pk-slip .ps-ch.dz-choice { border-radius: 0; background: #f4e8c8; box-shadow: 0 1px 0 rgba(70, 46, 16, 0.25); padding: 3px 6px 2px; margin: 0 0 3px; color: #2a2420; min-height: calc(40px * var(--kk)); }
+.pk-slip .ps-ch.dz-choice b { font: 700 calc(11.5px * var(--kk))/1.2 "LD Type", monospace; color: #1d1814; }
+.pk-slip .ps-ch.dz-choice[disabled] { opacity: 0.6; }
+/* the chair turn's painted frames have no props on the table: the rim props leave with the cut, never ghost over frame 1 */
+.desk.sd.is-pulling .sd-propimg { visibility: hidden; }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -11986,7 +12087,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   var BASE = "assets/house/1978/";
   LD.HOUSE_TURN_MS = 1000;
   LD.HOUSE_FRAMES = [
-    { id: "turn-1-before", src: BASE + "turn-1-before.webp", at: 0 },
+    { id: "turn-1-before", src: BASE + "turn-1-before-clean.webp", at: 0 }, /* brass pins painted out (turn-1-before.webp kept): matches the glass-pin desk */
     { id: "turn-2-push", src: BASE + "turn-2-push.webp", at: 0.14 },
     { id: "turn-3-spin1", src: BASE + "turn-3-spin1.webp", at: 0.32 },
     /* spin2b: a repaint at the same camera distance as 3 and 5 (the old turn-4-spin2 used a wider camera and is kept, unused) */
@@ -15206,6 +15307,43 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     return { id: dealId, kind: kind, label: KIND_LABEL[kind], tag: d.choices ? d.choices.length + " responses" : cardTag(state, d), title: d.title,
       region: rid, regionName: rid ? LD.REGION_NAMES[rid] : "", aria: pinAria(state, dealId) };
   };
+  /* Seated desk props (house rules): the deal as plain rows for the typed slip inside its prop. Chips come from the same
+     payloadChips/regionChips the dossier uses, so the slip and the dossier can never disagree. */
+  function chipList(arr) {
+    var out = [];
+    (arr || []).forEach(function (h) {
+      var m = /class="when">([^<]*)</.exec(h); if (m) { out.when = m[1]; return; }
+      m = /class="fx-chip ([^"]*)">([^<]*)</.exec(h); if (m) out.push({ c: m[1], t: m[2] });
+    });
+    return out;
+  }
+  LD.dealSlip = function (state, dealId) {
+    var d = LD.dealById(dealId); if (!d) return null;
+    var rid = state.world && state.world.pins ? state.world.pins[dealId] : null;
+    var o = { id: dealId, kind: LD.dealKind(d), kicker: d.kicker, region: rid ? LD.REGION_NAMES[rid] : "", title: d.title, body: d.body, fine: d.hint || "",
+      tag: d.choices ? d.choices.length + " responses" : cardTag(state, d) };
+    if (state.fy && state.fy.deck && LD.encounterFor) {
+      var en = LD.encounterFor(state, dealId), EN = LD.ENCOUNTERS && LD.ENCOUNTERS[en];
+      if (EN) o.enc = { id: en, name: EN.name, win: EN.win, art: LD.encArt ? LD.encArt(EN, en) : "" };
+    }
+    function rows(payload, choiceId) {
+      var c = payloadChips(state, d, payload), later = chipList(c.later);
+      return { now: chipList(c.now), later: later, when: later.when || "", map: chipList(regionChips(state, dealId, choiceId).concat(c.world)) };
+    }
+    if (d.choices) {
+      o.choices = d.choices.map(function (c) {
+        var rebate = LD.crisisRebate(state, d, c), blocked = LD.choiceBlocked(state, d, c), poor = c.cost && state.cash < c.cost - rebate;
+        var r = rows(c, c.id);
+        return { id: c.id, label: c.label, blocked: blocked || "", poor: poor ? money(c.cost - rebate) : "", rebate: rebate && !blocked ? money(rebate) : "",
+          now: r.now, later: r.later, when: r.when, map: r.map };
+      });
+    } else {
+      var r = rows(d);
+      o.now = r.now; o.later = r.later; o.when = r.when; o.map = r.map;
+      o.poor = d.cost && state.cash < d.cost ? money(d.cost) : "";
+    }
+    return o;
+  };
   LD.renderExecDossier = renderExecDossier;
   LD.payloadChips = payloadChips;
   LD.deskAnchor = anchor;
@@ -16632,7 +16770,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     room: BASE + "sd-room.webp",
     /* the same room painted wider (outpainted from sd-room, lined up by feature match); plate x 0 sits at x0 */
     roomWide: { src: BASE + "sd-room-wide.webp", x0: 640, w: 2000 },
-    table: { src: BASE + "sd-table.webp", box: [0, 545, 720, 597] },
+    table: { src: BASE + "sd-table-clean.webp", box: [0, 545, 720, 597] },
+    /* sd-table.webp (painted brass pins) is kept; the house desk now draws glass pins over sd-table-clean.webp */
     hands: { rest: { src: BASE + "sd-hands-rest-mara.webp", box: [100, 770, 614, 372] }, dip: { src: BASE + "sd-hands-dip-mara.webp", box: [100, 879, 620, 263] } },
     mara: { src: BASE + "sd-mara-ots.webp", box: [181, 389, 539, 891] },
     /* map pins on the painted table map. p: 1 = a painted brass pin sits there; 0 = we add one. */
@@ -16658,7 +16797,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     SEAT.mara = id === "mara" ? MARA_SET.mara : { src: d + "sd-ots.webp", box: EXEC_OTS[id] };
     SEAT.hands.rest.src = id === "mara" ? MARA_SET.rest : d + "sd-hands-rest.webp";
     SEAT.hands.dip.src = id === "mara" ? MARA_SET.dip : d + "sd-hands-dip.webp";
-    if (LD.HOUSE_FRAMES && plateSrc) LD.HOUSE_FRAMES.forEach(function (f, i) { f.src = id === "mara" ? plateSrc[i] : d + "turn-" + (i + 1) + ".webp"; });
+    if (LD.HOUSE_FRAMES && plateSrc) LD.HOUSE_FRAMES.forEach(function (f, i) { f.src = id === "mara" ? plateSrc[i] : d + "turn-" + (i + 1) + (i === 0 ? "-clean" : "") + ".webp"; });
     return id;
   };
   LD.seatedOn = function (state) {
@@ -16724,6 +16863,105 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   var TAG_AT = { na: [-62, -118], sam: [-58, 92], eu: [-6, -150], me: [58, -128], ea: [76, -96], af: [6, 104], sa: [74, 82], oc: [70, 106] };
   LD.seatTagAt = function (rid, k) { var o = TAG_AT[rid] || [0, -110]; return [o[0] * k, o[1] * k]; };
 
+
+  /* ---------- Deal props (house desk): the deal lies on the table as a prop; tap to open it, drag it to your hands to sign ----------
+     Closed props sit on the near rim (plate px). Each opens into a painted interior (no text in the art); the typed slip on it is
+     live game text. Every move is one object tweened; the open is a video slot (CLIPS) with a hard-cut fallback. */
+  var PROP_DIR = "assets/house/props/";
+  var PSIZE = {"briefcase": [640, 341], "briefcase-oxblood": [640, 341], "briefcase-black": [640, 341], "policy": [542, 640], "deed": [640, 537], "dossier": [614, 640], "dossier-red": [614, 640], "ledger": [633, 640], "cheque": [640, 443], "cheque-blue": [640, 443], "telegram": [640, 467], "stamp": [543, 640], "pen": [364, 279], "briefcase-open": [851, 751], "briefcase-oxblood-open": [851, 751], "briefcase-black-open": [851, 751], "policy-open": [686, 817], "deed-open": [721, 616], "dossier-open": [898, 676], "dossier-red-open": [898, 676], "ledger-open": [878, 742], "cheque-open": [900, 663], "cheque-blue-open": [900, 663], "telegram-open": [754, 633]};
+  var PROP_TYPES = {
+    briefcase: ["Treasury", "Export", "Procurement", "Operations", "Disaster", "Diversion", "Talent", "Commodities"],
+    policy: ["Products", "Services", "ESG"], deed: ["Acquisition", "Land", "Takeover", "Off-books"],
+    dossier: ["Lobby", "Government", "Compliance", "Legal", "Communications"], ledger: ["Finance", "IR", "Tax", "Disclosure"],
+    cheque: ["Concession", "Philanthropy", "People", "Logistics"]
+  };
+  var PROP_VAR = { briefcase: ["briefcase", "briefcase-oxblood", "briefcase-black"], dossier: ["dossier", "dossier-red"], cheque: ["cheque", "cheque-blue"] };
+  /* rim width in plate px */
+  var PROP_W = { briefcase: 200, policy: 128, deed: 168, dossier: 138, ledger: 150, cheque: 176, telegram: 166 };
+  var RIM = [[262, 838, -6], [430, 860, 4], [592, 832, 7]];
+  /* where the closed prop sits inside its open box ([x, y, w] as fractions of the open box): the clip's first frame */
+  var CLOSED_IN = { briefcase: [0.01, 0.41, 0.98], policy: [0.02, 0.02, 0.96], deed: [0.06, 0.06, 0.88], dossier: [0.34, 0.05, 0.64],
+    ledger: [0.36, 0.18, 0.62], cheque: [0.12, 0.2, 0.68], telegram: [0.03, 0.12, 0.94] };
+  /* the typed slip on each open interior: x, y, w (fractions of the open box), rotate, skewX (deg), how it is held */
+  var SLIP = { briefcase: { x: 0.15, y: 0.035, w: 0.68, r: -1.5, sk: -3, hold: "lid" }, dossier: { x: 0.03, y: 0.46, w: 0.46, r: -2, sk: 0, hold: "clip", min: 178 },
+    deed: { x: 0.05, y: 0.05, w: 0.6, r: -4, sk: 2, hold: "pin" }, cheque: { x: 0.01, y: 0.56, w: 0.56, r: -3, sk: 0, hold: "pocket", min: 186 },
+    policy: { x: 0.15, y: 0.15, w: 0.66, r: 1.2, sk: 0, hold: "rider" }, ledger: { x: 0.1, y: 0.52, w: 0.7, r: -3, sk: 0, hold: "page", wide: true },
+    telegram: { x: 0.12, y: 0.27, w: 0.76, r: -1.5, sk: 0, hold: "strips" } };
+  /* finished reveal clips: set an art name true once assets/house/props/clips/<art>-open.webm is in (see the video-stills README) */
+  LD.PROP_CLIPS = { stamp: false };
+  LD.PROP_CLIP_DIR = PROP_DIR + "clips/";
+  LD.SEAT_PROPS = { dir: PROP_DIR, size: PSIZE, w: PROP_W, rim: RIM, closedIn: CLOSED_IN, slip: SLIP };
+  LD.propTypeOf = function (d) {
+    if (!d) return "dossier";
+    if (LD.dealKind(d) === "crisis") return "telegram";
+    for (var t in PROP_TYPES) if (PROP_TYPES[t].indexOf(d.kicker) >= 0) return t;
+    return "dossier";
+  };
+  LD.propSrc = function (art) { return PROP_DIR + art + ".webp"; };
+  /* the props on the table this quarter, left to right in pin order (repeats of a kind get the next colourway) */
+  LD.seatPropsFor = function (state) {
+    if (!state || state.phase !== "deal" || state.ended || !state.offered) return [];
+    var ids = state.offered.filter(function (id) { return LD.dealById(id); });
+    ids.sort(function (a, b) { var pa = SEAT.pins[state.world.pins[a]] || SEAT.pins.eu, pb = SEAT.pins[state.world.pins[b]] || SEAT.pins.eu; return pa[0] - pb[0]; });
+    var seen = {};
+    return ids.slice(0, 3).map(function (id, i) {
+      var d = LD.dealById(id), t = LD.propTypeOf(d), n = seen[t] = (seen[t] || 0) + 1, v = PROP_VAR[t] || [t], art = v[(n - 1) % v.length];
+      var nat = PSIZE[art], w = PROP_W[t], h = w * nat[1] / nat[0], slot = ids.length === 2 ? RIM[i === 0 ? 0 : 2] : ids.length === 1 ? RIM[1] : RIM[i];
+      return { id: id, type: t, art: art, open: art + "-open", x: slot[0], y: slot[1], rot: slot[2], w: w, h: h };
+    });
+  };
+  /* Where the open prop stands: the biggest box (aspect r = h/w) in the free band that keeps the chosen deal's pin in sight.
+     o: { r, pin: [x, y], top, bottom, left, right, maxW } in screen px. */
+  LD.seatPeekBox = function (o) {
+    var gap = o.gap || 24, best = null;
+    function cand(x0, x1, y0, y1, side) {
+      var aw = x1 - x0, ah = y1 - y0; if (aw < 60 || ah < 60) return;
+      var w = Math.min(aw, o.maxW, ah / o.r), h = w * o.r;
+      if (!best || w > best.w + 0.5) best = { w: w, h: h, x0: x0, x1: x1, y0: y0, y1: y1, side: side };
+    }
+    var px = o.pin ? o.pin[0] : -1e4, py = o.pin ? o.pin[1] : 1e4;
+    cand(o.left, o.right, o.top, Math.min(o.bottom, py - gap), "above");
+    if (o.pin) { cand(o.left, px - gap, o.top, o.bottom, "left"); cand(px + gap, o.right, o.top, o.bottom, "right"); }
+    if (!best) return null;
+    var cx = best.side === "above" ? (o.left + o.right) / 2 : (best.x0 + best.x1) / 2;
+    cx = Math.max(best.x0 + best.w / 2, Math.min(best.x1 - best.w / 2, cx));
+    var y = best.y0 + Math.max(0, best.y1 - best.y0 - best.h) * 0.25;
+    return { x: cx - best.w / 2, y: y, w: best.w, h: best.h, side: best.side };
+  };
+  function slipRows(rows, cls) {
+    return (rows || []).map(function (x) { return '<span class="' + (/good|own/.test(x.c) ? "ps-g" : /bad|cost/.test(x.c) ? "ps-x" : "ps-m") + (cls || "") + '">' + x.t + "</span>"; }).join(" · ");
+  }
+  /* the typed slip for one deal (live text). Crisis telegrams list every response with its cost. */
+  LD.seatSlipHtml = function (state, id, type) {
+    var o = LD.dealSlip(state, id); if (!o) return "";
+    var g = SLIP[type] || SLIP.dossier;
+    var h = '<div class="pk-slip t-' + type + " h-" + g.hold + (g.wide ? " is-wide" : "") + (o.choices ? " is-crisis" : "") + '" data-deal="' + esc(id) + '">';
+    h += '<div class="ps-k">' + esc(o.kicker) + (o.region ? " · " + esc(o.region) : "") + "</div>";
+    h += '<div class="ps-t">' + esc(o.title) + "</div>";
+    var enc = o.enc ? '<div class="ps-r ps-enc"><i>Knocking</i><span><span class="ps-ic" aria-hidden="true">' + o.enc.art + "</span>" + esc(o.enc.name) + "</span></div>" : "";
+    if (o.choices) {
+      h += enc + '<div class="ps-chs">';
+      o.choices.forEach(function (c, i) {
+        var dis = c.blocked || c.poor;
+        h += '<button type="button" class="dz-choice ps-ch" data-deal="' + esc(id) + '" data-choice="' + esc(c.id) + '"' + (dis ? " disabled" : "") + ">" +
+          '<b><em>' + (i + 1) + ".</em> " + esc(c.label) + (c.blocked ? " · " + esc(c.blocked) : c.poor ? " · need " + c.poor : "") + "</b>" +
+          '<span class="ps-cr">' + (c.rebate ? '<span class="ps-g">Rebate +' + c.rebate + "</span> · " : "") + (slipRows(c.now) || "Free") +
+          (c.later.length ? " · <i>" + esc(c.when || "Later") + "</i> " + slipRows(c.later) : "") + (c.map.length ? " · " + slipRows(c.map) : "") + "</span></button>";
+      });
+      h += "</div>";
+      h += '<div class="ps-more"><p class="ps-fine">Ignore it and it spreads to a neighbouring region at quarter close.</p></div>';
+    } else {
+      var now = o.now || [], money0 = now.length && /\$/.test(now[0].t) ? now[0] : null, rest = money0 ? now.slice(1) : now;
+      h += '<div class="ps-r ps-pay"><i>Pays now</i><span><b class="' + (money0 && /^−|^-/.test(money0.t) ? "ps-x" : "") + '">' + esc(money0 ? money0.t : o.tag) + "</b>" + (rest.length ? " " + slipRows(rest) : "") + "</span></div>";
+      h += enc;
+      if (o.later.length) h += '<div class="ps-r"><i>Later ' + esc(o.when) + "</i><span>" + slipRows(o.later) + "</span></div>";
+      h += '<div class="ps-more">' + (o.map.length ? '<div class="ps-r"><i>Map</i><span>' + slipRows(o.map) + "</span></div>" : "") +
+        (o.enc ? '<p class="ps-fine">Win the meeting: ' + esc(o.enc.win) + "</p>" : "") + '<p class="ps-fine">Fine print: ' + esc(o.fine) + "</p></div>";
+      h += '<button type="button" class="ps-sign" id="btn-sign" data-deal="' + esc(id) + '"' + (o.poor ? " disabled" : "") + "><i>" + (o.poor ? "Need " + o.poor : "Sign") + '</i><span class="ps-line"><svg viewBox="0 0 120 22" preserveAspectRatio="none" aria-hidden="true"><path d="M3,16 c8,-14 12,-4 9,4 s9,-16 16,-9 s3,12 11,-2 s9,-8 12,2 s7,3 14,-6 s5,8 12,1 s9,-5 20,-3 s10,2 16,-1" pathLength="100"/></svg></span></button>';
+    }
+    h += '<span class="ps-ink" aria-hidden="true">Approved</span>';
+    return h + "</div>";
+  };
   /* ---------- MG-1 HUD (locked): cream stepped bar, cash, vials, network jewels, quarter ---------- */
   var ICON = {
     unrest: '<path d="M5 15v-4a2 2 0 0 1 4 0v4M11 15v-5a2 2 0 0 1 4 0v5M17 15v-4a2 2 0 0 1 4 0v4" /><circle cx="7" cy="6.5" r="1.7"/><circle cx="13" cy="5" r="1.7"/><circle cx="19" cy="6.5" r="1.7"/>',
@@ -16799,7 +17037,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   /* ---------- the desk ---------- */
   function pinHtml(state, info, i, sel) {
     var p = SEAT.pins[info.region] || SEAT.pins.eu;
-    return '<button type="button" class="sd-pin k-' + info.kind + (p[2] ? "" : " add") + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-plate="' + p[0] + "," + p[1] + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><i></i></button>';
+    return '<button type="button" class="sd-pin k-' + info.kind + " add" + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-plate="' + p[0] + "," + p[1] + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><i></i></button>';
   }
   function tagHtml(info, i, sel) {
     return '<button type="button" class="sd-tag k-' + info.kind + (sel === info.id ? " sel" : "") + '" data-deal="' + info.id + '" data-rid="' + esc(info.region || "") + '" style="--i:' + i + '" aria-label="' + esc(info.aria) + '"><b>' + esc(info.label) + "</b><em>" + esc(info.tag) + "</em></button>";
@@ -16838,10 +17076,14 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     ui = ui || {};
     var sel = ui.sel || {}, deal = state.phase === "deal" && !state.ended;
     var infos = deal ? state.offered.map(function (id) { return LD.dealTagInfo(state, id); }).filter(Boolean) : [];
-    var hasSel = !!(sel.deal || sel.region || sel.net);
-    var h = '<div class="desk sd' + (ui.fan ? " is-fan" : "") + (hasSel ? " has-sel" : "") + (ui.land ? " is-land" : "") + (deal ? " is-deal" : " is-bunker") + (ui.closing ? " is-closing" : "") + '" data-phase="'  + state.phase + '">';
+    var hasSel = !!(sel.deal || sel.region || sel.net), props = LD.seatPropsFor(state);
+    var h = '<div class="desk sd' + (ui.fan ? " is-fan" : "") + (hasSel ? " has-sel" : "") + (ui.land ? " is-land" : "") + (deal ? " is-deal" : " is-bunker") + (deal && props.length ? " has-props" : "") + (ui.closing ? " is-closing" : "") + '" data-phase="'  + state.phase + '">';
     h += '<div class="sd-bg" aria-hidden="true"></div>';
-    h += LD.seatStage({ under: "" });
+    var under = "";
+    props.forEach(function (pr) {
+      under += '<img class="sd-propimg" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + 'deg)">';
+    });
+    h += LD.seatStage({ under: under });
     /* screen-space layer: lines, pins, tags, region taps */
     h += '<div class="sd-ui">';
     h += '<svg class="sd-lines" aria-hidden="true"></svg>';
@@ -16852,6 +17094,11 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     });
     infos.forEach(function (x, i) { h += pinHtml(state, x, i, sel.deal); });
     infos.forEach(function (x, i) { h += tagHtml(x, i, sel.deal); });
+    props.forEach(function (pr, i) {
+      var x = infos.filter(function (n) { return n.id === pr.id; })[0], sd = LD.dealSlip(state, pr.id), neg = /^[−-]/.test(x.tag);
+      h += '<button type="button" class="sd-prop k-' + x.kind + " t-" + pr.type + (sel.deal === pr.id ? " sel" : "") + '" data-deal="' + pr.id + '" data-plate="' + pr.x + "," + pr.y + '" data-pw="' + pr.w.toFixed(1) + "," + pr.h.toFixed(1) + '" style="--rot:' + pr.rot + "deg;--i:" + i + '" aria-label="' + esc(x.aria) + '">' +
+        '<span class="sd-stk"><b>' + esc(sd.kicker) + "</b><em" + (neg ? ' class="neg"' : "") + ">" + esc(x.tag) + "</em></span></button>";
+    });
     h += "</div>";
     if (!ui.land) h += '<div class="sd-ribbon" role="status">' + (deal ? "Q" + state.turn + " · pick 1 of " + infos.length + " deals on the map" : state.ended ? "The run is over" : "Q" + state.turn + " · deal signed") + "</div>";
     h += LD.seatHud(state);
@@ -18585,7 +18832,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   function uiOpts() {
     var c = coachInfo();
     var phone = isPhone();
-    return { selDeal: sel.deal, selRegion: sel.region, selNet: sel.net, coach: c.coach, coachDeal: c.coachDeal, coachText: c.coachText,
+    return { selDeal: seatedNow() && pkOn() ? null : sel.deal, selRegion: sel.region, selNet: sel.net, coach: c.coach, coachDeal: c.coachDeal, coachText: c.coachText,
       hidePins: hidePins, lens: lens, interactive: true, phone: phone, globe: !phone };
   }
 
@@ -18672,6 +18919,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   function renderSeatedDesk(from) {
     var el = $("screen-desk");
     if (tickerTimer) { clearInterval(tickerTimer); tickerTimer = null; }
+    seatPeekKill();
     el.innerHTML = LD.renderSeatedDesk(state, seatedUi());
     bindSeated();
     placeSeated();
@@ -18710,8 +18958,16 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     Array.prototype.forEach.call(ui.querySelectorAll("[data-plate]"), function (n) {
       var p = n.getAttribute("data-plate").split(",").map(Number), q = LD.seatToScreen(f, p[0], p[1]);
       n.style.left = q[0].toFixed(1) + "px"; n.style.top = q[1].toFixed(1) + "px";
+      var pw = n.getAttribute("data-pw");
+      if (pw) { pw = pw.split(",").map(Number); n.style.width = (pw[0] * f.s).toFixed(1) + "px"; n.style.height = (pw[1] * f.s).toFixed(1) + "px"; }
       var r = n.getAttribute("data-r");
       if (r) { r = r.split(",").map(Number); n.style.width = (2 * r[0] * f.s).toFixed(1) + "px"; n.style.height = (2 * r[1] * f.s).toFixed(1) + "px"; }
+    });
+    /* prop stickers: keep each one inside the stage (the rim props sit near the edges) */
+    Array.prototype.forEach.call(ui.querySelectorAll(".sd-stk"), function (t) {
+      t.style.marginLeft = "0px"; var r = t.getBoundingClientRect(), dx = 0;
+      if (r.left < 4) dx = 4 - r.left; else if (r.right > W - 4) dx = W - 4 - r.right;
+      if (dx) t.style.marginLeft = dx.toFixed(1) + "px";
     });
     /* tags: start at the region's preferred offset, clamp to the stage, push apart */
     var x0 = land ? col[0] + 8 : 8, x1 = land ? col[1] - 8 : W - 8, yTop = hb + (land ? 44 : 44 * k), yBot = H - 96 * k;
@@ -18853,18 +19109,268 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     desk.style.setProperty("--fan-h", Math.round(ch + base + 8) + "px");
     var lab = desk.querySelector(".sd-tabl"); if (lab) desk.style.setProperty("--tab-hw", Math.round(lab.offsetWidth / 2) + "px");
   }
+  /* ---------- House desk deal props: tap a prop and it lifts and opens (the typed slip on it is the deal); tap another to compare;
+     drag it to your hands (or tap Sign on the slip) and the slip grows into the contract, is signed and stamped.
+     Every move is one object tweened (WAAPI); the open and the stamp are <video> slots that start and end on the exact stills,
+     with a hard cut when the clip is missing. Never a crossfade between two paintings. ---------- */
+  var PK = { id: null, busy: false, gen: 0 };
+  function pkOn() { return !!document.querySelector("#screen-desk .desk.sd.has-props"); }
+  function pkProp(id) { return LD.seatPropsFor(state).filter(function (p) { return p.id === id; })[0] || null; }
+  function pkRoot() {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return null;
+    var r = desk.querySelector(".sd-peek");
+    if (!r) { r = document.createElement("div"); r.className = "sd-peek"; r.id = "sd-peek"; r.innerHTML = '<svg class="pk-thread" aria-hidden="true"><path/></svg>'; desk.appendChild(r); }
+    return r;
+  }
+  function pkAnim(el, frames, ms, ease) {
+    if (!el || !el.animate || reduced()) { var last = frames[frames.length - 1]; Object.keys(last).forEach(function (k) { if (k !== "offset") el.style[k] = last[k]; }); return Promise.resolve(); }
+    var a = el.animate(frames, { duration: ms, easing: ease || "cubic-bezier(.2,.75,.25,1)", fill: "forwards" });
+    return a.finished.then(function () { var last = frames[frames.length - 1]; Object.keys(last).forEach(function (k) { if (k !== "offset") el.style[k] = last[k]; }); try { a.cancel(); } catch (e) {} }, function () {});
+  }
+  function pkPose(p) { return "translate(" + p.x.toFixed(1) + "px," + p.y.toFixed(1) + "px) rotate(" + (p.r || 0).toFixed(2) + "deg) skewX(" + (p.sk || 0).toFixed(2) + "deg) scale(" + (p.s == null ? 1 : p.s).toFixed(4) + ")"; }
+  function pkWait(ms) { return new Promise(function (res) { setTimeout(res, reduced() ? 0 : ms); }); }
+  /* geometry of one peek for this viewport */
+  function pkLayout(pr) {
+    var W = window.innerWidth, H = window.innerHeight, f = LD.seatFrame(W, H), land = f.land, col = LD.seatColumn(W, H), P = LD.SEAT_PROPS;
+    var desk = document.querySelector("#screen-desk .desk.sd"), hud = desk.querySelector(".sd-hud"), rib = desk.querySelector(".sd-ribbon");
+    var top = Math.max(hud ? hud.getBoundingClientRect().bottom : 0, rib && rib.offsetParent ? rib.getBoundingClientRect().bottom : 0) + 8;
+    var L = land ? col[0] + 10 : 8, R = land ? col[1] - 10 : W - 8, rimTop = 1e4;
+    LD.seatPropsFor(state).forEach(function (q) { rimTop = Math.min(rimTop, LD.seatToScreen(f, q.x, q.y - q.h * 0.42)[1]); });
+    var pinEl = desk.querySelector('.sd-pin[data-deal="' + pr.id + '"]'), pin = null;
+    if (pinEl) { var pb = pinEl.getBoundingClientRect(); pin = [pb.left + pb.width / 2, pb.top + pb.height / 2]; }
+    var nat = P.size[pr.open], r = nat[1] / nat[0];
+    var box = LD.seatPeekBox({ r: r, pin: pin, top: top, bottom: Math.min(rimTop - 4, H * 0.74), left: L, right: R, maxW: land ? Math.min(470, (R - L) * 0.86) : Math.min(470, W * 0.9) }) || { x: L, y: top, w: (R - L) * 0.6, h: (R - L) * 0.6 * r };
+    var ci = P.closedIn[pr.type], cw = ci[2] * box.w, ch = cw * P.size[pr.art][1] / P.size[pr.art][0];
+    var rimC = LD.seatToScreen(f, pr.x, pr.y), rimW = pr.w * f.s;
+    /* the closed art at the rim and inside the box must be the same picture at the same pose: solve the box transform that lands it on the rim */
+    var lc = [ci[0] * box.w + cw / 2, ci[1] * box.h + ch / 2], k = rimW / cw, a = pr.rot * Math.PI / 180;
+    var from = { x: rimC[0] - k * (Math.cos(a) * lc[0] - Math.sin(a) * lc[1]), y: rimC[1] - k * (Math.sin(a) * lc[0] + Math.cos(a) * lc[1]), r: pr.rot, s: k };
+    var g = P.slip[pr.type], kk = W > 500 && !land ? 1.12 : 1;
+    var sw = Math.min(box.w * 0.94, Math.max(g.w * box.w, (g.min || 196) * kk));
+    var slip = { x: box.x + g.x * box.w, y: box.y + g.y * box.h, r: g.r, sk: g.sk, s: 1, w: sw };
+    if (slip.x + sw * Math.cos(g.r * Math.PI / 180) > R) slip.x = Math.max(L, R - sw);
+    var hands = LD.seatToScreen(f, 410, 940);
+    return { W: W, H: H, f: f, land: land, box: box, from: from, closed: { x: ci[0], y: ci[1], w: ci[2] }, pin: pin, slip: slip, top: top, L: L, R: R, hands: hands, kk: kk };
+  }
+  function pkThread(root, lay, on) {
+    var svg = root.querySelector(".pk-thread"), path = svg && svg.querySelector("path"); if (!path) return;
+    if (!on || !lay.pin) { path.setAttribute("d", ""); return; }
+    svg.setAttribute("viewBox", "0 0 " + lay.W + " " + lay.H); svg.setAttribute("width", lay.W); svg.setAttribute("height", lay.H);
+    var b = lay.box, p = lay.pin, ex = Math.max(b.x + 16, Math.min(b.x + b.w - 16, p[0])), ey = b.y + b.h - 6;
+    if (lay.box.side === "left") { ex = b.x + b.w - 6; ey = Math.max(b.y + 16, Math.min(b.y + b.h - 16, p[1])); }
+    if (lay.box.side === "right") { ex = b.x + 6; ey = Math.max(b.y + 16, Math.min(b.y + b.h - 16, p[1])); }
+    path.setAttribute("d", "M" + p[0].toFixed(1) + "," + p[1].toFixed(1) + " Q" + ((p[0] + ex) / 2).toFixed(1) + "," + (Math.max(p[1], ey) + 10).toFixed(1) + " " + ex.toFixed(1) + "," + ey.toFixed(1));
+  }
+  function pkRibbon(text) {
+    var rib = document.querySelector("#screen-desk .desk.sd .sd-ribbon"); if (!rib) return;
+    if (!rib.hasAttribute("data-base")) rib.setAttribute("data-base", rib.textContent);
+    rib.textContent = text == null ? rib.getAttribute("data-base") : text;
+  }
+  function pkRim(id, show) {
+    Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-propimg[data-deal="' + id + '"], #screen-desk .sd-prop[data-deal="' + id + '"]'), function (n) { n.style.visibility = show ? "" : "hidden"; });
+  }
+  function pkClip(art) { return LD.PROP_CLIPS && LD.PROP_CLIPS[art] ? LD.PROP_CLIP_DIR + art + "-open.webm" : null; }
+  /* play a clip over its held stills, or resolve at once (hard cut) when there is none */
+  function pkPlay(host, src) {
+    if (!src || reduced()) return Promise.resolve();
+    return new Promise(function (res) {
+      var v = document.createElement("video"), done = false;
+      v.className = "pk-vid"; v.muted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "auto"; v.src = src;
+      function end() { if (done) return; done = true; res(v); }
+      v.addEventListener("ended", end); v.addEventListener("error", end); setTimeout(end, 2500);
+      host.appendChild(v); var pr = v.play(); if (pr && pr.catch) pr.catch(end);
+    });
+  }
+  function seatPeekKill() {
+    PK.gen++; PK.id = null; PK.busy = false; PK.lay = null; PK.el = null; PK.slip = null;
+    var r = document.querySelector("#screen-desk .sd-peek"); if (r) r.parentNode.removeChild(r);
+    Array.prototype.forEach.call(document.querySelectorAll("#screen-desk .sd-propimg, #screen-desk .sd-prop"), function (n) { n.style.visibility = ""; n.style.transform = n.classList.contains("sd-propimg") ? n.style.transform : ""; });
+  }
+  /* close the open prop back to its rim slot (slip in, hard cut / clip to closed, one tween home) */
+  function seatPeekClose(instant) {
+    var id = PK.id, el = PK.el, slip = PK.slip, lay = PK.lay, root = pkRoot(); if (!id || !el) return Promise.resolve();
+    PK.id = null; PK.el = null; PK.slip = null; PK.lay = null;
+    pkRibbon(null); pkThread(root, lay, false);
+    Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-pin'), function (n) { n.classList.remove("sel"); });
+    if (instant || reduced()) { if (el.parentNode) el.parentNode.removeChild(el); if (slip && slip.parentNode) slip.parentNode.removeChild(slip); pkRim(id, true); return Promise.resolve(); }
+    var s0 = lay.slip;
+    var a = slip ? pkAnim(slip, [{ transform: pkPose(s0), clipPath: "inset(0 0 0 0)" }, { transform: pkPose({ x: s0.x, y: s0.y + 26, r: s0.r, sk: s0.sk }), clipPath: "inset(0 0 100% 0)" }], 130, "ease-in") : Promise.resolve();
+    return a.then(function () {
+      if (slip && slip.parentNode) slip.parentNode.removeChild(slip);
+      el.classList.remove("is-open");
+      return pkAnim(el, [{ transform: pkPose({ x: lay.box.x, y: lay.box.y }) }, { transform: pkPose(lay.from) }], 200, "cubic-bezier(.4,0,.6,1)");
+    }).then(function () { pkRim(id, true); if (el.parentNode) el.parentNode.removeChild(el); });
+  }
+  function seatPeek(id) {
+    if (PK.busy) return;
+    if (PK.id === id) { seatPeekClose(); clearSel(); seatSelSync(); return; }
+    var pr = pkProp(id); if (!pr) return;
+    if (PK.id) seatPeekClose();
+    var root = pkRoot(), lay = pkLayout(pr), gen = ++PK.gen, b = lay.box;
+    PK.id = id; PK.lay = lay; PK.pr = pr;
+    var el = document.createElement("div");
+    el.className = "pk t-" + pr.type; el.setAttribute("data-deal", id);
+    el.style.width = b.w.toFixed(1) + "px"; el.style.height = b.h.toFixed(1) + "px";
+    el.innerHTML = '<img class="pk-closed" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (lay.closed.x * 100).toFixed(2) + "%;top:" + (lay.closed.y * 100).toFixed(2) + "%;width:" + (lay.closed.w * 100).toFixed(2) + '%">' +
+      '<img class="pk-open" src="' + LD.propSrc(pr.open) + '" alt="" draggable="false">';
+    el.style.transform = pkPose(lay.from);
+    root.appendChild(el); PK.el = el;
+    var tmp = document.createElement("div"); tmp.innerHTML = LD.seatSlipHtml(state, id, pr.type); var slip = tmp.firstChild;
+    slip.style.width = lay.slip.w.toFixed(1) + "px"; slip.style.setProperty("--kk", lay.kk); slip.style.transform = pkPose(lay.slip); slip.style.clipPath = "inset(0 0 100% 0)"; slip.style.visibility = "hidden";
+    root.appendChild(slip); PK.slip = slip;
+    /* a tall slip (a crisis with three responses) never runs down over the deal's own pin or the rim props: it rides up instead */
+    var sh = slip.offsetHeight, lim = Math.min(lay.pin ? (lay.box.side === "above" ? lay.pin[1] - 20 : 1e4) : 1e4, lay.H * 0.74);
+    if (lay.slip.y + sh > lim) { lay.slip.y = Math.max(lay.top - 2, lim - sh); slip.style.transform = pkPose(lay.slip); }
+    bindPeek(el, slip, id);
+    pkRim(id, false);
+    Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-pin'), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === id); });
+    pkThread(root, lay, true);
+    pkRibbon(lay.land ? null : (LD.dealById(id).choices ? "Tap a response to answer it" : "Drag to your hands to sign · or tap another"));
+    SFX.play("tick");
+    /* 1 lift (tween) -> 2 open (clip or hard cut) -> 3 slip slides out of its holder (tween) */
+    pkAnim(el, [{ transform: pkPose(lay.from) }, { transform: pkPose({ x: b.x, y: b.y }) }], 230).then(function () {
+      if (gen !== PK.gen) return;
+      return pkPlay(el, pkClip(pr.art)).then(function (v) {
+        if (gen !== PK.gen) return;
+        el.classList.add("is-open"); if (v && v.parentNode) v.parentNode.removeChild(v);
+        slip.style.visibility = "";
+        var s0 = lay.slip;
+        return pkAnim(slip, [{ transform: pkPose({ x: s0.x, y: s0.y + 26, r: s0.r, sk: s0.sk }), clipPath: "inset(0 0 100% 0)" }, { transform: pkPose(s0), clipPath: "inset(0 0 0% 0)" }], 190);
+      });
+    });
+  }
+  /* drag the open prop (slip rides with it) to your hands; tap the slip to read it at full size */
+  function bindPeek(el, slip, id) {
+    var st = null;
+    function pose(dx, dy, sc, o) { var lay = PK.lay, b = lay.box, s = lay.slip;
+      el.style.transform = pkPose({ x: o[0] + (b.x - o[0]) * sc + dx, y: o[1] + (b.y - o[1]) * sc + dy, s: sc });
+      slip.style.transform = pkPose({ x: o[0] + (s.x - o[0]) * sc + dx, y: o[1] + (s.y - o[1]) * sc + dy, r: s.r, sk: s.sk, s: sc }); }
+    function zone(y) { return y > PK.lay.H * (PK.lay.land ? 0.72 : 0.7); }
+    function down(e) {
+      if (PK.busy || PK.id !== id || !el.classList.contains("is-open") || (e.button && e.button > 0)) return;
+      if (e.target.closest && e.target.closest("button")) return;
+      st = { x: e.clientX, y: e.clientY, moved: false, pid: e.pointerId, src: e.currentTarget };
+      try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
+    }
+    function move(e) {
+      if (!st || e.pointerId !== st.pid) return;
+      var dx = e.clientX - st.x, dy = e.clientY - st.y;
+      if (!st.moved && Math.abs(dx) + Math.abs(dy) < 9) return;
+      st.moved = true; e.preventDefault();
+      var lay = PK.lay, prog = Math.max(0, Math.min(1, dy / Math.max(1, lay.hands[1] - lay.box.y - lay.box.h * 0.5))), sc = 1 - 0.3 * prog;
+      pose(dx, dy, sc, [st.x, st.y]); st.dx = dx; st.dy = dy; st.sc = sc;
+      var over = zone(e.clientY); if (over !== st.over) { st.over = over; pkRibbon(lay.land ? null : over ? "Let go to sign" : "Drag to your hands to sign · or tap another"); document.querySelector("#screen-desk .desk.sd").classList.toggle("pk-over", over); }
+    }
+    function up(e) {
+      if (!st || e.pointerId !== st.pid) return;
+      var s = st; st = null;
+      document.querySelector("#screen-desk .desk.sd").classList.remove("pk-over");
+      if (!s.moved) { if (s.src === slip) pkRead(slip); return; }
+      if (zone(e.clientY)) { if (LD.dealById(id).choices) { flash("Pick a response on the telegram first."); pkBack(s); return; } seatSign(id, null, s); return; }
+      pkBack(s);
+    }
+    function pkBack(s) { var lay = PK.lay, b = lay.box, sl = lay.slip, o = [s.x, s.y], sc = s.sc || 1;
+      pkRibbon(lay.land ? null : "Drag to your hands to sign · or tap another");
+      pkAnim(el, [{ transform: pkPose({ x: o[0] + (b.x - o[0]) * sc + s.dx, y: o[1] + (b.y - o[1]) * sc + s.dy, s: sc }) }, { transform: pkPose({ x: b.x, y: b.y }) }], 180);
+      pkAnim(slip, [{ transform: pkPose({ x: o[0] + (sl.x - o[0]) * sc + s.dx, y: o[1] + (sl.y - o[1]) * sc + s.dy, r: sl.r, sk: sl.sk, s: sc }) }, { transform: pkPose(sl) }], 180); }
+    [el, slip].forEach(function (n) { n.addEventListener("pointerdown", down); n.addEventListener("pointermove", move); n.addEventListener("pointerup", up); n.addEventListener("pointercancel", function () { if (st) pkBack(st); st = null; }); n.addEventListener("click", function (e) { e.stopPropagation(); }); });
+    var sign = slip.querySelector("#btn-sign");
+    if (sign) sign.addEventListener("click", function (e) { e.stopPropagation(); tick(); seatSign(id, null); });
+    Array.prototype.forEach.call(slip.querySelectorAll(".ps-ch"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); tick(); seatSign(id, b.getAttribute("data-choice")); }); });
+  }
+  /* the contract pose: the same slip, straightened and grown (its extra rows unfold) */
+  function pkBig(lay) {
+    var W = lay.W, w = lay.land ? Math.min((lay.R - lay.L) * 0.86, 430) : Math.min(W * 0.9, 430), s = w / lay.slip.w;
+    return { x: (lay.land ? (lay.L + lay.R) / 2 : W / 2) - w / 2, y: lay.top + 6, r: -0.8, sk: 0, s: s };
+  }
+  function pkRead(slip) {
+    var lay = PK.lay; if (!lay || PK.busy) return;
+    var more = slip.querySelector(".ps-more"), big = slip.classList.toggle("is-big");
+    var to = big ? pkBig(lay) : lay.slip, fr = big ? lay.slip : pkBig(lay);
+    if (more) { var hh = more.scrollHeight; pkAnim(more, [{ maxHeight: (big ? 0 : hh) + "px" }, { maxHeight: (big ? hh : 0) + "px" }], 260); }
+    pkAnim(slip, [{ transform: pkPose(fr) }, { transform: pkPose(to) }], 260);
+    pkRibbon(lay.land ? null : big ? "Tap Sign, or tap the slip to put it back" : "Drag to your hands to sign · or tap another");
+  }
+  /* sign: others leave the table, the prop goes to your hands, the slip grows into the contract, pen, stamp (clip or tween), then the real deal */
+  function seatSign(id, choice, drag) {
+    if (PK.busy || PK.id !== id) return;
+    var d = LD.dealById(id), sd = LD.dealSlip(state, id);
+    if (!choice && sd && sd.poor) { flash("Need " + sd.poor + " to sign this."); return; }
+    PK.busy = true;
+    var gen = PK.gen, lay = PK.lay, el = PK.el, slip = PK.slip, root = pkRoot(), f = lay.f;
+    root.classList.add("is-signing"); pkThread(root, lay, false); pkRibbon(lay.land ? null : "Signing…");
+    if (reduced()) { PK.busy = false; seatPeekKill(); applyDeal(id, choice || undefined); return; }
+    /* the others slide off the table edge (one tween each) */
+    LD.seatPropsFor(state).forEach(function (p) {
+      if (p.id === id) return;
+      var dir = p.x < 410 ? -1 : 1;
+      Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-propimg[data-deal="' + p.id + '"]'), function (n) {
+        pkAnim(n, [{ transform: "rotate(" + p.rot + "deg)" }, { transform: "translateX(" + (dir * 560) + "px) rotate(" + (p.rot * 3) + "deg)" }], 260, "cubic-bezier(.5,0,.8,.4)"); });
+      var btn = document.querySelector('#screen-desk .sd-prop[data-deal="' + p.id + '"]'); if (btn) btn.style.visibility = "hidden";
+    });
+    /* the prop settles into your hands */
+    var b = lay.box, hs = 0.6, cur = drag ? { x: drag.x + (b.x - drag.x) * (drag.sc || 1) + drag.dx, y: drag.y + (b.y - drag.y) * (drag.sc || 1) + drag.dy, s: drag.sc || 1 } : { x: b.x, y: b.y, s: 1 };
+    var held = { x: lay.hands[0] - b.w * hs / 2, y: lay.hands[1] - b.h * hs * 0.62, s: hs };
+    pkAnim(el, [{ transform: pkPose(cur) }, { transform: pkPose(held) }], 260);
+    /* the slip grows into the contract (one object: pose + its folded rows) */
+    var big = pkBig(lay), sc0 = slip.classList.contains("is-big") ? big : drag ? { x: drag.x + (lay.slip.x - drag.x) * (drag.sc || 1) + drag.dx, y: drag.y + (lay.slip.y - drag.y) * (drag.sc || 1) + drag.dy, r: lay.slip.r, sk: lay.slip.sk, s: drag.sc || 1 } : lay.slip;
+    var more = slip.querySelector(".ps-more");
+    if (more && !slip.classList.contains("is-big")) { var hh = more.scrollHeight; pkAnim(more, [{ maxHeight: "0px" }, { maxHeight: hh + "px" }], 320); }
+    slip.classList.add("is-big", "is-contract");
+    if (choice) Array.prototype.forEach.call(slip.querySelectorAll(".ps-ch"), function (n) { n.classList.toggle("is-chosen", n.getAttribute("data-choice") === choice); });
+    pkAnim(slip, [{ transform: pkPose(sc0) }, { transform: pkPose(big) }], 320).then(function () {
+      if (gen !== PK.gen) return;
+      slip.classList.add("is-pen");
+      return pkWait(420);
+    }).then(function () {
+      if (gen !== PK.gen) return;
+      return seatStamp(root, slip);
+    }).then(function () {
+      if (gen !== PK.gen) return;
+      return pkWait(260);
+    }).then(function () {
+      if (gen !== PK.gen) return;
+      PK.busy = false; seatPeekKill();
+      applyDeal(id, choice || undefined);
+    });
+  }
+  /* the stamp: clip slot (starts and ends on the stamp held above the slip) or a two-tween fallback; the ink is live text and cuts in at impact */
+  function seatStamp(root, slip) {
+    var sr = slip.getBoundingClientRect(), w = Math.min(150, sr.width * 0.36), x = sr.right - w * 1.02, yHover = sr.bottom - w * 1.55 - 40, yDown = sr.bottom - w * 1.18;
+    var st = document.createElement("img"); st.className = "pk-stamp"; st.src = LD.propSrc("stamp"); st.alt = ""; st.style.width = w + "px";
+    st.style.transform = "translate(" + x.toFixed(1) + "px," + yHover.toFixed(1) + "px) rotate(-8deg)";
+    root.appendChild(st);
+    var clip = LD.PROP_CLIPS && LD.PROP_CLIPS.stamp ? LD.PROP_CLIP_DIR + "stamp.webm" : null;
+    if (clip) {
+      /* clip frame: w x 2w, stamp held at the top (stamp-start.png), impact with its foot 0.62w lower, ends empty (stamp-end.png) */
+      var host = document.createElement("div"); host.className = "pk-stamphost"; host.style.transform = "translate(" + x.toFixed(1) + "px," + (yDown - 0.62 * w).toFixed(1) + "px) rotate(-8deg)"; host.style.width = w + "px"; host.style.height = (w * 2) + "px"; root.appendChild(host);
+      st.style.visibility = "hidden";
+      setTimeout(function () { slip.classList.add("is-inked"); }, LD.PROP_CLIPS.stampImpactMs || 300);
+      return pkPlay(host, clip).then(function (v) { if (v && v.parentNode) v.parentNode.removeChild(v); slip.classList.add("is-inked"); host.parentNode.removeChild(host); st.parentNode.removeChild(st); });
+    }
+    return pkAnim(st, [{ transform: "translate(" + x.toFixed(1) + "px," + yHover.toFixed(1) + "px) rotate(-8deg)" }, { transform: "translate(" + x.toFixed(1) + "px," + yDown.toFixed(1) + "px) rotate(-6deg) scale(.96)" }], 150, "cubic-bezier(.6,0,.9,.5)").then(function () {
+      slip.classList.add("is-inked"); SFX.play("pick");
+      var desk = document.querySelector("#screen-desk .desk.sd"); if (desk) { desk.classList.remove("pk-thud"); void desk.offsetWidth; desk.classList.add("pk-thud"); }
+      return pkWait(110);
+    }).then(function () {
+      return pkAnim(st, [{ transform: "translate(" + x.toFixed(1) + "px," + yDown.toFixed(1) + "px) rotate(-6deg) scale(.96)" }, { transform: "translate(" + (x + 60).toFixed(1) + "px," + (yHover - 140).toFixed(1) + "px) rotate(-14deg)" }], 230, "cubic-bezier(.2,.6,.3,1)");
+    }).then(function () { if (st.parentNode) st.parentNode.removeChild(st); });
+  }
+  LD.seatPeek = function (id) { seatPeek(id); };
+  LD.seatPeekState = function () { return { id: PK.id, busy: PK.busy, box: PK.lay ? PK.lay.box : null, pin: PK.lay ? PK.lay.pin : null }; };
   function seatSelSync() {
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     Array.prototype.forEach.call(desk.querySelectorAll("[data-deal]"), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === sel.deal); });
     Array.prototype.forEach.call(desk.querySelectorAll(".sd-region"), function (n) { n.classList.toggle("sel", n.getAttribute("data-region") === sel.region); });
     Array.prototype.forEach.call(desk.querySelectorAll(".sd-net[data-net], .sd-nrow"), function (n) { n.classList.toggle("sel", n.getAttribute("data-net") === sel.net); });
-    var dz = $("dossier"); if (dz) dz.classList.toggle("on", !!(sel.deal || sel.region || sel.net));
+    var dz = $("dossier"); if (dz) dz.classList.toggle("on", !!((sel.deal && !pkOn()) || sel.region || sel.net));
     if (sel.deal || sel.region || sel.net) seatSetFan(false);
+    if (PK.id && sel.deal !== PK.id) seatPeekClose();
   }
   function bindSeated() {
     var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
     function on(selr, fn) { Array.prototype.forEach.call(desk.querySelectorAll(selr), function (n) { n.addEventListener("click", function (e) { e.stopPropagation(); fn(n, e); }); }); }
-    on(".sd-pin, .sd-tag, .sd-qrow", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
+    on(".sd-pin, .sd-tag, .sd-qrow, .sd-prop", function (n) { tick(); selectDealPin(n.getAttribute("data-deal")); });
     on(".sd-region", function (n) { tick(); selectRegion(n.getAttribute("data-region")); });
     on(".sd-net[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
     on(".sd-nrow[data-net]", function (n) { tick(); selectNet(n.getAttribute("data-net")); });
@@ -18876,6 +19382,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     [stage, bg].forEach(function (n) { if (n) n.addEventListener("click", function (e) {
       if (e.target.closest && e.target.closest("button")) return;
       if (SD.fan) { seatSetFan(false); return; }
+      if (PK.busy) return;
+      if (PK.id) { clearSel(); seatSelSync(); return; }
       if (sel.deal || sel.region || sel.net) { clearSel(); refreshSelection(); }
     }); });
     /* swipe up on the tab opens the fan; down closes */
@@ -18888,7 +19396,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     bindDossier();
     if (SD.fan) { SD.fan = false; seatSetFan(true); }
   }
-  window.addEventListener("resize", function () { if (seatedNow()) placeSeated(); if (document.querySelector("#door.sd-fight")) placeSeatFight(); });
+  window.addEventListener("resize", function () { if (seatedNow()) { if (PK.id && !PK.busy) { seatPeekClose(true); clearSel(); seatSelSync(); } placeSeated(); } if (document.querySelector("#door.sd-fight")) placeSeatFight(); });
   /* the fight uses the same framing as the desk, so the room does not move when the visitor sits down */
   function placeSeatFight() {
     var d = doorEl(); if (!d || !d.classList.contains("sd-fight")) return;
@@ -18965,6 +19473,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   function clearSel() { sel.deal = null; sel.region = null; sel.net = null; }
   function selectDealPin(id) {
     if (state.phase !== "deal") return;
+    if (seatedNow() && pkOn()) { if (PK.busy) return; var again = PK.id === id; clearSel(); if (!again) sel.deal = id; seatSelSync(); if (again) return; seatPeek(id); pennyEmit("pin"); if (!again && LD.dealKind(LD.dealById(id)) === "crisis") pennyTip("crisis"); return; }
     clearSel();
     sel.deal = id;
     refreshSelection();

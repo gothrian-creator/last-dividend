@@ -114,18 +114,23 @@
     dossier: ["Lobby", "Government", "Compliance", "Legal", "Communications"], ledger: ["Finance", "IR", "Tax", "Disclosure"],
     cheque: ["Concession", "Philanthropy", "People", "Logistics"]
   };
+  /* Era re-skins (stage 4): same deal types, the era's object. Cut from the approved 2008 / Now desk paintings (closed only:
+     they lift and the slip slides out on top; painted open interiors can replace "skin" geometry later). */
+  var ERA_SKIN = { 2: { deed: "bb-folder", briefcase: "laptop", dossier: "report" }, 3: { deed: "folio", briefcase: "tablet", dossier: "phone-env" } };
+  var SKIN_SIZE = { "bb-folder": [426, 376], laptop: [468, 204], report: [348, 372], folio: [396, 432], tablet: [466, 244], "phone-env": [354, 374] };
   var PROP_VAR = { briefcase: ["briefcase", "briefcase-oxblood", "briefcase-black"], dossier: ["dossier", "dossier-red"], cheque: ["cheque", "cheque-blue"] };
   /* rim width in plate px */
   var PROP_W = { briefcase: 200, policy: 128, deed: 168, dossier: 138, ledger: 150, cheque: 176, telegram: 166 };
   var RIM = [[262, 828, -6], [430, 850, 4], [592, 822, 7]];
+  Object.keys(SKIN_SIZE).forEach(function (k) { PSIZE[k] = SKIN_SIZE[k]; });
   /* where the closed prop sits inside its open box ([x, y, w] as fractions of the open box): the clip's first frame */
   var CLOSED_IN = { briefcase: [0.01, 0.41, 0.98], policy: [0.02, 0.02, 0.96], deed: [0.06, 0.06, 0.88], dossier: [0.34, 0.05, 0.64],
-    ledger: [0.36, 0.18, 0.62], cheque: [0.12, 0.2, 0.68], telegram: [0.03, 0.12, 0.94] };
+    ledger: [0.36, 0.18, 0.62], cheque: [0.12, 0.2, 0.68], telegram: [0.03, 0.12, 0.94], skin: [0, 0, 1] };
   /* the typed slip on each open interior: x, y, w (fractions of the open box), rotate, skewX (deg), how it is held */
   var SLIP = { briefcase: { x: 0.15, y: 0.035, w: 0.68, r: -1.5, sk: -3, hold: "lid" }, dossier: { x: 0.03, y: 0.46, w: 0.46, r: -2, sk: 0, hold: "clip", min: 178 },
     deed: { x: 0.05, y: 0.05, w: 0.6, r: -4, sk: 2, hold: "pin" }, cheque: { x: 0.01, y: 0.56, w: 0.56, r: -3, sk: 0, hold: "pocket", min: 186 },
     policy: { x: 0.15, y: 0.15, w: 0.66, r: 1.2, sk: 0, hold: "rider" }, ledger: { x: 0.1, y: 0.52, w: 0.7, r: -3, sk: 0, hold: "page", wide: true },
-    telegram: { x: 0.12, y: 0.27, w: 0.76, r: -1.5, sk: 0, hold: "strips" } };
+    telegram: { x: 0.12, y: 0.27, w: 0.76, r: -1.5, sk: 0, hold: "strips" }, skin: { x: 0.1, y: 0.16, w: 0.8, r: -1.5, sk: 0, hold: "rider", min: 190 } };
   /* finished reveal clips: set an art name true once assets/house/props/clips/<art>-open.webm is in (see the video-stills README) */
   /* shipped: briefcase (+oxblood, black), dossier (+red), cheque, ledger (green retake; cash kept solid + recoloured to the still). Hard cut by choice: policy (retake: the sheet flies off-frame, a see-through strip at the top), deed (retake: the seal goes dark and the map dissolves in through the paper), telegram (retake: the seal splits into two/three and a faded wax disc ghosts), cheque-blue (pages tint blue mid-clip), stamp (tween) */
   LD.PROP_CLIPS = { stamp: false, briefcase: true, "briefcase-oxblood": true, "briefcase-black": true, dossier: true, "dossier-red": true, cheque: true, ledger: true };
@@ -143,11 +148,11 @@
     if (!state || state.phase !== "deal" || state.ended || !state.offered) return [];
     var ids = state.offered.filter(function (id) { return LD.dealById(id); });
     ids.sort(function (a, b) { var pa = SEAT.pins[state.world.pins[a]] || SEAT.pins.eu, pb = SEAT.pins[state.world.pins[b]] || SEAT.pins.eu; return pa[0] - pb[0]; });
-    var seen = {};
+    var seen = {}, skin = ERA_SKIN[LD.eraAct ? LD.eraAct(state) : 1] || {};
     return ids.slice(0, 3).map(function (id, i) {
-      var d = LD.dealById(id), t = LD.propTypeOf(d), n = seen[t] = (seen[t] || 0) + 1, v = PROP_VAR[t] || [t], art = v[(n - 1) % v.length];
+      var d = LD.dealById(id), t = LD.propTypeOf(d), n = seen[t] = (seen[t] || 0) + 1, v = PROP_VAR[t] || [t], art = skin[t] || v[(n - 1) % v.length];
       var nat = PSIZE[art], w = PROP_W[t], h = w * nat[1] / nat[0], slot = ids.length === 2 ? RIM[i === 0 ? 0 : 2] : ids.length === 1 ? RIM[1] : RIM[i];
-      return { id: id, type: t, art: art, open: art + "-open", x: slot[0], y: slot[1], rot: slot[2], w: w, h: h };
+      return { id: id, type: t, art: art, open: skin[t] ? art : art + "-open", geo: skin[t] ? "skin" : t, x: slot[0], y: slot[1], rot: slot[2], w: w, h: h };
     });
   };
   /* Where the open prop stands: the biggest box (aspect r = h/w) in the free band that keeps the chosen deal's pin in sight.
@@ -261,8 +266,24 @@
   }
   LD.seatOppHtml = oppHtml;
   /* o: { opp: html, hands: "rest"|"dip", card: html, mara: bool } */
+  /* Era desks (stage 4): per-era layer sets for the seated desk only (fights keep the 1978 room). null = not painted yet,
+     so the 1978 set stands in. Shape: { room: src, roomWide: { src, x0, w }, table: { src, box } | null, hands: { rest: { src, box }, dip: { src, box } } } */
+  LD.SEAT_ERA = { 2: null, 3: null };
+  LD.seatEraSet = function (state) {
+    var e = LD.eraAct ? LD.eraAct(state) : 1, s = LD.SEAT_ERA[e];
+    return s && state && state.executiveId === "mara" ? s : null;
+  };
   LD.seatStage = function (o) {
     o = o || {};
+    var S = o.set || null;
+    if (S) {
+      var hh = '<div class="sd-clip"><div class="sd-rig" aria-hidden="true"><img class="sd-room" src="' + S.room + '" alt="" draggable="false">' + (o.room || "");
+      if (S.table) hh += img("sd-table", S.table);
+      hh += (o.under || "") + (o.card || "");
+      var you2 = o.youId ? ' id="' + o.youId + '"' : "";
+      hh += img("sd-hands sd-hands-rest", S.hands.rest) + img("sd-hands sd-hands-dip", S.hands.dip).replace("<img ", "<img" + you2 + " ");
+      return hh + "</div></div>";
+    }
     var h = '<div class="sd-clip"><div class="sd-rig" aria-hidden="true">';
     h += '<img class="sd-room" src="' + SEAT.room + '" alt="" draggable="false">';
     h += o.room || "";
@@ -397,7 +418,7 @@
       under += '<img class="sd-propref" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + "deg) translateY(" + (pr.h * 0.64).toFixed(1) + 'px) scaleY(-0.34)">';
       under += '<img class="sd-propimg" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + 'deg)">';
     });
-    h += LD.seatStage({ under: LD.feltUnder(state) + under, room: LD.feltRoom(state) });
+    h += LD.seatStage({ under: LD.feltUnder(state) + under, room: LD.feltRoom(state), set: LD.seatEraSet(state) });
     /* screen-space layer: pins, props, region taps */
     h += '<div class="sd-ui">';
     Object.keys(SEAT.regions).forEach(function (rid) {

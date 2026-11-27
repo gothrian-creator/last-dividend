@@ -888,8 +888,8 @@
     var bg = root && root.querySelector(".sd-bg"); if (!bg) return;
     var im = bg.querySelector(".sd-wide");
     if (!f.land) { if (im) im.style.display = "none"; return; }
-    if (!im) { im = document.createElement("img"); im.className = "sd-wide"; im.alt = ""; im.draggable = false; im.src = LD.SEAT.roomWide.src; bg.appendChild(im); }
-    var X0 = LD.SEAT.roomWide.x0;
+    if (!im) { im = document.createElement("img"); im.className = "sd-wide"; im.alt = ""; im.draggable = false; im.src = ((LD.seatEraSet && LD.seatEraSet(state)) || {}).roomWide ? LD.seatEraSet(state).roomWide.src : LD.SEAT.roomWide.src; bg.appendChild(im); }
+    var X0 = (((LD.seatEraSet && LD.seatEraSet(state)) || {}).roomWide || LD.SEAT.roomWide).x0;
     im.style.display = "";
     im.style.transform = "translate(" + (f.tx - X0 * f.s).toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
     im.style.opacity = String(Math.max(0, 1 - (t || 0) * 1.4).toFixed(3));
@@ -1022,12 +1022,12 @@
     if (pinEl) { var pb = pinEl.getBoundingClientRect(); pin = [pb.left + pb.width / 2, pb.top + pb.height / 2]; }
     var nat = P.size[pr.open], r = nat[1] / nat[0];
     var box = LD.seatPeekBox({ r: r, pin: pin, top: top, bottom: Math.min(rimTop - 4, H * 0.74), left: L, right: R, maxW: land ? Math.min(470, (R - L) * 0.86) : Math.min(470, W * 0.9) }) || { x: L, y: top, w: (R - L) * 0.6, h: (R - L) * 0.6 * r };
-    var ci = P.closedIn[pr.type], cw = ci[2] * box.w, ch = cw * P.size[pr.art][1] / P.size[pr.art][0];
+    var ci = P.closedIn[pr.geo || pr.type], cw = ci[2] * box.w, ch = cw * P.size[pr.art][1] / P.size[pr.art][0];
     var rimC = LD.seatToScreen(f, pr.x, pr.y), rimW = pr.w * f.s;
     /* the closed art at the rim and inside the box must be the same picture at the same pose: solve the box transform that lands it on the rim */
     var lc = [ci[0] * box.w + cw / 2, ci[1] * box.h + ch / 2], k = rimW / cw, a = pr.rot * Math.PI / 180;
     var from = { x: rimC[0] - k * (Math.cos(a) * lc[0] - Math.sin(a) * lc[1]), y: rimC[1] - k * (Math.sin(a) * lc[0] + Math.cos(a) * lc[1]), r: pr.rot, s: k };
-    var g = P.slip[pr.type], kk = W > 500 && !land ? 1.12 : 1;
+    var g = P.slip[pr.geo || pr.type], kk = W > 500 && !land ? 1.12 : 1;
     var sw = Math.min(box.w * 0.94, Math.max(g.w * box.w, (g.min || 196) * kk));
     var slip = { x: box.x + g.x * box.w, y: box.y + g.y * box.h, r: g.r, sk: g.sk, s: 1, w: sw };
     if (slip.x + sw * Math.cos(g.r * Math.PI / 180) > R) slip.x = Math.max(L, R - sw);

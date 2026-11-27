@@ -5997,6 +5997,92 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   .sd-rglow, .sd-th-pulse, .pk-thread .pk-trail.run, .pk-puff, .sd-mcap { animation: none !important; }
   .sd-th-pulse { opacity: 0; } .pk-puff { opacity: 0.9; } .pk-thread .pk-trail.run { opacity: 0.9; }
 }
+
+/* ===== Bunker declutter (2026-11-27, sheet 2): act strip, name+pips chips, one action bar with (i),
+   the door as a chip, a one-time "Tap a screen" pulse. ===== */
+.hv-goal.hv-act { display: flex; align-items: center; gap: 10px; padding: 5px 14px; font: 800 12px var(--font-sans); letter-spacing: 0.16em; text-transform: uppercase; background: rgba(28, 22, 16, 0.86); box-shadow: 0 0 0 1px rgba(214, 168, 76, 0.45); }
+.hv-act b { font-weight: 800; color: #f1dba0; }
+.hv-act-pips { display: inline-flex; gap: 5px; }
+.hv-act-pips i { width: 9px; height: 9px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #d6a84c; }
+.hv-act-pips i.on { background: #d6a84c; box-shadow: 0 0 6px rgba(214, 168, 76, 0.6); }
+.hv-root.has-knock .hv-goal, .hv-root:not(.has-card) .hv-goal.hv-act { opacity: 1; }
+.hv-root.is-before .hv-goal.hv-act, .hv-root.is-turning .hv-goal.hv-act { opacity: 0; }
+/* chips: state glyph + name, pips above */
+.hv-echip { padding-top: 6px; padding-bottom: 5px; }
+.hv-echip b { display: flex; align-items: center; justify-content: center; gap: 0.3em; }
+.hv-est { flex: 0 0 auto; display: inline-block; width: 0.5em; height: 0.5em; border-radius: 50%; font-style: normal; }
+.hv-est.is-on { background: #3fae6a; box-shadow: 0 0 0.35em rgba(63, 174, 106, 0.75); }
+.hv-est.is-open { box-shadow: inset 0 0 0 0.12em #b8402f; }
+.hv-est.is-building, .hv-est.is-locked { width: 0.78em; height: 0.78em; border-radius: 0; }
+.hv-est svg { width: 100%; height: 100%; fill: none; stroke: #6a5a48; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.hv-est.is-building svg { stroke: #9a6c1c; }
+/* the action bar */
+.hv-band.hv-ebar { pointer-events: auto; left: 10px; right: 10px; width: auto; max-width: 520px; padding: 6px 8px 6px 12px; }
+@media (min-width: 700px) and (min-height: 1100px) { .hv-band.hv-ebar { right: auto; width: min(70vw, 520px); } }
+.hv-ebar-row { display: flex; align-items: center; gap: 8px; min-height: 48px; }
+.hv-ebar-t { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; }
+.hv-ebar-t b { font-family: var(--font-serif); font-weight: 600; font-size: 17px; color: #2a1c12; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hv-ebar-t .hv-pips { position: static; flex: 0 0 auto; }
+.hv-ebar-t .hv-pips i { width: 11px; height: 11px; box-shadow: 0 0 0 1.5px #faf3e4, 0 0 0 2.5px rgba(140, 100, 48, 0.45); }
+.hv-ebar-w { font: 700 11px var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; color: #1c5c60; }
+.hv-ebar-w.is-failing { color: #b8402f; } .hv-ebar-w.is-dark { color: #6a5a48; }
+.hv-ebar-st { flex: 0 0 auto; font: 700 12px var(--font-sans); color: #4a3828; padding: 0 6px; }
+.hv-ebar-st b { font-family: var(--font-serif); color: #2a1c12; font-size: 15px; }
+.hv-info { flex: 0 0 auto; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+.hv-info svg { width: 24px; height: 24px; fill: none; stroke: #6a4a22; stroke-width: 1.7; stroke-linecap: round; }
+.hv-info[aria-expanded="true"] svg { stroke: #fff4dc; fill: #6a4a22; }
+.hv-ebar .hv-era-up, .hv-nbar-act { flex: 0 0 auto; min-height: 44px; min-width: 96px; padding: 3px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1;
+  border-radius: 0; border: 2px solid var(--gold); background: #f4ecdc; color: var(--ink); text-shadow: none; box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.34); }
+.hv-ebar .hv-era-up.btn-coral { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.34); }
+.hv-ebar .hv-era-up b, .hv-nbar-act b { font: 700 14px var(--font-sans); } .hv-ebar .hv-era-up small, .hv-nbar-act small { font: 400 11px var(--font-sans); opacity: 0.9; }
+.hv-ebar .hv-era-up[aria-disabled="true"] { opacity: 0.55; }
+.hv-ebar .hv-era-up:active, .hv-nbar-act:active { transform: translate(2px, 3px); }
+.hv-ebar-more { padding: 2px 0 7px; margin-bottom: 2px; border-bottom: 1px solid rgba(140, 100, 48, 0.25); }
+.hv-ebar-more[hidden] { display: none; }
+.hv-ebar-more .hv-erow { margin-top: 2px; }
+.hv-ebar-more .hv-band-list { grid-template-columns: 1fr 1fr; }
+.hv-root.has-card .hv-band.hv-ebar, .hv-root.has-sheet .hv-band.hv-ebar { opacity: 0; pointer-events: none; }
+/* Now feeds: corner tags instead of the text band */
+.hv-ftag { position: absolute; left: 10px; top: 10px; display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px 4px 8px; background: rgba(10, 12, 12, 0.72); color: #e8efe9; font: 800 24px var(--font-sans); letter-spacing: 0.14em; border-radius: 4px; pointer-events: none; }
+.hv-ftag i { width: 13px; height: 13px; border-radius: 50%; background: #5d6660; }
+.hv-ftag.is-on i { background: #46d07e; box-shadow: 0 0 8px rgba(70, 208, 126, 0.8); }
+.hv-ftag.is-fail i { background: #ff6a3a; box-shadow: 0 0 8px rgba(255, 106, 58, 0.8); }
+.hv-ftag.is-off { color: #9aa19c; }
+.hv-cell[data-pick] { cursor: pointer; }
+.hv-screen:not(.hv-era) .hv-cell.is-picked { box-shadow: inset 0 0 0 4px #ecc45c; }
+/* the door as a chip */
+.hv-knock { position: absolute; right: 12px; top: 152px; z-index: 7; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px 0 12px; border: 2px solid var(--gold); border-radius: 22px;
+  background: #faf3e2; color: #2a1c12; font: 400 13px var(--font-sans); cursor: pointer; box-shadow: 0 6px 16px rgba(20, 10, 4, 0.35); pointer-events: auto; max-width: calc(100% - 24px); }
+.hv-knock b { font-family: var(--font-serif); font-weight: 600; font-size: 15px; white-space: nowrap; }
+.hv-knock span { white-space: nowrap; color: #6a4a22; }
+.hv-knock-dot { width: 9px; height: 9px; border-radius: 50%; background: #b8402f; animation: hvKnock 1.6s ease-in-out infinite; }
+@keyframes hvKnock { 0%, 100% { box-shadow: 0 0 0 0 rgba(184, 64, 47, 0.55); } 50% { box-shadow: 0 0 0 6px rgba(184, 64, 47, 0); } }
+.hv-root.is-landscape .hv-knock { top: 74px; right: 16px; }
+.hv-root.is-seated.is-landscape .hv-knock { top: 112px; }
+.hv-card-x { position: absolute; right: 6px; top: 6px; width: 40px; height: 40px; border: 0; background: none; font: 400 26px/1 var(--font-serif); color: #6a4a22; cursor: pointer; }
+.hv-card header { padding-right: 36px; }
+/* one-time pulse */
+.is-pulse { animation: hvPulse 1.8s ease-in-out infinite; }
+@keyframes hvPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(236, 196, 92, 0.9), inset 0 0 0 3px rgba(236, 196, 92, 0.9); } 60% { box-shadow: 0 0 0 16px rgba(236, 196, 92, 0), inset 0 0 0 3px rgba(236, 196, 92, 0.9); } }
+.hv-tapme { position: absolute; z-index: 6; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(28, 22, 16, 0.88); color: #faf3e4;
+  font: 800 12px var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; border-radius: 16px; pointer-events: none; box-shadow: 0 0 0 1px rgba(236, 196, 92, 0.7); }
+.hv-tapme i { width: 8px; height: 8px; border-radius: 50%; background: #ecc45c; }
+@media (prefers-reduced-motion: reduce) {
+  .hv-knock-dot, .is-pulse { animation: none !important; }
+  .is-pulse { box-shadow: inset 0 0 0 3px rgba(236, 196, 92, 0.95); }
+}
+.hv-ebar .btn { width: auto; max-width: none; margin: 0; }
+.hv-ebar .hv-ebar-t { min-width: 0; }
+.hv-echip b { display: block; }
+.hv-pips .hv-est { align-self: center; margin-left: 3px; width: 12px; height: 12px; box-shadow: 0 0 0 2px #faf3e4; background-color: #faf3e4; }
+.hv-pips .hv-est.is-on { background: #3fae6a; box-shadow: 0 0 0 2px #faf3e4, 0 0 6px rgba(63, 174, 106, 0.8); }
+.hv-pips .hv-est.is-open { background: #faf3e4; box-shadow: inset 0 0 0 2.5px #b8402f, 0 0 0 2px #faf3e4; }
+.hv-pips .hv-est.is-building, .hv-pips .hv-est.is-locked { width: 16px; height: 16px; border-radius: 3px; padding: 1px; }
+.hv-goal.hv-act { overflow: visible; padding-right: 6px; }
+.hv-root.is-after .hv-goal.hv-act { pointer-events: none; }
+.hv-help { pointer-events: auto; width: 30px; height: 30px; margin: -4px 0 -4px 2px; border-radius: 50%; border: 1.5px solid rgba(214, 168, 76, 0.8); background: none; color: #f1dba0; font: 800 14px var(--font-sans); cursor: pointer; position: relative; }
+.hv-help::after { content: ""; position: absolute; inset: -8px; }
+.hv-root.is-before .hv-help, .hv-root.is-turning .hv-help { pointer-events: none; }
 </style>
   <script>
   /* Visible viewport height: prefer visualViewport so a Safari toolbar
@@ -11929,7 +12015,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   /* Act III (Now) feeds show the present-day bunker; Acts I-II (and old saves before Q9) keep the 1978 feeds */
   function feedBase(state) { return LD.eraAct && LD.eraAct(state) === 3 ? "assets/house/now/feed/" : BASE + "feed/"; }
   LD.houseFeedBase = feedBase;
-  function feedCell(state, systemId, resId) {
+  function feedCell(state, systemId, resId, picked) {
     var room = roomOf(state, systemId) || { on: false };
     var occupied = resId && hasRes(state, resId);
     var failing = !!(room.on && room.quality === "cheap" && !hasRes(state, "helen"));
@@ -11937,21 +12023,24 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var src = feedBase(state) + systemId + "-" + kind + ".webp";
     var label = occupied ? (LD.houseResident(resId) || {}).name : room.on ? (ROOM_EMPTY[systemId] || {}).name : systemId;
     var cls = "hv-cell is-" + kind + (failing ? " is-failing" : "") + (room.on ? " is-lit" : "");
-    var tap = occupied ? " data-leave=\"" + resId + "\"" : "";
+    if (picked === systemId) cls += " is-picked";
+    var tap = occupied ? " data-leave=\"" + resId + "\"" : " data-pick=\"" + systemId + "\"";
     return '<button type="button" class="' + cls + '" data-feed="' + systemId + '"' + tap + ' aria-label="' + esc(label || systemId) + '">' +
       '<img src="' + src + '" alt="" draggable="false">' +
       (failing ? '<i class="hv-static" aria-hidden="true"></i>' : "") +
+      '<span class="hv-ftag is-' + (failing ? "fail" : room.on ? "on" : "off") + '" aria-hidden="true"><i></i>' + systemId.toUpperCase() + "</span>" +
       "</button>";
   }
 
   /* Lila is not a system room: she gets a tall strip of the feed, inside the glass, only once she is in. */
-  LD.renderHouseFeed = function (state) {
+  LD.renderHouseFeed = function (state, ui) {
+    var pk = LD.housePickFeed ? LD.housePickFeed(state, ui && ui.feed) : null;
     var lila = hasRes(state, "lila");
     var h = '<div class="hv-screen' + (lila ? " has-lila" : "") + '" aria-label="Bunker feed">';
-    h += feedCell(state, "power", "helen");
-    h += feedCell(state, "water", "tom");
-    h += feedCell(state, "air", "eli");
-    h += feedCell(state, "food", "nia");
+    h += feedCell(state, "power", "helen", pk);
+    h += feedCell(state, "water", "tom", pk);
+    h += feedCell(state, "air", "eli", pk);
+    h += feedCell(state, "food", "nia", pk);
     if (lila) {
       var lr = LD.houseResident("lila") || { name: "Lila Brenner" };
       h += '<button type="button" class="hv-cell hv-lila is-on is-lit" data-leave="lila" aria-label="' + esc(lr.name) + '">' +
@@ -12007,7 +12096,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var cost = LD.housePayOffCost ? LD.housePayOffCost(state, arr.id) : 0;
     var occupant = null;
     if (replace && res.room && state.house.rooms[res.room]) occupant = LD.houseResident(state.house.rooms[res.room].by);
-    var h = '<article class="hv-card hv-arrival" role="dialog" aria-label="Someone at the door">';
+    var h = '<article class="hv-card hv-arrival" role="dialog" aria-label="Someone at the door">' + cardX();
     h += "<header><small>At the door</small><h2>" + esc(res.name) + "</h2></header>";
     h += '<p class="hv-line">' + esc(DOOR_LINE[res.id] || "") + "</p>";
     if (replace && occupant) h += '<p class="hv-note">' + esc(occupant.name.split(" ")[0]) + " leaves. Unrest +3.</p>";
@@ -12023,13 +12112,22 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     return h;
   };
 
+  /* Someone at the door waits as a chip by the door; tap opens her card. */
+  LD.renderHouseKnock = function (state, kind) {
+    var who = null, what = "knocking";
+    if (kind === "arrival") { var arr = LD.houseArrival && LD.houseArrival(state); if (arr) who = LD.houseResident(arr.id) || { name: arr.id }; }
+    else if (kind === "word") { var rec = LD.houseDuePromise && LD.houseDuePromise(state); if (rec) { who = LD.houseResident(rec.residentId); what = "your word is due"; } }
+    if (!who) return "";
+    return '<button type="button" class="hv-knock" id="hv-knock" data-kind="' + kind + '" aria-label="' + esc(who.name + ", " + what + ". Open") + '"><i class="hv-knock-dot" aria-hidden="true"></i><b>' + esc(who.name) + "</b><span> \u00b7 " + what + "</span></button>";
+  };
+  function cardX() { return '<button type="button" class="hv-card-x" id="hv-card-x" aria-label="Back to the room">\u00d7</button>'; }
   LD.renderHouseWord = function (state) {
     var rec = LD.houseDuePromise && LD.houseDuePromise(state);
     if (!rec) return "";
     var who = LD.houseResident(rec.residentId) || { name: "them" };
     var keep = LD.houseKeepCost(state, rec);
     var brk = LD.houseBreakCost(state, rec);
-    var h = '<article class="hv-card hv-word" role="dialog" aria-label="A promise comes due">';
+    var h = '<article class="hv-card hv-word" role="dialog" aria-label="A promise comes due">' + cardX();
     h += "<header><small>The Word \u00b7 due</small><h2>" + esc(who.name) + "</h2></header>";
     h += '<p class="hv-line">' + esc(PROM_SHORT[rec.defId] || rec.text) + ".</p>";
     if (keep.blocked) h += '<p class="hv-note">You turned someone away. This one cannot be kept.</p>';
@@ -12143,6 +12241,13 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var c = LD.eraUpgradeCost(state, k, era);
     return (st === "open" ? "Not built \u00b7 $" : "Locked \u00b7 $") + c + "M";
   }
+  /* one glyph says the state; the sentence lives behind the action bar's (i) */
+  function stIcon(st) {
+    if (st === "on") return '<i class="hv-est is-on" aria-hidden="true"></i>';
+    if (st === "building") return '<i class="hv-est is-building" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 13l6-6M8 3l5 5-2 2-5-5z"/></svg></i>';
+    if (st === "locked") return '<i class="hv-est is-locked" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="3.5" y="7" width="9" height="7" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg></i>';
+    return '<i class="hv-est is-open" aria-hidden="true"></i>';
+  }
   function pips(lv, build) {
     var h = '<i class="hv-pips" aria-hidden="true">';
     for (var i = 1; i <= LD.ERA_MAX_LV; i++) h += '<i class="' + (i <= lv ? "on" : build && i === build ? "bd" : "") + '"></i>';
@@ -12166,7 +12271,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       if (era === 1 && k === "air") name = "Capitol"; else if (era === 1 && k === "food") name = "Offshore";
       var cls = "hv-eslot is-" + st + (k === sel ? " is-sel" : "");
       var img = ERA_ART + (era === 1 ? "fac-" : "site-") + k + ".webp";
-      var chip = '<span class="hv-echip">' + pips(s.lv, s.build) + "<b>" + esc(name) + "</b><small>" + esc(slotSub(state, era, k)) + "</small></span>";
+      var chip = '<span class="hv-echip" title="' + esc(slotSub(state, era, k)) + '">' + pips(s.lv, s.build).replace(/<\/i>$/, stIcon(st) + "</i>") + "<b>" + esc(name) + "</b></span>";
       var lock = st === "locked" ? '<em class="hv-elock">Locked</em>' : "";
       if (full && era === 1) {
         var p = BOARD_PANELS[k];
@@ -12197,6 +12302,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   LD.renderEraCard = function (state, ui) {
     var era = LD.eraAct(state), e = state.house.era, sel = LD.eraPick(state, ui && ui.eraSlot);
     var land = !!(ui && ui.land);
+    if (!land) return eraBar(state, era, e, sel, ui);
     var h = '<aside class="hv-band hv-ecard" aria-label="' + esc(LD.ERA_DEFS[era].title) + '">';
     h += '<p class="hv-band-k">' + esc(firmOf(state)) + " \u00b7 " + ERA_YEAR[era] + "</p>";
     h += '<h3 class="hv-etitle">' + esc(LD.ERA_DEFS[era].title) + "</h3>";
@@ -12216,9 +12322,84 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     h += "</aside>";
     return h;
   };
+  function eraFoot(state, era, e) {
+    var foot = [];
+    if (era === 2 && e.bank) foot.push("Offshore $" + e.bank + "M");
+    if (era === 1 && e.bank) foot.push("Offshore banked $" + e.bank + "M");
+    if (e.actQ === state.turn) foot.push("Order placed this quarter");
+    return '<p class="hv-stores">' + (foot.length ? esc(foot.join(" \u00b7 ")) + " \u00b7 " : "") + "Stores <b>" + (state.house.stores | 0) + "</b></p>";
+  }
+  function staffRow(state) {
+    var staff = (state.house.residents || []).map(function (r) { var b = BAND[r.id]; return b ? '<button type="button" class="hv-estaff" data-leave="' + r.id + '">' + esc(b.name) + "</button>" : ""; }).join("");
+    return staff ? '<p class="hv-estaff-row"><small>Staff</small>' + staff + "</p>" : "";
+  }
+  function infoBtn(open) {
+    return '<button type="button" class="hv-info" id="hv-info" aria-expanded="' + (open ? "true" : "false") + '" aria-label="' + (open ? "Hide details" : "Details") + '"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.2"/><path d="M10 9v5.2M10 5.6v.1"/></svg></button>';
+  }
+  /* Portrait: one bar. The selected screen's name and pips, (i), and its one order. The full line, the goal,
+     stores and staff fold out above it on (i). */
+  function eraBar(state, era, e, sel, ui) {
+    var s = LD.eraSlots(state, era)[sel], c = LD.eraUpgradeCost(state, sel, era), why = LD.eraCanUpgrade(state, sel);
+    var name = LD.eraSlotName(state, era, sel), open = !!(ui && ui.info);
+    var verb = s.lv || s.build ? "Expand" : "Build";
+    var btn = c == null ? '<span class="hv-ebar-st">Fully built</span>' : s.build ? '<span class="hv-ebar-st">Ready Q' + (state.turn + 1) + "</span>" :
+      '<button type="button" class="btn' + (why ? "" : " btn-coral") + ' hv-era-up" data-eslot="' + sel + '"' + (why ? ' aria-disabled="true" data-why="' + esc(why) + '"' : "") + "><b>" + verb + "</b><small>$" + c + "M</small></button>";
+    var h = '<aside class="hv-band hv-ecard hv-ebar' + (open ? " is-info" : "") + '" aria-label="' + esc(LD.ERA_DEFS[era].title) + '">';
+    h += '<div class="hv-ebar-more" id="hv-more"' + (open ? "" : " hidden") + ">";
+    h += '<p class="hv-band-k">' + esc(firmOf(state)) + " \u00b7 " + ERA_YEAR[era] + "</p>";
+    h += '<p class="hv-egoal">' + esc(LD.ERA_DEFS[era].goal) + "</p>";
+    h += slotRow(state, era, sel, true).replace(/<button[\s\S]*<\/button>/, "");
+    h += eraFoot(state, era, e) + staffRow(state);
+    h += "</div>";
+    h += '<div class="hv-ebar-row"><div class="hv-ebar-t"><b>' + esc(name) + "</b>" + pips(s.lv, s.build) + "</div>" + infoBtn(open) + btn + "</div>";
+    h += "</aside>";
+    return h;
+  }
+  /* Now: the same bar for the bunker. The picked feed (or the one most in trouble), its state, (i) for the run list. */
+  var ROOM_NAME = { power: "Power", water: "Water", air: "Air", food: "Food" };
+  function roomPips(room) {
+    var lv = !room || !room.on ? 0 : room.quality === "cheap" ? 1 : room.quality === "sound" ? 3 : 2;
+    return { lv: lv, word: !room || !room.on ? "Dark" : room.quality === "cheap" ? "Failing" : room.quality === "sound" ? "Sound" : "On" };
+  }
+  LD.housePickFeed = function (state, want) {
+    var ids = ["power", "water", "air", "food"];
+    if (want && ids.indexOf(want) !== -1) return want;
+    var bad = null, dark = null;
+    ids.forEach(function (id) { var r = roomOf(state, id); if (!r || !r.on) { if (!dark) dark = id; } else if (r.quality === "cheap" && !bad) bad = id; });
+    return bad || dark || "power";
+  };
+  LD.renderHouseBar = function (state, ui) {
+    if (!state || !state.house) return "";
+    var id = LD.housePickFeed(state, ui && ui.feed), room = roomOf(state, id), rp = roomPips(room), open = !!(ui && ui.info);
+    var band = LD.renderHouseBand(state);
+    var h = '<aside class="hv-band hv-nbar hv-ebar' + (open ? " is-info" : "") + '" aria-label="The bunker">';
+    h += '<div class="hv-ebar-more" id="hv-more"' + (open ? "" : " hidden") + ">";
+    h += band ? band.replace(/^<aside[^>]*>/, "").replace(/<\/aside>$/, "") : '<p class="hv-stores">Stores <b>' + (state.house.stores | 0) + "</b></p>";
+    h += "</div>";
+    var p = '<i class="hv-pips" aria-hidden="true">';
+    for (var i = 1; i <= 3; i++) p += '<i class="' + (i <= rp.lv ? "on" : "") + '"></i>';
+    p += "</i>";
+    var occ = room && room.by && hasRes(state, room.by) ? room.by : null;
+    var act = occ && state.phase === "bunker" && !state.bunkerActedThisTurn ? '<button type="button" class="btn hv-nbar-act" data-leave="' + occ + '"><b>Ask to leave</b><small>' + esc((LD.houseResident(occ) || {}).name || "") + "</small></button>" : "";
+    h += '<div class="hv-ebar-row"><div class="hv-ebar-t"><b>' + ROOM_NAME[id] + "</b>" + p + '<span class="hv-ebar-w is-' + rp.word.toLowerCase() + '">' + rp.word + "</span></div>" + infoBtn(open) +
+      (act || '<span class="hv-ebar-st">Stores <b>' + (state.house.stores | 0) + "</b></span>") + "</div>";
+    h += "</aside>";
+    return h;
+  };
+  /* The act strip under the HUD: act, four pips (done), the deadline. The goal sentence is its label and sits behind (i). */
+  var ACT_ROMAN = { 1: "I", 2: "II", 3: "III" }, ACT_DUE = { 1: 4, 2: 8, 3: 12 };
+  LD.eraActDone = function (state) {
+    var era = LD.eraAct ? LD.eraAct(state) : 3, n = 0;
+    if (era <= 2 && state.house && state.house.era) LD.ERA_SLOTS.forEach(function (k) { if (LD.eraSlots(state, era)[k].lv >= 1) n++; });
+    else ["power", "water", "air", "food"].forEach(function (id) { var r = roomOf(state, id); if (r && r.on && r.quality !== "cheap") n++; });
+    return n;
+  };
   LD.renderEraGoal = function (state) {
-    var era = LD.eraAct ? LD.eraAct(state) : 3;
-    return '<p class="hv-goal" aria-live="polite">' + esc(ERA_GOAL_LINE[era] || "") + "</p>";
+    var era = LD.eraAct ? LD.eraAct(state) : 3, n = LD.eraActDone(state);
+    var dots = "";
+    for (var i = 0; i < 4; i++) dots += '<i class="' + (i < n ? "on" : "") + '"></i>';
+    var lbl = (ERA_GOAL_LINE[era] || "") + ". " + n + " of 4 done.";
+    return '<p class="hv-goal hv-act" aria-live="polite" aria-label="' + esc(lbl) + '"><b>Act ' + ACT_ROMAN[era] + '</b><span class="hv-act-pips" aria-hidden="true">' + dots + "</span><span>Q" + ACT_DUE[era] + '</span><button type="button" class="hv-help" id="hv-help" aria-label="Penny explains this act">?</button></p>';
   };
   LD.eraInheritLine = function (state) {
     var inh = state && state.house && state.house.era && state.house.era.inherited;
@@ -12236,7 +12417,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     ui = ui || {};
     if (LD.seatUseExec) LD.seatUseExec(state && state.executiveId);
     var mode = ui.mode || "after";
-    var cls = "hv-root is-" + mode + (LD.eraShows && LD.eraShows(state) ? " is-era is-era-" + LD.eraAct(state) + (LD.eraFullArt(state) ? " is-era-full" : "") : "") + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
+    var cls = "hv-root is-" + mode + (LD.eraShows && LD.eraShows(state) ? " is-era is-era-" + LD.eraAct(state) + (LD.eraFullArt(state) ? " is-era-full" : "") : "") + (ui.auto ? " is-auto" : "") + (ui.card && ui.cardOpen ? " has-card" : "") + (ui.card && !ui.cardOpen ? " has-knock" : "") + (ui.leaveId ? " has-sheet" : "");
     var eraOn = LD.eraShows ? LD.eraShows(state) : false, turn = LD.maraTurn ? LD.maraTurn(state) : null;
     var frames = LD.housePlates(state).map(function (src, i) {
       return '<img class="hv-plate" data-frame="' + i + '" src="' + src + '" alt="" draggable="false">';
@@ -12248,11 +12429,11 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     h += ui.seated && LD.seatHud ? LD.seatHud(state, { menu: false, nets: false }).replace('class="sd-menu"', 'class="sd-menu" tabindex="-1" aria-hidden="true"') : LD.renderHouseHud(state);
     h += '<div class="hv-clip"><div class="hv-rig">';
     h += '<div class="hv-plates" aria-hidden="true">' + frames + "</div>";
-    if (showSet) h += eraOn ? LD.renderEraScreen(state, ui) : LD.renderHouseFeed(state);
+    if (showSet) h += eraOn ? LD.renderEraScreen(state, ui) : LD.renderHouseFeed(state, ui);
     if (showSet && turn && turn.fg && !eraOn) h += '<img class="hv-fg" src="' + turn.fg + '" alt="" aria-hidden="true" draggable="false">';
     h += "</div></div>";
     if (showSet && LD.isHouse(state) && state.house && state.house.era) h += LD.renderEraGoal(state);
-    if (showSet) h += eraOn ? LD.renderEraCard(state, ui) : LD.renderHouseBand(state);
+    if (showSet) h += eraOn ? LD.renderEraCard(state, ui) : ui.land ? LD.renderHouseBand(state) : LD.renderHouseBar(state, ui);
     if (mode === "turning") h += '<button type="button" class="hv-skip" id="hv-skip">Skip</button>';
     h += '<div class="hv-dock">';
     if (mode === "after") {
@@ -12260,7 +12441,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       if (ui.canEnd) h += '<button type="button" class="btn btn-coral" id="hv-endq">End quarter</button>';
     }
     h += "</div>";
-    if (ui.card === "word") h += LD.renderHouseWord(state);
+    if (ui.card && !ui.cardOpen) h += LD.renderHouseKnock(state, ui.card);
+    else if (ui.card === "word") h += LD.renderHouseWord(state);
     else if (ui.card === "arrival") h += LD.renderHouseArrival(state, ui);
     if (ui.leaveId) h += LD.renderHouseLeave(state, ui.leaveId);
     h += "</div>";
@@ -19598,6 +19780,8 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     if (!root || !state) return;
     Array.prototype.forEach.call(document.querySelectorAll(".boss-banner"), function (b) { if (b.parentNode) b.parentNode.removeChild(b); });
     HV.card = houseCardKind();
+    var ckey = HV.card ? HV.card + ":" + state.turn + ":" + ((HV.card === "arrival" ? (LD.houseArrival(state) || {}).id : (LD.houseDuePromise(state) || {}).id) || "") : null;
+    if (ckey !== HV.cardKey) { HV.cardKey = ckey; HV.cardOpen = false; }
     var land = houseIsLandscape();
     root.hidden = false;
     root.classList.add("is-open");
@@ -19610,6 +19794,9 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       canEnd: houseCanEndQ(),
       seated: !!(LD.seatedOn && LD.seatedOn(state)),
       eraSlot: HV.eraSlot || null,
+      cardOpen: !!HV.cardOpen,
+      info: !!HV.info,
+      feed: HV.feed || null,
       land: land
     });
     var stage = root.querySelector(".hv-root");
@@ -19617,6 +19804,40 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     if (stage && LD.seatedOn && LD.seatedOn(state)) stage.classList.add("is-seated");
     sizeHouseRig();
     bindHouseChrome();
+    housePulsePlace();
+  }
+  /* One-time "Tap a screen" pulse per act (replaces Penny's era popup, which sat over the card it pointed at). */
+  function housePulseKey() { return state && LD.eraAct ? "pulse" + LD.eraAct(state) : null; }
+  function housePulseArm() {
+    var k = housePulseKey(), m = pennyMeta();
+    if (!k || m.penny.tipsOff || m.penny.tips[k] || PN.mode === "tour") return;
+    HV.pulse = k;
+    housePulsePlace();
+  }
+  function housePulseDone() {
+    if (!HV.pulse) return;
+    var k = HV.pulse;
+    HV.pulse = null;
+    pennySave(function (p) { p.tips = p.tips || {}; p.tips[k] = true; });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-tapme"), function (n) { n.parentNode.removeChild(n); });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .is-pulse"), function (n) { n.classList.remove("is-pulse"); });
+  }
+  function housePulsePlace() {
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-tapme"), function (n) { n.parentNode.removeChild(n); });
+    if (!HV.pulse || !HV.facing || HV.turning) return;
+    var root = document.querySelector("#house-root .hv-root");
+    if (!root || root.classList.contains("has-card") || root.classList.contains("has-sheet")) return;
+    var t = root.querySelector(".hv-eslot.is-sel") || root.querySelector('.hv-cell[data-feed="' + (LD.housePickFeed ? LD.housePickFeed(state, HV.feed) : "power") + '"]') || root.querySelector(".hv-cell");
+    if (!t) return;
+    t.classList.add("is-pulse");
+    var r = t.getBoundingClientRect(), R = root.getBoundingClientRect();
+    var tag = document.createElement("span");
+    tag.className = "hv-tapme";
+    tag.setAttribute("aria-hidden", "true");
+    tag.innerHTML = '<i></i>' + (LD.eraShows && LD.eraShows(state) ? "Tap a screen" : "Tap a feed");
+    tag.style.left = Math.round(Math.max(R.left + 76, Math.min(R.right - 76, r.left + r.width / 2)) - R.left) + "px";
+    tag.style.top = Math.round(r.bottom - R.top + 18) + "px";
+    root.appendChild(tag);
   }
   function setPlateOpacities(t) {
     /* t 0 = before, 1 = after. Six plates at one camera distance, crossfaded in order; no blur needed to hide a jump. */
@@ -19651,7 +19872,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
       HV.facing = true;
       setPlateOpacities(1);
       paintHouse("after");
-      if (state && state.house && state.house.era && LD.eraAct) { var eraT = LD.eraAct(state); setTimeout(function () { if (HV.facing && !HV.turning) pennyTip("era" + eraT); }, 400); }
+      if (state && state.house && state.house.era && LD.eraAct) setTimeout(function () { if (HV.facing && !HV.turning) housePulseArm(); }, 400);
     } else {
       HV.facing = false;
       HV.open = false;
@@ -19850,6 +20071,18 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var stage = $("hv-stage");
     if (stage) stage.addEventListener("click", function (e) {
       if (HV.turning) { tick(); skipHouseTurn(); }
+    });
+    if (stage) stage.addEventListener("pointerdown", function () { if (HV.pulse && HV.facing) housePulseDone(); }, true);
+    var help = $("hv-help");
+    if (help) help.addEventListener("click", function (e) { e.stopPropagation(); tick(); housePulseDone(); if (LD.eraAct) pennyTip("era" + LD.eraAct(state), true); });
+    var knock = $("hv-knock");
+    if (knock) knock.addEventListener("click", function (e) { e.stopPropagation(); tick(); HV.cardOpen = true; refreshHouseChrome(); });
+    var cx = $("hv-card-x");
+    if (cx) cx.addEventListener("click", function (e) { e.stopPropagation(); tick(); HV.cardOpen = false; refreshHouseChrome(); });
+    var info = $("hv-info");
+    if (info) info.addEventListener("click", function (e) { e.stopPropagation(); tick(); HV.info = !HV.info; refreshHouseChrome(); });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-cell[data-feed]"), function (n) {
+      n.addEventListener("click", function () { HV.feed = n.getAttribute("data-feed"); if (n.hasAttribute("data-pick")) { tick(); refreshHouseChrome(); } });
     });
   }
   window.addEventListener("resize", function () { if (HV.open || HV.facing) sizeHouseRig(); });
@@ -21356,7 +21589,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     era2: { face: "wink", text: function () { return "Welcome to <b>2008</b>: the island! Build all four sites by <b>Q8</b>, paid from Offshore first. Each site's level decides how its bunker room starts: Lv 2 switches it on, Lv 3 makes it sound."; },
       target: function () { return pq("#house-root .hv-ecard") || pq("#house-root .hv-screen"); } },
     era3: { face: "smug", text: function () { return "Now it's the <b>bunker</b>. Your island set the rooms' start, and Offshore's leftovers are in the stores. Get all four rooms on and holding, then seal from <b>Q" + LD.MIN_EVAC_TURN + "</b>."; },
-      target: function () { return pq("#house-root .hv-band") || pq("#house-root .hv-screen"); } },
+      target: function () { return pq("#house-root .hv-ebar") || pq("#house-root .hv-band") || pq("#house-root .hv-screen"); } },
     ratings: { face: "smug", text: function () { return "<b>Credit ratings</b>: win at a rating to unlock the next one, from AAA all the way down to D. Every tier adds a new rule, and exits there pay a lot more. No pressure ♡"; },
       target: function () { return pq("#screen-exec .rating-row"); } }
   };
@@ -21691,10 +21924,10 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   function pennySkip() { pennyDone(true); }
 
   /* One-time tips: same dialogue, "Got it" to close. Never during the tour. */
-  function pennyTip(key) {
+  function pennyTip(key, force) {
     if (PN.mode === "tour") return;
     var m = pennyMeta();
-    if (m.penny.tipsOff || m.penny.tips[key]) return;
+    if (!force && (m.penny.tipsOff || m.penny.tips[key])) return;
     var tip = PENNY_TIPS[key];
     if (!tip) return;
     var t = tip.target();

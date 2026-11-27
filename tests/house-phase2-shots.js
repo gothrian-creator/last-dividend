@@ -154,9 +154,11 @@ function makeStates(LD) {
   {
     await boot([412, 915], pack.arrival);
     await sleep(1800);
-    const f1 = await page.evaluate(() => ({ facing: !!(LD.houseUi && LD.houseUi.facing()), admit: !!document.getElementById("hv-admit"), rail: !!document.getElementById("bunker-card") }));
+    const f1 = await page.evaluate(() => ({ facing: !!(LD.houseUi && LD.houseUi.facing()), admit: !!(document.getElementById("hv-admit") || document.getElementById("hv-knock")), rail: !!document.getElementById("bunker-card") }));
     if (!f1.facing) errors.push("auto-turn did not run on continue (signed deal, no moves left)");
     if (!f1.admit) errors.push("arrival card not shown after auto-turn");
+    await page.evaluate(() => document.getElementById("hv-knock") && document.getElementById("hv-knock").click());
+    await sleep(200);
     await page.evaluate(() => document.getElementById("hv-admit") && document.getElementById("hv-admit").click());
     await sleep(300);
     const f2 = await page.evaluate(() => ({ card: !!document.getElementById("hv-admit"), band: /Helen/.test((document.querySelector(".hv-band") || {}).textContent || ""), endq: !!document.getElementById("hv-endq") }));

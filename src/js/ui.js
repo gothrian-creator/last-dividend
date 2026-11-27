@@ -2014,6 +2014,8 @@
     if (!root || !state) return;
     Array.prototype.forEach.call(document.querySelectorAll(".boss-banner"), function (b) { if (b.parentNode) b.parentNode.removeChild(b); });
     HV.card = houseCardKind();
+    var ckey = HV.card ? HV.card + ":" + state.turn + ":" + ((HV.card === "arrival" ? (LD.houseArrival(state) || {}).id : (LD.houseDuePromise(state) || {}).id) || "") : null;
+    if (ckey !== HV.cardKey) { HV.cardKey = ckey; HV.cardOpen = false; }
     var land = houseIsLandscape();
     root.hidden = false;
     root.classList.add("is-open");
@@ -2026,6 +2028,9 @@
       canEnd: houseCanEndQ(),
       seated: !!(LD.seatedOn && LD.seatedOn(state)),
       eraSlot: HV.eraSlot || null,
+      cardOpen: !!HV.cardOpen,
+      info: !!HV.info,
+      feed: HV.feed || null,
       land: land
     });
     var stage = root.querySelector(".hv-root");
@@ -2033,6 +2038,40 @@
     if (stage && LD.seatedOn && LD.seatedOn(state)) stage.classList.add("is-seated");
     sizeHouseRig();
     bindHouseChrome();
+    housePulsePlace();
+  }
+  /* One-time "Tap a screen" pulse per act (replaces Penny's era popup, which sat over the card it pointed at). */
+  function housePulseKey() { return state && LD.eraAct ? "pulse" + LD.eraAct(state) : null; }
+  function housePulseArm() {
+    var k = housePulseKey(), m = pennyMeta();
+    if (!k || m.penny.tipsOff || m.penny.tips[k] || PN.mode === "tour") return;
+    HV.pulse = k;
+    housePulsePlace();
+  }
+  function housePulseDone() {
+    if (!HV.pulse) return;
+    var k = HV.pulse;
+    HV.pulse = null;
+    pennySave(function (p) { p.tips = p.tips || {}; p.tips[k] = true; });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-tapme"), function (n) { n.parentNode.removeChild(n); });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .is-pulse"), function (n) { n.classList.remove("is-pulse"); });
+  }
+  function housePulsePlace() {
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-tapme"), function (n) { n.parentNode.removeChild(n); });
+    if (!HV.pulse || !HV.facing || HV.turning) return;
+    var root = document.querySelector("#house-root .hv-root");
+    if (!root || root.classList.contains("has-card") || root.classList.contains("has-sheet")) return;
+    var t = root.querySelector(".hv-eslot.is-sel") || root.querySelector('.hv-cell[data-feed="' + (LD.housePickFeed ? LD.housePickFeed(state, HV.feed) : "power") + '"]') || root.querySelector(".hv-cell");
+    if (!t) return;
+    t.classList.add("is-pulse");
+    var r = t.getBoundingClientRect(), R = root.getBoundingClientRect();
+    var tag = document.createElement("span");
+    tag.className = "hv-tapme";
+    tag.setAttribute("aria-hidden", "true");
+    tag.innerHTML = '<i></i>' + (LD.eraShows && LD.eraShows(state) ? "Tap a screen" : "Tap a feed");
+    tag.style.left = Math.round(Math.max(R.left + 76, Math.min(R.right - 76, r.left + r.width / 2)) - R.left) + "px";
+    tag.style.top = Math.round(r.bottom - R.top + 18) + "px";
+    root.appendChild(tag);
   }
   function setPlateOpacities(t) {
     /* t 0 = before, 1 = after. Six plates at one camera distance, crossfaded in order; no blur needed to hide a jump. */
@@ -2067,7 +2106,7 @@
       HV.facing = true;
       setPlateOpacities(1);
       paintHouse("after");
-      if (state && state.house && state.house.era && LD.eraAct) { var eraT = LD.eraAct(state); setTimeout(function () { if (HV.facing && !HV.turning) pennyTip("era" + eraT); }, 400); }
+      if (state && state.house && state.house.era && LD.eraAct) setTimeout(function () { if (HV.facing && !HV.turning) housePulseArm(); }, 400);
     } else {
       HV.facing = false;
       HV.open = false;
@@ -2266,6 +2305,18 @@
     var stage = $("hv-stage");
     if (stage) stage.addEventListener("click", function (e) {
       if (HV.turning) { tick(); skipHouseTurn(); }
+    });
+    if (stage) stage.addEventListener("pointerdown", function () { if (HV.pulse && HV.facing) housePulseDone(); }, true);
+    var help = $("hv-help");
+    if (help) help.addEventListener("click", function (e) { e.stopPropagation(); tick(); housePulseDone(); if (LD.eraAct) pennyTip("era" + LD.eraAct(state), true); });
+    var knock = $("hv-knock");
+    if (knock) knock.addEventListener("click", function (e) { e.stopPropagation(); tick(); HV.cardOpen = true; refreshHouseChrome(); });
+    var cx = $("hv-card-x");
+    if (cx) cx.addEventListener("click", function (e) { e.stopPropagation(); tick(); HV.cardOpen = false; refreshHouseChrome(); });
+    var info = $("hv-info");
+    if (info) info.addEventListener("click", function (e) { e.stopPropagation(); tick(); HV.info = !HV.info; refreshHouseChrome(); });
+    Array.prototype.forEach.call(document.querySelectorAll("#house-root .hv-cell[data-feed]"), function (n) {
+      n.addEventListener("click", function () { HV.feed = n.getAttribute("data-feed"); if (n.hasAttribute("data-pick")) { tick(); refreshHouseChrome(); } });
     });
   }
   window.addEventListener("resize", function () { if (HV.open || HV.facing) sizeHouseRig(); });
@@ -3772,7 +3823,7 @@
     era2: { face: "wink", text: function () { return "Welcome to <b>2008</b>: the island! Build all four sites by <b>Q8</b>, paid from Offshore first. Each site's level decides how its bunker room starts: Lv 2 switches it on, Lv 3 makes it sound."; },
       target: function () { return pq("#house-root .hv-ecard") || pq("#house-root .hv-screen"); } },
     era3: { face: "smug", text: function () { return "Now it's the <b>bunker</b>. Your island set the rooms' start, and Offshore's leftovers are in the stores. Get all four rooms on and holding, then seal from <b>Q" + LD.MIN_EVAC_TURN + "</b>."; },
-      target: function () { return pq("#house-root .hv-band") || pq("#house-root .hv-screen"); } },
+      target: function () { return pq("#house-root .hv-ebar") || pq("#house-root .hv-band") || pq("#house-root .hv-screen"); } },
     ratings: { face: "smug", text: function () { return "<b>Credit ratings</b>: win at a rating to unlock the next one, from AAA all the way down to D. Every tier adds a new rule, and exits there pay a lot more. No pressure ♡"; },
       target: function () { return pq("#screen-exec .rating-row"); } }
   };
@@ -4107,10 +4158,10 @@
   function pennySkip() { pennyDone(true); }
 
   /* One-time tips: same dialogue, "Got it" to close. Never during the tour. */
-  function pennyTip(key) {
+  function pennyTip(key, force) {
     if (PN.mode === "tour") return;
     var m = pennyMeta();
-    if (m.penny.tipsOff || m.penny.tips[key]) return;
+    if (!force && (m.penny.tipsOff || m.penny.tips[key])) return;
     var tip = PENNY_TIPS[key];
     if (!tip) return;
     var t = tip.target();

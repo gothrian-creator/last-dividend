@@ -116,7 +116,7 @@
   /* Act III (Now) feeds show the present-day bunker; Acts I-II (and old saves before Q9) keep the 1978 feeds */
   function feedBase(state) { return LD.eraAct && LD.eraAct(state) === 3 ? "assets/house/now/feed/" : BASE + "feed/"; }
   LD.houseFeedBase = feedBase;
-  function feedCell(state, systemId, resId) {
+  function feedCell(state, systemId, resId, picked) {
     var room = roomOf(state, systemId) || { on: false };
     var occupied = resId && hasRes(state, resId);
     var failing = !!(room.on && room.quality === "cheap" && !hasRes(state, "helen"));
@@ -124,21 +124,24 @@
     var src = feedBase(state) + systemId + "-" + kind + ".webp";
     var label = occupied ? (LD.houseResident(resId) || {}).name : room.on ? (ROOM_EMPTY[systemId] || {}).name : systemId;
     var cls = "hv-cell is-" + kind + (failing ? " is-failing" : "") + (room.on ? " is-lit" : "");
-    var tap = occupied ? " data-leave=\"" + resId + "\"" : "";
+    if (picked === systemId) cls += " is-picked";
+    var tap = occupied ? " data-leave=\"" + resId + "\"" : " data-pick=\"" + systemId + "\"";
     return '<button type="button" class="' + cls + '" data-feed="' + systemId + '"' + tap + ' aria-label="' + esc(label || systemId) + '">' +
       '<img src="' + src + '" alt="" draggable="false">' +
       (failing ? '<i class="hv-static" aria-hidden="true"></i>' : "") +
+      '<span class="hv-ftag is-' + (failing ? "fail" : room.on ? "on" : "off") + '" aria-hidden="true"><i></i>' + systemId.toUpperCase() + "</span>" +
       "</button>";
   }
 
   /* Lila is not a system room: she gets a tall strip of the feed, inside the glass, only once she is in. */
-  LD.renderHouseFeed = function (state) {
+  LD.renderHouseFeed = function (state, ui) {
+    var pk = LD.housePickFeed ? LD.housePickFeed(state, ui && ui.feed) : null;
     var lila = hasRes(state, "lila");
     var h = '<div class="hv-screen' + (lila ? " has-lila" : "") + '" aria-label="Bunker feed">';
-    h += feedCell(state, "power", "helen");
-    h += feedCell(state, "water", "tom");
-    h += feedCell(state, "air", "eli");
-    h += feedCell(state, "food", "nia");
+    h += feedCell(state, "power", "helen", pk);
+    h += feedCell(state, "water", "tom", pk);
+    h += feedCell(state, "air", "eli", pk);
+    h += feedCell(state, "food", "nia", pk);
     if (lila) {
       var lr = LD.houseResident("lila") || { name: "Lila Brenner" };
       h += '<button type="button" class="hv-cell hv-lila is-on is-lit" data-leave="lila" aria-label="' + esc(lr.name) + '">' +
@@ -194,7 +197,7 @@
     var cost = LD.housePayOffCost ? LD.housePayOffCost(state, arr.id) : 0;
     var occupant = null;
     if (replace && res.room && state.house.rooms[res.room]) occupant = LD.houseResident(state.house.rooms[res.room].by);
-    var h = '<article class="hv-card hv-arrival" role="dialog" aria-label="Someone at the door">';
+    var h = '<article class="hv-card hv-arrival" role="dialog" aria-label="Someone at the door">' + cardX();
     h += "<header><small>At the door</small><h2>" + esc(res.name) + "</h2></header>";
     h += '<p class="hv-line">' + esc(DOOR_LINE[res.id] || "") + "</p>";
     if (replace && occupant) h += '<p class="hv-note">' + esc(occupant.name.split(" ")[0]) + " leaves. Unrest +3.</p>";
@@ -210,13 +213,22 @@
     return h;
   };
 
+  /* Someone at the door waits as a chip by the door; tap opens her card. */
+  LD.renderHouseKnock = function (state, kind) {
+    var who = null, what = "knocking";
+    if (kind === "arrival") { var arr = LD.houseArrival && LD.houseArrival(state); if (arr) who = LD.houseResident(arr.id) || { name: arr.id }; }
+    else if (kind === "word") { var rec = LD.houseDuePromise && LD.houseDuePromise(state); if (rec) { who = LD.houseResident(rec.residentId); what = "your word is due"; } }
+    if (!who) return "";
+    return '<button type="button" class="hv-knock" id="hv-knock" data-kind="' + kind + '" aria-label="' + esc(who.name + ", " + what + ". Open") + '"><i class="hv-knock-dot" aria-hidden="true"></i><b>' + esc(who.name) + "</b><span> \u00b7 " + what + "</span></button>";
+  };
+  function cardX() { return '<button type="button" class="hv-card-x" id="hv-card-x" aria-label="Back to the room">\u00d7</button>'; }
   LD.renderHouseWord = function (state) {
     var rec = LD.houseDuePromise && LD.houseDuePromise(state);
     if (!rec) return "";
     var who = LD.houseResident(rec.residentId) || { name: "them" };
     var keep = LD.houseKeepCost(state, rec);
     var brk = LD.houseBreakCost(state, rec);
-    var h = '<article class="hv-card hv-word" role="dialog" aria-label="A promise comes due">';
+    var h = '<article class="hv-card hv-word" role="dialog" aria-label="A promise comes due">' + cardX();
     h += "<header><small>The Word \u00b7 due</small><h2>" + esc(who.name) + "</h2></header>";
     h += '<p class="hv-line">' + esc(PROM_SHORT[rec.defId] || rec.text) + ".</p>";
     if (keep.blocked) h += '<p class="hv-note">You turned someone away. This one cannot be kept.</p>';
@@ -330,6 +342,13 @@
     var c = LD.eraUpgradeCost(state, k, era);
     return (st === "open" ? "Not built \u00b7 $" : "Locked \u00b7 $") + c + "M";
   }
+  /* one glyph says the state; the sentence lives behind the action bar's (i) */
+  function stIcon(st) {
+    if (st === "on") return '<i class="hv-est is-on" aria-hidden="true"></i>';
+    if (st === "building") return '<i class="hv-est is-building" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 13l6-6M8 3l5 5-2 2-5-5z"/></svg></i>';
+    if (st === "locked") return '<i class="hv-est is-locked" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="3.5" y="7" width="9" height="7" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg></i>';
+    return '<i class="hv-est is-open" aria-hidden="true"></i>';
+  }
   function pips(lv, build) {
     var h = '<i class="hv-pips" aria-hidden="true">';
     for (var i = 1; i <= LD.ERA_MAX_LV; i++) h += '<i class="' + (i <= lv ? "on" : build && i === build ? "bd" : "") + '"></i>';
@@ -353,7 +372,7 @@
       if (era === 1 && k === "air") name = "Capitol"; else if (era === 1 && k === "food") name = "Offshore";
       var cls = "hv-eslot is-" + st + (k === sel ? " is-sel" : "");
       var img = ERA_ART + (era === 1 ? "fac-" : "site-") + k + ".webp";
-      var chip = '<span class="hv-echip">' + pips(s.lv, s.build) + "<b>" + esc(name) + "</b><small>" + esc(slotSub(state, era, k)) + "</small></span>";
+      var chip = '<span class="hv-echip" title="' + esc(slotSub(state, era, k)) + '">' + pips(s.lv, s.build).replace(/<\/i>$/, stIcon(st) + "</i>") + "<b>" + esc(name) + "</b></span>";
       var lock = st === "locked" ? '<em class="hv-elock">Locked</em>' : "";
       if (full && era === 1) {
         var p = BOARD_PANELS[k];
@@ -384,6 +403,7 @@
   LD.renderEraCard = function (state, ui) {
     var era = LD.eraAct(state), e = state.house.era, sel = LD.eraPick(state, ui && ui.eraSlot);
     var land = !!(ui && ui.land);
+    if (!land) return eraBar(state, era, e, sel, ui);
     var h = '<aside class="hv-band hv-ecard" aria-label="' + esc(LD.ERA_DEFS[era].title) + '">';
     h += '<p class="hv-band-k">' + esc(firmOf(state)) + " \u00b7 " + ERA_YEAR[era] + "</p>";
     h += '<h3 class="hv-etitle">' + esc(LD.ERA_DEFS[era].title) + "</h3>";
@@ -403,9 +423,84 @@
     h += "</aside>";
     return h;
   };
+  function eraFoot(state, era, e) {
+    var foot = [];
+    if (era === 2 && e.bank) foot.push("Offshore $" + e.bank + "M");
+    if (era === 1 && e.bank) foot.push("Offshore banked $" + e.bank + "M");
+    if (e.actQ === state.turn) foot.push("Order placed this quarter");
+    return '<p class="hv-stores">' + (foot.length ? esc(foot.join(" \u00b7 ")) + " \u00b7 " : "") + "Stores <b>" + (state.house.stores | 0) + "</b></p>";
+  }
+  function staffRow(state) {
+    var staff = (state.house.residents || []).map(function (r) { var b = BAND[r.id]; return b ? '<button type="button" class="hv-estaff" data-leave="' + r.id + '">' + esc(b.name) + "</button>" : ""; }).join("");
+    return staff ? '<p class="hv-estaff-row"><small>Staff</small>' + staff + "</p>" : "";
+  }
+  function infoBtn(open) {
+    return '<button type="button" class="hv-info" id="hv-info" aria-expanded="' + (open ? "true" : "false") + '" aria-label="' + (open ? "Hide details" : "Details") + '"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.2"/><path d="M10 9v5.2M10 5.6v.1"/></svg></button>';
+  }
+  /* Portrait: one bar. The selected screen's name and pips, (i), and its one order. The full line, the goal,
+     stores and staff fold out above it on (i). */
+  function eraBar(state, era, e, sel, ui) {
+    var s = LD.eraSlots(state, era)[sel], c = LD.eraUpgradeCost(state, sel, era), why = LD.eraCanUpgrade(state, sel);
+    var name = LD.eraSlotName(state, era, sel), open = !!(ui && ui.info);
+    var verb = s.lv || s.build ? "Expand" : "Build";
+    var btn = c == null ? '<span class="hv-ebar-st">Fully built</span>' : s.build ? '<span class="hv-ebar-st">Ready Q' + (state.turn + 1) + "</span>" :
+      '<button type="button" class="btn' + (why ? "" : " btn-coral") + ' hv-era-up" data-eslot="' + sel + '"' + (why ? ' aria-disabled="true" data-why="' + esc(why) + '"' : "") + "><b>" + verb + "</b><small>$" + c + "M</small></button>";
+    var h = '<aside class="hv-band hv-ecard hv-ebar' + (open ? " is-info" : "") + '" aria-label="' + esc(LD.ERA_DEFS[era].title) + '">';
+    h += '<div class="hv-ebar-more" id="hv-more"' + (open ? "" : " hidden") + ">";
+    h += '<p class="hv-band-k">' + esc(firmOf(state)) + " \u00b7 " + ERA_YEAR[era] + "</p>";
+    h += '<p class="hv-egoal">' + esc(LD.ERA_DEFS[era].goal) + "</p>";
+    h += slotRow(state, era, sel, true).replace(/<button[\s\S]*<\/button>/, "");
+    h += eraFoot(state, era, e) + staffRow(state);
+    h += "</div>";
+    h += '<div class="hv-ebar-row"><div class="hv-ebar-t"><b>' + esc(name) + "</b>" + pips(s.lv, s.build) + "</div>" + infoBtn(open) + btn + "</div>";
+    h += "</aside>";
+    return h;
+  }
+  /* Now: the same bar for the bunker. The picked feed (or the one most in trouble), its state, (i) for the run list. */
+  var ROOM_NAME = { power: "Power", water: "Water", air: "Air", food: "Food" };
+  function roomPips(room) {
+    var lv = !room || !room.on ? 0 : room.quality === "cheap" ? 1 : room.quality === "sound" ? 3 : 2;
+    return { lv: lv, word: !room || !room.on ? "Dark" : room.quality === "cheap" ? "Failing" : room.quality === "sound" ? "Sound" : "On" };
+  }
+  LD.housePickFeed = function (state, want) {
+    var ids = ["power", "water", "air", "food"];
+    if (want && ids.indexOf(want) !== -1) return want;
+    var bad = null, dark = null;
+    ids.forEach(function (id) { var r = roomOf(state, id); if (!r || !r.on) { if (!dark) dark = id; } else if (r.quality === "cheap" && !bad) bad = id; });
+    return bad || dark || "power";
+  };
+  LD.renderHouseBar = function (state, ui) {
+    if (!state || !state.house) return "";
+    var id = LD.housePickFeed(state, ui && ui.feed), room = roomOf(state, id), rp = roomPips(room), open = !!(ui && ui.info);
+    var band = LD.renderHouseBand(state);
+    var h = '<aside class="hv-band hv-nbar hv-ebar' + (open ? " is-info" : "") + '" aria-label="The bunker">';
+    h += '<div class="hv-ebar-more" id="hv-more"' + (open ? "" : " hidden") + ">";
+    h += band ? band.replace(/^<aside[^>]*>/, "").replace(/<\/aside>$/, "") : '<p class="hv-stores">Stores <b>' + (state.house.stores | 0) + "</b></p>";
+    h += "</div>";
+    var p = '<i class="hv-pips" aria-hidden="true">';
+    for (var i = 1; i <= 3; i++) p += '<i class="' + (i <= rp.lv ? "on" : "") + '"></i>';
+    p += "</i>";
+    var occ = room && room.by && hasRes(state, room.by) ? room.by : null;
+    var act = occ && state.phase === "bunker" && !state.bunkerActedThisTurn ? '<button type="button" class="btn hv-nbar-act" data-leave="' + occ + '"><b>Ask to leave</b><small>' + esc((LD.houseResident(occ) || {}).name || "") + "</small></button>" : "";
+    h += '<div class="hv-ebar-row"><div class="hv-ebar-t"><b>' + ROOM_NAME[id] + "</b>" + p + '<span class="hv-ebar-w is-' + rp.word.toLowerCase() + '">' + rp.word + "</span></div>" + infoBtn(open) +
+      (act || '<span class="hv-ebar-st">Stores <b>' + (state.house.stores | 0) + "</b></span>") + "</div>";
+    h += "</aside>";
+    return h;
+  };
+  /* The act strip under the HUD: act, four pips (done), the deadline. The goal sentence is its label and sits behind (i). */
+  var ACT_ROMAN = { 1: "I", 2: "II", 3: "III" }, ACT_DUE = { 1: 4, 2: 8, 3: 12 };
+  LD.eraActDone = function (state) {
+    var era = LD.eraAct ? LD.eraAct(state) : 3, n = 0;
+    if (era <= 2 && state.house && state.house.era) LD.ERA_SLOTS.forEach(function (k) { if (LD.eraSlots(state, era)[k].lv >= 1) n++; });
+    else ["power", "water", "air", "food"].forEach(function (id) { var r = roomOf(state, id); if (r && r.on && r.quality !== "cheap") n++; });
+    return n;
+  };
   LD.renderEraGoal = function (state) {
-    var era = LD.eraAct ? LD.eraAct(state) : 3;
-    return '<p class="hv-goal" aria-live="polite">' + esc(ERA_GOAL_LINE[era] || "") + "</p>";
+    var era = LD.eraAct ? LD.eraAct(state) : 3, n = LD.eraActDone(state);
+    var dots = "";
+    for (var i = 0; i < 4; i++) dots += '<i class="' + (i < n ? "on" : "") + '"></i>';
+    var lbl = (ERA_GOAL_LINE[era] || "") + ". " + n + " of 4 done.";
+    return '<p class="hv-goal hv-act" aria-live="polite" aria-label="' + esc(lbl) + '"><b>Act ' + ACT_ROMAN[era] + '</b><span class="hv-act-pips" aria-hidden="true">' + dots + "</span><span>Q" + ACT_DUE[era] + '</span><button type="button" class="hv-help" id="hv-help" aria-label="Penny explains this act">?</button></p>';
   };
   LD.eraInheritLine = function (state) {
     var inh = state && state.house && state.house.era && state.house.era.inherited;
@@ -423,7 +518,7 @@
     ui = ui || {};
     if (LD.seatUseExec) LD.seatUseExec(state && state.executiveId);
     var mode = ui.mode || "after";
-    var cls = "hv-root is-" + mode + (LD.eraShows && LD.eraShows(state) ? " is-era is-era-" + LD.eraAct(state) + (LD.eraFullArt(state) ? " is-era-full" : "") : "") + (ui.auto ? " is-auto" : "") + (ui.card ? " has-card" : "") + (ui.leaveId ? " has-sheet" : "");
+    var cls = "hv-root is-" + mode + (LD.eraShows && LD.eraShows(state) ? " is-era is-era-" + LD.eraAct(state) + (LD.eraFullArt(state) ? " is-era-full" : "") : "") + (ui.auto ? " is-auto" : "") + (ui.card && ui.cardOpen ? " has-card" : "") + (ui.card && !ui.cardOpen ? " has-knock" : "") + (ui.leaveId ? " has-sheet" : "");
     var eraOn = LD.eraShows ? LD.eraShows(state) : false, turn = LD.maraTurn ? LD.maraTurn(state) : null;
     var frames = LD.housePlates(state).map(function (src, i) {
       return '<img class="hv-plate" data-frame="' + i + '" src="' + src + '" alt="" draggable="false">';
@@ -435,11 +530,11 @@
     h += ui.seated && LD.seatHud ? LD.seatHud(state, { menu: false, nets: false }).replace('class="sd-menu"', 'class="sd-menu" tabindex="-1" aria-hidden="true"') : LD.renderHouseHud(state);
     h += '<div class="hv-clip"><div class="hv-rig">';
     h += '<div class="hv-plates" aria-hidden="true">' + frames + "</div>";
-    if (showSet) h += eraOn ? LD.renderEraScreen(state, ui) : LD.renderHouseFeed(state);
+    if (showSet) h += eraOn ? LD.renderEraScreen(state, ui) : LD.renderHouseFeed(state, ui);
     if (showSet && turn && turn.fg && !eraOn) h += '<img class="hv-fg" src="' + turn.fg + '" alt="" aria-hidden="true" draggable="false">';
     h += "</div></div>";
     if (showSet && LD.isHouse(state) && state.house && state.house.era) h += LD.renderEraGoal(state);
-    if (showSet) h += eraOn ? LD.renderEraCard(state, ui) : LD.renderHouseBand(state);
+    if (showSet) h += eraOn ? LD.renderEraCard(state, ui) : ui.land ? LD.renderHouseBand(state) : LD.renderHouseBar(state, ui);
     if (mode === "turning") h += '<button type="button" class="hv-skip" id="hv-skip">Skip</button>';
     h += '<div class="hv-dock">';
     if (mode === "after") {
@@ -447,7 +542,8 @@
       if (ui.canEnd) h += '<button type="button" class="btn btn-coral" id="hv-endq">End quarter</button>';
     }
     h += "</div>";
-    if (ui.card === "word") h += LD.renderHouseWord(state);
+    if (ui.card && !ui.cardOpen) h += LD.renderHouseKnock(state, ui.card);
+    else if (ui.card === "word") h += LD.renderHouseWord(state);
     else if (ui.card === "arrival") h += LD.renderHouseArrival(state, ui);
     if (ui.leaveId) h += LD.renderHouseLeave(state, ui.leaveId);
     h += "</div>";

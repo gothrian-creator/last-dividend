@@ -801,7 +801,7 @@ ok(LD.actionable(hh, { lensSeen: seen }).badges.includes("tab:holdings"), "Holdi
     const st = openBunker(houseRun({ seed: "copy-ui" }));
     st.house.rooms.air.on = true; st.house.rooms.air.by = "start"; st.turn = 9;
     const html = LD.renderHouseStage(st, { mode: "after" });
-    ok(!/hv-pip/.test(html) && /feed\/air-empty\.webp/.test(html), "empty-running Air uses the empty plate and no name pip");
+    ok(!/hv-pip\b/.test(html) && /feed\/air-empty\.webp/.test(html), "empty-running Air uses the empty plate and no name pip");
     const admitted = LD.houseAdmit(st, { id: "eli" }).state;
     const eli = LD.renderHouseStage(admitted, { mode: "after" });
     ok(/feed\/air-on\.webp/.test(eli) && /Dirty jobs sting less/.test(eli), "Eli has his own Air plate and a real This run line");

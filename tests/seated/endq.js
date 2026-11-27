@@ -14,7 +14,7 @@ const SIZES=(process.env.SIZES||"412x915,360x800,800x1280,1280x800").split(",");
   if(!(await p.$("#house-root:not([hidden])"))){const pk=await p.$("#house-peek");if(pk){await pk.click();await p.waitForTimeout(3500);}}
   await p.waitForFunction(()=>!(window.LD&&LD.houseUi&&LD.houseUi.turning&&LD.houseUi.turning()),null,{timeout:8000}).catch(()=>{}); /* the era turn clip runs ~2.5 s with the seat pull */
   await p.screenshot({path:`${OUT}/${sz}-visitor.png`});
-  for(let i=0;i<3;i++){const a=await p.$("#hv-admit");if(!a)break;await a.click();await p.waitForTimeout(1200);}
+  for(let i=0;i<3;i++){const kn=await p.$("#hv-knock");if(kn){await kn.click();await p.waitForTimeout(500);}const a=await p.$("#hv-admit");if(!a)break;await a.click();await p.waitForTimeout(1200);}
   await p.screenshot({path:`${OUT}/${sz}-bunker.png`});
   const e=await p.$("#hv-endq");console.log(sz,"endq",!!e);
   if(e){await e.click();for(let i=0;i<10;i++){await p.waitForTimeout(450);await p.screenshot({path:`${OUT}/${sz}-close-${i}.png`});}}

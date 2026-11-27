@@ -5985,3 +5985,89 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   .sd-rglow, .sd-th-pulse, .pk-thread .pk-trail.run, .pk-puff, .sd-mcap { animation: none !important; }
   .sd-th-pulse { opacity: 0; } .pk-puff { opacity: 0.9; } .pk-thread .pk-trail.run { opacity: 0.9; }
 }
+
+/* ===== Bunker declutter (2026-11-27, sheet 2): act strip, name+pips chips, one action bar with (i),
+   the door as a chip, a one-time "Tap a screen" pulse. ===== */
+.hv-goal.hv-act { display: flex; align-items: center; gap: 10px; padding: 5px 14px; font: 800 12px var(--font-sans); letter-spacing: 0.16em; text-transform: uppercase; background: rgba(28, 22, 16, 0.86); box-shadow: 0 0 0 1px rgba(214, 168, 76, 0.45); }
+.hv-act b { font-weight: 800; color: #f1dba0; }
+.hv-act-pips { display: inline-flex; gap: 5px; }
+.hv-act-pips i { width: 9px; height: 9px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #d6a84c; }
+.hv-act-pips i.on { background: #d6a84c; box-shadow: 0 0 6px rgba(214, 168, 76, 0.6); }
+.hv-root.has-knock .hv-goal, .hv-root:not(.has-card) .hv-goal.hv-act { opacity: 1; }
+.hv-root.is-before .hv-goal.hv-act, .hv-root.is-turning .hv-goal.hv-act { opacity: 0; }
+/* chips: state glyph + name, pips above */
+.hv-echip { padding-top: 6px; padding-bottom: 5px; }
+.hv-echip b { display: flex; align-items: center; justify-content: center; gap: 0.3em; }
+.hv-est { flex: 0 0 auto; display: inline-block; width: 0.5em; height: 0.5em; border-radius: 50%; font-style: normal; }
+.hv-est.is-on { background: #3fae6a; box-shadow: 0 0 0.35em rgba(63, 174, 106, 0.75); }
+.hv-est.is-open { box-shadow: inset 0 0 0 0.12em #b8402f; }
+.hv-est.is-building, .hv-est.is-locked { width: 0.78em; height: 0.78em; border-radius: 0; }
+.hv-est svg { width: 100%; height: 100%; fill: none; stroke: #6a5a48; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.hv-est.is-building svg { stroke: #9a6c1c; }
+/* the action bar */
+.hv-band.hv-ebar { pointer-events: auto; left: 10px; right: 10px; width: auto; max-width: 520px; padding: 6px 8px 6px 12px; }
+@media (min-width: 700px) and (min-height: 1100px) { .hv-band.hv-ebar { right: auto; width: min(70vw, 520px); } }
+.hv-ebar-row { display: flex; align-items: center; gap: 8px; min-height: 48px; }
+.hv-ebar-t { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; }
+.hv-ebar-t b { font-family: var(--font-serif); font-weight: 600; font-size: 17px; color: #2a1c12; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hv-ebar-t .hv-pips { position: static; flex: 0 0 auto; }
+.hv-ebar-t .hv-pips i { width: 11px; height: 11px; box-shadow: 0 0 0 1.5px #faf3e4, 0 0 0 2.5px rgba(140, 100, 48, 0.45); }
+.hv-ebar-w { font: 700 11px var(--font-sans); letter-spacing: 0.08em; text-transform: uppercase; color: #1c5c60; }
+.hv-ebar-w.is-failing { color: #b8402f; } .hv-ebar-w.is-dark { color: #6a5a48; }
+.hv-ebar-st { flex: 0 0 auto; font: 700 12px var(--font-sans); color: #4a3828; padding: 0 6px; }
+.hv-ebar-st b { font-family: var(--font-serif); color: #2a1c12; font-size: 15px; }
+.hv-info { flex: 0 0 auto; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+.hv-info svg { width: 24px; height: 24px; fill: none; stroke: #6a4a22; stroke-width: 1.7; stroke-linecap: round; }
+.hv-info[aria-expanded="true"] svg { stroke: #fff4dc; fill: #6a4a22; }
+.hv-ebar .hv-era-up, .hv-nbar-act { flex: 0 0 auto; min-height: 44px; min-width: 96px; padding: 3px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1;
+  border-radius: 0; border: 2px solid var(--gold); background: #f4ecdc; color: var(--ink); text-shadow: none; box-shadow: inset 0 0 0 3px #f4ecdc, inset 0 0 0 4px var(--gold-dk), 3px 4px 0 rgba(20, 12, 8, 0.34); }
+.hv-ebar .hv-era-up.btn-coral { background: #b8402f; color: #fff4dc; box-shadow: inset 0 0 0 3px #b8402f, inset 0 0 0 4px #f1dba0, 3px 4px 0 rgba(20, 12, 8, 0.34); }
+.hv-ebar .hv-era-up b, .hv-nbar-act b { font: 700 14px var(--font-sans); } .hv-ebar .hv-era-up small, .hv-nbar-act small { font: 400 11px var(--font-sans); opacity: 0.9; }
+.hv-ebar .hv-era-up[aria-disabled="true"] { opacity: 0.55; }
+.hv-ebar .hv-era-up:active, .hv-nbar-act:active { transform: translate(2px, 3px); }
+.hv-ebar-more { padding: 2px 0 7px; margin-bottom: 2px; border-bottom: 1px solid rgba(140, 100, 48, 0.25); }
+.hv-ebar-more[hidden] { display: none; }
+.hv-ebar-more .hv-erow { margin-top: 2px; }
+.hv-ebar-more .hv-band-list { grid-template-columns: 1fr 1fr; }
+.hv-root.has-card .hv-band.hv-ebar, .hv-root.has-sheet .hv-band.hv-ebar { opacity: 0; pointer-events: none; }
+/* Now feeds: corner tags instead of the text band */
+.hv-ftag { position: absolute; left: 10px; top: 10px; display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px 4px 8px; background: rgba(10, 12, 12, 0.72); color: #e8efe9; font: 800 24px var(--font-sans); letter-spacing: 0.14em; border-radius: 4px; pointer-events: none; }
+.hv-ftag i { width: 13px; height: 13px; border-radius: 50%; background: #5d6660; }
+.hv-ftag.is-on i { background: #46d07e; box-shadow: 0 0 8px rgba(70, 208, 126, 0.8); }
+.hv-ftag.is-fail i { background: #ff6a3a; box-shadow: 0 0 8px rgba(255, 106, 58, 0.8); }
+.hv-ftag.is-off { color: #9aa19c; }
+.hv-cell[data-pick] { cursor: pointer; }
+.hv-screen:not(.hv-era) .hv-cell.is-picked { box-shadow: inset 0 0 0 4px #ecc45c; }
+/* the door as a chip */
+.hv-knock { position: absolute; right: 12px; top: 152px; z-index: 7; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px 0 12px; border: 2px solid var(--gold); border-radius: 22px;
+  background: #faf3e2; color: #2a1c12; font: 400 13px var(--font-sans); cursor: pointer; box-shadow: 0 6px 16px rgba(20, 10, 4, 0.35); pointer-events: auto; max-width: calc(100% - 24px); }
+.hv-knock b { font-family: var(--font-serif); font-weight: 600; font-size: 15px; white-space: nowrap; }
+.hv-knock span { white-space: nowrap; color: #6a4a22; }
+.hv-knock-dot { width: 9px; height: 9px; border-radius: 50%; background: #b8402f; animation: hvKnock 1.6s ease-in-out infinite; }
+@keyframes hvKnock { 0%, 100% { box-shadow: 0 0 0 0 rgba(184, 64, 47, 0.55); } 50% { box-shadow: 0 0 0 6px rgba(184, 64, 47, 0); } }
+.hv-root.is-landscape .hv-knock { top: 74px; right: 16px; }
+.hv-root.is-seated.is-landscape .hv-knock { top: 112px; }
+.hv-card-x { position: absolute; right: 6px; top: 6px; width: 40px; height: 40px; border: 0; background: none; font: 400 26px/1 var(--font-serif); color: #6a4a22; cursor: pointer; }
+.hv-card header { padding-right: 36px; }
+/* one-time pulse */
+.is-pulse { animation: hvPulse 1.8s ease-in-out infinite; }
+@keyframes hvPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(236, 196, 92, 0.9), inset 0 0 0 3px rgba(236, 196, 92, 0.9); } 60% { box-shadow: 0 0 0 16px rgba(236, 196, 92, 0), inset 0 0 0 3px rgba(236, 196, 92, 0.9); } }
+.hv-tapme { position: absolute; z-index: 6; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(28, 22, 16, 0.88); color: #faf3e4;
+  font: 800 12px var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; border-radius: 16px; pointer-events: none; box-shadow: 0 0 0 1px rgba(236, 196, 92, 0.7); }
+.hv-tapme i { width: 8px; height: 8px; border-radius: 50%; background: #ecc45c; }
+@media (prefers-reduced-motion: reduce) {
+  .hv-knock-dot, .is-pulse { animation: none !important; }
+  .is-pulse { box-shadow: inset 0 0 0 3px rgba(236, 196, 92, 0.95); }
+}
+.hv-ebar .btn { width: auto; max-width: none; margin: 0; }
+.hv-ebar .hv-ebar-t { min-width: 0; }
+.hv-echip b { display: block; }
+.hv-pips .hv-est { align-self: center; margin-left: 3px; width: 12px; height: 12px; box-shadow: 0 0 0 2px #faf3e4; background-color: #faf3e4; }
+.hv-pips .hv-est.is-on { background: #3fae6a; box-shadow: 0 0 0 2px #faf3e4, 0 0 6px rgba(63, 174, 106, 0.8); }
+.hv-pips .hv-est.is-open { background: #faf3e4; box-shadow: inset 0 0 0 2.5px #b8402f, 0 0 0 2px #faf3e4; }
+.hv-pips .hv-est.is-building, .hv-pips .hv-est.is-locked { width: 16px; height: 16px; border-radius: 3px; padding: 1px; }
+.hv-goal.hv-act { overflow: visible; padding-right: 6px; }
+.hv-root.is-after .hv-goal.hv-act { pointer-events: none; }
+.hv-help { pointer-events: auto; width: 30px; height: 30px; margin: -4px 0 -4px 2px; border-radius: 50%; border: 1.5px solid rgba(214, 168, 76, 0.8); background: none; color: #f1dba0; font: 800 14px var(--font-sans); cursor: pointer; position: relative; }
+.hv-help::after { content: ""; position: absolute; inset: -8px; }
+.hv-root.is-before .hv-help, .hv-root.is-turning .hv-help { pointer-events: none; }

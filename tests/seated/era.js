@@ -7,7 +7,7 @@ const SIZES=(process.env.SIZES||"360x800,412x915,800x1150,800x1280,1280x800").sp
 let bad=0,n=0;function ok(c,m){n++;if(!c){bad++;console.log("FAIL",m);}}
 const inter=(a,b)=>Math.max(0,Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y));
 async function openHouse(p){for(let i=0;i<8;i++){if(await p.$("#hv-back"))break;const b=await p.$("#house-peek");if(b&&await b.isVisible()){await b.click({timeout:1500}).catch(()=>{});}await p.waitForTimeout(900);}await p.waitForTimeout(500);return !!(await p.$("#hv-back"));}
-async function cards(p){for(let i=0;i<3;i++){const a=await p.$("#hv-admit:not([disabled])")||await p.$("#hv-turnaway");if(a){await p.waitForTimeout(600);await a.click({timeout:2000}).catch(()=>{});await p.waitForTimeout(1000);continue;}const k=await p.$("#hv-keep:not([disabled])")||await p.$("#hv-break");if(k){await p.waitForTimeout(600);await k.click({timeout:2000}).catch(()=>{});await p.waitForTimeout(1000);continue;}break;}}
+async function cards(p){for(let i=0;i<3;i++){const kn=await p.$("#hv-knock");if(kn){await kn.click({timeout:2000}).catch(()=>{});await p.waitForTimeout(500);}const a=await p.$("#hv-admit:not([disabled])")||await p.$("#hv-turnaway");if(a){await p.waitForTimeout(600);await a.click({timeout:2000}).catch(()=>{});await p.waitForTimeout(1000);continue;}const k=await p.$("#hv-keep:not([disabled])")||await p.$("#hv-break");if(k){await p.waitForTimeout(600);await k.click({timeout:2000}).catch(()=>{});await p.waitForTimeout(1000);continue;}break;}}
 async function layout(p,W,H,tag){
   const r=await p.evaluate(()=>{const bb=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
     const chips=[...document.querySelectorAll("#house-root .hv-eslot .hv-echip")].map(bb);const card=document.querySelector("#house-root .hv-ecard");const hud=document.querySelector("#house-root .sd-hud, #house-root .hv-hud");
@@ -30,7 +30,7 @@ async function layout(p,W,H,tag){
    if(t<=8){await layout(p,W,Hh,sz+" t"+t);
      const cls=await p.evaluate(()=>(document.querySelector("#house-root .hv-screen")||{}).className||"");ok(t<=4?/is-board is-full/.test(cls):/is-isle is-full/.test(cls),sz+" t"+t+" Mara plate "+cls);}
    else{const cls=await p.evaluate(()=>(document.querySelector("#house-root .hv-screen")||{}).className||"");ok(!/hv-era/.test(cls)&&/hv-screen/.test(cls),sz+" t10 bunker feed "+cls);
-     ok(await p.evaluate(()=>/Act III goal/.test((document.querySelector("#house-root .hv-goal")||{}).textContent||"")),sz+" t10 Act III ribbon");}
+     ok(await p.evaluate(()=>/Act III goal/.test((document.querySelector("#house-root .hv-goal")||{getAttribute:()=>""}).getAttribute("aria-label")||"")&&/Act III/i.test((document.querySelector("#house-root .hv-goal")||{}).textContent||"")),sz+" t10 Act III ribbon");}
    if(SHOTS)await p.screenshot({path:`${SHOTS}/era-${t<=4?"1978":t<=8?"2008":"now"}-${sz}.png`});
    ok(!p.errs.length,sz+" t"+t+" no page errors "+p.errs.slice(0,2));await p.ctx.close();}}
  // a real order through the UI (412x915, Q2 after the deal)

@@ -888,8 +888,9 @@
     var bg = root && root.querySelector(".sd-bg"); if (!bg) return;
     var im = bg.querySelector(".sd-wide");
     if (!f.land) { if (im) im.style.display = "none"; return; }
-    if (!im) { im = document.createElement("img"); im.className = "sd-wide"; im.alt = ""; im.draggable = false; im.src = ((LD.seatEraSet && LD.seatEraSet(state)) || {}).roomWide ? LD.seatEraSet(state).roomWide.src : LD.SEAT.roomWide.src; bg.appendChild(im); }
-    var X0 = (((LD.seatEraSet && LD.seatEraSet(state)) || {}).roomWide || LD.SEAT.roomWide).x0;
+    var RW = ((LD.seatEraSet && LD.seatEraSet(state)) || {}).roomWide || LD.SEAT.roomWide, X0 = RW.x0;
+    if (!im) { im = document.createElement("img"); im.className = "sd-wide"; im.alt = ""; im.draggable = false; bg.appendChild(im); }
+    if (im.getAttribute("src") !== RW.src) im.setAttribute("src", RW.src);
     im.style.display = "";
     im.style.transform = "translate(" + (f.tx - X0 * f.s).toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
     im.style.opacity = String(Math.max(0, 1 - (t || 0) * 1.4).toFixed(3));

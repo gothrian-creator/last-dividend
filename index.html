@@ -6092,9 +6092,10 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .sd-fwin-haze { background: radial-gradient(60% 40% at 30% 30%, rgba(40, 30, 26, 0.85), rgba(70, 50, 40, 0.55) 60%, rgba(120, 80, 50, 0.2)), linear-gradient(180deg, rgba(60, 44, 36, 0.8), rgba(170, 90, 40, 0.45) 75%, rgba(200, 110, 40, 0.25));
   mix-blend-mode: multiply; display: none; }
 .desk.sd.is-land .sd-fwin-haze { display: block; }
+.sd-fwin-glass { background: radial-gradient(70% 30% at 40% 100%, rgba(235, 120, 40, 0.55), rgba(200, 80, 30, 0) 70%), linear-gradient(180deg, rgba(40, 32, 30, 0.82), rgba(70, 50, 40, 0.6) 55%, rgba(150, 80, 40, 0.45)); }
 .sd-fwin-dark { background: linear-gradient(180deg, rgba(10, 14, 20, 0.6), rgba(10, 14, 20, 0.35)); opacity: 0; transition: opacity 0.7s ease; }
 .desk.sd.felt-dark .sd-fwin { opacity: 1; }
-.desk.sd.felt-dark .sd-fwin:not(.on) img { visibility: hidden; }
+.desk.sd.felt-dark .sd-fwin:not(.on) img, .desk.sd.felt-dark .sd-fwin:not(.on) .sd-fwin-glass { visibility: hidden; }
 .desk.sd.felt-dark .sd-fwin-dark { opacity: 1; }
 /* burning regions on the map */
 .sd-fburn { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; pointer-events: none; overflow: visible; }
@@ -16584,15 +16585,20 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   /* rim width in plate px */
   var PROP_W = { briefcase: 200, policy: 128, deed: 168, dossier: 138, ledger: 150, cheque: 176, telegram: 166 };
   var RIM = [[262, 828, -6], [430, 850, 4], [592, 822, 7]];
+  /* painted open states (laptop lid up, tablet lit); the folder, report, folio and phone keep the lift + slip slide-out */
+  var SKIN_OPEN = { laptop: [772, 808], tablet: [822, 528] };
   Object.keys(SKIN_SIZE).forEach(function (k) { PSIZE[k] = SKIN_SIZE[k]; });
+  Object.keys(SKIN_OPEN).forEach(function (k) { PSIZE[k + "-open"] = SKIN_OPEN[k]; });
   /* where the closed prop sits inside its open box ([x, y, w] as fractions of the open box): the clip's first frame */
   var CLOSED_IN = { briefcase: [0.01, 0.41, 0.98], policy: [0.02, 0.02, 0.96], deed: [0.06, 0.06, 0.88], dossier: [0.34, 0.05, 0.64],
-    ledger: [0.36, 0.18, 0.62], cheque: [0.12, 0.2, 0.68], telegram: [0.03, 0.12, 0.94], skin: [0, 0, 1] };
+    ledger: [0.36, 0.18, 0.62], cheque: [0.12, 0.2, 0.68], telegram: [0.03, 0.12, 0.94], skin: [0, 0, 1],
+    "laptop-open": [0.02, 0.53, 0.96], "tablet-open": [0, 0.09, 1] };
   /* the typed slip on each open interior: x, y, w (fractions of the open box), rotate, skewX (deg), how it is held */
   var SLIP = { briefcase: { x: 0.15, y: 0.035, w: 0.68, r: -1.5, sk: -3, hold: "lid" }, dossier: { x: 0.03, y: 0.46, w: 0.46, r: -2, sk: 0, hold: "clip", min: 178 },
     deed: { x: 0.05, y: 0.05, w: 0.6, r: -4, sk: 2, hold: "pin" }, cheque: { x: 0.01, y: 0.56, w: 0.56, r: -3, sk: 0, hold: "pocket", min: 186 },
     policy: { x: 0.15, y: 0.15, w: 0.66, r: 1.2, sk: 0, hold: "rider" }, ledger: { x: 0.1, y: 0.52, w: 0.7, r: -3, sk: 0, hold: "page", wide: true },
-    telegram: { x: 0.12, y: 0.27, w: 0.76, r: -1.5, sk: 0, hold: "strips" }, skin: { x: 0.1, y: 0.16, w: 0.8, r: -1.5, sk: 0, hold: "rider", min: 190 } };
+    telegram: { x: 0.12, y: 0.27, w: 0.76, r: -1.5, sk: 0, hold: "strips" }, skin: { x: 0.1, y: 0.16, w: 0.8, r: -1.5, sk: 0, hold: "rider", min: 190 },
+    "laptop-open": { x: 0.1, y: 0.07, w: 0.8, r: -1, sk: 0, hold: "rider", min: 190 }, "tablet-open": { x: 0.1, y: 0.14, w: 0.8, r: -1, sk: 0, hold: "rider", min: 190 } };
   /* finished reveal clips: set an art name true once assets/house/props/clips/<art>-open.webm is in (see the video-stills README) */
   /* shipped: briefcase (+oxblood, black), dossier (+red), cheque, ledger (green retake; cash kept solid + recoloured to the still). Hard cut by choice: policy (retake: the sheet flies off-frame, a see-through strip at the top), deed (retake: the seal goes dark and the map dissolves in through the paper), telegram (retake: the seal splits into two/three and a faded wax disc ghosts), cheque-blue (pages tint blue mid-clip), stamp (tween) */
   LD.PROP_CLIPS = { stamp: false, briefcase: true, "briefcase-oxblood": true, "briefcase-black": true, dossier: true, "dossier-red": true, cheque: true, ledger: true };
@@ -16614,7 +16620,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     return ids.slice(0, 3).map(function (id, i) {
       var d = LD.dealById(id), t = LD.propTypeOf(d), n = seen[t] = (seen[t] || 0) + 1, v = PROP_VAR[t] || [t], art = skin[t] || v[(n - 1) % v.length];
       var nat = PSIZE[art], w = PROP_W[t], h = w * nat[1] / nat[0], slot = ids.length === 2 ? RIM[i === 0 ? 0 : 2] : ids.length === 1 ? RIM[1] : RIM[i];
-      return { id: id, type: t, art: art, open: skin[t] ? art : art + "-open", geo: skin[t] ? "skin" : t, x: slot[0], y: slot[1], rot: slot[2], w: w, h: h };
+      return { id: id, type: t, art: art, open: skin[t] ? (SKIN_OPEN[art] ? art + "-open" : art) : art + "-open", geo: skin[t] ? (SKIN_OPEN[art] ? art + "-open" : "skin") : t, x: slot[0], y: slot[1], rot: slot[2], w: w, h: h };
     });
   };
   /* Where the open prop stands: the biggest box (aspect r = h/w) in the free band that keeps the chosen deal's pin in sight.
@@ -16730,7 +16736,14 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   /* o: { opp: html, hands: "rest"|"dip", card: html, mara: bool } */
   /* Era desks (stage 4): per-era layer sets for the seated desk only (fights keep the 1978 room). null = not painted yet,
      so the 1978 set stands in. Shape: { room: src, roomWide: { src, x0, w }, table: { src, box } | null, hands: { rest: { src, box }, dip: { src, box } } } */
-  LD.SEAT_ERA = { 2: null, 3: null };
+  var DESK = "assets/house/desk/";
+  function eraSet(k, win, rest, dip) {
+    return { room: DESK + k + "-room.webp", roomWide: { src: DESK + k + "-wide.webp", x0: 640, w: 2000 }, table: null, win: win,
+      hands: { rest: { src: DESK + k + "-hands-rest.webp", box: [85, rest, 650, 366] }, dip: { src: DESK + k + "-hands-dip.webp", box: [85, dip, 650, 366] } } };
+  }
+  /* 2008: steel table, front edge ~y996; Now: stone table, ~y1004 (1978: ~880). Hands keep the 1978 Mara hands' size and sit the
+     same distance from each era's table edge (rest fingertips ~106px onto the top, dip knuckles just below the edge). */
+  LD.SEAT_ERA = { 2: eraSet("2008", [556, 0, 164, 482], 879, 958), 3: eraSet("now", [506, 0, 214, 470], 884, 961) };
   LD.seatEraSet = function (state) {
     var e = LD.eraAct ? LD.eraAct(state) : 1, s = LD.SEAT_ERA[e];
     return s && state && state.executiveId === "mara" ? s : null;
@@ -16817,10 +16830,12 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
   };
   /* the street outside the window: the riot painting for the 1978 room, plus a haze for the wider landscape glass */
   LD.feltRoom = function (state) {
-    var w = LD.FELT.win, on = LD.feltWindow(state);
+    var S = LD.seatEraSet(state), w = (S && S.win) || LD.FELT.win, on = LD.feltWindow(state);
+    /* era rooms have no riot painting: the street's smoke and fire glow tint their own glass instead */
+    var pane = S && S.win ? '<i class="sd-fwin-glass" style="left:' + w[0] + "px;top:" + w[1] + "px;width:" + w[2] + "px;height:" + w[3] + 'px"></i>'
+      : '<img src="' + BASE + 'sd-window-riot.webp" alt="" draggable="false" style="left:' + w[0] + "px;top:" + w[1] + "px;width:" + w[2] + "px;height:" + w[3] + 'px">';
     return '<div class="sd-fwin' + (on ? " on" : "") + '" aria-hidden="true">' +
-      '<i class="sd-fwin-haze" style="left:' + (w[0] + w[2] - 12) + "px;top:0;width:200px;height:" + (w[3] - 70) + 'px"></i>' +
-      '<img src="' + BASE + 'sd-window-riot.webp" alt="" draggable="false" style="left:' + w[0] + "px;top:" + w[1] + "px;width:" + w[2] + "px;height:" + w[3] + 'px">' +
+      '<i class="sd-fwin-haze" style="left:' + (w[0] + w[2] - 12) + "px;top:0;width:200px;height:" + (w[3] - 70) + 'px"></i>' + pane +
       '<i class="sd-fwin-dark" style="left:' + (w[0] + 30) + "px;top:0;width:" + (w[2] + 180) + "px;height:" + (w[3] - 18) + 'px"></i></div>';
   };
   /* burning regions on the map, and the paper that landed on the table */
@@ -18791,8 +18806,9 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
     var bg = root && root.querySelector(".sd-bg"); if (!bg) return;
     var im = bg.querySelector(".sd-wide");
     if (!f.land) { if (im) im.style.display = "none"; return; }
-    if (!im) { im = document.createElement("img"); im.className = "sd-wide"; im.alt = ""; im.draggable = false; im.src = ((LD.seatEraSet && LD.seatEraSet(state)) || {}).roomWide ? LD.seatEraSet(state).roomWide.src : LD.SEAT.roomWide.src; bg.appendChild(im); }
-    var X0 = (((LD.seatEraSet && LD.seatEraSet(state)) || {}).roomWide || LD.SEAT.roomWide).x0;
+    var RW = ((LD.seatEraSet && LD.seatEraSet(state)) || {}).roomWide || LD.SEAT.roomWide, X0 = RW.x0;
+    if (!im) { im = document.createElement("img"); im.className = "sd-wide"; im.alt = ""; im.draggable = false; bg.appendChild(im); }
+    if (im.getAttribute("src") !== RW.src) im.setAttribute("src", RW.src);
     im.style.display = "";
     im.style.transform = "translate(" + (f.tx - X0 * f.s).toFixed(2) + "px," + f.ty.toFixed(2) + "px) scale(" + f.s.toFixed(5) + ")";
     im.style.opacity = String(Math.max(0, 1 - (t || 0) * 1.4).toFixed(3));

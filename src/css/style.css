@@ -6071,3 +6071,69 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .hv-help { pointer-events: auto; width: 30px; height: 30px; margin: -4px 0 -4px 2px; border-radius: 50%; border: 1.5px solid rgba(214, 168, 76, 0.8); background: none; color: #f1dba0; font: 800 14px var(--font-sans); cursor: pointer; position: relative; }
 .hv-help::after { content: ""; position: absolute; inset: -8px; }
 .hv-root.is-before .hv-help, .hv-root.is-turning .hv-help { pointer-events: none; }
+
+/* ===== Felt events (2026-11-27, sheet 3): scene beat, delta token to the HUD with its cause, marks that stay ===== */
+/* the street outside: the riot painting over the window glass (wrapper fades, the img never animates) */
+.sd-fwin { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; pointer-events: none; opacity: 0; transition: opacity 0.9s ease; }
+.sd-fwin.on { opacity: 1; }
+.sd-fwin img, .sd-fwin i { position: absolute; display: block; }
+.sd-fwin-haze { background: radial-gradient(60% 40% at 30% 30%, rgba(40, 30, 26, 0.85), rgba(70, 50, 40, 0.55) 60%, rgba(120, 80, 50, 0.2)), linear-gradient(180deg, rgba(60, 44, 36, 0.8), rgba(170, 90, 40, 0.45) 75%, rgba(200, 110, 40, 0.25));
+  mix-blend-mode: multiply; display: none; }
+.desk.sd.is-land .sd-fwin-haze { display: block; }
+.sd-fwin-dark { background: linear-gradient(180deg, rgba(10, 14, 20, 0.6), rgba(10, 14, 20, 0.35)); opacity: 0; transition: opacity 0.7s ease; }
+.desk.sd.felt-dark .sd-fwin { opacity: 1; }
+.desk.sd.felt-dark .sd-fwin:not(.on) img { visibility: hidden; }
+.desk.sd.felt-dark .sd-fwin-dark { opacity: 1; }
+/* burning regions on the map */
+.sd-fburn { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; pointer-events: none; overflow: visible; }
+.sd-burn { opacity: 0; transition: opacity 0.6s ease; }
+.sd-burn.on { opacity: 1; }
+.sd-burn.is-protest .sd-burn-fl { display: none; }
+.sd-burn.is-protest .sd-burn-glow { opacity: 0.55; }
+.sd-burn-glow { mix-blend-mode: screen; animation: sdEmber 2.4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
+@keyframes sdEmber { from { opacity: 0.7; } to { opacity: 1; } }
+.sd-burn-fl { fill: #ffb43a; stroke: #b8401c; stroke-width: 1; animation: sdFlame 0.9s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes sdFlame { from { transform: scale(0.92, 0.86); } to { transform: scale(1.04, 1.1); } }
+.sd-burn-smoke circle { fill: rgba(52, 44, 40, 0.55); animation: sdSmoke 3.2s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+.sd-burn-smoke .s2 { animation-delay: -1.1s; } .sd-burn-smoke .s3 { animation-delay: -2.1s; }
+@keyframes sdSmoke { 0% { transform: translate(0, 0) scale(0.6); opacity: 0; } 20% { opacity: 0.9; } 100% { transform: translate(6px, -46px) scale(1.7); opacity: 0; } }
+.sd-burn.flare .sd-burn-glow { animation: sdFlare 0.9s ease-out 1, sdEmber 2.4s ease-in-out 0.9s infinite alternate; }
+@keyframes sdFlare { 0% { transform: scale(0.4); opacity: 0; } 50% { transform: scale(1.35); opacity: 1; } 100% { transform: scale(1); opacity: 0.9; } }
+/* the 2008 paper on the table */
+.sd-paper { position: absolute; pointer-events: none; transform: rotate(var(--rot)); filter: drop-shadow(0 3px 2px rgba(20, 10, 4, 0.55)) drop-shadow(6px 12px 12px rgba(20, 10, 4, 0.35)); visibility: hidden; }
+.sd-paper.on { visibility: visible; }
+.sd-paper img { display: block; width: 100%; height: 100%; }
+.sd-paper.drop { animation: sdPaperDrop 0.75s cubic-bezier(0.2, 0.7, 0.3, 1) 1; }
+@keyframes sdPaperDrop { 0% { transform: translate(60px, -320px) rotate(28deg) scale(1.25); } 70% { transform: translate(0, 6px) rotate(calc(var(--rot) - 2deg)) scale(0.98); } 100% { transform: rotate(var(--rot)); } }
+/* the token: flies from where it happened to its meter */
+.sd-token { position: absolute; z-index: 40; pointer-events: none; transform: translate(-50%, -50%); padding: 4px 10px; border-radius: 3px; white-space: nowrap;
+  font: 800 14px var(--font-sans); letter-spacing: 0.04em; color: #fff4dc; background: #a3261b; box-shadow: 0 0 0 1.5px #f1dba0, 0 6px 14px rgba(20, 10, 4, 0.4);
+  animation: sdToken 1.1s cubic-bezier(0.5, 0, 0.3, 1) 1 forwards; }
+.sd-token.cash { background: #1c5c60; } .sd-token.good { background: #2d6a3e; }
+@keyframes sdToken { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 14% { transform: translate(-50%, -60%) scale(1.08); opacity: 1; } 40% { transform: translate(-50%, -60%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, -200px))) scale(0.6); opacity: 0.15; } }
+.felt-hit { animation: sdHit 0.5s ease-out 1; }
+@keyframes sdHit { 0% { transform: scale(1); } 40% { transform: scale(1.16); } 100% { transform: scale(1); } }
+/* the cause line, under the map rim */
+.sd-fcap { position: absolute; z-index: 30; margin: 0; transform: translate(-50%, -100%); display: flex; align-items: center; gap: 7px; padding: 5px 11px; max-width: calc(100% - 20px); white-space: nowrap;
+  font: 700 12px var(--font-mono, "Courier Prime", monospace); color: #f4e6c8; background: rgba(24, 16, 10, 0.86); box-shadow: 0 0 0 1px rgba(214, 168, 76, 0.55); border-radius: 2px; pointer-events: none; opacity: 0; }
+.sd-fcap b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; } .sd-fcap i { font-style: normal; color: #d6a84c; } .sd-fcap span { color: #ff9a7a; }
+.sd-fcap.cash span, .sd-fcap.good span { color: #9fe0c2; }
+.sd-fcap.show { animation: sdFcap 1.2s ease 1 forwards; }
+@keyframes sdFcap { 0% { opacity: 0; transform: translate(-50%, calc(-100% + 6px)); } 15%, 80% { opacity: 1; transform: translate(-50%, -100%); } 100% { opacity: 0; transform: translate(-50%, -100%); } }
+/* Now: a cracked jewel stays while the public network is down */
+.sd-net { position: relative; }
+.sd-net .sd-crack { position: absolute; inset: 1px; width: calc(100% - 2px); height: calc(100% - 2px); fill: none; stroke: #ff4a2a; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.6)); }
+.sd-net.is-crack { box-shadow: 0 0 0 2px #a3261b; }
+/* the bunker feed gets the public failure */
+.hv-static.is-pub { opacity: 0.7; }
+.hv-tape { position: absolute; left: -6%; right: -6%; top: 46%; transform: rotate(-6deg); padding: 5px 0; text-align: center; font: 900 26px var(--font-sans); letter-spacing: 0.22em; color: #1a1408;
+  background: repeating-linear-gradient(135deg, #e8c02a 0 26px, #1a1408 26px 34px, #e8c02a 34px 60px); background-clip: padding-box; text-shadow: 0 0 6px #e8c02a, 0 0 2px #e8c02a; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .sd-fwin, .sd-burn, .sd-fwin-dark { transition: none; }
+  .sd-burn-glow, .sd-burn-fl, .sd-burn-smoke circle, .sd-paper.drop, .felt-hit { animation: none !important; }
+  .sd-burn-smoke circle { opacity: 0.6; }
+  .sd-token { animation: sdTokenRm 1s linear 1 forwards; }
+  @keyframes sdTokenRm { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
+  .sd-fcap.show { animation: none; opacity: 1; }
+}

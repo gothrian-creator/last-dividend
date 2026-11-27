@@ -1766,10 +1766,15 @@
     if (LD.O4) LD.O4.on("deal", state);
     SFX.play("pick");
     pennyEmit("signed");
+    var worse = feltDesk() ? feltNetsWorse(prev, state) : [];
+    if (worse.length && !(state.fy && state.fy.fight)) {
+      var why = (LD.dealById(id) || {}).title || "The deal";
+      worse.forEach(function (nid, i) { setTimeout(function () { if (feltDesk() && !doorOpen() && !HV.facing) feltNet(nid, why); }, (reduced() ? 200 : 600) + i * 1300); });
+    }
     var dcash = state.cash - prev.cash, dun = state.unrest - prev.unrest, dco = state.collapse - prev.collapse;
     if (dcash >= 15) officeReact("glee"); else if (dun >= 8 || dco >= 5) officeReact("shock");
     if (state.fy && state.fy.fight) { DF.start = prev; setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight && !doorOpen() && !FI.on) { setTimeout(function () { if (screen === "desk" && state && state.fy && state.fy.fight) startFight(); }, reduced() ? 120 : 200); } }, reduced() ? 200 : 450); }
-    else setTimeout(function () { maybeAutoHouse(); }, reduced() ? 80 : 400);
+    else setTimeout(function () { maybeAutoHouse(); }, (reduced() ? 80 : 400) + (worse.length && !(state.fy && state.fy.fight) ? (reduced() ? 900 : 700 + worse.length * 1300) : 0));
     var rid = res.region ? res.region.regionId : (prev.world && prev.world.pins[id]);
     if (rid) {
       var dc = state.cash - prev.cash;
@@ -2455,6 +2460,99 @@
   /* ---------- Quarter close: the world reacts, one beat at a time, then the report ---------- */
   var closing = false;
   var seq = null;
+  /* ---------- Felt events (2026-11-27, sheet 3). One beat at a time on the seated desk: the scene changes,
+     the number flies from where it happened to its HUD meter with its cause, and the mark stays (seated.js renders marks from state). ---------- */
+  function feltDesk() { return document.querySelector("#screen-desk .desk.sd"); }
+  function feltPt(px, py) {
+    var d = feltDesk(); if (!d) return [0, 0];
+    var q = LD.seatToScreen(LD.seatFrame(window.innerWidth, window.innerHeight), px, py), r = d.getBoundingClientRect();
+    return [q[0] - r.left, q[1] - r.top];
+  }
+  function feltHud(sel) {
+    var d = feltDesk(), t = d && d.querySelector(".sd-hud " + sel);
+    if (!t) return null;
+    var a = t.getBoundingClientRect(), r = d.getBoundingClientRect();
+    return { el: t, xy: [a.left + a.width / 2 - r.left, a.top + a.height / 2 - r.top] };
+  }
+  function feltToken(text, from, sel, cls) {
+    var d = feltDesk(); if (!d) return;
+    var t = feltHud(sel);
+    var k = document.createElement("span");
+    k.className = "sd-token " + (cls || "bad");
+    k.setAttribute("aria-hidden", "true");
+    k.textContent = text;
+    k.style.left = Math.round(from[0]) + "px"; k.style.top = Math.round(from[1]) + "px";
+    if (t) { k.style.setProperty("--dx", Math.round(t.xy[0] - from[0]) + "px"); k.style.setProperty("--dy", Math.round(t.xy[1] - from[1]) + "px"); }
+    d.appendChild(k);
+    setTimeout(function () { if (t && t.el) { t.el.classList.remove("felt-hit"); void t.el.offsetWidth; t.el.classList.add("felt-hit"); } }, reduced() ? 300 : 820);
+    setTimeout(function () { if (k.parentNode) k.parentNode.removeChild(k); }, reduced() ? 1000 : 1150);
+  }
+  function feltCap(cause, effect, cls) {
+    var d = feltDesk(); if (!d) return;
+    var c = d.querySelector(".sd-fcap");
+    if (!c) { c = document.createElement("p"); c.className = "sd-fcap"; c.setAttribute("role", "status"); d.appendChild(c); }
+    var xy = feltPt(380, 596);
+    c.style.left = Math.round(xy[0]) + "px"; c.style.top = Math.round(xy[1]) + "px";
+    c.className = "sd-fcap " + (cls || "bad");
+    c.innerHTML = "<b>" + LD.escapeHtml(cause) + "</b><i aria-hidden=\"true\">\u2192</i><span>" + LD.escapeHtml(effect) + "</span>";
+    c.classList.remove("show"); void c.offsetWidth; c.classList.add("show");
+  }
+  function feltClear() {
+    var d = feltDesk(); if (!d) return;
+    Array.prototype.forEach.call(d.querySelectorAll(".sd-token, .sd-fcap"), function (n) { n.parentNode.removeChild(n); });
+  }
+  function feltPin(rid) { var p = LD.SEAT && LD.SEAT.pins[rid]; return p ? feltPt(p[0], p[1]) : feltPt(380, 680); }
+  /* A. riots / protests / revolts: the window, the region, the door */
+  function feltRiot(ev) {
+    var d = feltDesk(); if (!d) return;
+    var big = ev.kind === "riot" || ev.kind === "revolt", name = LD.REGION_NAMES[ev.regionId] || "The street";
+    if (big) { var w = d.querySelector(".sd-fwin"); if (w) w.classList.add("on"); }
+    var g = d.querySelector('.sd-burn[data-region="' + ev.regionId + '"]');
+    if (g) { g.classList.add("on", big ? "is-riot" : "is-protest"); g.classList.remove("flare"); void g.getBoundingClientRect(); g.classList.add("flare"); }
+    if (big) setTimeout(function () { knockNow(); }, 380);
+    var what = ev.kind === "riot" ? "Riots" : ev.kind === "revolt" ? "Nationalised" : "Protests";
+    feltToken("Unrest +" + (ev.unrest | 0), feltPin(ev.regionId), ".m-unrest", "bad");
+    feltCap(what + ", " + name, "unrest +" + (ev.unrest | 0), "bad");
+  }
+  function feltWorld(ev) {
+    var name = LD.REGION_NAMES[ev.regionId] || "";
+    if (ev.kind === "riot" || ev.kind === "protest" || ev.kind === "revolt") return feltRiot(ev);
+    if (ev.kind === "income") { feltToken("+" + LD.formatMoney(ev.cash), feltPin(ev.regionId), ".sd-cash", "cash"); feltCap("Plant pays, " + name, "+" + LD.formatMoney(ev.cash), "cash"); return; }
+    if (ev.kind === "strike") { feltToken("Strike", feltPin(ev.regionId), ".sd-cash", "bad"); feltCap("Strike, " + name, "no income", "bad"); return; }
+    if (ev.kind === "brine") { feltToken("Collapse +" + (ev.collapse | 0), feltPt(380, 680), ".m-collapse", "bad"); feltCap("Plant brine", "collapse +" + (ev.collapse | 0), "bad"); return; }
+    feltCap(ev.text || "The map moves", "", "bad");
+  }
+  /* C. a delayed effect lands: in 2008 it lands as a newspaper on the table, and the paper stays for the act */
+  function feltUnrestOf(f) { var m = /([+\u2212-]\d+) unrest/.exec(f.text || ""); return m ? parseInt(m[1].replace("\u2212", "-"), 10) : 0; }
+  function feltFired(f, era) {
+    var d = feltDesk(); if (!d) return;
+    var u = feltUnrestOf(f), src = f.source || "A filing", from = feltPt(380, 680);
+    if (era === 2 && !f.item) {
+      var p = d.querySelector(".sd-paper");
+      if (p) { p.classList.add("on"); p.classList.remove("drop"); void p.offsetWidth; p.classList.add("drop"); var b = LD.FELT.paper; from = feltPt(b[0] + b[2] / 2, b[1] + b[3] / 2); }
+    }
+    if (u) feltToken("Unrest " + (u > 0 ? "+" : "\u2212") + Math.abs(u), from, ".m-unrest", u > 0 ? "bad" : "good");
+    else if (f.item) feltToken("Arrives", from, ".sd-cash", "good");
+    feltCap(src + (f.item ? " arrives" : " lands"), u ? "unrest " + (u > 0 ? "+" : "\u2212") + Math.abs(u) : (/\(([^)]*)\)/.exec(f.text || "") || [0, "on the books"])[1], u > 0 ? "bad" : "good");
+  }
+  /* B. a public network fails (Now): the view darkens, the jewel cracks, the bunker feed goes to static (house-view.js) */
+  var NET_WORD = { water: "Water", power: "Power", air: "Air", food: "Food" };
+  function feltNet(id, cause) {
+    var d = feltDesk(); if (!d) return;
+    d.classList.remove("felt-dark"); void d.offsetWidth; d.classList.add("felt-dark");
+    setTimeout(function () { d.classList.remove("felt-dark"); }, reduced() ? 900 : 2200);
+    var j = d.querySelector('.sd-hud .sd-net[data-net="' + id + '"]');
+    if (j && !j.classList.contains("is-crack")) { j.classList.add("is-crack"); j.insertAdjacentHTML("beforeend", '<svg class="sd-crack" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 1l-2 6 3 3-4 5 2 3-3 5M11 7l-4 1M14 10l4-1M10 15l-4 2"/></svg>'); }
+    feltToken(NET_WORD[id] + " \u25bc", feltPt(630, 200), '.sd-net[data-net="' + id + '"]', "bad");
+    feltCap(cause, "public " + NET_WORD[id].toLowerCase() + " fails", "bad");
+  }
+  function feltNetsWorse(prev, next) {
+    var out = [];
+    if (!prev || !next || !next.grids || !(LD.eraAct && LD.eraAct(next) === 3)) return out;
+    ["water", "power", "air", "food"].forEach(function (id) { if ((next.grids[id] | 0) > ((prev.grids || {})[id] | 0)) out.push(id); });
+    return out;
+  }
+
   function endQuarter(opts) {
     opts = opts || {};
     if (closing) return;
@@ -2477,6 +2575,11 @@
     if (!res.ok) { flash(res.error); return; }
     closing = true;
     state = res.state;
+    if (LD.eraAct && LD.eraAct(prev) === 2 && (res.fired || []).some(function (f) { return !f.world && !f.fy && !f.item; })) {
+      var lastF = (res.fired || []).filter(function (f) { return !f.world && !f.fy && !f.item; }).pop();
+      state.felt = state.felt || {};
+      state.felt.paper = { q: prev.turn, src: lastF.source || "", until: 8 };
+    }
     pennyEmit("endq");
     if (state.ended) recordEnding();
     else persistRun();
@@ -2499,6 +2602,7 @@
       seq.timers.forEach(clearTimeout);
       var f = $("fx");
       if (f) f.innerHTML = "";
+      feltClear();
       closing = false;
       showReport(prev, res);
     }
@@ -2515,14 +2619,26 @@
       var board = document.querySelector(isPhone() ? ".desk .board-tilt" : ".desk .board") || document.querySelector(".desk .board") || document.querySelector("#screen-desk .desk.sd");
       if (board) board.appendChild(skip);
       var beats = [];
+      var felt = !!feltDesk(), eraP = LD.eraAct ? LD.eraAct(prev) : 1;
       /* 1. Delayed effects land (from the rail). */
       (res.fired || []).forEach(function (f) {
         if (f.world) return;
         if (f.fy) {
           var ft = f.fy === "boss" ? (f.beaten ? "⚑ " + (LD.BOSSES[f.boss] || {}).name + " beaten!" : "⚑ " + (LD.BOSSES[f.boss] || {}).name + ": missed") : f.text.replace(/\.$/, "");
+          if (felt && f.fy !== "boss") {
+            beats.push(function () {
+              var mc = /([+\u2212-])\s?\$?(\d+)M/.exec(f.text || ""), mu = /unrest\s?([+\u2212-]\d+)|([+\u2212-]\d+) unrest/i.exec(f.text || "");
+              var parts = ft.split(/:\s*/), cause = parts[0], eff = parts.slice(1).join(": ") || "";
+              if (mu) { var uv = parseInt((mu[1] || mu[2]).replace("\u2212", "-"), 10); feltToken("Unrest " + (uv > 0 ? "+" : "\u2212") + Math.abs(uv), feltPt(380, 680), ".m-unrest", uv > 0 ? "bad" : "good"); }
+              else if (mc) feltToken((mc[1] === "+" ? "+" : "\u2212") + "$" + mc[2] + "M", feltPt(380, 680), ".sd-cash", mc[1] === "+" ? "cash" : "bad");
+              feltCap(cause, eff || "on the books", f.fy === "liability" ? "bad" : (mc && mc[1] !== "+") ? "bad" : "cash");
+            });
+            return;
+          }
           beats.push(function (dy) { floatCenter(ft, f.fy === "boss" ? (f.beaten ? "good big boss" : "bad big boss") : f.fy === "liability" ? "bad" : "cash", 0, dy); });
           return;
         }
+        if (felt) { beats.push(function () { feltFired(f, eraP); }); return; }
         var short = (f.source || "Delayed effect") + (f.item ? " arrives" : " lands");
         var m = /\(([^)]*)\)/.exec(f.text || "");
         beats.push(function (dy) { floatCenter(short + (m ? " · " + m[1] : ""), f.item ? "good" : "bad", 0, dy); });
@@ -2532,13 +2648,17 @@
         var label = ev.kind === "income" ? "+" + LD.formatMoney(ev.cash) : ev.kind === "strike" ? "Strike!" : ev.kind === "riot" ? "Riots +" + ev.unrest :
           ev.kind === "protest" ? "Protest +" + ev.unrest : ev.kind === "revolt" ? "Nationalised! Unrest +" + ev.unrest : ev.kind === "spread" ? "Crisis spreads" : ev.text;
         var cls = ev.kind === "income" ? "cash" : "bad";
+        if (felt) { beats.push(function () { feltWorld(ev); }); return; }
         if (ev.regionId) beats.push(function () { floatAt(ev.regionId, label, cls); popRegion(ev.regionId, "ev-" + ev.kind, 0); });
         else beats.push(function (dy) { floatCenter(label, "bad", 0, dy); });
       });
       /* 3. Collapse drifts: the world visibly worsens. */
-      if (res.tick) beats.push(function (dy) { floatCenter("Collapse +" + res.tick, "bad", 0, dy); var sl = document.querySelector(".desk .board-slab"); if (sl) sl.classList.add("worsen"); });
-      beats.forEach(function (b, i) { later(function () { b((i % 3) * 38); }, 150 + i * step); });
-      later(finish, Math.max(1100, 150 + beats.length * step + 700));
+      feltNetsWorse(prev, state).forEach(function (id) { if (felt) beats.push(function () { feltNet(id, "The networks strain"); }); });
+      if (res.tick) beats.push(felt ? function () { feltToken("Collapse +" + res.tick, feltPt(380, 680), ".m-collapse", "bad"); feltCap("The world drifts", "collapse +" + res.tick, "bad"); } :
+        function (dy) { floatCenter("Collapse +" + res.tick, "bad", 0, dy); var sl = document.querySelector(".desk .board-slab"); if (sl) sl.classList.add("worsen"); });
+      var stepB = felt ? (reduced() ? 700 : 1250) : step;
+      beats.forEach(function (b, i) { later(function () { b((i % 3) * 38); }, 150 + i * stepB); });
+      later(finish, Math.max(1100, 150 + beats.length * stepB + (felt ? 500 : 700)));
     }, reduced() ? 300 : 850);
   }
 

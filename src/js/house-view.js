@@ -116,10 +116,13 @@
   /* Act III (Now) feeds show the present-day bunker; Acts I-II (and old saves before Q9) keep the 1978 feeds */
   function feedBase(state) { return LD.eraAct && LD.eraAct(state) === 3 ? "assets/house/now/feed/" : BASE + "feed/"; }
   LD.houseFeedBase = feedBase;
+  var PUB_TAPE = { water: "LOW PRESSURE", power: "BROWNOUT", air: "BAD AIR", food: "SHORT SUPPLY" };
   function feedCell(state, systemId, resId, picked) {
     var room = roomOf(state, systemId) || { on: false };
     var occupied = resId && hasRes(state, resId);
     var failing = !!(room.on && room.quality === "cheap" && !hasRes(state, "helen"));
+    /* Now: a failing public network reaches the bunker feed (static + tape) until it recovers */
+    var pub = LD.eraAct && LD.eraAct(state) === 3 && LD.gridLevel ? LD.gridLevel(state, systemId) : 0;
     var kind = !room.on ? "dark" : occupied ? "on" : "empty";
     var src = feedBase(state) + systemId + "-" + kind + ".webp";
     var label = occupied ? (LD.houseResident(resId) || {}).name : room.on ? (ROOM_EMPTY[systemId] || {}).name : systemId;
@@ -128,7 +131,8 @@
     var tap = occupied ? " data-leave=\"" + resId + "\"" : " data-pick=\"" + systemId + "\"";
     return '<button type="button" class="' + cls + '" data-feed="' + systemId + '"' + tap + ' aria-label="' + esc(label || systemId) + '">' +
       '<img src="' + src + '" alt="" draggable="false">' +
-      (failing ? '<i class="hv-static" aria-hidden="true"></i>' : "") +
+      (failing || pub ? '<i class="hv-static' + (pub && !failing ? " is-pub" : "") + '" aria-hidden="true"></i>' : "") +
+      (pub ? '<span class="hv-tape" aria-hidden="true">' + PUB_TAPE[systemId] + "</span>" : "") +
       '<span class="hv-ftag is-' + (failing ? "fail" : room.on ? "on" : "off") + '" aria-hidden="true"><i></i>' + systemId.toUpperCase() + "</span>" +
       "</button>";
   }

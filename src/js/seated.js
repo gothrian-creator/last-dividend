@@ -222,6 +222,7 @@
     return '<span class="sd-meter m-' + k + '" data-tip="' + esc(tip) + '" tabindex="0"><span class="sd-vial" style="--f:' + Math.max(0.06, Math.min(1, frac)).toFixed(3) + '"><i></i>' + ico(k) + "</span>" +
       '<span class="sd-mv"><b>' + v + "</b><small>" + label + "</small></span></span>";
   }
+  var CRACK = '<svg class="sd-crack" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 1l-2 6 3 3-4 5 2 3-3 5M11 7l-4 1M14 10l4-1M10 15l-4 2"/></svg>';
   var NET_NAME = { air: "Air", water: "Water", power: "Power", food: "Food" };
   LD.seatHud = function (state, o) {
     o = o || {};
@@ -237,7 +238,8 @@
     h += '<span class="sd-nets">';
     ["air", "water", "power", "food"].forEach(function (id) {
       var lvl = LD.gridLevel ? LD.gridLevel(state, id) : 0, lab = LD.gridLabel ? LD.gridLabel(lvl) : "";
-      h += '<button type="button" class="sd-net g' + lvl + '"' + (o.nets === false ? " disabled" : ' data-net="' + id + '"') + ' aria-label="Public ' + NET_NAME[id] + ": " + esc(lab) + '">' + ico(id) + "</button>";
+      var crack = !fg && lvl >= 1 && LD.eraAct && LD.eraAct(state) === 3;
+      h += '<button type="button" class="sd-net g' + lvl + (crack ? " is-crack" : "") + '"' + (o.nets === false ? " disabled" : ' data-net="' + id + '"') + ' aria-label="Public ' + NET_NAME[id] + ": " + esc(lab) + '">' + ico(id) + (crack ? CRACK : "") + "</button>";
     });
     h += "</span>";
     h += '<span class="sd-q" aria-label="Quarter ' + state.turn + " of " + fq + '"><b>Q' + state.turn + "<i>/" + fq + "</i></b><small>" + esc(year) + "</small></span>";
@@ -263,6 +265,7 @@
     o = o || {};
     var h = '<div class="sd-clip"><div class="sd-rig" aria-hidden="true">';
     h += '<img class="sd-room" src="' + SEAT.room + '" alt="" draggable="false">';
+    h += o.room || "";
     if (o.opp) h += o.opp;
     h += img("sd-table", SEAT.table);
     h += o.under || "";
@@ -311,6 +314,49 @@
   /* The living map (plate space, inside the rig, under the props): each offered deal's region glows softly on the painted map,
      its pin pulses, and a thread runs from the pin and tucks under its prop. 1978 a red string with a cast shadow; 2008 a teal
      fibre-light line; Now a soft white projected line. Static geometry; only the glow and pulse breathe (CSS, off under reduced motion). */
+  /* ---------- felt events (2026-11-27, sheet 3): marks that stay on the scene until their cause is gone ---------- */
+  LD.FELT = { win: [500, 0, 220, 470], paper: [500, 548, 132, 124, 9], riotUnrest: 60 };
+  LD.feltRiots = function (state) {
+    var out = [];
+    if (!state || !state.world || !state.world.regions) return out;
+    Object.keys(SEAT.regions).forEach(function (id) {
+      var r = state.world.regions[id];
+      if (r && r.owned && r.stress >= LD.STRESS_TENSE) out.push({ id: id, lvl: r.stress >= LD.STRESS_STRIKE ? "riot" : "protest" });
+    });
+    return out;
+  };
+  LD.feltWindow = function (state) {
+    return LD.feltRiots(state).some(function (x) { return x.lvl === "riot"; }) || (state.unrest | 0) >= LD.FELT.riotUnrest;
+  };
+  LD.feltPaper = function (state) {
+    var p = state && state.felt && state.felt.paper;
+    return p && state.turn <= p.until ? p : null;
+  };
+  /* the street outside the window: the riot painting for the 1978 room, plus a haze for the wider landscape glass */
+  LD.feltRoom = function (state) {
+    var w = LD.FELT.win, on = LD.feltWindow(state);
+    return '<div class="sd-fwin' + (on ? " on" : "") + '" aria-hidden="true">' +
+      '<i class="sd-fwin-haze" style="left:' + (w[0] + w[2] - 12) + "px;top:0;width:200px;height:" + (w[3] - 70) + 'px"></i>' +
+      '<img src="' + BASE + 'sd-window-riot.webp" alt="" draggable="false" style="left:' + w[0] + "px;top:" + w[1] + "px;width:" + w[2] + "px;height:" + w[3] + 'px">' +
+      '<i class="sd-fwin-dark" style="left:' + (w[0] + 30) + "px;top:0;width:" + (w[2] + 180) + "px;height:" + (w[3] - 18) + 'px"></i></div>';
+  };
+  /* burning regions on the map, and the paper that landed on the table */
+  LD.feltUnder = function (state) {
+    var riots = {}, h = "";
+    LD.feltRiots(state).forEach(function (x) { riots[x.id] = x.lvl; });
+    h += '<svg class="sd-fburn" viewBox="0 0 720 1280" aria-hidden="true"><defs><radialGradient id="sdEmber"><stop offset="0" style="stop-color:#ffcf6a;stop-opacity:.95"/><stop offset=".45" style="stop-color:#e2501f;stop-opacity:.7"/><stop offset="1" style="stop-color:#5a0e06;stop-opacity:0"/></radialGradient></defs>';
+    Object.keys(SEAT.regions).forEach(function (id) {
+      var r = SEAT.regions[id], lv = riots[id] || "";
+      h += '<g class="sd-burn' + (lv ? " on is-" + lv : "") + '" data-region="' + id + '">' +
+        '<ellipse class="sd-burn-glow" cx="' + r[0] + '" cy="' + r[1] + '" rx="' + (r[2] * 0.9).toFixed(1) + '" ry="' + (r[3] * 0.9).toFixed(1) + '" fill="url(#sdEmber)"/>' +
+        '<g class="sd-burn-smoke" transform="translate(' + r[0] + "," + (r[1] - 4) + ')"><circle class="s1" r="9" cx="-4"/><circle class="s2" r="11" cx="4"/><circle class="s3" r="8" cx="-1"/></g>' +
+        '<g transform="translate(' + r[0] + "," + (r[1] + 2) + ') scale(1.5)"><path class="sd-burn-fl" d="M0 -16c4 6 7 9 6 14-1 4-4 6-6 6s-6-2-6-6c0-3 2-5 3-8 1 3 2 4 3 4-1-4 0-7 0-10z"/></g></g>';
+    });
+    h += "</svg>";
+    var p = LD.feltPaper(state), b = LD.FELT.paper;
+    h += '<div class="sd-paper' + (p ? " on" : "") + '" style="left:' + b[0] + "px;top:" + b[1] + "px;width:" + b[2] + "px;height:" + b[3] + "px;--rot:" + b[4] + 'deg" aria-hidden="true"><img src="assets/house/props/newspaper-2008.webp" alt="" draggable="false"></div>';
+    return h;
+  };
   LD.seatThreadsSvg = function (state, props, selId) {
     var era = LD.eraAct ? LD.eraAct(state) : 1, h = '<svg class="sd-map-live e' + era + '" viewBox="0 0 720 1280" aria-hidden="true">';
     h += '<defs><radialGradient id="sdGlow' + era + '"><stop offset="0" style="stop-color:var(--glow);stop-opacity:0.95"/><stop offset="0.55" style="stop-color:var(--glow);stop-opacity:0.42"/><stop offset="1" style="stop-color:var(--glow);stop-opacity:0"/></radialGradient>' +
@@ -351,7 +397,7 @@
       under += '<img class="sd-propref" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + "deg) translateY(" + (pr.h * 0.64).toFixed(1) + 'px) scaleY(-0.34)">';
       under += '<img class="sd-propimg" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + 'deg)">';
     });
-    h += LD.seatStage({ under: under });
+    h += LD.seatStage({ under: LD.feltUnder(state) + under, room: LD.feltRoom(state) });
     /* screen-space layer: pins, props, region taps */
     h += '<div class="sd-ui">';
     Object.keys(SEAT.regions).forEach(function (rid) {

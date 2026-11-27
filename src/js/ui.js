@@ -858,10 +858,30 @@
     });
     /* prop stickers: keep each one inside the stage (the rim props sit near the edges) */
     Array.prototype.forEach.call(ui.querySelectorAll(".sd-stk"), function (t) {
-      t.style.marginLeft = "0px"; var r = t.getBoundingClientRect(), dx = 0;
+      t.style.marginLeft = "0px"; t.style.marginTop = ""; var r = t.getBoundingClientRect(), dx = 0;
       if (r.left < 4) dx = 4 - r.left; else if (r.right > W - 4) dx = W - 4 - r.right;
       if (dx) t.style.marginLeft = dx.toFixed(1) + "px";
+      /* paper tags sit low on the props: slide one clear of the chair-arm buttons (Case / Phone / Bunker) when they meet */
+      r = t.getBoundingClientRect();
+      Array.prototype.forEach.call(desk.querySelectorAll(".sd-left .sd-brass, .sd-bunker:not([hidden])"), function (b) {
+        var q = b.getBoundingClientRect(); if (!q.width || q.bottom < r.top || q.top > r.bottom || q.right < r.left || q.left > r.right) return;
+        var right = q.left + q.width / 2 < W / 2, m = parseFloat(t.style.marginLeft) || 0;
+        m += right ? q.right + 4 - r.left : q.left - 4 - r.right;
+        t.style.marginLeft = m.toFixed(1) + "px"; r = t.getBoundingClientRect();
+      });
     });
+    /* and never on each other: nudge a tag that meets its left neighbour apart, half each way (lower one down a touch if no room) */
+    var tg = Array.prototype.slice.call(ui.querySelectorAll(".sd-prop .sd-stk")).sort(function (a, b) { return a.getBoundingClientRect().left - b.getBoundingClientRect().left; });
+    for (var ti = 1; ti < tg.length; ti++) {
+      var A = tg[ti - 1].getBoundingClientRect(), B = tg[ti].getBoundingClientRect();
+      var ox = A.right + 3 - B.left, oy = Math.min(A.bottom, B.bottom) - Math.max(A.top, B.top);
+      if (ox <= 0 || oy <= 0) continue;
+      var ma = parseFloat(tg[ti - 1].style.marginLeft) || 0, mb = parseFloat(tg[ti].style.marginLeft) || 0;
+      var leftRoom = Math.max(0, A.left - 4), rightRoom = Math.max(0, W - 4 - B.right);
+      var gb = Math.min(rightRoom, ox / 2), ga = Math.min(leftRoom, ox - gb); gb = Math.min(rightRoom, ox - ga);
+      tg[ti - 1].style.marginLeft = (ma - ga).toFixed(1) + "px"; tg[ti].style.marginLeft = (mb + gb).toFixed(1) + "px";
+      if (ga + gb < ox - 0.5) tg[ti].style.marginTop = (oy + 3).toFixed(1) + "px"; else tg[ti].style.marginTop = "";
+    }
   }
   /* Landscape: the room carries on behind the side panels (a wider painting of the same office, lined up with the plate). */
   function seatWide(root, f, t) {
@@ -1023,13 +1043,56 @@
     if (lay.box.side === "right") { ex = b.x + 6; ey = Math.max(b.y + 16, Math.min(b.y + b.h - 16, p[1])); }
     path.setAttribute("d", "M" + p[0].toFixed(1) + "," + p[1].toFixed(1) + " Q" + ((p[0] + ex) / 2).toFixed(1) + "," + (Math.max(p[1], ey) + 10).toFixed(1) + " " + ex.toFixed(1) + "," + ey.toFixed(1));
   }
+  /* The living map while a prop is open: its region lights fully, the other props dim, money runs along the thread to the prop,
+     small smoke marks rise from the region when the deal costs unrest, and one caption sits under the pin:
+     "North America · +$28M · unrest +6". Touch-first: this is the tap state (no hover). id null clears it. */
+  function pkUnrest(sd) {
+    var rows = [].concat(sd.now || [], sd.later || []), u = null;
+    rows.forEach(function (r) { if (u == null && /unrest/i.test(r.t)) { var m = /([+\u2212-]\s*\d+)/.exec(r.t); if (m) u = m[1].replace(/\s/g, "").replace("-", "\u2212"); } });
+    return u;
+  }
+  function pkLive(id, lay) {
+    var desk = document.querySelector("#screen-desk .desk.sd"); if (!desk) return;
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-th, .sd-rglow"), function (n) { n.classList.toggle("is-on", !!id && n.getAttribute("data-deal") === id); });
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-propimg, .sd-propref, .sd-prop"), function (n) { n.classList.toggle("is-dim", !!id && n.getAttribute("data-deal") !== id); });
+    desk.classList.toggle("is-peeking", !!id);
+    var root = desk.querySelector(".sd-peek");
+    Array.prototype.forEach.call(desk.querySelectorAll(".sd-mcap, .pk-marks"), function (n) { n.parentNode.removeChild(n); });
+    var tr = root && root.querySelector(".pk-trail"); if (tr) tr.setAttribute("d", "");
+    if (!id || !root || !lay || !lay.pin) return;
+    var sd = LD.dealSlip(state, id); if (!sd) return;
+    var now = sd.now || [], money0 = now.length && /\$/.test(now[0].t) ? now[0].t : sd.choices ? sd.tag : sd.tag, un = sd.choices ? null : pkUnrest(sd);
+    var parts = [sd.region || "", money0 || "", un ? "unrest " + un : ""].filter(Boolean);
+    if (parts.length) {
+      var cap = document.createElement("div"); cap.className = "sd-mcap"; cap.setAttribute("role", "status");
+      cap.innerHTML = parts.map(function (t, i) { return '<span class="' + (i === 1 ? (/^[\u2212-]/.test(t) ? "c-neg" : "c-cash") : i === 2 ? "c-un" : "c-reg") + '">' + (i === 0 ? LD.escapeHtml(t) : t) + "</span>"; }).join("<i> · </i>");
+      root.appendChild(cap);
+      var W = lay.W, cw = cap.offsetWidth, ch = cap.offsetHeight, x = Math.max(lay.L + 2, Math.min(lay.R - cw - 2, lay.pin[0] - cw / 2)), y = lay.pin[1] + 16;
+      /* never over the open prop: on a side layout it sits under the pin, which is always clear of the box */
+      cap.style.left = x.toFixed(1) + "px"; cap.style.top = y.toFixed(1) + "px";
+      if (W && x + cw > W) cap.style.left = Math.max(2, W - cw - 2) + "px";
+    }
+    /* money along the thread (the same curve pkThread drew), toward the prop */
+    var th = root.querySelector(".pk-thread path"), svg = root.querySelector(".pk-thread");
+    if (th && svg && th.getAttribute("d")) {
+      if (!tr) { tr = document.createElementNS("http://www.w3.org/2000/svg", "path"); tr.setAttribute("class", "pk-trail"); tr.setAttribute("pathLength", "100"); svg.appendChild(tr); }
+      tr.setAttribute("d", th.getAttribute("d"));
+      tr.classList.remove("run"); void tr.getBoundingClientRect(); tr.classList.add("run");
+    }
+    if (un && !/^\u2212/.test(un)) {
+      var mk = document.createElement("div"); mk.className = "pk-marks"; mk.setAttribute("aria-hidden", "true");
+      var k = lay.f.s, xs = [-16, 2, 17];
+      mk.innerHTML = xs.map(function (dx, i) { return '<svg class="pk-puff" style="left:' + (lay.pin[0] + dx * Math.max(0.8, k) - 6).toFixed(1) + "px;top:" + (lay.pin[1] - 30 * Math.max(0.8, k) - (i % 2) * 5).toFixed(1) + "px;--i:" + i + '" viewBox="0 0 12 20"><circle class="sm" cx="7" cy="4" r="2.6"/><circle class="sm" cx="4.6" cy="1.8" r="1.6"/><path class="fl" d="M6 19c-3 0-4.5-2-4.5-4.2 0-2.3 2-3.4 2.4-5.6 1.6 1 2 2.4 1.9 3.6 1-.5 1.6-1.6 1.6-2.8 1.8 1.2 3.1 3 3.1 5 0 2.3-1.6 4-4.5 4z"/></svg>'; }).join("");
+      root.appendChild(mk);
+    }
+  }
   function pkRibbon(text) {
     var rib = document.querySelector("#screen-desk .desk.sd .sd-ribbon"); if (!rib) return;
     if (!rib.hasAttribute("data-base")) rib.setAttribute("data-base", rib.textContent);
     rib.textContent = text == null ? rib.getAttribute("data-base") : text;
   }
   function pkRim(id, show) {
-    Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-propimg[data-deal="' + id + '"], #screen-desk .sd-prop[data-deal="' + id + '"]'), function (n) { n.style.visibility = show ? "" : "hidden"; });
+    Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-propimg[data-deal="' + id + '"], #screen-desk .sd-propref[data-deal="' + id + '"], #screen-desk .sd-prop[data-deal="' + id + '"]'), function (n) { n.style.visibility = show ? "" : "hidden"; });
   }
   /* reveal / stamp clips: VP9-alpha WebM, fetched into memory when the desk renders so a tap never waits on the network.
      A clip only plays once it is fully loaded; otherwise (or on Apple WebKit, which has no WebM alpha) the move is the hard cut. */
@@ -1075,12 +1138,14 @@
     PK.gen++; PK.id = null; PK.busy = false; PK.lay = null; PK.el = null; PK.slip = null;
     var r = document.querySelector("#screen-desk .sd-peek"); if (r) r.parentNode.removeChild(r);
     Array.prototype.forEach.call(document.querySelectorAll("#screen-desk .sd-propimg, #screen-desk .sd-prop"), function (n) { n.style.visibility = ""; n.style.transform = n.classList.contains("sd-propimg") ? n.style.transform : ""; });
+    Array.prototype.forEach.call(document.querySelectorAll("#screen-desk .sd-propref"), function (n) { n.style.visibility = ""; });
+    pkLive(null);
   }
   /* close the open prop back to its rim slot (slip in, hard cut / clip to closed, one tween home) */
   function seatPeekClose(instant) {
     var id = PK.id, el = PK.el, slip = PK.slip, lay = PK.lay, root = pkRoot(); if (!id || !el) return Promise.resolve();
     PK.id = null; PK.el = null; PK.slip = null; PK.lay = null;
-    pkRibbon(null); pkThread(root, lay, false);
+    pkRibbon(null); pkThread(root, lay, false); pkLive(null);
     Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-pin'), function (n) { n.classList.remove("sel"); });
     if (instant || reduced()) { if (el.parentNode) el.parentNode.removeChild(el); if (slip && slip.parentNode) slip.parentNode.removeChild(slip); pkRim(id, true); return Promise.resolve(); }
     var s0 = lay.slip;
@@ -1114,7 +1179,7 @@
     bindPeek(el, slip, id);
     pkRim(id, false);
     Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-pin'), function (n) { n.classList.toggle("sel", n.getAttribute("data-deal") === id); });
-    pkThread(root, lay, true);
+    pkThread(root, lay, true); pkLive(id, lay);
     pkRibbon(lay.land ? null : (LD.dealById(id).choices ? "Tap a response to answer it" : "Drag to your hands to sign · or tap another"));
     SFX.play("tick");
     /* 1 lift (tween) -> 2 open (clip or hard cut) -> 3 slip slides out of its holder (tween) */
@@ -1188,7 +1253,7 @@
     if (!choice && sd && sd.poor) { flash("Need " + sd.poor + " to sign this."); return; }
     PK.busy = true;
     var gen = PK.gen, lay = PK.lay, el = PK.el, slip = PK.slip, root = pkRoot(), f = lay.f;
-    root.classList.add("is-signing"); pkThread(root, lay, false); pkRibbon(lay.land ? null : "Signing…");
+    root.classList.add("is-signing"); pkThread(root, lay, false); pkLive(null); pkRibbon(lay.land ? null : "Signing…");
     if (reduced()) { PK.busy = false; seatPeekKill(); applyDeal(id, choice || undefined); return; }
     /* the others slide off the table edge (one tween each) */
     LD.seatPropsFor(state).forEach(function (p) {
@@ -1197,6 +1262,7 @@
       Array.prototype.forEach.call(document.querySelectorAll('#screen-desk .sd-propimg[data-deal="' + p.id + '"]'), function (n) {
         pkAnim(n, [{ transform: "rotate(" + p.rot + "deg)" }, { transform: "translateX(" + (dir * 560) + "px) rotate(" + (p.rot * 3) + "deg)" }], 260, "cubic-bezier(.5,0,.8,.4)"); });
       var btn = document.querySelector('#screen-desk .sd-prop[data-deal="' + p.id + '"]'); if (btn) btn.style.visibility = "hidden";
+      var rf = document.querySelector('#screen-desk .sd-propref[data-deal="' + p.id + '"]'); if (rf) rf.style.visibility = "hidden";
     });
     /* the prop settles into your hands */
     var b = lay.box, hs = 0.6, cur = drag ? { x: drag.x + (b.x - drag.x) * (drag.sc || 1) + drag.dx, y: drag.y + (b.y - drag.y) * (drag.sc || 1) + drag.dy, s: drag.sc || 1 } : { x: b.x, y: b.y, s: 1 };

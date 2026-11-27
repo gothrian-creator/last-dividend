@@ -117,7 +117,7 @@
   var PROP_VAR = { briefcase: ["briefcase", "briefcase-oxblood", "briefcase-black"], dossier: ["dossier", "dossier-red"], cheque: ["cheque", "cheque-blue"] };
   /* rim width in plate px */
   var PROP_W = { briefcase: 200, policy: 128, deed: 168, dossier: 138, ledger: 150, cheque: 176, telegram: 166 };
-  var RIM = [[262, 838, -6], [430, 860, 4], [592, 832, 7]];
+  var RIM = [[262, 828, -6], [430, 850, 4], [592, 822, 7]];
   /* where the closed prop sits inside its open box ([x, y, w] as fractions of the open box): the clip's first frame */
   var CLOSED_IN = { briefcase: [0.01, 0.41, 0.98], policy: [0.02, 0.02, 0.96], deed: [0.06, 0.06, 0.88], dossier: [0.34, 0.05, 0.64],
     ledger: [0.36, 0.18, 0.62], cheque: [0.12, 0.2, 0.68], telegram: [0.03, 0.12, 0.94] };
@@ -308,16 +308,47 @@
     h += "</div>";
     return h + "</section>";
   }
+  /* The living map (plate space, inside the rig, under the props): each offered deal's region glows softly on the painted map,
+     its pin pulses, and a thread runs from the pin and tucks under its prop. 1978 a red string with a cast shadow; 2008 a teal
+     fibre-light line; Now a soft white projected line. Static geometry; only the glow and pulse breathe (CSS, off under reduced motion). */
+  LD.seatThreadsSvg = function (state, props, selId) {
+    var era = LD.eraAct ? LD.eraAct(state) : 1, h = '<svg class="sd-map-live e' + era + '" viewBox="0 0 720 1280" aria-hidden="true">';
+    h += '<defs><radialGradient id="sdGlow' + era + '"><stop offset="0" style="stop-color:var(--glow);stop-opacity:0.95"/><stop offset="0.55" style="stop-color:var(--glow);stop-opacity:0.42"/><stop offset="1" style="stop-color:var(--glow);stop-opacity:0"/></radialGradient>' +
+      '<filter id="sdSoft' + era + '" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter>' +
+      '<linearGradient id="sdLight' + era + '" x1="1" y1="0" x2="0" y2="0.4"><stop offset="0" style="stop-color:var(--light);stop-opacity:0.34"/><stop offset="0.55" style="stop-color:var(--light);stop-opacity:0.08"/><stop offset="1" style="stop-color:var(--light);stop-opacity:0"/></linearGradient></defs>';
+    /* window-side light across the table top (the window is on the right in every era's room) */
+    h += '<rect class="sd-tlight" x="0" y="560" width="720" height="420" fill="url(#sdLight' + era + ')"/>';
+    props.forEach(function (pr, i) {
+      var rid = state.world && state.world.pins ? state.world.pins[pr.id] : null, pin = SEAT.pins[rid] || SEAT.pins.eu, rg = SEAT.regions[rid];
+      if (rg) h += '<ellipse class="sd-rglow" data-deal="' + pr.id + '" cx="' + rg[0] + '" cy="' + rg[1] + '" rx="' + (rg[2] * 1.35).toFixed(1) + '" ry="' + (rg[3] * 1.35).toFixed(1) + '" fill="url(#sdGlow' + era + ')" style="--i:' + i + '"/>';
+      /* the thread ends under the prop's far edge, a little toward the map */
+      var a = pr.rot * Math.PI / 180, lx = (pin[0] - pr.x) * 0.18, ly = -pr.h * 0.3;
+      var ex = pr.x + lx * Math.cos(a) - ly * Math.sin(a), ey = pr.y + lx * Math.sin(a) + ly * Math.cos(a);
+      var mx = (pin[0] + ex) / 2, my = Math.max(pin[1], ey) + 18;
+      var d = "M" + pin[0] + "," + pin[1] + " Q" + mx.toFixed(1) + "," + my.toFixed(1) + " " + ex.toFixed(1) + "," + ey.toFixed(1);
+      h += '<g class="sd-th' + (selId === pr.id ? " is-on" : "") + '" data-deal="' + pr.id + '">';
+      if (era === 1) h += '<path class="sd-th-sh" d="' + d + '" transform="translate(-3,5)" filter="url(#sdSoft1)"/>';
+      if (era === 3) h += '<path class="sd-th-halo" d="' + d + '" filter="url(#sdSoft3)"/>';
+      if (era === 2) h += '<path class="sd-th-halo" d="' + d + '" filter="url(#sdSoft2)"/>';
+      h += '<path class="sd-th-line" d="' + d + '"/>';
+      h += '<circle class="sd-th-pulse" cx="' + pin[0] + '" cy="' + pin[1] + '" r="7" style="--i:' + i + '"/>';
+      h += "</g>";
+    });
+    return h + "</svg>";
+  };
   /* ui: { sel: {deal, region, net}, fan: bool, land: bool, dossier: html, peek: bool, memo: bool } */
   LD.renderSeatedDesk = function (state, ui) {
     ui = ui || {};
     var sel = ui.sel || {}, deal = state.phase === "deal" && !state.ended;
     var infos = deal ? state.offered.map(function (id) { return LD.dealTagInfo(state, id); }).filter(Boolean) : [];
     var hasSel = !!(sel.deal || sel.region || sel.net), props = LD.seatPropsFor(state);
-    var h = '<div class="desk sd' + (ui.fan ? " is-fan" : "") + (hasSel ? " has-sel" : "") + (ui.land ? " is-land" : "") + (deal ? " is-deal" : " is-bunker") + (deal && props.length ? " has-props" : "") + (ui.closing ? " is-closing" : "") + '" data-phase="'  + state.phase + '">';
+    var era = LD.eraAct ? LD.eraAct(state) : 1;
+    var h = '<div class="desk sd era-' + era + (ui.fan ? " is-fan" : "") + (hasSel ? " has-sel" : "") + (ui.land ? " is-land" : "") + (deal ? " is-deal" : " is-bunker") + (deal && props.length ? " has-props" : "") + (ui.closing ? " is-closing" : "") + '" data-phase="'  + state.phase + '">';
     h += '<div class="sd-bg" aria-hidden="true"></div>';
-    var under = "";
+    var under = props.length ? LD.seatThreadsSvg(state, props, sel.deal) : "";
     props.forEach(function (pr) {
+      /* a faint mirror of the prop in the polished walnut, squashed toward you and fading (static, never animated) */
+      under += '<img class="sd-propref" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + "deg) translateY(" + (pr.h * 0.64).toFixed(1) + 'px) scaleY(-0.34)">';
       under += '<img class="sd-propimg" data-deal="' + pr.id + '" src="' + LD.propSrc(pr.art) + '" alt="" draggable="false" style="left:' + (pr.x - pr.w / 2).toFixed(1) + "px;top:" + (pr.y - pr.h / 2).toFixed(1) + "px;width:" + pr.w.toFixed(1) + "px;height:" + pr.h.toFixed(1) + "px;transform:rotate(" + pr.rot + 'deg)">';
     });
     h += LD.seatStage({ under: under });

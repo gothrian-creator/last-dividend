@@ -5916,3 +5916,72 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
 .sd-knock.show { animation: o4pow .9s cubic-bezier(.2, 1.6, .4, 1) both; }
 .sd-knock[data-lv="3"] { color: #ffd2b0; font-size: clamp(17px, 3.8vh, 32px); }
 @media (prefers-reduced-motion: reduce) { .sd-knock.show { animation: none; opacity: 1; transition: opacity .2s; } }
+
+/* ===== Living table (2026-11-27, sheet 4): props that sit on the walnut, paper tags, a map that breathes, the tap state. =====
+   All in the rig's plate px unless noted; nothing animates a painted image's opacity (props only tween transforms). */
+.desk.sd { --glow: #ffa63a; --light: #ffd9a0; --thread: #a3261b; }
+.desk.sd.era-2 { --glow: #4fd8d0; --light: #e6f2ff; --thread: #8af2ea; }
+.desk.sd.era-3 { --glow: #fff4dc; --light: #fff1d8; --thread: rgba(255, 255, 255, 0.72); }
+/* two shadows falling away from the window (left and toward you): a tight contact line and a broad soft one */
+.desk.sd .sd-propimg { filter: drop-shadow(-1px 2px 1.2px rgba(30, 14, 4, 0.62)) drop-shadow(-9px 14px 12px rgba(30, 14, 4, 0.32)); transition: filter 0.22s ease; }
+.desk.sd .sd-propimg.is-dim { filter: drop-shadow(-1px 2px 1.2px rgba(30, 14, 4, 0.62)) drop-shadow(-9px 14px 12px rgba(30, 14, 4, 0.32)) brightness(0.62) saturate(0.8); }
+.sd-propref { position: absolute; pointer-events: none; transform-origin: 50% 50%; opacity: 0.11; filter: blur(1.6px) saturate(0.7);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 100%); mask-image: linear-gradient(to bottom, transparent 25%, #000 100%); }
+.desk.sd.era-3 .sd-propref { opacity: 0.16; } /* marble takes a clearer reflection */
+.desk.sd.is-pulling .sd-propref { visibility: hidden; }
+.sd-map-live { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; overflow: visible; pointer-events: none; }
+.sd-tlight { mix-blend-mode: soft-light; }
+.sd-rglow { opacity: 0.3; mix-blend-mode: screen; animation: sdBreath 4.4s ease-in-out infinite; animation-delay: calc(var(--i) * 1.3s); transition: opacity 0.3s ease; }
+.sd-rglow.is-on { opacity: 0.95; animation: none; }
+@keyframes sdBreath { 0%, 100% { opacity: 0.22; } 50% { opacity: 0.42; } }
+.sd-th path { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.sd-th-line { stroke: var(--thread); stroke-width: 1.4; }
+.sd-th-sh { stroke: rgba(28, 12, 4, 0.42); stroke-width: 1.8; }
+.e2 .sd-th-halo { stroke: rgba(79, 216, 208, 0.55); stroke-width: 5; }
+.e3 .sd-th-halo { stroke: rgba(255, 248, 230, 0.3); stroke-width: 7; }
+.e3 .sd-th-line { stroke-width: 1.1; }
+.sd-th-pulse { fill: none; stroke: var(--glow); stroke-width: 1.6; vector-effect: non-scaling-stroke; opacity: 0; transform-box: fill-box; transform-origin: center;
+  animation: sdPinPulse 3.8s ease-out infinite; animation-delay: calc(0.6s + var(--i) * 1.25s); }
+@keyframes sdPinPulse { 0% { transform: scale(0.55); opacity: 0.75; } 70% { opacity: 0; } 100% { transform: scale(2.3); opacity: 0; } }
+.sd-th { transition: opacity 0.22s ease; }
+.desk.sd.is-peeking .sd-th:not(.is-on) { opacity: 0.32; }
+.sd-th.is-on .sd-th-line, .sd-th.is-on .sd-th-sh, .sd-th.is-on .sd-th-halo { opacity: 0; } /* the open prop's own thread (pk-thread) takes over */
+/* lit glass pins: a soft halo in the era's light (screen px) */
+.desk.sd.is-deal .sd-pin i { box-shadow: inset 0 0 0 calc(2px * var(--k)) var(--ring), 0 0 0 1px rgba(255, 250, 235, 0.75), 0 0 calc(10px * var(--k)) calc(2px * var(--k)) color-mix(in srgb, var(--glow) 55%, transparent), 1px 3px 3px rgba(40, 22, 8, 0.35); }
+/* the price sticker is now a paper tag tucked under the prop's near edge (the prop's shadow falls across its top) */
+.desk.sd .sd-stk { left: 4%; top: 84%; padding: calc(4px * var(--k)) calc(8px * var(--k)) calc(3px * var(--k)) calc(14px * var(--k)); transform: rotate(-4deg); flex-direction: column; align-items: flex-start; gap: 1px;
+  background: #efe3c4 linear-gradient(180deg, rgba(40, 20, 6, 0.38) 0, rgba(40, 20, 6, 0) 6px, rgba(255, 250, 236, 0.45) 7px, rgba(160, 120, 60, 0.1) 100%);
+  clip-path: polygon(7px 0, 100% 0, 100% 100%, 7px 100%, 0 50%); box-shadow: none; filter: drop-shadow(-1px 2px 1px rgba(40, 22, 8, 0.45)); transition: opacity 0.22s ease; }
+.desk.sd .sd-stk::before { content: ""; position: absolute; left: 6px; top: 50%; width: 4px; height: 4px; margin-top: -2px; border-radius: 50%; background: #6a4a26; box-shadow: inset 0 0 0 1px #3a2810; }
+.desk.sd .sd-prop:nth-of-type(odd) .sd-stk { transform: rotate(3deg); }
+.desk.sd .sd-prop.is-dim .sd-stk { opacity: 0.5; }
+/* 2008: sticky notes */
+.desk.sd.era-2 .sd-stk { clip-path: none; padding: calc(4px * var(--k)) calc(8px * var(--k)) calc(3px * var(--k)); background: #f3e27a linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0, rgba(0, 0, 0, 0) 4px, rgba(255, 255, 255, 0.18) 60%, rgba(160, 130, 20, 0.16) 100%); color: #2c2610; }
+.desk.sd.era-2 .sd-stk::before { display: none; }
+/* Now: small notification tags */
+.desk.sd.era-3 .sd-stk { clip-path: none; transform: none; border-radius: calc(7px * var(--k)); padding: calc(4px * var(--k)) calc(9px * var(--k)) calc(4px * var(--k)) calc(16px * var(--k)); background: rgba(22, 24, 26, 0.86); color: #eef0ea;
+  font-family: var(--font-sans); letter-spacing: 0.02em; text-transform: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 4px 10px rgba(0, 0, 0, 0.3); filter: none; }
+.desk.sd.era-3 .sd-stk::before { left: 7px; width: 5px; height: 5px; margin-top: -2.5px; background: #5ad27a; box-shadow: 0 0 6px #5ad27a; }
+.desk.sd.era-3 .sd-stk em { color: #9ee6a8; font-family: var(--font-sans); } .desk.sd.era-3 .sd-stk em.neg, .desk.sd.era-3 .sd-prop.k-crisis .sd-stk em { color: #ff9a86; }
+/* the open prop's thread in the era's material, and money running along it to the prop (screen px) */
+.desk.sd.era-2 .pk-thread path:not(.pk-trail) { stroke: #8af2ea; filter: drop-shadow(0 0 3px rgba(79, 216, 208, 0.9)); }
+.desk.sd.era-3 .pk-thread path:not(.pk-trail) { stroke: rgba(255, 255, 255, 0.85); stroke-width: 1.2; filter: drop-shadow(0 0 4px rgba(255, 248, 230, 0.9)); }
+.pk-thread .pk-trail { fill: none; stroke: #f2cc5c; stroke-width: 3.2; stroke-linecap: round; stroke-dasharray: 0.1 7; opacity: 0; filter: drop-shadow(0 0 2px rgba(255, 214, 120, 0.85)); }
+.pk-thread .pk-trail.run { animation: pkTrail 1.25s linear 2 both; }
+@keyframes pkTrail { 0% { stroke-dashoffset: 0; opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } 100% { stroke-dashoffset: -21; opacity: 0; } }
+.sd-mcap { position: absolute; z-index: 3; padding: calc(3px * var(--k)) calc(10px * var(--k)); white-space: nowrap; pointer-events: none; background: rgba(34, 24, 14, 0.9); color: #faf3e2;
+  box-shadow: inset 0 1px 0 rgba(220, 180, 100, 0.55), 0 3px 8px rgba(20, 10, 4, 0.35); font: 700 calc(11.5px * var(--k))/1.35 "LD Type", "Courier New", monospace; letter-spacing: 0.01em; animation: sdMcapIn 0.26s ease-out both; }
+.sd-mcap i { font-style: normal; opacity: 0.6; } .sd-mcap .c-cash { color: #f0cf6a; } .sd-mcap .c-neg, .sd-mcap .c-un { color: #ff9f8a; }
+.desk.sd.era-2 .sd-mcap { box-shadow: inset 0 0 0 1px rgba(79, 216, 208, 0.6), 0 3px 8px rgba(0, 0, 0, 0.35); background: rgba(12, 24, 28, 0.9); }
+.desk.sd.era-3 .sd-mcap { border-radius: 999px; font-family: var(--font-sans); background: rgba(20, 22, 24, 0.86); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 3px 10px rgba(0, 0, 0, 0.3); }
+@keyframes sdMcapIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.pk-marks { position: absolute; inset: 0; pointer-events: none; }
+.pk-puff { position: absolute; width: calc(15px * var(--k)); height: calc(24px * var(--k)); fill: #e8743a; opacity: 0; transform-origin: 50% 100%; filter: drop-shadow(0 -3px 3px rgba(90, 80, 70, 0.55));
+  animation: pkPuff 0.6s ease-out both, pkFlick 1.9s ease-in-out infinite alternate; animation-delay: calc(0.2s + var(--i) * 0.18s), calc(0.8s + var(--i) * 0.3s); }
+@keyframes pkFlick { from { transform: scale(1, 1); } to { transform: scale(0.92, 1.1); } }
+.pk-puff .sm { fill: rgba(70, 62, 56, 0.55); } .desk.sd.era-2 .pk-puff .fl { fill: #d8d4c8; } .desk.sd.era-3 .pk-puff { fill: #f08a4a; }
+@keyframes pkPuff { 0% { opacity: 0; transform: translateY(6px) scale(0.6); } 100% { opacity: 0.92; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .sd-rglow, .sd-th-pulse, .pk-thread .pk-trail.run, .pk-puff, .sd-mcap { animation: none !important; }
+  .sd-th-pulse { opacity: 0; } .pk-puff { opacity: 0.9; } .pk-thread .pk-trail.run { opacity: 0.9; }
+}

@@ -16738,7 +16738,7 @@ body:has(#screen-desk.on .desk.sd) { overflow: hidden; overscroll-behavior: none
      so the 1978 set stands in. Shape: { room: src, roomWide: { src, x0, w }, table: { src, box } | null, hands: { rest: { src, box }, dip: { src, box } } } */
   var DESK = "assets/house/desk/";
   function eraSet(k, win, rest, dip) {
-    return { room: DESK + k + "-room.webp", roomWide: { src: DESK + k + "-wide.webp", x0: 640, w: 2000 }, table: null, win: win,
+    return { room: DESK + k + "-room-map.webp", roomWide: { src: DESK + k + "-wide-map.webp", x0: 640, w: 2000 }, table: null, win: win,
       hands: { rest: { src: DESK + k + "-hands-rest.webp", box: [85, rest, 650, 366] }, dip: { src: DESK + k + "-hands-dip.webp", box: [85, dip, 650, 366] } } };
   }
   /* 2008: steel table, front edge ~y996; Now: stone table, ~y1004 (1978: ~880). Hands keep the 1978 Mara hands' size and sit the
